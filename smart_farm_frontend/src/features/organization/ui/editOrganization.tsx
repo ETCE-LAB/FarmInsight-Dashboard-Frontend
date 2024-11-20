@@ -37,13 +37,11 @@ export const EditOrganization = () => {
 
     const userSelected = (user: UserProfile) => {
         if (!usersToAdd.includes(user)) {
-            console.log(usersToAdd)
             setUsersToAdd((prevUsers) => [...prevUsers, user]);
         }
     };
 
     const handleAddUsers = () => {
-        // Add users to organization
         Promise.all(
             usersToAdd.map((user) =>
                 addUserToOrganization({
@@ -54,7 +52,6 @@ export const EditOrganization = () => {
             )
         )
             .then(() => {
-                // Show success notification
                 setNotification({
                     type: 'success',
                     message: `${usersToAdd.length} users have been added to the organization.`,
@@ -65,7 +62,6 @@ export const EditOrganization = () => {
                 setUserModalOpen(false);
             })
             .catch((error) => {
-                // Show error notification
                 setNotification({
                     type: 'error',
                     message: 'There was an error adding the users.',

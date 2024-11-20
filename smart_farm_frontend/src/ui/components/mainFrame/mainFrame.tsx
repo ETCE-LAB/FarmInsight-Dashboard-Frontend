@@ -6,6 +6,7 @@ import {useLocation} from "react-router-dom";
 import {Fpf} from "../../../features/fpf/models/Fpf";
 import {receiveFpfData} from "../../../features/fpf/useCase/receiveFpfData";
 import {getFpf} from "../../../features/fpf/useCase/getFpf";
+import GrowingCycleList from "../../../features/growthCycle/ui/growingCycleList";
 
 export const MainFrame = () => {
 
@@ -39,6 +40,9 @@ export const MainFrame = () => {
                         <div style={{ height: 'auto', marginBottom: '20px'}}>
                             {/* Camera feed placeholder */}
                             <img src={placeholderImage} alt="Placeholder" style={{width: '100%', height: 'auto'}}/>
+                        </div>
+                        <div>
+                            <GrowingCycleList fpfId={'d47d820738ba44ee953be36b50becf2f'}/>
                         </div>
                     </div>
                 </div>
