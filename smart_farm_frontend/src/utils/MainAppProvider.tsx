@@ -1,6 +1,6 @@
 import React, {PropsWithChildren} from 'react';
 import { Provider } from 'react-redux';
-import { MantineProvider } from '@mantine/core';
+import {createTheme, MantineProvider} from '@mantine/core';
 import { store } from './store';
 import {WebStorageStateStore} from "oidc-client-ts";
 import {AuthProvider} from "react-oidc-context";
@@ -17,6 +17,11 @@ export const oidcConfig = {
 // ...
 };
 
+const theme = createTheme({
+    autoContrast: true,
+});
+
+
 const MainAppProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     return (
         //Auth Provider goes here too
@@ -24,7 +29,7 @@ const MainAppProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         <AuthProvider {...oidcConfig}>
             <Provider store={store}>
                 {/* <SocketProvider> */}
-                    <MantineProvider defaultColorScheme="auto">
+                    <MantineProvider defaultColorScheme="auto" theme={theme}>
                         {children}
                     </MantineProvider>
                {/* </SocketProvider>*/}

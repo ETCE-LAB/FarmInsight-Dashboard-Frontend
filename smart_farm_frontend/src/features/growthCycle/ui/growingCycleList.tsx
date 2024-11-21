@@ -8,8 +8,8 @@ const GrowingCycleList: React.FC<{ fpfId: string }> = ({ fpfId }) => {
 
     // Mock data for growing cycles
     const [growingCycles, setGrowingCycles] = useState([
-        { id: 1, plant: "Cannabis", planted: "10-01-2024", harvested: "10-31-2024", notes: "Grows quickly." },
-        { id: 2, plant: "Tobacco", planted: "10-31-2024", harvested: "", notes: "" },
+        { id: 1, plant: "Lettuce", planted: "10-01-2024", harvested: "10-31-2024", notes: "Grows quickly." },
+        { id: 2, plant: "Lettuce", planted: "10-31-2024", harvested: "", notes: "" },
     ]);
 
     // Function to handle deletion of a cycle

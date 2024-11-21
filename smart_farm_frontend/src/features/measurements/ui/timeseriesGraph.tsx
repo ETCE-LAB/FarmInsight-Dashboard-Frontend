@@ -16,17 +16,29 @@ const TimeseriesGraph: React.FC<{sensor:Sensor}> = ({sensor}) => {
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
 
+    function generateRandomMeasurements(count: number): Measurement[] {
+        const measurements: Measurement[] = [];
 
+        for (let i = 0; i < count; i++) {
+            const measuredAt = new Date(Date.now() - i * 1000 * 60).toISOString(); // 1 minute apart
+            const value = Math.floor(Math.random() * 100); // Random value between 0 and 100
+            measurements.push({ measuredAt, value });
+        }
+
+        return measurements;
+    }
 
     useEffect(() => {
         requestMeasuremnt("8250f7569a3047ea8decf4cc101003da", "2024-10-10", "2024-11-01").then(resp => {
             // Round the values before setting them
-            const roundedMeasurements = resp.map((measurement) => ({
+            /*const roundedMeasurements = resp.map((measurement) => ({
                 ...measurement,
                 //TODO: "We might have to change this"
                 value: parseFloat(measurement.value.toFixed(2)),
-            }));
-            setMeasurements(roundedMeasurements);
+            }));*/
+
+            const measurements2 = generateRandomMeasurements(20)
+            setMeasurements(measurements2);
         });
     }, [measurementReceivedEventListener]);
 

@@ -13,7 +13,7 @@ export const BasicAppShell: React.FC<PropsWithChildren<{}>> = ({ children }) => 
             <AppShell.Header>
                 <AppShell_Header />
             </AppShell.Header>
-            <AppShell.Navbar >
+            <AppShell.Navbar>
                 <AppShell_Navbar />
             </AppShell.Navbar>
             <AppShell.Main>
