@@ -141,7 +141,7 @@ const GrowingCycleList: React.FC<{ fpfId: string; growingCycles: GrowingCycle[] 
                 shadow="sm"
                 padding="md"
                 radius="md"
-                style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)", position: "relative" }}
+                style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)", position: "static", overflowY:'scroll', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', height:'45vh'}}
             >
                 <IconCirclePlus
                     size={25}

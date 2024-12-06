@@ -85,18 +85,6 @@ export const EditOrganization = () => {
                         <Title order={2} style={{ color: "#105385", marginBottom: "10px" }}>
                             Organization: {organization.name}
                         </Title>
-                        <Text
-                            size="sm"
-                            style={{
-                                color: organization.isPublic ? "#28a745" : "#dc3545",
-                                padding: "5px 10px",
-                                borderRadius: "5px",
-                                backgroundColor: organization.isPublic ? "#e6f9f0" : "#fbe5e5",
-                                display: "inline-block",
-                            }}
-                        >
-                            {organization.isPublic ? "Public" : "Private"}
-                        </Text>
                     </Paper>
                     <MembershipList members={organization.memberships} />
 
