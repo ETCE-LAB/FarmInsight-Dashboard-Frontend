@@ -13,12 +13,12 @@ import {useAppDispatch} from "../../../utils/Hooks";
 import {changedMembership} from "../../membership/state/MembershipSlice";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
+import {showNotification} from "@mantine/notifications";
 
 export const EditOrganization = () => {
     const { organizationId } = useParams();
     const [organization, setOrganization] = useState<Organization | null>(null);
     const [usersToAdd, setUsersToAdd] = useState<UserProfile[]>([]);
-    const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
     const [userModalOpen, setUserModalOpen] = useState(false); // State to manage modal visibility
     const [fpfModalOpen, setFpFModalOpen] = useState(false); // State to manage FpF modal visibility
     const membershipEventListener = useSelector((state: RootState) => state.membership.changeMembershipEvent);
@@ -51,9 +51,10 @@ export const EditOrganization = () => {
             )
         )
             .then(() => {
-                setNotification({
-                    type: 'success',
+                showNotification({
+                    title: 'Success',
                     message: `${usersToAdd.length} users have been added to the organization.`,
+                    color: 'green',
                 });
                 // Clear the user list
                 setUsersToAdd([]);
@@ -61,9 +62,10 @@ export const EditOrganization = () => {
                 setUserModalOpen(false);
             })
             .catch((error) => {
-                setNotification({
-                    type: 'error',
-                    message: 'There was an error adding the users.',
+                showNotification({
+                    title: 'There was an error adding the users.',
+                    message: `${error}`,
+                    color: 'red',
                 });
                 console.error("Error adding users:", error);
             });
@@ -153,23 +155,6 @@ export const EditOrganization = () => {
                         <FpfForm inputOrganization={organization}></FpfForm>
                     </Modal>
 
-                    {/* Notification */}
-                    {notification && (
-                        <Notification
-                            color={notification.type === 'success' ? 'green' : 'red'}
-                            title={notification.type === 'success' ? 'Success' : 'Error'}
-                            onClose={() => setNotification(null)}
-                            style={{
-                                position: 'fixed',
-                                top: '20px',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                zIndex: 1000,
-                            }}
-                        >
-                            {notification.message}
-                        </Notification>
-                    )}
                 </>
             ) : null}
         </>

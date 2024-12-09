@@ -6,6 +6,7 @@ import { GrowingCycle } from "../models/growingCycle";
 import { deleteGrowingCycle } from "../useCase/deleteGrowingCycle";
 import { changedGrowingCycle } from "../state/GrowingCycleSlice";
 import { useAppDispatch } from "../../../utils/Hooks";
+import {showNotification} from "@mantine/notifications";
 
 // Helper function to truncate text
 const truncateText = (text: string, limit: number): string => {
@@ -18,14 +19,10 @@ const truncateText = (text: string, limit: number): string => {
 const GrowingCycleList: React.FC<{ fpfId: string; growingCycles: GrowingCycle[] }> = ({ fpfId, growingCycles }) => {
     const [showGrowingCycleForm, setShowGrowingCycleForm] = useState(false);
     const [toEditGrowingCycle, setToEditGrowingCycle] = useState<GrowingCycle | null>(null);
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for confirmation modal
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [cycleToDelete, setCycleToDelete] = useState<GrowingCycle | null>(null); // State to hold cycle to delete
     const [selectedCycle, setSelectedCycle] = useState<GrowingCycle | null>(null); // State for the details modal
-    const [notification, setNotification] = useState<{ show: boolean; message: string; color: string }>({
-        show: false,
-        message: "",
-        color: "",
-    }); // State for managing the notification
+
     const dispatch = useAppDispatch();
 
     const closeModal = () => {
@@ -41,19 +38,28 @@ const GrowingCycleList: React.FC<{ fpfId: string; growingCycles: GrowingCycle[] 
     const confirmDelete = () => {
         if (cycleToDelete) {
             deleteGrowingCycle(cycleToDelete.id)
-                .then(() => {
-                    dispatch(changedGrowingCycle());
-                    setNotification({
-                        show: true,
-                        message: `Growing cycle for ${cycleToDelete.plants} has been deleted successfully.`,
-                        color: "green",
+                .then((result) => {
+                    console.log(result)
+                    if(result){
+                        dispatch(changedGrowingCycle());
+                        showNotification({
+                            title: 'Success',
+                            message: `Growing cycle for ${cycleToDelete.plants} has been deleted successfully.`,
+                            color: 'green',
+                        });
+                    }else{
+                        showNotification({
+                        title: 'Error',
+                        message: 'Failed to delete the growing cycle',
+                        color: 'red',
                     });
+                    }
                 })
                 .catch(() => {
-                    setNotification({
-                        show: true,
-                        message: "Failed to delete the growing cycle.",
-                        color: "red",
+                    showNotification({
+                        title: 'Error',
+                        message: 'Failed to delete the growing cycle',
+                        color: 'red',
                     });
                 })
                 .finally(() => {
@@ -124,17 +130,6 @@ const GrowingCycleList: React.FC<{ fpfId: string; growingCycles: GrowingCycle[] 
                     </Button>
                 </Group>
             </Modal>
-
-            {/* Notification */}
-            {notification.show && (
-                <Notification
-                    color={notification.color}
-                    onClose={() => setNotification({ ...notification, show: false })}
-                    style={{ position: "fixed", bottom: 20, right: 20, zIndex: 999 }}
-                >
-                    {notification.message}
-                </Notification>
-            )}
 
             {/* Card Component */}
             <Card

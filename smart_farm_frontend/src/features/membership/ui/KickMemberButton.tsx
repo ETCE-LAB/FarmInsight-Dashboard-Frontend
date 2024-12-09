@@ -4,18 +4,19 @@ import React, {useState} from "react";
 import {kickMember} from "../useState/kickMember";
 import {useDispatch} from "react-redux";
 import {changedMembership} from "../state/MembershipSlice";
+import {showNotification} from "@mantine/notifications";
 
 
 export const KickMemberButton:React.FC<{id:string}> = ({id}) => {
     const dispatch = useDispatch();
-    const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
     function handleKick(id: string) {
         kickMember({id}).then(r =>{
-            setNotification({
-                type: 'success',
-                message: `User was kicked from Organization.`,
-            })
+            showNotification({
+                    title: 'Success',
+                    message: `User was kicked from Organization.`,
+                    color: 'green',
+                });
             dispatch(changedMembership());
         })
     }

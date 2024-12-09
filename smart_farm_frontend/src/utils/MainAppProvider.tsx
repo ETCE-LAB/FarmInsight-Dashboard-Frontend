@@ -4,6 +4,8 @@ import { MantineProvider } from '@mantine/core';
 import { store } from './store';
 import {WebStorageStateStore} from "oidc-client-ts";
 import {AuthProvider} from "react-oidc-context";
+import {Notifications} from "@mantine/notifications";
+import '@mantine/notifications/styles.css';
 //import {SocketProvider} from "./SocketProvider";
 
 export const oidcConfig = {
@@ -24,8 +26,9 @@ const MainAppProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         <AuthProvider {...oidcConfig}>
             <Provider store={store}>
                 {/* <SocketProvider> */}
-                    <MantineProvider defaultColorScheme="auto">
-                        {children}
+                <MantineProvider defaultColorScheme="auto">
+                    <Notifications position="bottom-right" zIndex={3000} limit={5}/>
+                    {children}
                     </MantineProvider>
                {/* </SocketProvider>*/}
             </Provider>

@@ -10,11 +10,13 @@ import {receivedSensor} from "../state/SensorSlice";
 import {AppRoutes} from "../../../utils/appRoutes";
 import {useNavigate} from "react-router-dom";
 import {updateSensor} from "../useCase/updateSensor";
+import {notifications} from "@mantine/notifications";
 
-export const SensorForm:React.FC<{toEditSensor?:EditSensor}> = ({toEditSensor}) => {
+
+export const SensorForm:React.FC<{toEditSensor?:EditSensor, setClosed: React.Dispatch<React.SetStateAction<boolean>>}> = ({toEditSensor, setClosed}) => {
     const auth = useAuth();
     const { organizationId, fpfId } = useParams();
-    const dispatch = useAppDispatch()
+
     const [name, setName] = useState<string>("")
     const [unit, setUnit] = useState<string>("")
     const [modelNr, setModelNr] = useState<string>("")
@@ -23,6 +25,8 @@ export const SensorForm:React.FC<{toEditSensor?:EditSensor}> = ({toEditSensor}) 
     const [location, setLocation] = useState<string>("")
     const [hardwareConfiguration, setHardwareConfiguration] = useState<{ sensorClassId: string, additionalInformation: Record<string, any>} | undefined>(undefined);
     const navigate = useNavigate();
+
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (toEditSensor) {
@@ -37,6 +41,14 @@ export const SensorForm:React.FC<{toEditSensor?:EditSensor}> = ({toEditSensor}) 
 
     const handleEdit = () => {
         if (toEditSensor && hardwareConfiguration) {
+            setClosed(false)
+            const id = notifications.show({
+                  loading: true,
+                  title: 'Loading',
+                  message: 'Updating Sensor on your FPF',
+                  autoClose: false,
+                  withCloseButton: false,
+                });
             updateSensor({
                 id:toEditSensor.id,
                 name,
@@ -48,16 +60,67 @@ export const SensorForm:React.FC<{toEditSensor?:EditSensor}> = ({toEditSensor}) 
                 fpfId: toEditSensor.fpfId,
                 hardwareConfiguration,
             }).then((sensor) => {
-                console.dir(sensor);
+                if(sensor){
+                    dispatch(receivedSensor())
+                    notifications.update({
+                        id,
+                        title: 'Success',
+                        message: `Sensor updated successfully.`,
+                        color: 'green',
+                        loading: false,
+                        autoClose: 2000,
+                    });
+                }else{
+                    notifications.update({
+                        id,
+                        title: 'There was an error updating the sensor.',
+                        message: `${sensor}`,
+                        color: 'green',
+                        loading: false,
+                        autoClose: 2000,
+                    });
+                }
+
             });
         }
     };
 
     const handleSave = () => {
         if (hardwareConfiguration && fpfId && organizationId) {
+            setClosed(false)
             const interval = +intervalSeconds;
-            createSensor({id:'', name, unit, location, modelNr, intervalSeconds:interval, isActive, fpfId, hardwareConfiguration,}).then((sensor) => {
+            const id = notifications.show({
+                  loading: true,
+                  title: 'Loading',
+                  message: 'Saving Sensor on your FPF',
+                  autoClose: false,
+                  withCloseButton: false,
+                });
+            createSensor({id:'', name, unit, location, modelNr, intervalSeconds:interval, isActive, fpfId, hardwareConfiguration,}).then((response) => {
+                if(response){
+
+                    notifications.update({
+                        id,
+                        title: 'Success',
+                        message: `Sensor saved successfully.`,
+                        color: 'green',
+                        loading: false,
+                        autoClose: 2000,
+                    });
+
+                }else{
+                    notifications.update({
+                        id,
+                        title: 'There was an error saving the sensor.',
+                        message: `${response}`,
+                        color: 'green',
+                        loading: false,
+                        autoClose: 2000,
+                    });
+
+                }
                 dispatch(receivedSensor())
+
                 navigate(AppRoutes.editFpf.replace(":organizationId", organizationId).replace(":fpfId", fpfId));
             })
 

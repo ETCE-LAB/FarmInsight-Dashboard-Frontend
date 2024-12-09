@@ -7,10 +7,10 @@ import {getFpf} from "../../fpf/useCase/getFpf";
 import {modifyGrowingCycle} from "../useCase/modifyGrowingCycle";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {changedGrowingCycle} from "../state/GrowingCycleSlice";
+import {showNotification} from "@mantine/notifications";
 
 export const GrowingCycleForm: React.FC<{ fpfId: string, toEditGrowingCycle:GrowingCycle | null }> = ({ fpfId, toEditGrowingCycle }) => {
     const [growingCycle, setGrowingCycle] = useState<GrowingCycle>({ fpfId: fpfId } as GrowingCycle);
-    const [notification, setNotification] = useState<{ message: string; color: string } | null>(null);
     const dispatch = useAppDispatch()
     const handleInputChange = (field: string, value: any) => {
         setGrowingCycle((prev) => ({ ...prev, [field]: value }));
@@ -19,17 +19,33 @@ export const GrowingCycleForm: React.FC<{ fpfId: string, toEditGrowingCycle:Grow
         if(toEditGrowingCycle){
             try {
                 await modifyGrowingCycle(growingCycle.id, growingCycle);
-                setNotification({ message: "Growing cycle edited", color: "green" });
+                showNotification({
+                    title: 'Success',
+                    message: 'Growing cycle edited',
+                    color: 'green',
+                });
             } catch (error) {
-                setNotification({ message: "Failed to save the growing cycle.", color: "red" });
+                showNotification({
+                    title: 'Failed to save the growing cycle',
+                    message: `${error}`,
+                    color: 'red',
+                });
             }
         }
         else{
             try {
                 await createGrowingCycle(growingCycle);
-                setNotification({ message: "Growing cycle saved successfully!", color: "green" });
+                showNotification({
+                    title: 'Success',
+                    message: 'Growing cycle saved successfully!',
+                    color: 'green',
+                });
             } catch (error) {
-                setNotification({ message: "Failed to save the growing cycle.", color: "red" });
+                showNotification({
+                    title: 'Failed to save the growing cycle',
+                    message: `${error}`,
+                    color: 'red',
+            });
             }
         }
         dispatch(changedGrowingCycle());
@@ -97,16 +113,6 @@ export const GrowingCycleForm: React.FC<{ fpfId: string, toEditGrowingCycle:Grow
                     Save
                 </Button>
             </Flex>
-
-            {notification && (
-                <Notification
-                    color={notification.color}
-                    onClose={() => setNotification(null)}
-                    style={{ marginTop: "20px" }}
-                >
-                    {notification.message}
-                </Notification>
-            )}
         </>
     );
 };

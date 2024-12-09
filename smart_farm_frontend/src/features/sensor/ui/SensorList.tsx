@@ -5,6 +5,8 @@ import {IconEdit, IconPlus} from "@tabler/icons-react";
 import {FpfForm} from "../../fpf/ui/fpfForm";
 import {SensorForm} from "./SensorForm";
 import {getFpf} from "../../fpf/useCase/getFpf";
+import {useAppSelector} from "../../../utils/Hooks";
+import {receivedSensorEvent} from "../state/SensorSlice";
 
 
 export const SensorList:React.FC<{sensorsToDisplay?:Sensor[], fpfId:string}> = ({sensorsToDisplay, fpfId}) => {
@@ -12,11 +14,14 @@ export const SensorList:React.FC<{sensorsToDisplay?:Sensor[], fpfId:string}> = (
     const [sensorModalOpen, setSensorModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState<EditSensor | undefined>(undefined);
 
+    const sensorReceivedEventListener = useAppSelector(receivedSensorEvent);
+
     useEffect(() => {
-    if (sensorsToDisplay) {
-      setSensor(sensorsToDisplay);
+        if (sensorsToDisplay) {
+            setSensor(sensorsToDisplay);
     }
-  }, [sensorsToDisplay]);
+  }, [sensorsToDisplay, sensorReceivedEventListener]);
+
 
     const onClickEdit = (sensor: Sensor) => {
         const editSensor: EditSensor = {
@@ -40,6 +45,11 @@ export const SensorList:React.FC<{sensorsToDisplay?:Sensor[], fpfId:string}> = (
         setSensorModalOpen(true)
     }
 
+    const onClickAddSensor = () => {
+        setSelectedSensor(undefined)
+        setSensorModalOpen(true)
+    }
+
     return (
         <Box>
             {/* Add FpF Modal */}
@@ -49,14 +59,14 @@ export const SensorList:React.FC<{sensorsToDisplay?:Sensor[], fpfId:string}> = (
                 title={selectedSensor ? "Edit Sensor": "Create Sensor"}
                 centered
             >
-                <SensorForm toEditSensor={selectedSensor} />
+                <SensorForm toEditSensor={selectedSensor} setClosed={setSensorModalOpen}/>
             </Modal>
 
             <Group mb="md">
                 <h2>Sensor</h2>
                <IconPlus size={16}
                          stroke={3}
-                         onClick={ () => setSensorModalOpen(true)}
+                         onClick={ () => onClickAddSensor()}
                          style={{cursor:"pointer"}} />
             </Group>
             <Table highlightOnHover>

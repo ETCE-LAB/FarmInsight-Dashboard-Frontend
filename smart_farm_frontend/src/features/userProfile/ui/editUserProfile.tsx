@@ -6,6 +6,7 @@ import {receiveUserProfile} from "../useCase/receiveUserProfile";
 import {useAuth} from "react-oidc-context";
 import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
 import {changedUserProfile, receivedUserProfileEvent} from "../state/UserProfileSlice";
+import {showNotification} from "@mantine/notifications";
 
 export const EditUserProfile = () => {
     const [editableProfile, setEditableProfile] = useState({
@@ -15,47 +16,32 @@ export const EditUserProfile = () => {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const auth = useAuth();
     const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
-    const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const dispatch = useAppDispatch();
+
 
     const handleInputChange = (field: keyof typeof editableProfile, value: string) => {
         setEditableProfile((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleSave = async () => {
-        console.log('Saving updated profile:', editableProfile);
         try {
             const response = await modifyUserProfile({
                 name: editableProfile.name,
             });
             dispatch(changedUserProfile());
-            console.log('Profile updated:', response);
             setUserProfile((prev) => (prev ? { ...prev, ...response } : null)); // Update local state
-
-            // Show success notification
-            setNotification({
-                type: 'success',
-                message: 'Your profile has been updated successfully!',
+            showNotification({
+                title: 'Successfully updated',
+                message: 'Updated the Profile name successfully!',
+                color: 'green',
             });
-
-            // Auto-close notification after 3 seconds
-            setTimeout(() => {
-                setNotification(null);
-            }, 3000);
 
         } catch (error) {
-            console.error('Error updating profile:', error);
-
-            // Show error notification
-            setNotification({
-                type: 'error',
-                message: 'There was an error updating your profile.',
+            showNotification({
+                title: 'Unable to update profile name',
+                message: `${error}`,
+                color: 'red',
             });
-
-            // Auto-close notification after 3 seconds
-            setTimeout(() => {
-                setNotification(null);
-            }, 3000);
         }
     };
 
@@ -112,25 +98,6 @@ export const EditUserProfile = () => {
                     Save changes
                 </Button>
             </Group>
-
-            {/* Render Notification */}
-            {notification && (
-                <Notification
-                    onClose={() => setNotification(null)}
-                    color={notification.type === 'success' ? 'green' : 'red'}
-                    title={notification.type === 'success' ? 'Success' : 'Error'}
-                    style={{
-                        position: 'fixed',
-                        top: '20px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        zIndex: 1000,
-                    }}
-                >
-                    {notification.message}
-                </Notification>
-            )}
-
         </>
     );
 };
