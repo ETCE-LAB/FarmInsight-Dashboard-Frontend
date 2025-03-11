@@ -10,14 +10,12 @@ import {
     Burger,
     Paper,
     Group,
-    useMantineTheme,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+} from '@mantine/core';
 import {
     IconSettings,
     IconSearch,
     IconSquareRoundedPlus,
-    IconEdit,
+    IconEdit
 } from "@tabler/icons-react";
 import { Organization } from "../../../../features/organization/models/Organization";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -27,31 +25,28 @@ import { useAuth } from "react-oidc-context";
 import { Fpf } from "../../../../features/fpf/models/Fpf";
 import { getOrganization } from "../../../../features/organization/useCase/getOrganization";
 import DynamicFontText from "../../../../utils/DynamicFontText";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import { FpfForm } from "../../../../features/fpf/ui/fpfForm";
+import { useMediaQuery } from '@mantine/hooks';
 
 export const AppShell_Navbar: React.FC = () => {
-    const theme = useMantineTheme();
-    const [searchValue, setSearchValue] = useState("");
+    const [searchValue, setSearchValue] = useState('');
     const { t } = useTranslation();
-    const [selectedOrganization, setSelectedOrganization] = useState<{ name: string; id: string }>({
-        name: t("header.myOrganizations"),
-        id: "",
-    });
+    const [selectedOrganization, setSelectedOrganization] = useState<{ name: string, id: string }>({ name: t("header.myOrganizations"), id: '' });
     const [organizations, setMyOrganizations] = useState<Organization[]>([]);
     const [selectedFPFId, setSelectedFPFId] = useState<string | null>(null);
     const [fpfList, setFpfList] = useState<Fpf[]>([]);
-    const [fpfModalOpen, setFpfModalOpen] = useState(false);
+    const [fpfModalOpen, setFpfModalOpen] = useState(false); // Renamed from drawerOpened for clarity
 
     const navigate = useNavigate();
     const auth = useAuth();
     const location = useLocation();
     const [organizationId, setOrganizationId] = useState<string>();
-    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isMobile = useMediaQuery('(max-width: 768px)');
 
     useEffect(() => {
         if (auth.isAuthenticated) {
-            getMyOrganizations().then((resp) => {
+            getMyOrganizations().then(resp => {
                 if (resp) setMyOrganizations(resp);
             });
         }
@@ -59,16 +54,16 @@ export const AppShell_Navbar: React.FC = () => {
 
     useEffect(() => {
         if (auth.isAuthenticated) {
-            const path = location.pathname.split("/");
-            const organizationPathIndex = path.indexOf("organization");
+            const path = location.pathname.split('/');
+            const organizationPathIndex = path.indexOf('organization');
             if (organizationPathIndex !== -1 && path.length > organizationPathIndex + 1) {
                 const orgId = path[organizationPathIndex + 1];
                 setOrganizationId(orgId);
-                getOrganization(orgId).then((resp) => {
+                getOrganization(orgId).then(resp => {
                     if (resp) {
                         setFpfList(resp.FPFs);
                         setSelectedOrganization({ name: resp.name, id: resp.id });
-                        const fpfPathIndex = path.indexOf("fpf");
+                        const fpfPathIndex = path.indexOf('fpf');
                         if (fpfPathIndex !== -1 && path.length > fpfPathIndex + 1) {
                             const fpfId = path[fpfPathIndex + 1];
                             setSelectedFPFId(fpfId);
@@ -78,8 +73,8 @@ export const AppShell_Navbar: React.FC = () => {
             } else {
                 setSelectedFPFId(null);
                 setFpfList([]);
-                setSelectedOrganization({ name: t("header.myOrganizations"), id: "" });
-                getMyOrganizations().then((resp) => {
+                setSelectedOrganization({ name: t("header.myOrganizations"), id: '' });
+                getMyOrganizations().then(resp => {
                     if (resp) setMyOrganizations(resp);
                 });
             }
@@ -94,13 +89,13 @@ export const AppShell_Navbar: React.FC = () => {
     const handleFpfSelect = (id: string) => {
         navigate(
             AppRoutes.displayFpf
-                .replace(":organizationId", selectedOrganization.id)
-                .replace(":fpfId", id)
+                .replace(':organizationId', selectedOrganization.id)
+                .replace(':fpfId', id)
         );
     };
 
     return (
-        <Container size="fluid" style={{ display: "flex", flexDirection: "column", width: "100%", padding: 0 }}>
+        <Container size="fluid" style={{ display: 'flex', flexDirection: 'column', width: '100%', padding: 0 }}>
             {/* FpF Modal */}
             <Modal
                 opened={fpfModalOpen}
@@ -112,20 +107,18 @@ export const AppShell_Navbar: React.FC = () => {
             </Modal>
 
             {/* Header */}
-            <Flex align="center" justify="space-between" style={{ padding: "1rem" }}>
+            <Flex align="center" justify="space-between" style={{ padding: '1rem' }}>
                 <Flex align="center" gap="md">
                     <IconSettings
                         size={24}
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                            navigate(AppRoutes.organization.replace(":organizationId", selectedOrganization.id))
-                        }
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => navigate(AppRoutes.organization.replace(':organizationId', selectedOrganization.id))}
                     />
                     <Group gap="xs">
                         {organizations.map((org) => (
                             <Menu key={org.id} trigger="hover" openDelay={100} closeDelay={100} withinPortal>
                                 <Menu.Target>
-                                    <Text style={{ cursor: "pointer", fontWeight: org.id === selectedOrganization.id ? 600 : 400 }}>
+                                    <Text style={{ cursor: 'pointer', fontWeight: org.id === selectedOrganization.id ? 600 : 400 }}>
                                         {org.name}
                                     </Text>
                                 </Menu.Target>
@@ -157,7 +150,7 @@ export const AppShell_Navbar: React.FC = () => {
             {!isMobile && <Divider my="sm" />}
 
             {/* FpF List */}
-            <Container size="xl" style={{ width: "100%", padding: "0 1rem" }}>
+            <Container size="xl" style={{ width: '100%', padding: '0 1rem' }}>
                 {fpfList
                     .filter((fpf) => fpf.name.toLowerCase().includes(searchValue.toLowerCase()))
                     .map((fpf) => (
@@ -167,45 +160,27 @@ export const AppShell_Navbar: React.FC = () => {
                             radius="md"
                             withBorder
                             style={{
-                                position: "relative",
-                                marginBottom: "1rem",
-                                padding: "0.75rem 1rem",
-                                cursor: "pointer",
-                                transition: "background-color 0.2s ease",
+                                marginBottom: '1rem',
+                                padding: '0.75rem 1rem',
+                                cursor: 'pointer',
+                                transition: 'background-color 0.2s ease',
                             }}
                             onClick={() => handleFpfSelect(fpf.id)}
                         >
-                            {selectedFPFId === fpf.id && (
-                                <Flex
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 0,
-                                        backgroundColor: (theme as any).fn.rgba(theme.colors[theme.primaryColor][6], 0.3),
-                                        borderRadius: "inherit",
-                                        pointerEvents: "none",
-                                        zIndex: 1,
+                            <Flex align="center" justify="space-between">
+                                <DynamicFontText text={fpf.name} maxWidth={150} />
+                                <IconEdit
+                                    size={20}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        navigate(
+                                            AppRoutes.editFpf
+                                                .replace(':organizationId', selectedOrganization.id)
+                                                .replace(':fpfId', fpf.id)
+                                        );
                                     }}
                                 />
-                            )}
-                            <Flex style={{ position: "relative", zIndex: 2 }}>
-                                <Flex align="center" justify="space-between">
-                                    <DynamicFontText text={fpf.name} maxWidth={150} />
-                                    <IconEdit
-                                        size={20}
-                                        style={{ cursor: "pointer" }}
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            navigate(
-                                                AppRoutes.editFpf
-                                                    .replace(":organizationId", selectedOrganization.id)
-                                                    .replace(":fpfId", fpf.id)
-                                            );
-                                        }}
-                                    />
-                                </Flex>
                             </Flex>
                         </Paper>
                     ))}
@@ -213,7 +188,7 @@ export const AppShell_Navbar: React.FC = () => {
                     <Divider style={{ flexGrow: 1 }} />
                     <IconSquareRoundedPlus
                         title={t("header.addFpf")}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer' }}
                         size={30}
                         stroke={2}
                         color={"#199ff4"}
