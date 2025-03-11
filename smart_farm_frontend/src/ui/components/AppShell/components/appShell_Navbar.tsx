@@ -9,13 +9,12 @@ import {
     Modal,
     Burger,
     Paper,
-    Group,
+    Group, useMantineTheme,
 } from '@mantine/core';
 import {
     IconSettings,
     IconSearch,
     IconSquareRoundedPlus,
-    IconEdit
 } from "@tabler/icons-react";
 import { Organization } from "../../../../features/organization/models/Organization";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,6 +29,7 @@ import { FpfForm } from "../../../../features/fpf/ui/fpfForm";
 import { useMediaQuery } from '@mantine/hooks';
 
 export const AppShell_Navbar: React.FC = () => {
+    const theme = useMantineTheme();
     const [searchValue, setSearchValue] = useState('');
     const { t } = useTranslation();
     const [selectedOrganization, setSelectedOrganization] = useState<{ name: string, id: string }>({ name: t("header.myOrganizations"), id: '' });
@@ -136,7 +136,7 @@ export const AppShell_Navbar: React.FC = () => {
                         variant="filled"
                         radius="md"
                         size="sm"
-                        style={{ maxWidth: 200 }}
+                        style={{ maxWidth: 150, marginLeft: '15' }}
                         value={searchValue}
                         onChange={(event) => setSearchValue(event.currentTarget.value)}
                         placeholder={t("header.search")}
@@ -156,21 +156,22 @@ export const AppShell_Navbar: React.FC = () => {
                     .map((fpf) => (
                         <Paper
                             key={fpf.id}
-                            shadow="sm"
+                            shadow={fpf.id === selectedFPFId ? 'sm' : 'none'}
                             radius="md"
-                            withBorder
                             style={{
                                 marginBottom: '1rem',
                                 padding: '0.75rem 1rem',
                                 cursor: 'pointer',
-                                transition: 'background-color 0.2s ease',
-                                ...(fpf.id === selectedFPFId ? { backgroundColor: 'rgba(240, 240, 240, 0.2)' } : {}),
+                                transition: 'background-color 0.3s ease',
+                                ...(fpf.id === selectedFPFId
+                                    ? { backgroundColor: 'rgba(240, 240, 240, 0.2)' }
+                                    : {}),
                             }}
                             onClick={() => handleFpfSelect(fpf.id)}
                         >
                             <Flex align="center" justify="space-between">
                                 <DynamicFontText text={fpf.name} maxWidth={150} />
-                                <IconEdit
+                                <IconSettings
                                     size={20}
                                     style={{ cursor: 'pointer' }}
                                     onClick={(event) => {
@@ -192,7 +193,7 @@ export const AppShell_Navbar: React.FC = () => {
                         style={{ cursor: 'pointer' }}
                         size={30}
                         stroke={2}
-                        color={"#199ff4"}
+                        color={theme.colors.blue[6]}
                         onClick={() => setFpfModalOpen(true)}
                     />
                     <Divider style={{ flexGrow: 1 }} />
