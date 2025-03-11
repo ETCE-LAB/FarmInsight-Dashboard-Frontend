@@ -164,6 +164,7 @@ export const AppShell_Navbar: React.FC = () => {
                                 padding: '0.75rem 1rem',
                                 cursor: 'pointer',
                                 transition: 'background-color 0.2s ease',
+                                ...(fpf.id === selectedFPFId ? { backgroundColor: 'rgba(240, 240, 240, 0.2)' } : {}),
                             }}
                             onClick={() => handleFpfSelect(fpf.id)}
                         >
