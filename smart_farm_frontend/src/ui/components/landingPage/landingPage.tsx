@@ -2,7 +2,6 @@ import {
     Button,
     Container,
     Flex,
-    Group,
     rem,
     TextInput,
     Modal,
@@ -15,7 +14,7 @@ import {
     Grid,
     Loader,
 } from '@mantine/core';
-import { IconChevronDown, IconPlant } from '@tabler/icons-react';
+import { IconPlant } from '@tabler/icons-react';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { getMyOrganizations } from '../../../features/organization/useCase/getMyOrganizations';
 import { Organization } from '../../../features/organization/models/Organization';
@@ -51,12 +50,14 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     // Detect mobile screens
     const isMobile = useMediaQuery('(max-width: 768px)');
 
+    // Filter fpfs based on search term
     const filteredFpfs = fpfs?.filter(
         (fpf) =>
             fpf.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             fpf.organization.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Paginate the filtered fpfs list
     const paginatedFpfs = filteredFpfs?.slice(startIndex, endIndex);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,10 +93,10 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     };
 
     return (
-        // Outer container using flex to push the footer to the bottom
-        <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            {/* Main content area */}
-            <Box style={{ flex: 1 }}>
+        // Outer container fixed to viewport height with no global scrolling
+        <Box style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+            {/* Header / Search Section */}
+            <Box>
                 <Container size={isMobile ? 'xs' : 'lg'} py={isMobile ? 'md' : 'xl'}>
                     <Flex direction={isMobile ? 'column' : 'row'} align="center" justify="center" gap="md">
                         <TextInput
@@ -116,8 +117,11 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                         )}
                     </Flex>
                 </Container>
+            </Box>
 
-                <Container style={{ overflowX: 'hidden' }} size={isMobile ? 'xs' : 'lg'}>
+            {/* Scrollable FPFS List */}
+            <Box style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+                <Container size={isMobile ? 'xs' : 'lg'}>
                     {loading ? (
                         <Flex justify="center" align="center" style={{ height: '50vh' }}>
                             <Loader size="lg" />
@@ -172,9 +176,9 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                                         alignItems: 'center',
                                                     }}
                                                 >
-                                                    {fpf && fpf.lastImageUrl?.length ? (
+                                                    {fpf.lastImageUrl?.length ? (
                                                         <Image
-                                                            src={`${fpf.lastImageUrl}`}
+                                                            src={fpf.lastImageUrl}
                                                             alt="Last Received Image"
                                                             style={{
                                                                 width: '100%',
@@ -206,9 +210,10 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                 </Container>
             </Box>
 
-            {/* Footer is placed here to always appear at the bottom */}
+            {/* Footer */}
             <Footer />
 
+            {/* Modal for Creating Organization */}
             <Modal
                 opened={modalOpen}
                 onClose={() => setModalOpen(false)}

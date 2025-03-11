@@ -90,7 +90,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                 if (!resp) throw new Error("Failed to fetch measurements.");
                 const roundedMeasurements = resp.map(m => ({
                     ...m,
-                    value: parseFloat(m.value.toFixed(2))
+                    value: parseFloat(m.value.toFixed(1))
                 }));
                 setMeasurements(roundedMeasurements);
             })
@@ -104,8 +104,8 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
     useEffect(() => {
         if (measurements.length > 0) {
             const values = measurements.map(m => m.value);
-            setMinXValue(parseFloat((Math.min(...values) - 5).toFixed(2)));
-            setMaxXValue(parseFloat((Math.max(...values) + 5).toFixed(2)));
+            setMinXValue(parseFloat((Math.min(...values) - 5).toFixed(1)));
+            setMaxXValue(parseFloat((Math.max(...values) + 5).toFixed(1)));
         }
     }, [measurements]);
 
