@@ -107,7 +107,7 @@ export const AppShell_Navbar: React.FC = () => {
             </Modal>
 
             {/* Header */}
-            <Flex align="center" justify="space-between" style={{ padding: '1rem', backgroundColor: '#f7f9fc' }}>
+            <Flex align="center" justify="space-between" style={{ padding: '1rem' }}>
                 <Flex align="center" gap="md">
                     <IconSettings
                         size={24}
@@ -162,7 +162,6 @@ export const AppShell_Navbar: React.FC = () => {
                             style={{
                                 marginBottom: '1rem',
                                 padding: '0.75rem 1rem',
-                                backgroundColor: selectedFPFId === fpf.id ? '#e7f5ff' : '#fff',
                                 cursor: 'pointer',
                                 transition: 'background-color 0.2s ease',
                             }}
