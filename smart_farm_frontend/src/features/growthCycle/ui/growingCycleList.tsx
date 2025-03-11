@@ -9,7 +9,6 @@ import {
     Flex,
     Paper,
     Grid,
-    Center,
 } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import {
@@ -35,7 +34,6 @@ import { useMediaQuery } from "@mantine/hooks";
 const truncateText = (text: string, limit: number): string =>
     text.length > limit ? `${text.slice(0, limit)}...` : text;
 
-// Helper to format the total harvest amount
 const formatTotalHarvest = (cycle: GrowingCycle): string => {
     const totalHarvest =
         cycle.harvests?.reduce((sum, harvest) => sum + harvest.amountInKg, 0) || 0;
@@ -223,19 +221,23 @@ const GrowingCycleList: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                     {truncateText(cycle.plants, 20)}
                                 </Text>
                                 <Flex justify="space-around" align="center" mb="xs">
-                                    <IconSquareRoundedMinus
-                                        onClick={() => handleDelete(cycle)}
-                                        size={20}
-                                        style={{ cursor: "pointer", color: "#a53737" }}
-                                    />
-                                    <IconEdit
-                                        onClick={() => {
-                                            setActiveModal("growingCycleForm");
-                                            setToEditGrowingCycle(cycle);
-                                        }}
-                                        size={20}
-                                        style={{ cursor: "pointer", color: "#105385" }}
-                                    />
+                                    {auth.user && (
+                                        <>
+                                            <IconSquareRoundedMinus
+                                                onClick={() => handleDelete(cycle)}
+                                                size={20}
+                                                style={{ cursor: "pointer", color: "#a53737" }}
+                                            />
+                                            <IconEdit
+                                                onClick={() => {
+                                                    setActiveModal("growingCycleForm");
+                                                    setToEditGrowingCycle(cycle);
+                                                }}
+                                                size={20}
+                                                style={{ cursor: "pointer", color: "#105385" }}
+                                            />
+                                        </>
+                                    )}
                                     <IconInfoSquareRounded
                                         onClick={() => {
                                             setSelectedCycle(cycle);
@@ -253,8 +255,7 @@ const GrowingCycleList: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                     {t("header.totalHarvestAmount")}: {formatTotalHarvest(cycle)}
                                 </Text>
                                 <Text size="xs" c="dimmed">
-                                    {t("header.table.notes")}:{" "}
-                                    {cycle.note ? truncateText(cycle.note, 20) : ""}
+                                    {t("header.table.notes")}: {cycle.note ? truncateText(cycle.note, 20) : ""}
                                 </Text>
                             </Card>
                         ))}
@@ -270,8 +271,8 @@ const GrowingCycleList: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                     <Table.Th style={{ width: "20%" }}>{t("header.table.planted")}</Table.Th>
                                     <Table.Th style={{ width: "20%" }}>{t("header.totalHarvestAmount")}</Table.Th>
                                     <Table.Th style={{ width: "20%" }}>{t("header.table.notes")}</Table.Th>
-                                    <Table.Th style={{ width: "10%" }} />
-                                    <Table.Th style={{ width: "10%" }} />
+                                    {auth.user && <Table.Th style={{ width: "10%" }} />}
+                                    {auth.user && <Table.Th style={{ width: "10%" }} />}
                                 </Table.Tr>
                             </Table.Thead>
                             <Table.Tbody>
@@ -286,21 +287,23 @@ const GrowingCycleList: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                         </Table.Td>
                                         <Table.Td>{formatTotalHarvest(cycle)}</Table.Td>
                                         <Table.Td>{cycle.note ? truncateText(cycle.note, 12) : ""}</Table.Td>
-                                        <Table.Td>
-                                            <IconSquareRoundedMinus
-                                                onClick={() => handleDelete(cycle)}
-                                                size={25}
-                                                style={{ cursor: "pointer", color: "#a53737", marginRight: "1rem" }}
-                                            />
-                                            <IconEdit
-                                                onClick={() => {
-                                                    setActiveModal("growingCycleForm");
-                                                    setToEditGrowingCycle(cycle);
-                                                }}
-                                                size={25}
-                                                style={{ cursor: "pointer", color: "#105385" }}
-                                            />
-                                        </Table.Td>
+                                        {auth.user && (
+                                            <Table.Td>
+                                                <IconSquareRoundedMinus
+                                                    onClick={() => handleDelete(cycle)}
+                                                    size={25}
+                                                    style={{ cursor: "pointer", color: "#a53737", marginRight: "1rem" }}
+                                                />
+                                                <IconEdit
+                                                    onClick={() => {
+                                                        setActiveModal("growingCycleForm");
+                                                        setToEditGrowingCycle(cycle);
+                                                    }}
+                                                    size={25}
+                                                    style={{ cursor: "pointer", color: "#105385" }}
+                                                />
+                                            </Table.Td>
+                                        )}
                                         <Table.Td>
                                             <IconInfoSquareRounded
                                                 onClick={() => {
