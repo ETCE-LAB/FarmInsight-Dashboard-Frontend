@@ -136,7 +136,7 @@ export const AppShell_Navbar: React.FC = () => {
                         variant="filled"
                         radius="md"
                         size="sm"
-                        style={{ maxWidth: 300 }}
+                        style={{ maxWidth: 200 }}
                         value={searchValue}
                         onChange={(event) => setSearchValue(event.currentTarget.value)}
                         placeholder={t("header.search")}
