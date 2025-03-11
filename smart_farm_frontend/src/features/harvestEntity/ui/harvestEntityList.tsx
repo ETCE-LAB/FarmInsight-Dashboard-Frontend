@@ -8,7 +8,7 @@ import {
     Text,
     Flex,
     Paper,
-    Grid,
+    Grid, useMantineTheme,
 } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import {
@@ -35,6 +35,7 @@ const truncateText = (text: string, limit: number): string => {
 };
 
 const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleID }) => {
+    const theme = useMantineTheme();
     const [showHarvestEntityForm, setShowHarvestEntityForm] = useState(false);
     const { t } = useTranslation();
     const [toEditHarvestEntity, setToEditHarvestEntity] = useState<HarvestEntity | null>(null);
@@ -168,7 +169,7 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
 
             {/* Conditional Rendering: Only show harvest list if there are entries or if user is signed in (to add a harvest) */}
             {(harvestEntities.length > 0 || auth.user) && (
-                <Card shadow="sm" padding="md" radius="md" style={{ marginTop: "1rem", width: "100%" }}>
+                <Card padding="md" radius="md" style={{ marginTop: "1rem", width: "100%" }}>
                     {harvestEntities.length > 0 ? (
                         <>
                             {auth.user && (
@@ -245,6 +246,8 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
                                         setToEditHarvestEntity(null);
                                         setShowHarvestEntityForm(true);
                                     }}
+                                    variant='light'
+                                    color={theme.colors.blue[6]}
                                 >
                                     {t("Add Harvest")}
                                 </Button>
