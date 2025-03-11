@@ -93,10 +93,10 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     };
 
     return (
-        // Outer container fixed to viewport height with no global scrolling
-        <Box style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        // Outer container with a minimum height; the entire page scrolls naturally if content overflows
+        <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             {/* Header / Search Section */}
-            <Box style={{overflowY: 'hidden'}}>
+            <Box>
                 <Container size={isMobile ? 'xs' : 'lg'} py={isMobile ? 'md' : 'xl'}>
                     <Flex direction={isMobile ? 'column' : 'row'} align="center" justify="center" gap="md">
                         <TextInput
@@ -119,8 +119,8 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                 </Container>
             </Box>
 
-            {/* Scrollable FPFS List */}
-            <Box style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+            {/* FPFS List */}
+            <Box style={{ flex: 1 }}>
                 <Container size={isMobile ? 'xs' : 'lg'}>
                     {loading ? (
                         <Flex justify="center" align="center" style={{ height: '50vh' }}>
