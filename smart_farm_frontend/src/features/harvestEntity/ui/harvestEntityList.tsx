@@ -168,12 +168,7 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
 
             {/* Conditional Rendering: Only show harvest list if there are entries or if user is signed in (to add a harvest) */}
             {(harvestEntities.length > 0 || auth.user) && (
-                <Card
-                    shadow="sm"
-                    padding="md"
-                    radius="md"
-                    style={{ marginTop: "1rem", width: "100%" }}
-                >
+                <Card shadow="sm" padding="md" radius="md" style={{ marginTop: "1rem", width: "100%" }}>
                     {harvestEntities.length > 0 ? (
                         <>
                             {auth.user && (
@@ -211,29 +206,30 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
                                                 </Table.Td>
                                                 <Table.Td>{entity.amountInKg}</Table.Td>
                                                 <Table.Td>{truncateText(entity.note, 12)}</Table.Td>
-                                                <Table.Td>
-                                                    <IconSquareRoundedMinus
-                                                        onClick={() => handleDelete(entity)}
-                                                        size={20}
-                                                        style={{
-                                                            cursor: "pointer",
-                                                            marginRight: "0.5rem",
-                                                            color: "#a53737",
-                                                        }}
-                                                    />
-                                                    <IconEdit
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setShowHarvestEntityForm(true);
-                                                            setToEditHarvestEntity(entity);
-                                                        }}
-                                                        size={20}
-                                                        style={{
-                                                            cursor: "pointer",
-                                                            color: "#105385",
-                                                        }}
-                                                    />
+                                                {auth.user && (
+                                                    <Table.Td>
+                                                        <>
+                                                            <IconSquareRoundedMinus
+                                                                onClick={() => handleDelete(entity)}
+                                                                size={20}
+                                                                style={{
+                                                                    cursor: "pointer",
+                                                                    marginRight: "0.5rem",
+                                                                    color: "#a53737",
+                                                                }}
+                                                            />
+                                                            <IconEdit
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setShowHarvestEntityForm(true);
+                                                                    setToEditHarvestEntity(entity);
+                                                                }}
+                                                                size={20}
+                                                                style={{ cursor: "pointer", color: "#105385" }}
+                                                            />
+                                                        </>
                                                 </Table.Td>
+                                                )}
                                             </Table.Tr>
                                         ))}
                                     </Table.Tbody>

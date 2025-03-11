@@ -96,7 +96,7 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         // Outer container fixed to viewport height with no global scrolling
         <Box style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
             {/* Header / Search Section */}
-            <Box>
+            <Box style={{overflowY: 'hidden'}}>
                 <Container size={isMobile ? 'xs' : 'lg'} py={isMobile ? 'md' : 'xl'}>
                     <Flex direction={isMobile ? 'column' : 'row'} align="center" justify="center" gap="md">
                         <TextInput
