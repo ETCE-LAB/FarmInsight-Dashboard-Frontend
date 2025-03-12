@@ -7,7 +7,6 @@ import {
     Flex,
     Divider,
     Modal,
-    Button,
     Paper,
     Group,
     useMantineTheme,
@@ -42,7 +41,6 @@ export const AppShell_Navbar: React.FC = () => {
     const [fpfList, setFpfList] = useState<Fpf[]>([]);
     const [fpfModalOpen, setFpfModalOpen] = useState(false);
     const [mobileNavbarOpen, setMobileNavbarOpen] = useState(false); // New state for mobile navbar toggle
-
     const navigate = useNavigate();
     const auth = useAuth();
     const location = useLocation();
@@ -151,8 +149,8 @@ export const AppShell_Navbar: React.FC = () => {
                                 >
                                     <Menu.Target>
                                         <Text
+                                            size={'xl'}
                                             style={{
-                                                fontSize: 'large',
                                                 cursor: "pointer",
                                                 fontWeight: org.id === selectedOrganization.id ? 600 : 400,
                                             }}
@@ -182,17 +180,10 @@ export const AppShell_Navbar: React.FC = () => {
                         */}
                     </Flex>
                 )}
-
-                {/* Mobile: Show a toggle button for the navbar */}
-                {isMobile && (
-                    <Button variant="outline" onClick={() => setMobileNavbarOpen(!mobileNavbarOpen)}>
-                        {mobileNavbarOpen ? "Close Menu" : "Menu"}
-                    </Button>
-                )}
             </Flex>
 
             {/* Mobile Navbar Items */}
-            {isMobile && mobileNavbarOpen && (
+            {isMobile && (
                 <Flex direction="column" gap="md" style={{ padding: "0 1rem" }}>
                     <Flex align="center" gap="md">
                         <IconSettings
