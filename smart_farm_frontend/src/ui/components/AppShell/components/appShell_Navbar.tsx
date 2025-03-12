@@ -171,7 +171,7 @@ export const AppShell_Navbar: React.FC = () => {
                             variant="filled"
                             radius="md"
                             size="sm"
-                            style={{ width: "100px", marginLeft: "15px" }}
+                            style={{ width: "150px", textOverflow: 'ellipsis' }}
                             value={searchValue}
                             onChange={(event) => setSearchValue(event.currentTarget.value)}
                             placeholder={t("header.search")}
@@ -237,7 +237,7 @@ export const AppShell_Navbar: React.FC = () => {
                         variant="filled"
                         radius="md"
                         size="sm"
-                        style={{ width: "150px" }}
+                        style={{ width: "100px", textOverflow: 'ellipsis' }}
                         value={searchValue}
                         onChange={(event) => setSearchValue(event.currentTarget.value)}
                         placeholder={t("header.search")}
@@ -256,7 +256,6 @@ export const AppShell_Navbar: React.FC = () => {
                     .map((fpf) => (
                         <Paper
                             key={fpf.id}
-                            shadow={fpf.id === selectedFPFId ? "sm" : "none"}
                             radius="md"
                             style={{
                                 marginBottom: "1rem",
