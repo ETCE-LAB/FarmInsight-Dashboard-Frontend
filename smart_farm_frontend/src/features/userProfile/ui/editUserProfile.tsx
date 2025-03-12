@@ -1,7 +1,6 @@
-import { Button, Card, Group, Stack, TextInput, Anchor, Divider } from "@mantine/core";
+import { Button, Card, Group, Stack, TextInput, Divider } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { modifyUserProfile } from "../useCase/modifyUserProfile";
-import { UserProfile } from "../models/UserProfile";
 import { receiveUserProfile } from "../useCase/receiveUserProfile";
 import { useAuth } from "react-oidc-context";
 import { useAppDispatch, useAppSelector } from "../../../utils/Hooks";
@@ -15,7 +14,6 @@ export const EditUserProfile = () => {
         email: '',
         name: ''
     });
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const { t } = useTranslation();
     const auth = useAuth();
     const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
@@ -27,11 +25,10 @@ export const EditUserProfile = () => {
 
     const handleSave = async () => {
         try {
-            const response = await modifyUserProfile({
+            await modifyUserProfile({
                 name: editableProfile.name,
             });
             dispatch(changedUserProfile());
-            setUserProfile((prev) => (prev ? { ...prev, ...response } : null));
             showNotification({
                 title: t("userprofile.notifications.success.title"),
                 message: t("userprofile.notifications.success.message"),
@@ -51,14 +48,12 @@ export const EditUserProfile = () => {
             receiveUserProfile()
                 .then((resp) => {
                     if (resp) {
-                        setUserProfile(resp);
                         setEditableProfile({
                             email: resp.email || '',
                             name: resp.name || '',
                         });
                     } else {
                         console.warn('No user profile data received');
-                        setUserProfile(null);
                     }
                 })
                 .catch((error) => {

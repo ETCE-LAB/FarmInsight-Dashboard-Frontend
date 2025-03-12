@@ -7,9 +7,8 @@ import { UserProfileComponent } from '../../../../features/userProfile/ui/UserPr
 import { LoginButton } from '../../../../features/auth/ui/loginButton';
 import { LogoutButton } from '../../../../features/auth/ui/logoutButton';
 import { useMediaQuery } from '@mantine/hooks';
-import {IconUserCircle} from "@tabler/icons-react";
 
-export const AppShell_Header: React.FC = () => {
+export const AppShellHeader: React.FC = () => {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
     const [selectedLanguage, setSelectedLanguage] = useState('English');

@@ -1,5 +1,5 @@
-import {Button, Table} from "@mantine/core";
-import React, {useContext, useEffect, useState} from "react";
+import {Table} from "@mantine/core";
+import React, {useEffect, useState} from "react";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {Membership} from "../models/membership";
 import {PromoteMembershipButton} from "./PromoteMembershipButton";
@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 
 export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) => {
-    const [memberList, setMembers] = useState<Membership[] >(members);
     const [isAdmin, setIsAdmin] = useState(false);
     const { t } = useTranslation();
 
@@ -21,7 +20,6 @@ export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) =
             }
         )
     }, [members]);
-
 
     return (
         <Table striped highlightOnHover withColumnBorders>

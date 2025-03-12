@@ -1,6 +1,6 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
-import {Camera, EditCamera} from "../models/camera";
+import {EditCamera} from "../models/camera";
 
 
 export const updateCamera = async (data: EditCamera) => {

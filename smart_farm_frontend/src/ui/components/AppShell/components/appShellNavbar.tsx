@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Container, Menu, TextInput, Text, Flex, Divider, Modal, Burger, Drawer } from '@mantine/core';
+import { Container, Menu, TextInput, Text, Flex, Divider, Modal } from '@mantine/core';
 import {
     IconSettings,
-    IconChevronDown,
     IconSearch,
     IconSquareRoundedPlus
 } from "@tabler/icons-react";
@@ -18,9 +17,9 @@ import { useTranslation } from 'react-i18next';
 import { FpfForm } from "../../../../features/fpf/ui/fpfForm";
 import { useMediaQuery } from '@mantine/hooks'; // Für media query
 
-export const AppShell_Navbar: React.FC = () => {
+export const AppShellNavbar: React.FC = () => {
     const [value, setValue] = useState('');
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [selectedOrganization, setSelectedOrganization] = useState<{ name: string, id: string }>({ name: t("header.myOrganizations"), id: '' });
     const [organizations, setMyOrganizations] = useState<Organization[]>([]);
     const [selectedFPFId, setSelectedFPFId] = useState<string | null>(null);

@@ -2,17 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Button, TextInput, Box, Switch, Grid, Title } from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { createFpf } from "../useCase/createFpf";
-import { Organization } from "../../organization/models/Organization";
 import { useDispatch } from "react-redux";
 import { AppRoutes } from "../../../utils/appRoutes";
 import {createdFpf, updatedFpf} from "../state/FpfSlice";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import { Fpf } from "../models/Fpf";
 import { useTranslation } from 'react-i18next';
 import { updateFpf } from "../useCase/updateFpf";
 import { notifications } from "@mantine/notifications";
 import {IconEye, IconEyeOff} from "@tabler/icons-react";
-import organizationSlice from "../../organization/state/OrganizationSlice";
 
 export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close: React.Dispatch<React.SetStateAction<boolean>>; }> = ({ organizationId, toEditFpf , close}) => {
     const auth = useAuth();

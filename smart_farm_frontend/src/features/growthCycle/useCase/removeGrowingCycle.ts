@@ -1,6 +1,5 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
-import {GrowingCycle} from "../models/growingCycle";
 
 //8250f7569a3047ea8decf4cc101003da
 //"2017-07-21T17:32:28Z

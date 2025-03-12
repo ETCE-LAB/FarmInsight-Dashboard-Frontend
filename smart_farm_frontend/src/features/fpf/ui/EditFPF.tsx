@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Fpf } from "../models/Fpf";
 import { useParams } from "react-router-dom";
 import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Accordion, Button, Group, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
+import { Card, Stack, Accordion, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";

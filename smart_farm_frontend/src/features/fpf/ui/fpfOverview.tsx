@@ -8,14 +8,12 @@ import GrowingCycleList from "../../growthCycle/ui/growingCycleList";
 import { CameraCarousel } from "../../camera/ui/CameraCarousel";
 import { useAppDispatch } from "../../../utils/Hooks";
 import { setGrowingCycles } from "../../growthCycle/state/GrowingCycleSlice";
-import { useTranslation } from "react-i18next";
 import {useMediaQuery} from "@mantine/hooks";
 
 export const FpfOverview = () => {
     const [fpf, setFpf] = useState<Fpf | null>(null);
     const dispatch = useAppDispatch();
     const params = useParams();
-    const { t } = useTranslation();
     const [isCameraActive, setCameraActive] = useState(false);
     const isMobile = useMediaQuery('(max-width: 768px)');
 

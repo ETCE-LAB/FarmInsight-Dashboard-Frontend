@@ -1,7 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../../../utils/store";
 import {Fpf} from "../models/Fpf";
-import {GrowingCycle} from "../../growthCycle/models/growingCycle";
 
 
 //Currently: 2 States, Logged in and not logged in

@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import {getUser} from "../../../utils/getUser";
-import {Badge, rem, Title} from "@mantine/core";
+import {Badge, rem} from "@mantine/core";
 import {displayObject} from "./CameraCarousel";
 
 export const Livestream: React.FC<{ src : displayObject }> = ({src}) => {

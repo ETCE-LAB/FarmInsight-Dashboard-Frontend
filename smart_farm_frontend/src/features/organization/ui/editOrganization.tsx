@@ -22,7 +22,7 @@ import { addUserToOrganization } from "../useCase/addUserToOrganization";
 import { showNotification } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import { FpfForm } from "../../fpf/ui/fpfForm";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {changedMembership} from "../../membership/state/MembershipSlice";
 import {editOrganization} from "../useCase/editOrganization";
 import {useAppDispatch} from "../../../utils/Hooks";

@@ -1,5 +1,5 @@
 import {Button} from "@mantine/core";
-import React, {useState} from "react";
+import React from "react";
 import {kickMember} from "../useState/kickMember";
 import {useDispatch} from "react-redux";
 import {changedMembership} from "../state/MembershipSlice";

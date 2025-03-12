@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
-import {ActionIcon, Badge, Box, Group, Modal, Table, Text} from "@mantine/core";
+import {Badge, Box, Group, Modal, Table, Text} from "@mantine/core";
 import {
     IconCirclePlus,
     IconEdit,

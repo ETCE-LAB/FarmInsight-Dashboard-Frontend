@@ -1,8 +1,8 @@
 import {AppShell, Burger, Flex} from '@mantine/core';
 import { useLocation } from 'react-router-dom';
 import React, {PropsWithChildren, useState} from "react";
-import { AppShell_Header } from "./components/appShell_Header"; // Import the header component
-import { AppShell_Navbar } from "./components/appShell_Navbar";
+import { AppShellHeader } from "./components/appShellHeader"; // Import the header component
+import { AppShellNavbar } from "./components/appShellNavbar";
 import {useAuth} from "react-oidc-context";
 import {AppRoutes} from "../../../utils/appRoutes"; // Import the navbar component
 import { useNavigate } from "react-router-dom";
@@ -44,14 +44,14 @@ export const BasicAppShell: React.FC<PropsWithChildren<{}>> = ({ children }) => 
                         <Burger opened={opened} onClick={() => setOpened((o) => !o)} />
                     )}
                     {/* Der Header bleibt an Ort und Stelle */}
-                    <AppShell_Header />
+                    <AppShellHeader />
                 </Flex>
 
             </AppShell.Header>
 
             {showNavbar && (
                 <AppShell.Navbar>
-                    <AppShell_Navbar />
+                    <AppShellNavbar />
                 </AppShell.Navbar>
             )}
 

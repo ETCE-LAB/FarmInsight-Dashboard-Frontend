@@ -3,8 +3,6 @@ import {
     Container,
     Flex,
     Group,
-    Menu,
-    rem,
     TextInput,
     Modal,
     Card,
@@ -17,7 +15,6 @@ import {
     Loader,
 } from '@mantine/core';
 import {
-    IconChevronDown,
     IconPlant,
 } from '@tabler/icons-react';
 import React, { PropsWithChildren, useEffect, useState } from 'react';

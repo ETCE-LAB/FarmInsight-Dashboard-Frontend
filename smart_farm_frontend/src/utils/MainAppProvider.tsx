@@ -6,7 +6,6 @@ import {WebStorageStateStore} from "oidc-client-ts";
 import {AuthProvider} from "react-oidc-context";
 import {Notifications} from "@mantine/notifications";
 import '@mantine/notifications/styles.css';
-//import {SocketProvider} from "./SocketProvider";
 import '@mantine/carousel/styles.css';
 
 export const oidcConfig = {
@@ -26,12 +25,10 @@ const MainAppProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         //Redux Provider
         <AuthProvider {...oidcConfig}>
             <Provider store={store}>
-                {/* <SocketProvider> */}
                 <MantineProvider defaultColorScheme="auto">
                     <Notifications position="bottom-right" zIndex={3000} limit={5}/>
                     {children}
                     </MantineProvider>
-               {/* </SocketProvider>*/}
             </Provider>
         </AuthProvider>
     );

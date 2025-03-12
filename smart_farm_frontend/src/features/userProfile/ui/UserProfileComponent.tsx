@@ -9,10 +9,6 @@ import {receiveUserProfile} from "../useCase/receiveUserProfile";
 // @ts-ignore
 import {IconUserCog} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
-import {useMediaQuery} from "@mantine/hooks";
-
-
-
 
 const UserProfileComponent = () => {
     const auth = useAuth();
@@ -20,7 +16,6 @@ const UserProfileComponent = () => {
     const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
     const changedUserProfile = useAppSelector(changedUserProfileEvent);
     const navigate = useNavigate();
-    const isMobile = useMediaQuery('(max-width: 768px)');
 
     useEffect(() => {
         if (auth.user) {
