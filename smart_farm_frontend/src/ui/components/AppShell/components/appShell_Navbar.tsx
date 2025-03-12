@@ -152,6 +152,7 @@ export const AppShell_Navbar: React.FC = () => {
                                     <Menu.Target>
                                         <Text
                                             style={{
+                                                fontSize: 'large',
                                                 cursor: "pointer",
                                                 fontWeight: org.id === selectedOrganization.id ? 600 : 400,
                                             }}
@@ -167,6 +168,7 @@ export const AppShell_Navbar: React.FC = () => {
                                 </Menu>
                             ))}
                         </Group>
+                        {/*}
                         <TextInput
                             variant="filled"
                             radius="md"
@@ -177,6 +179,7 @@ export const AppShell_Navbar: React.FC = () => {
                             placeholder={t("header.search")}
                             leftSection={<IconSearch size={16} />}
                         />
+                        */}
                     </Flex>
                 )}
 
@@ -233,6 +236,7 @@ export const AppShell_Navbar: React.FC = () => {
                             ))}
                         </Group>
                     </Flex>
+                    {/*}
                     <TextInput
                         variant="filled"
                         radius="md"
@@ -243,6 +247,7 @@ export const AppShell_Navbar: React.FC = () => {
                         placeholder={t("header.search")}
                         leftSection={<IconSearch size={16} />}
                     />
+                    */}
                 </Flex>
             )}
 
