@@ -58,11 +58,12 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({
                         ]);
                     } else {
                         getImages(camera.id).then((resp) => {
-                            if (resp && resp.length > 0) {
+                            if (resp && resp.length > 0 ) {
+                                const filteredResp = resp.filter((item) => item.camera === camera.id);
                                 setObjectsToDisplay((prevObjects) => [
                                     ...prevObjects,
                                     {
-                                        url: resp[0].url,
+                                        url: filteredResp[0].url,
                                         title: `${camera.name}`,
                                         isLiveStream: false,
                                     },

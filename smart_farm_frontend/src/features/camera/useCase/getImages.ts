@@ -1,5 +1,6 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
+import {BACKEND_URL} from "../../../env-config";
 
 export const getImages = (cameraId:string, from?:string) => {
 
@@ -23,9 +24,10 @@ export const getImages = (cameraId:string, from?:string) => {
 
     const headers =
         {'Authorization': `Bearer ${token}`}
-    let url = `${process.env.REACT_APP_BACKEND_URL}/api/cameras/${cameraId}/images?from=${from}`;
+    let url = `${BACKEND_URL}/api/cameras/${cameraId}/images?from=${from}`;
 
-    const result:Promise<[{url:string, measuredAt:string}]> = apiClient.get(url, headers)
+    const result:Promise<[{url:string, measuredAt:string, camera:string}]> = apiClient.get(url, headers)
+
 
 
     return result

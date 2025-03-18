@@ -1,6 +1,7 @@
 import {getUser} from "../../../utils/getUser";
 import APIClient from "../../../utils/APIClient";
 import {BasicFPF} from "../models/BasicFPF";
+import {BACKEND_URL} from "../../../env-config";
 
 //hier wird der API Client aufgerufen
 //anstatt useAuth, getUser verwenden und den token auslesen
@@ -17,7 +18,7 @@ export const receiveVisibleFpfs = () => {
             'Authorization': `Bearer ${token}`
         }
 
-    const url = `https://farminsight-backend.etce.isse.tu-clausthal.de/api/fpfs/visible`;
+    const url = `${BACKEND_URL}/api/fpfs/visible`;
     const result:  Promise<BasicFPF[]> = apiClient.get(url, headers)
 
     return result
