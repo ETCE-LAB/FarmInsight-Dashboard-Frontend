@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 import { FpfForm } from "../../../../features/fpf/ui/fpfForm";
 import { useMediaQuery } from "@mantine/hooks";
 
-export const AppShell_Navbar: React.FC = () => {
+export const AppShellNavbar: React.FC = () => {
     const theme = useMantineTheme();
     const [searchValue, setSearchValue] = useState("");
     const { t } = useTranslation();
