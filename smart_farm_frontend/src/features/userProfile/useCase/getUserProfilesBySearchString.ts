@@ -1,6 +1,7 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {UserProfile} from "../models/UserProfile";
+import {BACKEND_URL} from "../../../env-config";
 
 
 export const getUserProfilesBySearchString = (searchString:string, orgaID:string | undefined) => {
@@ -19,7 +20,7 @@ export const getUserProfilesBySearchString = (searchString:string, orgaID:string
         exclude = `?exclude_organization_id=${orgaID}`
     }
 
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/userprofiles/${searchString}${exclude}`;
+    const url = `${BACKEND_URL}/api/userprofiles/${searchString}${exclude}`;
 
     console.log(url)
 

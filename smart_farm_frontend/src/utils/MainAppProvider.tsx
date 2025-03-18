@@ -9,14 +9,14 @@ import '@mantine/notifications/styles.css';
 import '@mantine/carousel/styles.css';
 
 export const oidcConfig = {
-    authority: "http://localhost:8000/o",
-    client_id: "interactive",
+    authority: "https://farminsight-backend.etce.isse.tu-clausthal.de/o",
+    client_id: "farminsight",
+    client_secret: "NOlijQDCiurFkf1Ev27FD5USTw3sskpYoC4zvxvr91YgTwihoXBmIXm4P60BQ912PZLbHeZWniu0YSr4jxHFdh3063YEN4VRLO8qu200sN3SHofrzUpLO1dS5cQiqTJG",
     redirect_uri: window.location.origin + "/auth/callback",
     post_logout_redirect_uri: window.location.origin + "/auth/signout-callback",
     scopes: "profile openId offline_access",
     userStore: new WebStorageStateStore({ store: window.localStorage }),
     automaticSilentRenew: true
-// ...
 };
 
 const MainAppProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {

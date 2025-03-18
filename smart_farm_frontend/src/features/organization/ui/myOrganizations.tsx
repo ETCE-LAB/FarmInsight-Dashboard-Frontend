@@ -7,8 +7,6 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 import { useTranslation } from 'react-i18next';
 
-
-
 export const MyOrganizations: React.FC = () => {
     const auth = useAuth();
     const [organizations, setOrganizations] = useState<Organization[]>([]);

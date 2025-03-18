@@ -1,5 +1,6 @@
 import  APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
+import {BACKEND_URL} from "../../../env-config";
 
 export const createOrganization = async (data: { name: string; isPublic: boolean }) => {
     try {
@@ -9,7 +10,7 @@ export const createOrganization = async (data: { name: string; isPublic: boolean
         const token = user?.access_token;
         const headers =
             {'Authorization': `Bearer ${token}`}
-        const url = `${process.env.REACT_APP_BACKEND_URL}/api/organizations`;
+        const url = `${BACKEND_URL}/api/organizations`;
         const response = await apiClient.post(url, data, headers);
 
 

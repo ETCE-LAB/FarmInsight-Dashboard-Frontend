@@ -8,6 +8,7 @@ import { changedUserProfile, receivedUserProfileEvent } from "../state/UserProfi
 import { showNotification } from "@mantine/notifications";
 import { useTranslation } from 'react-i18next';
 import {IconLockCog} from "@tabler/icons-react";
+import {BACKEND_URL} from "../../../env-config";
 
 export const EditUserProfile = () => {
     const [editableProfile, setEditableProfile] = useState({
@@ -86,7 +87,7 @@ export const EditUserProfile = () => {
                 <Group mt="md">
                     <Button
                         component="a"
-                        href={`${process.env.REACT_APP_BACKEND_URL}/api/change-password`}
+                        href={`${BACKEND_URL}/api/change-password`}
                         target="_blank"
                         variant="light"
                         leftSection={<IconLockCog/>}

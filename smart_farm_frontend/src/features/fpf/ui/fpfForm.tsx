@@ -23,7 +23,6 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-
     useEffect(() => {
         if (toEditFpf) {
             setName(toEditFpf.name);

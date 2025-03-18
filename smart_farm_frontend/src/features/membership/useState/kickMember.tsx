@@ -1,5 +1,6 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
+import {BACKEND_URL} from "../../../env-config";
 
 export const kickMember = async (data: { id:string }) => {
     try {
@@ -11,7 +12,7 @@ export const kickMember = async (data: { id:string }) => {
 
         const headers =
             {'Authorization': `Bearer ${token}`}
-        const url = `${process.env.REACT_APP_BACKEND_URL}/api/memberships/${data.id}`;
+        const url = `${BACKEND_URL}/api/memberships/${data.id}`;
         return await apiClient.delete(url, headers)
     }
     catch (error) {

@@ -1,6 +1,7 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {HarvestEntity} from "../models/harvestEntity";
+import {BACKEND_URL} from "../../../env-config";
 
 //8250f7569a3047ea8decf4cc101003da
 //"2017-07-21T17:32:28Z
@@ -14,7 +15,7 @@ export const createHarvestEntity = (data:HarvestEntity) => {
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/harvests`;
+    const url = `${BACKEND_URL}/api/harvests`;
     const result:  Promise<HarvestEntity> = apiClient.post(url, data, headers)
 
     return result

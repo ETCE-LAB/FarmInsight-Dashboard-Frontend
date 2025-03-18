@@ -1,6 +1,7 @@
 import  APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {Organization} from "../models/Organization";
+import {BACKEND_URL} from "../../../env-config";
 
 export const addUserToOrganization = async (data: { organizationId:string, userprofileId:string, membershipRole:string }) => {
     try {
@@ -10,7 +11,7 @@ export const addUserToOrganization = async (data: { organizationId:string, userp
         const token = user?.access_token;
         const headers =
             {'Authorization': `Bearer ${token}`}
-        const url = `${process.env.REACT_APP_BACKEND_URL}/api/memberships`;
+        const url = `${BACKEND_URL}/api/memberships`;
         const response:Organization = await apiClient.post(url, data, headers);
 
         return response;

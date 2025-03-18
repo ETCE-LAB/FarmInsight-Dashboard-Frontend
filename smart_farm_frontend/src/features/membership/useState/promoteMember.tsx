@@ -1,5 +1,6 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
+import {BACKEND_URL} from "../../../env-config";
 
 
 export const promoteMember = async (data: { id:string, membershipRole:string }) => {
@@ -11,7 +12,7 @@ export const promoteMember = async (data: { id:string, membershipRole:string }) 
 
         const headers =
             {'Authorization': `Bearer ${token}`}
-        const url = `${process.env.REACT_APP_BACKEND_URL}/api/memberships/${data.id}`;
+        const url = `${BACKEND_URL}/api/memberships/${data.id}`;
 
 
         const response = await apiClient.put(url, data, headers)

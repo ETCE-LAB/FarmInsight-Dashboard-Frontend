@@ -96,6 +96,7 @@ i18n
                         userPromoted: 'User was promoted.'
                     },
                     growingCycleForm: {
+                        addCycle: 'Add Growing Cycle',
                         hint: {
                             plantTypeHint: 'Type of plant',
                             startDateHint: 'Start date of the growing cycle',
@@ -297,6 +298,7 @@ i18n
                         userPromoted: 'Benutzer wurde befördert.'
                     },
                     growingCycleForm: {
+                        addCycle: 'Wachstumszyklus hinzufügen',
                         hint: {
                             plantTypeHint: 'Pflanzentyp',
                             startDateHint: 'Startdatum des Wachstumszyklus',
@@ -498,6 +500,7 @@ i18n
                         userPromoted: 'L’utilisateur a été promu.'
                     },
                     growingCycleForm: {
+                        addCycle: 'Ajouter un cycle de croissance',
                         hint: {
                             plantTypeHint: 'Type de plante',
                             startDateHint: 'Date de début du cycle de croissance',
@@ -696,6 +699,7 @@ i18n
                         userPromoted: 'L’utente è stato promosso.'
                     },
                     growingCycleForm: {
+                        addCycle: 'Aggiungi ciclo di crescita',
                         hint: {
                             plantTypeHint: 'Tipo di pianta',
                             startDateHint: 'Data di inizio del ciclo di crescita',
@@ -895,6 +899,7 @@ i18n
                         userPromoted: '用户已晋升。'
                     },
                     growingCycleForm: {
+                        addCycle: '添加生长周期',
                         hint: {
                             plantTypeHint: '植物类型',
                             startDateHint: '生长周期开始日期',
@@ -1094,6 +1099,7 @@ i18n
                         userPromoted: 'Пользователь был повышен.'
                     },
                     growingCycleForm: {
+                        addCycle: 'Добавить цикл роста',
                         hint: {
                             plantTypeHint: 'Тип растения',
                             startDateHint: 'Дата начала цикла роста',

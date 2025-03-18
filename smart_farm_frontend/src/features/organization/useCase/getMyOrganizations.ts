@@ -1,6 +1,7 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {Organization} from "../models/Organization";
+import {BACKEND_URL} from "../../../env-config";
 
 
 export const getMyOrganizations = () => {
@@ -13,7 +14,7 @@ export const getMyOrganizations = () => {
         {'Authorization': `Bearer ${token}`}
 
 
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/organizations/own`;
+    const url = `${BACKEND_URL}/api/organizations/own`;
     const result:  Promise<Organization[]> = apiClient.get(url, headers)
 
     return result

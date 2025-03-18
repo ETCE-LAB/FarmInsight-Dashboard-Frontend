@@ -5,9 +5,8 @@ export const SignIn = () => {
     const auth = useAuth();
 
     useEffect(() => {
-        auth.signinRedirect(
-        )
-    }, []);
+        auth.signinRedirect()
+    }, [auth]);
     return <div>
         <button onClick={() => auth.signinRedirect()}>Log in</button>
     </div>

@@ -13,24 +13,20 @@ const Footer: React.FC = () => {
 
     return (
         <Flex
-            justify="space-between" // Distribute space between the text and icons
+            justify="space-between"
             align="center"
             style={{
                 height: "50px",
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
                 padding: '0 20px',
+                backgroundColor: "transparent",
             }}
         >
             <Text
                 style={{
                     cursor: "pointer",
-                    color: colorScheme === 'dark' ? '#E0E0E0' : '#4F4F4F', // Light gray for dark mode, medium gray for light mode
+                    color: colorScheme === 'dark' ? '#E0E0E0' : '#4F4F4F',
                 }}
-                onClick={() => navigate('/legal-notice')} // Navigate to the new page
-
+                onClick={() => navigate('/legal-notice')}
             >
                 Impress | Legal Notice | Privacy Policy
             </Text>
@@ -42,7 +38,7 @@ const Footer: React.FC = () => {
                     style={{
                         cursor: 'pointer',
                         color: '#199ff4',
-                        marginLeft: 10, // Spacing between icons
+                        marginLeft: 10,
                     }}
                 />
 

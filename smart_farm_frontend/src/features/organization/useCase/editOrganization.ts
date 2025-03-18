@@ -1,6 +1,7 @@
 import APIClient from "../../../utils/APIClient";
 import {Organization} from "../models/Organization";
 import {getUser} from "../../../utils/getUser";
+import {BACKEND_URL} from "../../../env-config";
 
 // Define the UserProfile type if needed, or replace with your actual model/interface
 interface UserProfile {
@@ -24,7 +25,7 @@ export const editOrganization = async (organization:Organization) => {
             'Content-Type': 'application/json', // Ensure proper content type for JSON payload
         };
 
-        const url = `${process.env.REACT_APP_BACKEND_URL}/api/organizations/`+organization.id; // Check if the URL matches the backend API
+        const url = `${BACKEND_URL}/api/organizations/`+organization.id; // Check if the URL matches the backend API
 
         const response: UserProfile = await apiClient.put(url, organization, headers);
 

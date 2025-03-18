@@ -1,6 +1,7 @@
 import {getUser} from "../../../utils/getUser";
 import APIClient from "../../../utils/APIClient";
 import {Sensor} from "../models/Sensor";
+import {BACKEND_URL} from "../../../env-config";
 
 
 export const receiveSensorMeasurements = (sensorID:number, from:Date, to:Date) => {
@@ -12,7 +13,7 @@ export const receiveSensorMeasurements = (sensorID:number, from:Date, to:Date) =
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/sensors/${sensorID}/measurement?from=${from}&to=${to}`;
+    const url = `${BACKEND_URL}/api/sensors/${sensorID}/measurement?from=${from}&to=${to}`;
     const result:  Promise<Sensor> = apiClient.get(url, headers)
 
     return result

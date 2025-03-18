@@ -2,10 +2,11 @@ import  APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 
 import {Fpf} from "../models/Fpf";
+import {BACKEND_URL} from "../../../env-config";
 
 export const createFpf = async (data: { name:string, isPublic:boolean, sensorServiceIp:string, address:string, organizationId:string }) => {
     try {
-        //const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/organizations`, {
+        //const response = await fetch(`${BACKEND_URL}/api/organizations`, {
         const apiClient = new APIClient()
 
         const user = getUser();
@@ -13,7 +14,7 @@ export const createFpf = async (data: { name:string, isPublic:boolean, sensorSer
 
         const headers =
             {'Authorization': `Bearer ${token}`}
-        const url = `${process.env.REACT_APP_BACKEND_URL}/api/fpfs`;
+        const url = `${BACKEND_URL}/api/fpfs`;
         const response:Fpf = await apiClient.post(url, data, headers);
 
         return response

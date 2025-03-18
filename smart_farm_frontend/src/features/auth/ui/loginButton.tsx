@@ -3,11 +3,9 @@ import {Button} from "@mantine/core";
 import {useAuth} from "react-oidc-context";
 import { useTranslation } from 'react-i18next';
 
-
-
 export const LoginButton = () => {
     const auth = useAuth();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     const onClick = () => {
         void auth.signinRedirect()

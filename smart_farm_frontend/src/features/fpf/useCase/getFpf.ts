@@ -1,6 +1,7 @@
 import {getUser} from "../../../utils/getUser";
 import APIClient from "../../../utils/APIClient";
 import {Fpf} from "../models/Fpf";
+import {BACKEND_URL} from "../../../env-config";
 
 
 export const getFpf = (fpfID: string) => {
@@ -13,7 +14,7 @@ export const getFpf = (fpfID: string) => {
         {'Authorization': `Bearer ${token}`}
 
 
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/fpfs/${fpfID}`;
+    const url = `${BACKEND_URL}/api/fpfs/${fpfID}`;
     const result:  Promise<Fpf> = apiClient.get(url, headers)
 
     return result

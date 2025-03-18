@@ -1,0 +1,52 @@
+pipeline {
+  environment {
+    CI="false"
+  }
+  agent any
+  stages {
+    stage('Checkout Source') {
+      steps {
+        git url: 'https://github.com/ETCE-LAB/FarmInsight-Dashboard-Frontend.git',
+            branch: 'Infrastructure-Setup'
+      }
+    }
+    stage('Fetch environment variables'){
+      steps {
+        withCredentials([file(credentialsId: 'farminsight-env',
+                              variable: 'ENV_FILE')]){
+          sh '''
+            [ -d "app" ] && rm -rf "app"
+            mkdir app
+            ls -lR app
+            cp ${ENV_FILE} app/.env.development
+          '''
+        }
+      }
+    }
+    stage('Build react APP') {
+        steps{
+        sh '''
+          . ./app/.env.development
+          cp -R smart_farm_frontend/* app/
+          cd app
+          npm install --force
+          npm run build
+          ls -l build/
+        '''
+        }
+      }
+      stage('Deploy Static Files'){
+        steps{
+          sh '''
+            cp -R app/build/* /mnt/nginx-reverse-proxy-static-files/farminsight-frontend/
+          '''
+        }
+      }
+      stage('Remove Build files'){
+        steps{
+          sh 'cd .. '
+          sh 'rm -rf app/'
+        }
+    }
+  }
+}
