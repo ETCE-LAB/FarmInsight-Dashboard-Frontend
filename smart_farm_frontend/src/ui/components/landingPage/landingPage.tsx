@@ -94,7 +94,7 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     return (
         // Outer container with a minimum height; the entire page scrolls naturally if content overflows
-        <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Box style={{ display: 'flex', flexDirection: 'column', minHeight: '92vh', overflow:'hidden' }}>
             {/* Header / Search Section */}
             <Box>
                 <Container size={isMobile ? 'xs' : 'lg'} py={isMobile ? 'md' : 'xl'}>
@@ -120,7 +120,7 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
             </Box>
 
             {/* FPFS List */}
-            <Box style={{ flex: 1, overflowx:'hidden' }}>
+            <Box style={{ flex: 1, overflow:'hidden' }}>
                 <Container size={isMobile ? 'xs' : 'lg'} style ={{overflowX:'hidden'}}>
                     {loading ? (
                         <Flex justify="center" align="center" style={{ height: '50vh' }}>
@@ -195,7 +195,7 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                         </Grid.Col>
                                     ))}
                             </Grid>
-                            <Flex justify="center" mt="lg">
+                            <Flex justify="center" mt="lg" style={{overflow:'hidden'}}>
                                 {filteredFpfs && (
                                     <Pagination
                                         total={Math.ceil(filteredFpfs.length / ITEMS_PER_PAGE) || 1}
