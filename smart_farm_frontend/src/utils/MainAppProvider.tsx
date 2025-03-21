@@ -7,9 +7,11 @@ import {AuthProvider} from "react-oidc-context";
 import {Notifications} from "@mantine/notifications";
 import '@mantine/notifications/styles.css';
 import '@mantine/carousel/styles.css';
+import {BACKEND_URL} from "../env-config";
+
 
 export const oidcConfig = {
-    authority: "http://localhost:8000/o",
+    authority: `${BACKEND_URL}/o`,
     client_id: "interactive",
     redirect_uri: window.location.origin + "/auth/callback",
     post_logout_redirect_uri: window.location.origin + "/auth/signout-callback",
