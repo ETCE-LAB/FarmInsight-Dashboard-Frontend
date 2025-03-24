@@ -73,7 +73,6 @@ export const TimeRangeSelector = ({onDateChange}: TimeRangeSelectorProps) => {
 
     useEffect(() => {
         if (applyCustomDate) {
-            console.log(customDate)
             onDateChange(customDate);
             setApplyCustomDate(false);
         }
