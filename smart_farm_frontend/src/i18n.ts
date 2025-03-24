@@ -205,6 +205,17 @@ i18n
                         notesLabel: 'Notes',
                         notesPlaceholder: 'Enter Notes',
                         saveButton: 'Save',
+                    },
+                    timeRangeSelector: {
+                        from: 'From',
+                        datePlaceholder: "Select Date",
+                        to: 'To',
+                        apply: 'Apply',
+                        label24H: 'Last 24h',
+                        labelWeek: 'Last Week',
+                        labelMonth: 'Last Month',
+                        labelYear: 'Last Year',
+                        labelCustom: 'Custom Date'
                     }
                 },
             },
@@ -407,6 +418,17 @@ i18n
                         notesLabel: 'Notizen',
                         notesPlaceholder: 'Notizen eingeben',
                         saveButton: 'Speichern',
+                    },
+                    timeRangeSelector: {
+                        from: 'Von',
+                        datePlaceholder: "Datum auswählen",
+                        to: 'Zu',
+                        apply: 'Anwenden',
+                        label24H: 'Letzten 24H',
+                        labelWeek: 'Letzte Woche',
+                        labelMonth: 'Letzten Monat',
+                        labelYear: 'Letztes Jahr',
+                        labelCustom: 'Benutzerdefiniertes Datum'
                     }
                 },
             },
@@ -606,6 +628,17 @@ i18n
                         notesLabel: 'Remarques',
                         notesPlaceholder: 'Entrez des remarques',
                         saveButton: 'Enregistrer',
+                    },
+                    timeRangeSelector: {
+                        from: 'De',
+                        datePlaceholder: "Sélectionner la date",
+                        to: 'À',
+                        apply: 'Appliquer',
+                        label24H: 'Dernières 24h',
+                        labelWeek: 'La semaine dernière',
+                        labelMonth: 'Le mois dernier',
+                        labelYear: 'L\'année dernière',
+                        labelCustom: 'Date personnalisée'
                     }
                 },
             },
@@ -791,21 +824,16 @@ i18n
                         editCamera: 'Modifica fotocamera',
                         createCamera: 'Crea fotocamera',
                     },
-                    harvestEntityForm: {
-                        hint: {
-                            dateDescription: 'Data del raccolto',
-                            amountDescription: 'Quantità del raccolto',
-                            notesDescription: 'Note sul raccolto',
-                        },
-                        addHarvest: 'Aggiungi entità di raccolto',
-                        dateLabel: 'Data',
-                        datePlaceholder: 'Seleziona la data',
-                        amountLabel: 'Quantità (kg)',
-                        amountPlaceholder: 'Inserisci la quantità',
-                        amountDescription: "Usa '.' per i decimali, non ','",
-                        notesLabel: 'Note',
-                        notesPlaceholder: 'Inserisci le note',
-                        saveButton: 'Salva',
+                    timeRangeSelector: {
+                        from: 'Da',
+                        datePlaceholder: "Seleziona la data",
+                        to: 'A',
+                        apply: 'Applica',
+                        label24H: 'Ultime 24 ore',
+                        labelWeek: 'Ultima settimana',
+                        labelMonth: 'Ultimo mese',
+                        labelYear: 'Ultimo anno',
+                        labelCustom: 'Data personalizzata'
                     }
                 },
             },
@@ -1006,6 +1034,17 @@ i18n
                         notesLabel: '备注',
                         notesPlaceholder: '输入备注',
                         saveButton: '保存',
+                    },
+                    timeRangeSelector: {
+                        from: '从',
+                        datePlaceholder: "选择日期",
+                        to: '到',
+                        apply: '应用',
+                        label24H: '过去24小时',
+                        labelWeek: '过去一周',
+                        labelMonth: '过去一个月',
+                        labelYear: '过去一年',
+                        labelCustom: '自定义日期'
                     }
                 },
             },
@@ -1206,6 +1245,17 @@ i18n
                         notesLabel: 'Примечания',
                         notesPlaceholder: 'Введите примечания',
                         saveButton: 'Сохранить',
+                    },
+                    timeRangeSelector: {
+                        from: 'От',
+                        datePlaceholder: "Выберите дату",
+                        to: 'До',
+                        apply: 'Применить',
+                        label24H: 'Последние 24 часа',
+                        labelWeek: 'Последняя неделя',
+                        labelMonth: 'Последний месяц',
+                        labelYear: 'Последний год',
+                        labelCustom: 'Пользовательская дата'
                     }
                 },
             },

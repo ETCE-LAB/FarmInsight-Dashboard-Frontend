@@ -35,6 +35,8 @@ export const FpfOverview = () => {
     const [showGrowingCycleForm, setShowGrowingCycleForm] = useState(false);
     const auth = useAuth();
 
+    const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
+
     useEffect(() => {
         if (params?.fpfId) {
             getFpf(params.fpfId).then(resp => {
@@ -89,21 +91,25 @@ export const FpfOverview = () => {
                             <CameraCarousel camerasToDisplay={fpf?.Cameras ?? []} />
                         </Box>
                     )}
-                    <TimeRangeSelector/>
+
                     {/* Sensor graphs come next */}
                     {fpf?.Sensors && fpf.Sensors.length > 0 ? (
-
-                        fpf.Sensors.map((sensor) => (
-                            <Box
-                                key={sensor.id}
-                                style={{
-                                    borderRadius: '10px',
-                                    marginBottom: '20px',
-                                }}
-                            >
-                                <TimeseriesGraph sensor={sensor} />
+                        <>
+                            <Box style={{ marginBottom: '20px' }}>
+                                <TimeRangeSelector onDateChange={setDateRange} />
                             </Box>
-                        ))
+                            {fpf.Sensors.map((sensor) => (
+                                <Box
+                                    key={sensor.id}
+                                    style={{
+                                        borderRadius: '10px',
+                                        marginBottom: '20px',
+                                    }}
+                                >
+                                    <TimeseriesGraph sensor={sensor} dates={dateRange}/>
+                                </Box>
+                            ))}
+                        </>
                     ) : (
                         <Center style={{ padding: '20px', minHeight: '100px' }}>
                             <IconPlant size={24} style={{ marginRight: '8px' }} />
@@ -140,9 +146,10 @@ export const FpfOverview = () => {
                 <SimpleGrid cols={2} spacing="lg" style={{ height: '88vh', overflow: 'hidden' }}>
                     {/* Left section: Sensor Graphs */}
                     <Box style={scrollableStyle}>
-                        <TimeRangeSelector/>
+                        <TimeRangeSelector onDateChange={setDateRange}/>
                         {fpf?.Sensors && fpf.Sensors.length > 0 ? (
-                            fpf.Sensors.map((sensor) => (
+
+                             fpf.Sensors.map((sensor) => (
                                 <Box
                                     key={sensor.id}
                                     style={{
@@ -150,7 +157,7 @@ export const FpfOverview = () => {
                                         marginBottom: '20px',
                                     }}
                                 >
-                                    <TimeseriesGraph sensor={sensor} />
+                                    <TimeseriesGraph sensor={sensor} dates={dateRange} />
                                 </Box>
                             ))
                         ) : (

@@ -32,6 +32,9 @@ export const requestMeasuremnt = (sensorID:string, from?:string, to?:string) => 
     const headers =
         {'Authorization': `Bearer ${token}`}
     let url = ""
+    console.log(from)
+    console.log(to)
+    console.log("-------")
     if(to) {
         url = `${BACKEND_URL}/api/sensors/${sensorID}/measurements?from=${from}&to=${to}`;
     }
