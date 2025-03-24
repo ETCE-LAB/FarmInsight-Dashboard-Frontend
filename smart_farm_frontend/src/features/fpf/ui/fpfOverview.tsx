@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconPlant } from "@tabler/icons-react";
 import { useAuth } from 'react-oidc-context';
+import TimeRangeSelector from "../../measurements/ui/TimeRangeSelector";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -88,8 +89,10 @@ export const FpfOverview = () => {
                             <CameraCarousel camerasToDisplay={fpf?.Cameras ?? []} />
                         </Box>
                     )}
+                    <TimeRangeSelector/>
                     {/* Sensor graphs come next */}
                     {fpf?.Sensors && fpf.Sensors.length > 0 ? (
+
                         fpf.Sensors.map((sensor) => (
                             <Box
                                 key={sensor.id}
@@ -137,6 +140,7 @@ export const FpfOverview = () => {
                 <SimpleGrid cols={2} spacing="lg" style={{ height: '88vh', overflow: 'hidden' }}>
                     {/* Left section: Sensor Graphs */}
                     <Box style={scrollableStyle}>
+                        <TimeRangeSelector/>
                         {fpf?.Sensors && fpf.Sensors.length > 0 ? (
                             fpf.Sensors.map((sensor) => (
                                 <Box
