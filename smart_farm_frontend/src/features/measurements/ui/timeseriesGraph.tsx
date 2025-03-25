@@ -48,7 +48,13 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
             if (!resp) throw new Error("No WebSocket token received.");
             let baseUrl = process.env.REACT_APP_BACKEND_URL;
             if (!baseUrl) throw new Error("REACT_APP_BACKEND_URL is not configured.");
-            baseUrl = baseUrl.replace(/^https?/, "wss").replace(/^http?/, "ws");
+            if (baseUrl.startsWith("https")) { // If anyone wants to change this, at least make sure your change actually works...
+                baseUrl = baseUrl.replace("https", "wss");
+            } else if (baseUrl.startsWith("http")) {
+                baseUrl = baseUrl.replace("http", "ws");
+            } else {
+                throw new Error(`Invalid REACT_APP_BACKEND_URL: ${baseUrl}`);
+            }
             setSocketUrl(`${baseUrl}/ws/sensor/${sensor?.id}?token=${encodeURIComponent(resp.token)}`);
             setShouldReconnect(true);
         } catch (err) {
