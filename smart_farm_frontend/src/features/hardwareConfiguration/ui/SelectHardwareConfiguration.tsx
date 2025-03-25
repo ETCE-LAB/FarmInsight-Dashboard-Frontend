@@ -37,15 +37,11 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
             .then((resp) => {
                 setHardwareConfiguration(resp);
                 setIsLoading(false); // Set loading state to false after fetching
-            })
-            .catch(() => {
-                setIsLoading(false); // In case of an error, stop the loading state
-                console.error("Failed to fetch hardware configurations.");
             });
     }, [fpfId]);
 
     useEffect(() => {
-        if (sensorId && hardwareConfiguration.length > 0) {
+        if (sensorId && hardwareConfiguration?.length > 0) {
             getSensor(sensorId).then((sensor) => {
                 if (sensor) {
                     const matchingConfig = hardwareConfiguration.find(
@@ -100,7 +96,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                 <Box style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "30px" }}>
                     <Loader size="lg" />
                 </Box>
-            ) : hardwareConfiguration && hardwareConfiguration.length > 0 ? (
+            ) : hardwareConfiguration?.length > 0 ? (
                 <Box>
                     <Table striped highlightOnHover withColumnBorders>
                         <Table.Thead>
