@@ -2,6 +2,7 @@ import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {Measurement} from "../models/measurement";
 import {BACKEND_URL} from "../../../env-config";
+import {getIsoStringFromDate} from "../../../utils/utils";
 
 //8250f7569a3047ea8decf4cc101003da
 //"2017-07-21T17:32:28Z
@@ -14,14 +15,7 @@ export const requestMeasuremnt = (sensorID:string, from?:string, to?:string) => 
 
         // %Y-%m-%dT%H:%M:%SZ'
         // Formatierung des Datums im Format YYYY-MM-DD
-        const year = pastDate.getFullYear();
-        const month = String(pastDate.getMonth() + 1).padStart(2, '0');
-        const day = String(pastDate.getDate()).padStart(2, '0');
-        const hour = String(pastDate.getHours()).padStart(2, '0');
-        const minute = String(pastDate.getMinutes()).padStart(2, '0');
-        const second = String(pastDate.getSeconds()).padStart(2, '0');
-
-        from = `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
+        from = getIsoStringFromDate(pastDate);
     }
 
     const apiClient = new APIClient()
