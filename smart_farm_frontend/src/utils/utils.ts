@@ -1,3 +1,4 @@
+import {Sensor} from "../features/sensor/models/Sensor";
 
 
 export const getIsoStringFromDate = (date: Date): string => {
@@ -9,4 +10,19 @@ export const getIsoStringFromDate = (date: Date): string => {
     const second = String(date.getSeconds()).padStart(2, '0');
 
     return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
+}
+
+export const getSensorStateColor = (sensor: Sensor): string => {
+    const measured_ms = new Date(sensor.lastMeasurement.measuredAt).getTime();
+    const now_ms = new Date().getTime();
+    const difference_seconds = (now_ms - measured_ms) / 1000;
+
+    if (difference_seconds < sensor.intervalSeconds) {
+        return 'green';
+    }
+    if (difference_seconds < sensor.intervalSeconds * 2) {
+        return 'yellow';
+    }
+
+    return 'red';
 }

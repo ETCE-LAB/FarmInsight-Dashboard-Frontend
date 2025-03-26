@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
-import {Badge, Box, Group, Modal, Table, Text} from "@mantine/core";
-import {
-    IconCirclePlus,
-    IconEdit,
-    IconMobiledata,
-    IconMobiledataOff,
-} from "@tabler/icons-react";
+import { Badge, Box, Group, Modal, Table, Text, HoverCard } from "@mantine/core";
+import { IconCirclePlus, IconEdit, IconMobiledata, IconMobiledataOff, } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
 import { useAppSelector } from "../../../utils/Hooks";
 import { receivedSensorEvent } from "../state/SensorSlice";
 import { useTranslation } from "react-i18next";
+import { getLogMessages } from "../../logMessages/useCase/getLogMessages";
+import {getIsoStringFromDate, getSensorStateColor} from "../../../utils/utils";
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
     const [sensor, setSensor] = useState<Sensor[]>([]);
@@ -23,6 +20,16 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
     useEffect(() => {
         if (sensorsToDisplay) {
             setSensor(sensorsToDisplay);
+            sensorsToDisplay.map(sensor => {
+                const currentDate = new Date();
+
+                const pastDate = new Date();
+                pastDate.setDate(currentDate.getDate() - 1);
+
+                getLogMessages('sensor', sensor.id, undefined, getIsoStringFromDate(pastDate)).then(resp => {
+
+                });
+            });
         }
     }, [sensorsToDisplay, sensorReceivedEventListener]);
 
@@ -82,6 +89,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 <Table highlightOnHover withColumnBorders>
                     <Table.Thead>
                     <Table.Tr>
+                        <Table.Th></Table.Th>
                         <Table.Th>{t('sensorList.name')}</Table.Th>
                         <Table.Th>{t('sensorList.location')}</Table.Th>
                         <Table.Th>{t('sensorList.unit')}</Table.Th>
@@ -96,6 +104,18 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                     <Table.Tbody>
                     {sensorsToDisplay.map((sensor, index) => (
                         <Table.Tr key={index}>
+                            <Table.Td>
+                                <HoverCard>
+                                    <HoverCard.Target>
+                                        <Badge color={getSensorStateColor(sensor)}></Badge>
+                                    </HoverCard.Target>
+                                    <HoverCard.Dropdown>
+                                        <Text size="sm">
+                                            {`last value: ${new Date(sensor.lastMeasurement.measuredAt)}`}
+                                        </Text>
+                                    </HoverCard.Dropdown>
+                                </HoverCard>
+                            </Table.Td>
                             <Table.Td>{sensor.name}</Table.Td>
                             <Table.Td>{sensor.location}</Table.Td>
                             <Table.Td>{sensor.unit}</Table.Td>

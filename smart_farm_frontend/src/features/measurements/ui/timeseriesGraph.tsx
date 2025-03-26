@@ -5,11 +5,23 @@ import { requestMeasuremnt } from "../useCase/requestMeasurements";
 import { receivedMeasurementEvent } from "../state/measurementSlice";
 import { useAppSelector } from "../../../utils/Hooks";
 import { Measurement } from "../models/measurement";
-import { Card, Flex, Title, Notification, LoadingOverlay, Center, Text, Box, useMantineTheme } from "@mantine/core";
+import {
+    Card,
+    Flex,
+    Title,
+    Notification,
+    LoadingOverlay,
+    Center,
+    Text,
+    Box,
+    useMantineTheme,
+    HoverCard, Badge
+} from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
+import {getSensorStateColor} from "../../../utils/utils";
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
     const theme = useMantineTheme();
@@ -141,7 +153,17 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                     boxSizing: 'border-box'
                 }}
             >
-                <Flex justify="space-between" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
+                <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
+                    <HoverCard>
+                        <HoverCard.Target>
+                            <Badge color={getSensorStateColor(sensor)}></Badge>
+                        </HoverCard.Target>
+                        <HoverCard.Dropdown>
+                            <Text size="sm">
+                                {`last value: ${new Date(sensor?.lastMeasurement.measuredAt)}`}
+                            </Text>
+                        </HoverCard.Dropdown>
+                    </HoverCard>
                     <Title order={4} c={theme.colors.blue[6]}>{sensor?.name}</Title>
                 </Flex>
                 {error ? (
