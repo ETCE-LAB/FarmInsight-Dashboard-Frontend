@@ -3,13 +3,9 @@ import { Table, ScrollArea, TextInput, Text, HoverCard, Loader, Box } from "@man
 import { HardwareConfiguration } from "../models/HardwareConfiguration";
 import { getAvailableHardwareConfiguration } from "../useCase/getAvailableHardwareConfiguration";
 import { getSensor } from "../../sensor/useCase/getSensor";
-import {getBackendTranslation} from "../../../utils/getBackendTranlation";
 import {useTranslation} from "react-i18next";
 import {EditSensor} from "../../sensor/models/Sensor";
-
-function capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
+import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
 
 interface SelectHardwareConfigurationProps {
     fpfId: string;

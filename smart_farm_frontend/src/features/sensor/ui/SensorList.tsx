@@ -4,7 +4,7 @@ import { Badge, Box, Group, Modal, Table, Text, HoverCard } from "@mantine/core"
 import { IconCirclePlus, IconEdit, IconMobiledata, IconMobiledataOff, } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
 import { useTranslation } from "react-i18next";
-import { getSensorStateColor } from "../../../utils/utils";
+import {getBackendTranslation, getSensorStateColor} from "../../../utils/utils";
 import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
@@ -12,7 +12,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
     const [logMessageModalOpen, setLogMessageModalOpen] = useState(false);
     const [logMessageSensorId, setLogMessageSensorId] = useState("");
     const [selectedSensor, setSelectedSensor] = useState<EditSensor | undefined>(undefined);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const onClickEdit = (sensor: Sensor) => {
         const editSensor: EditSensor = {
@@ -113,7 +113,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             <Table.Td>{sensor.name}</Table.Td>
                             <Table.Td>{sensor.location}</Table.Td>
                             <Table.Td>{sensor.modelNr}</Table.Td>
-                            <Table.Td>{sensor.parameter}</Table.Td>
+                            <Table.Td>{getBackendTranslation(sensor.parameter, i18n.language)}</Table.Td>
                             <Table.Td>{sensor.unit}</Table.Td>
                             <Table.Td>{sensor.intervalSeconds}</Table.Td>
                             <Table.Td>

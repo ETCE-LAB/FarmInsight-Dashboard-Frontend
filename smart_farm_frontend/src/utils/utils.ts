@@ -35,3 +35,16 @@ export const getColorFromLogLevel = (logLevel: string): string => {
 
     return 'white';
 }
+
+export function capitalizeFirstLetter(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function getBackendTranslation(value: string, languageCode: string) {
+    const split = value.split(';');
+    if (languageCode === 'de' && split.length > 1) {
+        return split[1];
+    }
+    // default return EN
+    return split[0];
+}
