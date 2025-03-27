@@ -26,3 +26,12 @@ export const getSensorStateColor = (sensor: Sensor): string => {
 
     return 'red';
 }
+
+export const getColorFromLogLevel = (logLevel: string): string => {
+    if (logLevel === 'DEBUG') return 'blue';
+    if (logLevel === 'INFO') return 'green';
+    if (logLevel === 'WARNING') return 'yellow';
+    if (logLevel === 'ERROR') return 'red';
+
+    return 'white';
+}

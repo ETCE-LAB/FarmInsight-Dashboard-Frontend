@@ -8,7 +8,12 @@ i18n
             en: {
                 translation: {
                     log: {
+                        logListTitle: 'Log Messages',
                         lastMessage: 'Last Log Message',
+                        created: 'Date',
+                        logLevel: 'Log Level',
+                        message: 'Message',
+                        showMessages: 'Logs',
                     },
                     fpf: {
                         address: 'Location',
@@ -216,7 +221,12 @@ i18n
             de: {
                 translation: {
                     log: {
-                        lastMessage: 'Letzte Log Nachricht',
+                        logListTitle: 'Protokoll Nachrichten',
+                        lastMessage: 'Letzte Protokoll Nachricht',
+                        created: 'Datum',
+                        logLevel: 'Protokollierungsstufe',
+                        message: 'Nachricht',
+                        showMessages: 'Protokoll Nachrichten'
                     },
                     fpf: {
                         address: 'Standort',

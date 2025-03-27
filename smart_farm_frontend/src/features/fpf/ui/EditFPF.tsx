@@ -4,7 +4,7 @@ import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
+import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";
@@ -16,9 +16,7 @@ import { IconEdit } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {updatedFpf} from "../state/FpfSlice";
-import {getLogMessages} from "../../logMessages/useCase/getLogMessages";
-import {getIsoStringFromDate} from "../../../utils/utils";
-import {LogMessage} from "../../logMessages/models/LogMessage";
+import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 
 export const EditFPF: React.FC = () => {
     const { organizationId, fpfId } = useParams();
@@ -29,14 +27,13 @@ export const EditFPF: React.FC = () => {
     const [cameras, setCamera] = useState<Camera[]>();
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
+    const [editLogOpen, setEditLogOpen] = useState(false);
 
     const SensorEventListener = useSelector((state: RootState) => state.sensor.receivedSensorEvent);
     const CameraEventListener = useSelector((state: RootState) => state.camera.createdCameraEvent);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     const fpf = useSelector((state: RootState) => state.fpf.fpf);
-
-    //const [lastLogMessage, setLastLogMessage] = useState<LogMessage | null>(null);
 
     const dispatch = useAppDispatch();
 
@@ -45,9 +42,6 @@ export const EditFPF: React.FC = () => {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
             });
-            /*getLogMessages('fpf', fpfId, 1).then(resp => {
-                setLastLogMessage(resp[0]);
-            });*/
         }
     }, [fpfId]);
 
@@ -92,7 +86,6 @@ export const EditFPF: React.FC = () => {
         }
     }, [fpf, organization]);
 
-
     return (
         <Stack gap={"md"}>
             <Card padding="xl" radius="md">
@@ -102,19 +95,17 @@ export const EditFPF: React.FC = () => {
                             <Title order={2}>
                                 {'FPF-' + t("header.name")}: {fpf.name}
                             </Title>
-                            <Flex align="center" style={{ marginLeft: "auto" }}>
-                                {isAdmin && (
-                                    <IconEdit
-                                        size={24}
-                                        onClick={() => setEditModalOpen(true)}
-                                        style={{
-                                            cursor: 'pointer',
-                                            color: '#199ff4',
-                                            marginLeft: 10,
-                                        }}
-                                    />
-                                )}
-                            </Flex>
+                            {isAdmin && (
+                                <IconEdit
+                                    size={24}
+                                    onClick={() => setEditModalOpen(true)}
+                                    style={{
+                                        cursor: 'pointer',
+                                        color: '#199ff4',
+                                        marginLeft: "auto",
+                                    }}
+                                />
+                            )}
                         </Flex>
                     </Grid.Col>
                     <Grid.Col span={12}>
@@ -126,17 +117,13 @@ export const EditFPF: React.FC = () => {
                         </Text>
                     </Grid.Col>
                     <Grid.Col span={12}>
-                        <Text size="lg" fw="bold" c="dimmed">
-                            {t('fpf.address')}: {fpf.address || t('fpf.noAddress')}
-                        </Text>
+                        <Flex>
+                            <Text size="lg" fw="bold" c="dimmed">
+                                {t('fpf.address')}: {fpf.address || t('fpf.noAddress')}
+                            </Text>
+                            <Button style={{ marginLeft: "auto" }} onClick={() => setEditLogOpen(true)} variant="default">{t('log.showMessages')}</Button>
+                        </Flex>
                     </Grid.Col>
-                    {/* too ugly to show, gotta figure out actual UI
-                    <Grid.Col span={12}>
-                        <Text size="lg" fw="bold" c="dimmed">
-                            {t('log.lastMessage')}: {lastLogMessage?.logLevel} {lastLogMessage?.createdAt}: {lastLogMessage?.message}
-                        </Text>
-                    </Grid.Col>
-                    */}
                 </Grid>
             </Card>
 
@@ -156,6 +143,17 @@ export const EditFPF: React.FC = () => {
                 centered
             >
                 <FpfForm toEditFpf={fpf} close={setEditModalOpen} />
+            </Modal>
+
+            {/* FPF Logs Modal */}
+            <Modal
+                opened={editLogOpen}
+                onClose={() => setEditLogOpen(false)}  // Close modal when canceled
+                title={t('log.logListTitle')}
+                centered
+                size="60%"
+            >
+                <LogMessageList resourceType='fpf' resourceId={fpfId} />
             </Modal>
         </Stack>
     );

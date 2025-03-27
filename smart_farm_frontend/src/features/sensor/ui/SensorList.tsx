@@ -1,37 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
 import { Badge, Box, Group, Modal, Table, Text, HoverCard } from "@mantine/core";
 import { IconCirclePlus, IconEdit, IconMobiledata, IconMobiledataOff, } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
-import { useAppSelector } from "../../../utils/Hooks";
-import { receivedSensorEvent } from "../state/SensorSlice";
 import { useTranslation } from "react-i18next";
-import { getLogMessages } from "../../logMessages/useCase/getLogMessages";
-import {getIsoStringFromDate, getSensorStateColor} from "../../../utils/utils";
+import { getSensorStateColor } from "../../../utils/utils";
+import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
-    const [sensor, setSensor] = useState<Sensor[]>([]);
     const [sensorModalOpen, setSensorModalOpen] = useState(false);
+    const [logMessageModalOpen, setLogMessageModalOpen] = useState(false);
+    const [logMessageSensorId, setLogMessageSensorId] = useState("");
     const [selectedSensor, setSelectedSensor] = useState<EditSensor | undefined>(undefined);
     const { t } = useTranslation();
-
-    const sensorReceivedEventListener = useAppSelector(receivedSensorEvent);
-
-    useEffect(() => {
-        if (sensorsToDisplay) {
-            setSensor(sensorsToDisplay);
-            sensorsToDisplay.map(sensor => {
-                const currentDate = new Date();
-
-                const pastDate = new Date();
-                pastDate.setDate(currentDate.getDate() - 1);
-
-                getLogMessages('sensor', sensor.id, undefined, getIsoStringFromDate(pastDate)).then(resp => {
-
-                });
-            });
-        }
-    }, [sensorsToDisplay, sensorReceivedEventListener]);
 
     const onClickEdit = (sensor: Sensor) => {
         const editSensor: EditSensor = {
@@ -72,6 +53,17 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 <SensorForm toEditSensor={selectedSensor} setClosed={setSensorModalOpen} />
             </Modal>
 
+            {/* Add Log Message Modal */}
+            <Modal
+                opened={logMessageModalOpen}
+                onClose={() => setLogMessageModalOpen(false)}
+                title={t("log.logListTitle") }
+                centered
+                size="40%"
+            >
+                <LogMessageList resourceType='sensor' resourceId={logMessageSensorId} />
+            </Modal>
+
             {/* Header with Add Button */}
             <Group mb="md" justify="space-between">
                 <h2>{t('sensor.title')}</h2>
@@ -109,7 +101,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             <Table.Td>
                                 <HoverCard>
                                     <HoverCard.Target>
-                                        <Badge color={getSensorStateColor(sensor)}></Badge>
+                                        <Badge color={getSensorStateColor(sensor)} style={{ cursor: "pointer" }} onClick={() => {setLogMessageSensorId(sensor.id); setLogMessageModalOpen(true);}}></Badge>
                                     </HoverCard.Target>
                                     <HoverCard.Dropdown>
                                         <Text size="sm">
@@ -124,18 +116,18 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             <Table.Td>{sensor.parameter}</Table.Td>
                             <Table.Td>{sensor.unit}</Table.Td>
                             <Table.Td>{sensor.intervalSeconds}</Table.Td>
-                                <Table.Td>
-                                    <Badge
-                                        color={sensor.isActive ? "green.9" : "red.9"}
-                                        variant="light"
-                                        leftSection={sensor.isActive ? <IconMobiledata size={16} /> : <IconMobiledataOff size={16} />}
-                                    >
-                                        {sensor.isActive ? t("camera.active") : t("camera.inactive")}
-                                    </Badge>
-                                </Table.Td>
+                            <Table.Td>
+                                <Badge
+                                    color={sensor.isActive ? "green.9" : "red.9"}
+                                    variant="light"
+                                    leftSection={sensor.isActive ? <IconMobiledata size={16} /> : <IconMobiledataOff size={16} />}
+                                >
+                                    {sensor.isActive ? t("camera.active") : t("camera.inactive")}
+                                </Badge>
+                            </Table.Td>
                             {isAdmin &&
                                 <Table.Td style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                <Group>
+                                    <Group>
                                         <IconEdit
                                             color={"#199ff4"}
                                             size={20}
@@ -143,8 +135,8 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                                             onClick={() => onClickEdit(sensor)}
                                             style={{ cursor: "pointer" }}
                                         />
-                                </Group>
-                            </Table.Td>
+                                    </Group>
+                                </Table.Td>
                             }
                         </Table.Tr>
                     ))}
