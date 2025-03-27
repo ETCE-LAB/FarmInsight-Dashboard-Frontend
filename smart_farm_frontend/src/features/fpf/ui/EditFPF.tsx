@@ -4,7 +4,7 @@ import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Accordion, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
+import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";
@@ -16,6 +16,9 @@ import { IconEdit } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {updatedFpf} from "../state/FpfSlice";
+import {getLogMessages} from "../../logMessages/useCase/getLogMessages";
+import {getIsoStringFromDate} from "../../../utils/utils";
+import {LogMessage} from "../../logMessages/models/LogMessage";
 
 export const EditFPF: React.FC = () => {
     const { organizationId, fpfId } = useParams();
@@ -33,6 +36,7 @@ export const EditFPF: React.FC = () => {
 
     const fpf = useSelector((state: RootState) => state.fpf.fpf);
 
+    //const [lastLogMessage, setLastLogMessage] = useState<LogMessage | null>(null);
 
     const dispatch = useAppDispatch();
 
@@ -41,6 +45,9 @@ export const EditFPF: React.FC = () => {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
             });
+            /*getLogMessages('fpf', fpfId, 1).then(resp => {
+                setLastLogMessage(resp[0]);
+            });*/
         }
     }, [fpfId]);
 
@@ -123,7 +130,22 @@ export const EditFPF: React.FC = () => {
                             {t('fpf.address')}: {fpf.address || t('fpf.noAddress')}
                         </Text>
                     </Grid.Col>
+                    {/* too ugly to show, gotta figure out actual UI
+                    <Grid.Col span={12}>
+                        <Text size="lg" fw="bold" c="dimmed">
+                            {t('log.lastMessage')}: {lastLogMessage?.logLevel} {lastLogMessage?.createdAt}: {lastLogMessage?.message}
+                        </Text>
+                    </Grid.Col>
+                    */}
                 </Grid>
+            </Card>
+
+            <Card padding="lg" radius="md">
+                <SensorList sensorsToDisplay={sensors} fpfId={fpf.id} isAdmin={isAdmin} />
+            </Card>
+
+            <Card padding="lg" radius="md">
+                <CameraList camerasToDisplay={cameras} isAdmin={isAdmin} />
             </Card>
 
             {/* Edit FPF Modal */}
@@ -135,30 +157,6 @@ export const EditFPF: React.FC = () => {
             >
                 <FpfForm toEditFpf={fpf} close={setEditModalOpen} />
             </Modal>
-
-            {/* Accordion for Sensor List */}
-            <Accordion variant="separated">
-                <Accordion.Item value="sensors">
-                    <Accordion.Control>{t('sensor.title')}</Accordion.Control>
-                    <Accordion.Panel>
-                        <Card padding="lg" radius="md">
-                            <SensorList sensorsToDisplay={sensors} fpfId={fpf.id} isAdmin={isAdmin} />
-                        </Card>
-                    </Accordion.Panel>
-                </Accordion.Item>
-            </Accordion>
-
-            {/* Accordion for Camera List */}
-            <Accordion variant="separated">
-                <Accordion.Item value="cameras">
-                    <Accordion.Control>{t('camera.cameras')}</Accordion.Control>
-                    <Accordion.Panel>
-                        <Card padding="lg" radius="md">
-                            <CameraList camerasToDisplay={cameras} isAdmin={isAdmin} />
-                        </Card>
-                    </Accordion.Panel>
-                </Accordion.Item>
-            </Accordion>
         </Stack>
     );
 };

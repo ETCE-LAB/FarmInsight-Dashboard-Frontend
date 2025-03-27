@@ -38,6 +38,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
             id: sensor.id,
             name: sensor.name,
             unit: sensor.unit,
+            parameter: sensor.parameter,
             location: sensor.location,
             modelNr: sensor.modelNr,
             intervalSeconds: sensor.intervalSeconds,
@@ -92,8 +93,9 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                         <Table.Th></Table.Th>
                         <Table.Th>{t('sensorList.name')}</Table.Th>
                         <Table.Th>{t('sensorList.location')}</Table.Th>
-                        <Table.Th>{t('sensorList.unit')}</Table.Th>
                         <Table.Th>{t('sensorList.modelNr')}</Table.Th>
+                        <Table.Th>{t('sensorList.parameter')}</Table.Th>
+                        <Table.Th>{t('sensorList.unit')}</Table.Th>
                         <Table.Th>{t('sensorList.intervalSeconds')}</Table.Th>
                         <Table.Th>{t('header.status')}</Table.Th>
                         {isAdmin &&
@@ -118,8 +120,9 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             </Table.Td>
                             <Table.Td>{sensor.name}</Table.Td>
                             <Table.Td>{sensor.location}</Table.Td>
-                            <Table.Td>{sensor.unit}</Table.Td>
                             <Table.Td>{sensor.modelNr}</Table.Td>
+                            <Table.Td>{sensor.parameter}</Table.Td>
+                            <Table.Td>{sensor.unit}</Table.Td>
                             <Table.Td>{sensor.intervalSeconds}</Table.Td>
                                 <Table.Td>
                                     <Badge

@@ -5,6 +5,7 @@ import { getAvailableHardwareConfiguration } from "../useCase/getAvailableHardwa
 import { getSensor } from "../../sensor/useCase/getSensor";
 import {getBackendTranslation} from "../../../utils/getBackendTranlation";
 import {useTranslation} from "react-i18next";
+import {EditSensor} from "../../sensor/models/Sensor";
 
 function capitalizeFirstLetter(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -13,18 +14,13 @@ function capitalizeFirstLetter(str: string): string {
 interface SelectHardwareConfigurationProps {
     fpfId: string;
     postHardwareConfiguration(data: { sensorClassId: string, additionalInformation: Record<string, any> }): any;
-    sensorId?: string;
+    sensor?: EditSensor;
     setUnit(data: string): any;
+    setParameter(data: string): any;
     setModel(data: string): any;
 }
 
-const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = ({
-                                                                                     fpfId,
-                                                                                     postHardwareConfiguration,
-                                                                                     sensorId,
-                                                                                     setUnit,
-                                                                                     setModel,
-                                                                                 }) => {
+const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = ({ fpfId, postHardwareConfiguration, sensor, setUnit, setParameter, setModel, }) => {
     const [hardwareConfiguration, setHardwareConfiguration] = useState<HardwareConfiguration[]>([]);
     const [selectedSensorClassId, setSelectedSensorClassId] = useState<string | undefined>(undefined);
     const [additionalInformation, setAdditionalInformation] = useState<Record<string, any>>({});
@@ -41,8 +37,8 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
     }, [fpfId]);
 
     useEffect(() => {
-        if (sensorId && hardwareConfiguration?.length > 0) {
-            getSensor(sensorId).then((sensor) => {
+        if (sensor && hardwareConfiguration?.length > 0) {
+            getSensor(sensor.id).then((sensor) => {
                 if (sensor) {
                     const matchingConfig = hardwareConfiguration.find(
                         (config) => config.sensorClassId === sensor.hardwareConfiguration.sensorClassId
@@ -62,7 +58,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                 }
             });
         }
-    }, [sensorId, hardwareConfiguration, postHardwareConfiguration]);
+    }, [sensor, hardwareConfiguration, postHardwareConfiguration]);
 
     const handleSensorClassSelected = (sensorClassId: string) => {
         const config = hardwareConfiguration.find((x) => x.sensorClassId === sensorClassId);
@@ -72,8 +68,9 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                 info[field.name] = undefined;
             }
             setAdditionalInformation(info);
-            if (config.unit !== 'manual') setUnit(config.unit);
-            setModel(config.model);
+            if (config.unit      !== '') setUnit(config.unit);
+            if (config.parameter !== '') setParameter(config.parameter);
+            if (config.model     !== '') setModel(config.model);
             postHardwareConfiguration({ sensorClassId: sensorClassId, additionalInformation: info });
             setSelectedSensorClassId(sensorClassId);
         }
@@ -101,8 +98,8 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                     <Table striped highlightOnHover withColumnBorders>
                         <Table.Thead>
                             <Table.Tr>
-                                <Table.Th>{t("sensor.model")}</Table.Th>
                                 <Table.Th>{t("sensor.connectionType")}</Table.Th>
+                                <Table.Th>{t("sensor.model")}</Table.Th>
                                 <Table.Th>{t("sensor.parameter")}</Table.Th>
                                 <Table.Th>{t("sensor.unit")}</Table.Th>
                                 <Table.Th>{t("sensor.tags")}</Table.Th>
@@ -115,8 +112,8 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                                         onClick={() => handleSensorClassSelected(configuration.sensorClassId)}
                                         style={{ cursor: "pointer" }}
                                     >
-                                        <Table.Td>{capitalizeFirstLetter(configuration.model)}</Table.Td>
                                         <Table.Td>{capitalizeFirstLetter(configuration.connection)}</Table.Td>
+                                        <Table.Td>{capitalizeFirstLetter(configuration.model)}</Table.Td>
                                         <Table.Td>{capitalizeFirstLetter(getBackendTranslation(configuration.parameter, i18n.language))}</Table.Td>
                                         <Table.Td>{capitalizeFirstLetter(configuration.unit)}</Table.Td>
                                         <Table.Td>
@@ -130,38 +127,71 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                                         </Table.Td>
                                     </Table.Tr>
                                     {configuration.sensorClassId === selectedSensorClassId && (
-                                        <Table.Tr>
-                                            <Table.Td colSpan={5}>
-                                                <Box style={{ display: "flex", gap: "16px" }}>
-                                                    {configuration.fields.map((field) => (
+                                        <>
+                                            {configuration.model === "" && (
+                                                <Table.Tr>
+                                                    <Table.Td colSpan={1} />
+                                                    <Table.Td colSpan={4}>
                                                         <TextInput
-                                                            required
-                                                            placeholder={capitalizeFirstLetter(field.name)}
-                                                            key={field.name}
-                                                            label={`${capitalizeFirstLetter(field.name)}`}
-                                                            type={field.type}
-                                                            value={additionalInformation[field.name]}
-                                                            onChange={(e) =>
-                                                                handleFieldInputChanged(field.name, e.target.value)
-                                                            }
-                                                            style={{ width: "100%" }}
+                                                            label={t("sensor.model")}
+                                                            type="text"
+                                                            value={sensor?.modelNr}
+                                                            onChange={(e) => setModel(e.target.value)}
+                                                            style={{ flex: 0.5 }}
                                                         />
-                                                    ))}
-                                                </Box>
-                                            </Table.Td>
-                                        </Table.Tr>
-                                    )}
-                                    {configuration.unit === "manual" && (
-                                        <Table.Tr>
-                                            <Table.Td colSpan={5}>
-                                                <TextInput
-                                                    label="Unit"
-                                                    type="text"
-                                                    onChange={(e) => setUnit(e.target.value)}
-                                                    style={{ flex: 0.5 }}
-                                                />
-                                            </Table.Td>
-                                        </Table.Tr>
+                                                    </Table.Td>
+                                                </Table.Tr>
+                                            )}
+                                            {configuration.parameter === "" && (
+                                                <Table.Tr>
+                                                    <Table.Td colSpan={1} />
+                                                    <Table.Td colSpan={4}>
+                                                        <TextInput
+                                                            label={`${t("sensor.parameter")} (${t("sensor.parameter_hint")})`}
+                                                            type="text"
+                                                            value={sensor?.parameter}
+                                                            onChange={(e) => setParameter(e.target.value)}
+                                                            style={{ flex: 0.5 }}
+                                                        />
+                                                    </Table.Td>
+                                                </Table.Tr>
+                                            )}
+                                            {configuration.unit === "" && (
+                                                <Table.Tr>
+                                                    <Table.Td colSpan={1} />
+                                                    <Table.Td colSpan={4}>
+                                                        <TextInput
+                                                            label={t("sensor.unit")}
+                                                            type="text"
+                                                            value={sensor?.unit}
+                                                            onChange={(e) => setUnit(e.target.value)}
+                                                            style={{ flex: 0.5 }}
+                                                        />
+                                                    </Table.Td>
+                                                </Table.Tr>
+                                            )}
+                                            <Table.Tr>
+                                                <Table.Td colSpan={1} />
+                                                <Table.Td colSpan={4}>
+                                                    <Box style={{ display: "flex", gap: "16px" }}>
+                                                        {configuration.fields.map((field) => (
+                                                            <TextInput
+                                                                required
+                                                                placeholder={capitalizeFirstLetter(field.name)}
+                                                                key={field.name}
+                                                                label={`${capitalizeFirstLetter(field.name)}`}
+                                                                type={field.type}
+                                                                value={additionalInformation[field.name]}
+                                                                onChange={(e) =>
+                                                                    handleFieldInputChanged(field.name, e.target.value)
+                                                                }
+                                                                style={{ width: "100%" }}
+                                                            />
+                                                        ))}
+                                                    </Box>
+                                                </Table.Td>
+                                            </Table.Tr>
+                                        </>
                                     )}
                                 </React.Fragment>
                             ))}

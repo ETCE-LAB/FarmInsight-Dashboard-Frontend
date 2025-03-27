@@ -8,6 +8,7 @@ export interface Sensor {
     modelNr:string,
     name:string,
     unit:string,
+    parameter:string;
     fpfId:string,
 
     lastMeasurement: {
@@ -27,6 +28,7 @@ export interface EditSensor {
     id: string,
     name:string,
     unit:string,
+    parameter: string;
     location:string,
     modelNr:string,
     intervalSeconds:number,
