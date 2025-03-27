@@ -120,7 +120,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                                             {Object.entries(configuration.tags).map(([key, value]) => (
                                                 <HoverCard key={key} width={280} shadow="md">
                                                     <HoverCard.Target>
-                                                        <Text>{capitalizeFirstLetter(value)}</Text>
+                                                        <Text>{capitalizeFirstLetter(getBackendTranslation(value, i18n.language))}</Text>
                                                     </HoverCard.Target>
                                                 </HoverCard>
                                             ))}
