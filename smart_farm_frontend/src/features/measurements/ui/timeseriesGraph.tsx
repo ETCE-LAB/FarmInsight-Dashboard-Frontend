@@ -38,11 +38,11 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
         return `${day}.${month}`;
     };
 
-    /* WebSOcket Deactivated
+
     let { lastMessage } = useWebSocket(socketURL || "", {
         shouldReconnect: () => shouldReconnect,
         });
-    */
+
 
     const reconnectSocket = async () => {
         try {
@@ -60,7 +60,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
         }
     };
 
-    /*
+
     useEffect(() => {
         if (lastMessage) {
             try {
@@ -78,7 +78,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
         }
     }, [lastMessage]);
 
-     */
+
 
     useEffect(() => {
         if (sensor && false) {
@@ -213,9 +213,10 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                                     xAxisProps={{
                                         tickFormatter: (dateString) => {
                                             const date = new Date(dateString);
-                                            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                            return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit' });
                                         }
                                     }}
+
                                     yAxisProps={{ domain: [minXValue, maxXValue] }}
                                     h={250}
                                     tooltipAnimationDuration={200}

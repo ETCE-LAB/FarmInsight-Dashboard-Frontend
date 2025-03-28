@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconPlant } from "@tabler/icons-react";
 import { useAuth } from 'react-oidc-context';
-import TimeRangeSelector from "../../measurements/ui/TimeRangeSelector";
+import TimeRangeSelector from "../../../utils/TimeRangeSelector";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
