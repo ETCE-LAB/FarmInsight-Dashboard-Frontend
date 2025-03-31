@@ -82,7 +82,6 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 <Table highlightOnHover withColumnBorders>
                     <Table.Thead>
                     <Table.Tr>
-                        <Table.Th></Table.Th>
                         <Table.Th>{t('sensorList.name')}</Table.Th>
                         <Table.Th>{t('sensorList.location')}</Table.Th>
                         <Table.Th>{t('sensorList.modelNr')}</Table.Th>
@@ -98,18 +97,6 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                     <Table.Tbody>
                     {sensorsToDisplay.map((sensor, index) => (
                         <Table.Tr key={index}>
-                            <Table.Td>
-                                <HoverCard>
-                                    <HoverCard.Target>
-                                        <Badge color={getSensorStateColor(sensor)} style={{ cursor: "pointer" }} onClick={() => {setLogMessageSensorId(sensor.id); setLogMessageModalOpen(true);}}></Badge>
-                                    </HoverCard.Target>
-                                    <HoverCard.Dropdown>
-                                        <Text size="sm">
-                                            {`last value: ${new Date(sensor.lastMeasurement.measuredAt)}`}
-                                        </Text>
-                                    </HoverCard.Dropdown>
-                                </HoverCard>
-                            </Table.Td>
                             <Table.Td>{sensor.name}</Table.Td>
                             <Table.Td>{sensor.location}</Table.Td>
                             <Table.Td>{sensor.modelNr}</Table.Td>
@@ -117,13 +104,18 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             <Table.Td>{sensor.unit}</Table.Td>
                             <Table.Td>{sensor.intervalSeconds}</Table.Td>
                             <Table.Td>
-                                <Badge
-                                    color={sensor.isActive ? "green.9" : "red.9"}
-                                    variant="light"
-                                    leftSection={sensor.isActive ? <IconMobiledata size={16} /> : <IconMobiledataOff size={16} />}
-                                >
-                                    {sensor.isActive ? t("camera.active") : t("camera.inactive")}
-                                </Badge>
+                                <HoverCard>
+                                    <HoverCard.Target>
+                                        <Badge color={getSensorStateColor(sensor)} style={{ cursor: "pointer" }} onClick={() => {setLogMessageSensorId(sensor.id); setLogMessageModalOpen(true);}}>
+                                            {!sensor.isActive && (<>{t("camera.inactive")}</>)}
+                                        </Badge>
+                                    </HoverCard.Target>
+                                    <HoverCard.Dropdown>
+                                        <Text size="sm">
+                                            {`last value: ${new Date(sensor.lastMeasurement.measuredAt)}`}
+                                        </Text>
+                                    </HoverCard.Dropdown>
+                                </HoverCard>
                             </Table.Td>
                             {isAdmin &&
                                 <Table.Td style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>

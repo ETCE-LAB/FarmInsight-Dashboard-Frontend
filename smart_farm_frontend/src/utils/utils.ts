@@ -17,6 +17,10 @@ export const getSensorStateColor = (sensor: Sensor): string => {
     const now_ms = new Date().getTime();
     const difference_seconds = (now_ms - measured_ms) / 1000;
 
+    if (!sensor.isActive) {
+        return 'grey';
+    }
+
     if (difference_seconds < sensor.intervalSeconds) {
         return 'green';
     }
