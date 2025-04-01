@@ -14,9 +14,11 @@ import { Camera } from "../../camera/models/camera";
 import { useTranslation } from "react-i18next";
 import { IconEdit } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
-import {useAppDispatch} from "../../../utils/Hooks";
-import {updatedFpf} from "../state/FpfSlice";
-import {LogMessageList} from "../../logMessages/ui/LogMessageList";
+import { useAppDispatch } from "../../../utils/Hooks";
+import { updatedFpf}  from "../state/FpfSlice";
+import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
+import {ResourceType} from "../../logMessages/models/LogMessage";
+
 
 export const EditFPF: React.FC = () => {
     const { organizationId, fpfId } = useParams();
@@ -27,7 +29,7 @@ export const EditFPF: React.FC = () => {
     const [cameras, setCamera] = useState<Camera[]>();
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
-    const [editLogOpen, setEditLogOpen] = useState(false);
+
 
     const SensorEventListener = useSelector((state: RootState) => state.sensor.receivedSensorEvent);
     const CameraEventListener = useSelector((state: RootState) => state.camera.createdCameraEvent);
@@ -117,11 +119,11 @@ export const EditFPF: React.FC = () => {
                         </Text>
                     </Grid.Col>
                     <Grid.Col span={12}>
-                        <Flex>
+                        <Flex justify="space-between">
                             <Text size="lg" fw="bold" c="dimmed">
                                 {t('fpf.address')}: {fpf.address || t('fpf.noAddress')}
                             </Text>
-                            <Button style={{ marginLeft: "auto" }} onClick={() => setEditLogOpen(true)} variant="default">{t('log.showMessages')}</Button>
+                            <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpfId}></LogMessageModalButton>
                         </Flex>
                     </Grid.Col>
                 </Grid>
@@ -143,17 +145,6 @@ export const EditFPF: React.FC = () => {
                 centered
             >
                 <FpfForm toEditFpf={fpf} close={setEditModalOpen} />
-            </Modal>
-
-            {/* FPF Logs Modal */}
-            <Modal
-                opened={editLogOpen}
-                onClose={() => setEditLogOpen(false)}  // Close modal when canceled
-                title={t('log.logListTitle')}
-                centered
-                size="60%"
-            >
-                <LogMessageList resourceType='fpf' resourceId={fpfId} />
             </Modal>
         </Stack>
     );

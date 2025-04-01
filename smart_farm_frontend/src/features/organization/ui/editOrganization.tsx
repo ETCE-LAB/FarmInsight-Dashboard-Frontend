@@ -1,19 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getOrganization } from "../useCase/getOrganization";
 import { Organization } from "../models/Organization";
-import {
-    Button,
-    Card,
-    Modal,
-    TextInput,
-    Switch,
-    Flex,
-    Title,
-    Text,
-    Box,
-    Badge,
-} from "@mantine/core";
+import { Button, Card, Modal, TextInput, Switch, Flex, Title, Text, Box, Badge, } from "@mantine/core";
 import { IconEdit, IconUserPlus, IconSquareRoundedMinus, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { MembershipList } from "../../membership/ui/MembershipList";
 import { SearchUserProfile } from "../../userProfile/ui/searchUserProfile";
@@ -28,6 +17,8 @@ import {editOrganization} from "../useCase/editOrganization";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {RootState} from "../../../utils/store";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
+import {ResourceType} from "../../logMessages/models/LogMessage";
+import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 
 export const EditOrganization = () => {
     const { organizationId } = useParams();
@@ -171,13 +162,16 @@ export const EditOrganization = () => {
                                 />
                             )}
                         </Flex>
-                        <Flex align="center" gap={10}>
-                            <Text fw="bold" size="lg" c="dimmed">
-                                {t("header.status")}:
-                            </Text>
-                            <Badge color={isPublic ? "green" : "red"} variant="light">
-                                {t(isPublic ? "header.public" : "header.private")}
-                            </Badge>
+                        <Flex justify="space-between" >
+                            <Flex align="center" gap={10}>
+                                <Text fw="bold" size="lg" c="dimmed">
+                                    {t("header.status")}:
+                                </Text>
+                                <Badge color={isPublic ? "green" : "red"} variant="light">
+                                    {t(isPublic ? "header.public" : "header.private")}
+                                </Badge>
+                            </Flex>
+                            <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organizationId}></LogMessageModalButton>
                         </Flex>
                     </Card>
 

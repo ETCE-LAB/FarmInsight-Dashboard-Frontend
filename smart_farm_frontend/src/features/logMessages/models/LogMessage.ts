@@ -6,3 +6,12 @@ export interface LogMessage {
     logLevel:string,
     message:string,
 }
+
+
+export enum ResourceType {
+    FPF = 'fpf',
+    SENSOR = 'sensor',
+    CAMERA = 'camera',
+    ORGANIZATION = 'org',
+    ADMIN = 'admin',
+}

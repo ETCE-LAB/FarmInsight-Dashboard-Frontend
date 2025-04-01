@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
-import { Badge, Box, Group, Modal, Table, Text, HoverCard } from "@mantine/core";
-import { IconCirclePlus, IconEdit, IconMobiledata, IconMobiledataOff, } from "@tabler/icons-react";
+import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex} from "@mantine/core";
+import { IconCirclePlus, IconEdit, } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
 import { useTranslation } from "react-i18next";
 import {getBackendTranslation, getSensorStateColor} from "../../../utils/utils";
-import {LogMessageList} from "../../logMessages/ui/LogMessageList";
+import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
+import {ResourceType} from "../../logMessages/models/LogMessage";
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
     const [sensorModalOpen, setSensorModalOpen] = useState(false);
-    const [logMessageModalOpen, setLogMessageModalOpen] = useState(false);
-    const [logMessageSensorId, setLogMessageSensorId] = useState("");
     const [selectedSensor, setSelectedSensor] = useState<EditSensor | undefined>(undefined);
     const { t, i18n } = useTranslation();
 
@@ -53,17 +52,6 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 <SensorForm toEditSensor={selectedSensor} setClosed={setSensorModalOpen} />
             </Modal>
 
-            {/* Add Log Message Modal */}
-            <Modal
-                opened={logMessageModalOpen}
-                onClose={() => setLogMessageModalOpen(false)}
-                title={t("log.logListTitle") }
-                centered
-                size="40%"
-            >
-                <LogMessageList resourceType='sensor' resourceId={logMessageSensorId} />
-            </Modal>
-
             {/* Header with Add Button */}
             <Group mb="md" justify="space-between">
                 <h2>{t('sensor.title')}</h2>
@@ -104,22 +92,25 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             <Table.Td>{sensor.unit}</Table.Td>
                             <Table.Td>{sensor.intervalSeconds}</Table.Td>
                             <Table.Td>
-                                <HoverCard>
-                                    <HoverCard.Target>
-                                        <Badge color={getSensorStateColor(sensor)} style={{ cursor: "pointer" }} onClick={() => {setLogMessageSensorId(sensor.id); setLogMessageModalOpen(true);}}>
-                                            {!sensor.isActive && (<>{t("camera.inactive")}</>)}
-                                        </Badge>
-                                    </HoverCard.Target>
-                                    <HoverCard.Dropdown>
-                                        <Text size="sm">
-                                            {`last value: ${new Date(sensor.lastMeasurement.measuredAt)}`}
-                                        </Text>
-                                    </HoverCard.Dropdown>
-                                </HoverCard>
+                                <Flex justify='space-between' align='center'>
+                                    <HoverCard>
+                                        <HoverCard.Target>
+                                            <Badge color={getSensorStateColor(sensor)}>
+                                                {!sensor.isActive && (<>{t("camera.inactive")}</>)}
+                                            </Badge>
+                                        </HoverCard.Target>
+                                        <HoverCard.Dropdown>
+                                            <Text size="sm">
+                                                {`last value: ${new Date(sensor.lastMeasurement.measuredAt)}`}
+                                            </Text>
+                                        </HoverCard.Dropdown>
+                                    </HoverCard>
+                                    <LogMessageModalButton resourceType={ResourceType.SENSOR} resourceId={sensor.id}></LogMessageModalButton>
+                                </Flex>
                             </Table.Td>
                             {isAdmin &&
-                                <Table.Td style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                    <Group>
+                                <Table.Td>
+                                    <Flex justify='center' align='center'>
                                         <IconEdit
                                             color={"#199ff4"}
                                             size={20}
@@ -127,7 +118,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                                             onClick={() => onClickEdit(sensor)}
                                             style={{ cursor: "pointer" }}
                                         />
-                                    </Group>
+                                    </Flex>
                                 </Table.Td>
                             }
                         </Table.Tr>
