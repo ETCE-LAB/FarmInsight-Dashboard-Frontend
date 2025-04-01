@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {LogMessage} from "../models/LogMessage";
+import {LogMessage, ResourceType} from "../models/LogMessage";
 import {getLogMessages} from "../useCase/getLogMessages";
 import {Table, Text} from "@mantine/core";
 import {useTranslation} from "react-i18next";
@@ -12,7 +12,7 @@ export const LogMessageList: React.FC<{ resourceType: string, resourceId?: strin
     const { t } = useTranslation();
 
     useEffect(() => {
-        if (resourceId)
+        if (resourceId || (resourceType === ResourceType.ADMIN))
             getLogMessages(resourceType, resourceId, 10).then(resp => {
                 setLogMessages(resp);
             });
