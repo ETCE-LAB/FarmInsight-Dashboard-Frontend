@@ -27,7 +27,7 @@ export const getLogMessages = (type:string, id?: string, amount?: number, from?:
         return Promise.reject(new Error("Invalid query params amount or from is required."));
     }
 
-    const url = `${BACKEND_URL}/api/log_message/${type}/${id}?${query}`;
+    const url = `${BACKEND_URL}/api/log_messages/${type}/${id}?${query}`;
     const result: Promise<LogMessage[]> = apiClient.get(url, headers);
 
     return result;
