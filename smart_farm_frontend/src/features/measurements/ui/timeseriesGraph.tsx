@@ -22,7 +22,7 @@ import useWebSocket from "react-use-websocket";
 import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
 
-const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
+const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string }| null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
@@ -49,9 +49,11 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
         return `${day}.${month}`;
     };
 
+
     let { lastMessage } = useWebSocket(socketURL || "", {
         shouldReconnect: () => shouldReconnect,
-    });
+        });
+
 
     const reconnectSocket = async () => {
         try {
@@ -75,6 +77,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
         }
     };
 
+
     useEffect(() => {
         if (lastMessage) {
             try {
@@ -92,8 +95,10 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
         }
     }, [lastMessage]);
 
+
+
     useEffect(() => {
-        if (sensor) {
+        if (sensor && false) {
             reconnectSocket();
         } else {
             setSocketUrl(null);
@@ -103,7 +108,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
 
     useEffect(() => {
         setLoading(true);
-        requestMeasuremnt(sensor.id)
+        requestMeasuremnt(sensor.id, dates?.from, dates?.to)
             .then((resp) => {
                 if (!resp) throw new Error("Failed to fetch measurements.");
                 const roundedMeasurements = resp.map(m => ({
@@ -117,7 +122,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                 setError("Failed to fetch initial measurements.");
             })
             .finally(() => setLoading(false));
-    }, [measurementReceivedEventListener]);
+    }, [measurementReceivedEventListener, dates]);
 
     useEffect(() => {
         if (measurements.length > 0) {
@@ -235,9 +240,10 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                                     xAxisProps={{
                                         tickFormatter: (dateString) => {
                                             const date = new Date(dateString);
-                                            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                            return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit' });
                                         }
                                     }}
+
                                     yAxisProps={{ domain: [minXValue, maxXValue] }}
                                     h={250}
                                     tooltipAnimationDuration={200}
