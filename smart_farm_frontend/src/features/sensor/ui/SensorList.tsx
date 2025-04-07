@@ -95,7 +95,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                                 <Flex justify='space-between' align='center'>
                                     <HoverCard>
                                         <HoverCard.Target>
-                                            <Badge color={sensor.state}>
+                                            <Badge color={sensor.status}>
                                                 {!sensor.isActive && (<>{t("camera.inactive")}</>)}
                                             </Badge>
                                         </HoverCard.Target>

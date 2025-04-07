@@ -160,7 +160,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
                     <HoverCard>
                         <HoverCard.Target>
-                            <Badge color={sensor.state}></Badge>
+                            <Badge color={sensor.status}></Badge>
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
                             <Text size="sm">
