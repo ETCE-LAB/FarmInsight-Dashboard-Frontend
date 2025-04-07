@@ -21,7 +21,6 @@ import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
-import {getSensorStateColor} from "../../../utils/utils";
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
     const theme = useMantineTheme();
@@ -156,7 +155,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
                     <HoverCard>
                         <HoverCard.Target>
-                            <Badge color={getSensorStateColor(sensor)}></Badge>
+                            <Badge color={sensor.state}></Badge>
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
                             <Text size="sm">

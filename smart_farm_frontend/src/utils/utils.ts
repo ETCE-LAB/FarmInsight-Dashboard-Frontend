@@ -12,25 +12,6 @@ export const getIsoStringFromDate = (date: Date): string => {
     return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
 }
 
-export const getSensorStateColor = (sensor: Sensor): string => {
-    const measured_ms = new Date(sensor.lastMeasurement.measuredAt).getTime();
-    const now_ms = new Date().getTime();
-    const difference_seconds = (now_ms - measured_ms) / 1000;
-
-    if (!sensor.isActive) {
-        return 'grey';
-    }
-
-    if (difference_seconds < sensor.intervalSeconds) {
-        return 'green';
-    }
-    if (difference_seconds < sensor.intervalSeconds * 2) {
-        return 'yellow';
-    }
-
-    return 'red';
-}
-
 export const getColorFromLogLevel = (logLevel: string): string => {
     if (logLevel === 'DEBUG') return 'blue';
     if (logLevel === 'INFO') return 'green';

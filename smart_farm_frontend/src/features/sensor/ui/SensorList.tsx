@@ -4,7 +4,7 @@ import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex} from "@mantine/c
 import { IconCirclePlus, IconEdit, } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
 import { useTranslation } from "react-i18next";
-import {getBackendTranslation, getSensorStateColor} from "../../../utils/utils";
+import {getBackendTranslation} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 
@@ -95,7 +95,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                                 <Flex justify='space-between' align='center'>
                                     <HoverCard>
                                         <HoverCard.Target>
-                                            <Badge color={getSensorStateColor(sensor)}>
+                                            <Badge color={sensor.state}>
                                                 {!sensor.isActive && (<>{t("camera.inactive")}</>)}
                                             </Badge>
                                         </HoverCard.Target>

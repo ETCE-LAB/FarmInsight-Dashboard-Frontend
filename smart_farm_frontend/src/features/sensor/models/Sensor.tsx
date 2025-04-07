@@ -10,6 +10,7 @@ export interface Sensor {
     unit:string,
     parameter:string;
     fpfId:string,
+    state:string,
 
     lastMeasurement: {
         measuredAt: Date,
