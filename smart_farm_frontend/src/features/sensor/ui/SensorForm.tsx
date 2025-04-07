@@ -19,9 +19,10 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
     const { organizationId, fpfId } = useParams();
     const [name, setName] = useState<string>("");
     const [unit, setUnit] = useState<string>("");
+    const [parameter, setParameter] = useState<string>("");
     const [modelNr, setModelNr] = useState<string>("");
     const [isActive, setIsActive] = useState<boolean>(false);
-    const [intervalSeconds, setIntervalSeconds] = useState<number>(0);
+    const [intervalSeconds, setIntervalSeconds] = useState<number>(3600);
     const [location, setLocation] = useState<string>("");
     const [hardwareConfiguration, setHardwareConfiguration] = useState<{ sensorClassId: string, additionalInformation: Record<string, any> } | undefined>(undefined);
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
         if (toEditSensor) {
             setName(toEditSensor.name || "");
             setUnit(toEditSensor.unit || "");
+            setParameter(toEditSensor.parameter || "");
             setModelNr(toEditSensor.modelNr || "");
             setIsActive(toEditSensor.isActive || false);
             setIntervalSeconds(toEditSensor.intervalSeconds || 1);
@@ -54,6 +56,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 id: toEditSensor.id,
                 name,
                 unit,
+                parameter,
                 location,
                 modelNr,
                 intervalSeconds,
@@ -97,7 +100,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 withCloseButton: false,
             });
             createSensor({
-                id: '', name, unit, location, modelNr, intervalSeconds: interval, isActive, fpfId, hardwareConfiguration,
+                id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, hardwareConfiguration,
             }).then((response) => {
                 if (response) {
                     notifications.update({
@@ -192,8 +195,9 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                                 <SelectHardwareConfiguration
                                     fpfId={fpfId}
                                     postHardwareConfiguration={setHardwareConfiguration}
-                                    sensorId={toEditSensor?.id}
+                                    sensor={toEditSensor}
                                     setUnit={setUnit}
+                                    setParameter={setParameter}
                                     setModel={setModelNr}
                                 />
                             )}

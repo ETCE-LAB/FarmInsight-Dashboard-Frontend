@@ -7,6 +7,14 @@ i18n
         resources: {
             en: {
                 translation: {
+                    log: {
+                        logListTitle: 'Log Messages',
+                        lastMessage: 'Last Log Message',
+                        created: 'Date',
+                        logLevel: 'Log Level',
+                        message: 'Message',
+                        showMessages: 'Logs',
+                    },
                     fpf: {
                         address: 'Location',
                         noAddress: 'No Standort',
@@ -81,6 +89,7 @@ i18n
                         model: 'Model',
                         connectionType: 'Connection Type',
                         parameter: 'Parameter',
+                        parameter_hint: 'Please enter english and german, eg: humidity;feuchtigkeit',
                         unit: 'Unit',
                         tags: 'Notes',
                         hint: {
@@ -121,7 +130,8 @@ i18n
                         name: 'Name',
                         location: 'Location',
                         unit: 'Unit',
-                        modelNr: 'Model Nr',
+                        parameter: 'Parameter',
+                        modelNr: 'Model',
                         intervalSeconds: 'Interval in Seconds',
                         isActive: 'Is Active?',
                         actions: 'Actions',
@@ -221,6 +231,14 @@ i18n
             },
             de: {
                 translation: {
+                    log: {
+                        logListTitle: 'Protokoll Nachrichten',
+                        lastMessage: 'Letzte Protokoll Nachricht',
+                        created: 'Datum',
+                        logLevel: 'Protokollierungsstufe',
+                        message: 'Nachricht',
+                        showMessages: 'Protokoll Nachrichten'
+                    },
                     fpf: {
                         address: 'Standort',
                         noAddress: 'Kein Adresse',
@@ -294,6 +312,7 @@ i18n
                         model: 'Modell',
                         connectionType: 'Verbindungstyp',
                         parameter: 'Kennwert',
+                        parameter_hint: 'Bitte in Englisch und Deutsch eingeben, zB: humidity;feuchtigkeit',
                         unit: 'Einheit',
                         tags: 'Notizen',
                         hint: {
@@ -334,13 +353,14 @@ i18n
                         name: 'Name',
                         location: 'Standort',
                         unit: 'Einheit',
-                        modelNr: 'Modell Nr.',
+                        parameter: 'Kennwert',
+                        modelNr: 'Modell',
                         intervalSeconds: 'Intervall in Sekunden',
                         isActive: 'Ist aktiv?',
                         actions: 'Aktionen',
                     },
                     button: {
-                        loginToManage: 'Einloggen, um Organisation zu verwalten',
+                        loginToManage: 'Anmelden, um Organisation zu verwalten',
                         create: 'Erstellen',
                         add: 'Hinzufügen',
                         update:'Änderungen speichern,'

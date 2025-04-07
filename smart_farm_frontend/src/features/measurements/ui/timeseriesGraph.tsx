@@ -5,11 +5,23 @@ import { requestMeasuremnt } from "../useCase/requestMeasurements";
 import { receivedMeasurementEvent } from "../state/measurementSlice";
 import { useAppSelector } from "../../../utils/Hooks";
 import { Measurement } from "../models/measurement";
-import { Card, Flex, Title, Notification, LoadingOverlay, Center, Text, Box, useMantineTheme } from "@mantine/core";
+import {
+    Card,
+    Flex,
+    Title,
+    Notification,
+    LoadingOverlay,
+    Center,
+    Text,
+    Box,
+    useMantineTheme,
+    HoverCard, Badge
+} from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
+import {getSensorStateColor} from "../../../utils/utils";
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string }| null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
@@ -50,7 +62,13 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
             if (!resp) throw new Error("No WebSocket token received.");
             let baseUrl = process.env.REACT_APP_BACKEND_URL;
             if (!baseUrl) throw new Error("REACT_APP_BACKEND_URL is not configured.");
-            baseUrl = baseUrl.replace(/^https?/, "wss").replace(/^http?/, "ws");
+            if (baseUrl.startsWith("https")) { // If anyone wants to change this, at least make sure your change actually works...
+                baseUrl = baseUrl.replace("https", "wss");
+            } else if (baseUrl.startsWith("http")) {
+                baseUrl = baseUrl.replace("http", "ws");
+            } else {
+                throw new Error(`Invalid REACT_APP_BACKEND_URL: ${baseUrl}`);
+            }
             setSocketUrl(`${baseUrl}/ws/sensor/${sensor?.id}?token=${encodeURIComponent(resp.token)}`);
             setShouldReconnect(true);
         } catch (err) {
@@ -140,7 +158,17 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                     boxSizing: 'border-box'
                 }}
             >
-                <Flex justify="space-between" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
+                <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
+                    <HoverCard>
+                        <HoverCard.Target>
+                            <Badge color={getSensorStateColor(sensor)}></Badge>
+                        </HoverCard.Target>
+                        <HoverCard.Dropdown>
+                            <Text size="sm">
+                                {`last value: ${new Date(sensor?.lastMeasurement.measuredAt)}`}
+                            </Text>
+                        </HoverCard.Dropdown>
+                    </HoverCard>
                     <Title order={4} c={theme.colors.blue[6]}>{sensor?.name}</Title>
                 </Flex>
                 {error ? (

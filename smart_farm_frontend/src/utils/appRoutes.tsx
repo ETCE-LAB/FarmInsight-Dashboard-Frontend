@@ -5,4 +5,5 @@ export class AppRoutes {
     static displayFpf = "/organization/:organizationId/fpf/:fpfId"
     static editUserProfile = "/userprofile/edit"
     static legalNotice = "/legal-notice"
+    static statusOverview = "/status-overview"
 }

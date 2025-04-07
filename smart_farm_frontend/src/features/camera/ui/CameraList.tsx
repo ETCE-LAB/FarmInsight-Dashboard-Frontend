@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Badge, Box, Group, Modal, Table, Text } from "@mantine/core";
+import {Badge, Box, Flex, Group, Modal, Table, Text} from "@mantine/core";
 import { IconCirclePlus, IconEdit, IconVideo, IconVideoOff } from "@tabler/icons-react";
 import { Camera, EditCamera } from "../models/camera";
 import { CameraForm } from "./CameraForm";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import {ResourceType} from "../../logMessages/models/LogMessage";
+import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 
 export const CameraList: React.FC<{ camerasToDisplay?: Camera[], isAdmin:Boolean }> = ({ camerasToDisplay, isAdmin }) => {
     const [CameraModalOpen, setCameraModalOpen] = useState(false);
@@ -97,26 +99,30 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], isAdmin:Boolean
                                     </Table.Td>
 
                                     <Table.Td>
-                                        <Badge
-                                            color={camera.isActive ? "green.9" : "red.9"}
-                                            variant="light"
-                                            leftSection={camera.isActive ? <IconVideo size={16} /> : <IconVideoOff size={16} />}
-                                        >
-                                            {camera.isActive ? t("camera.active") : t("camera.inactive")}
-                                        </Badge>
+                                        <Flex justify='space-between' align='center'>
+                                            <Badge
+                                                color={camera.isActive ? "green.9" : "red.9"}
+                                                variant="light"
+                                                leftSection={camera.isActive ? <IconVideo size={16} /> : <IconVideoOff size={16} />}
+                                            >
+                                                {camera.isActive ? t("camera.active") : t("camera.inactive")}
+                                            </Badge>
+
+                                            <LogMessageModalButton resourceType={ResourceType.CAMERA} resourceId={camera.id}></LogMessageModalButton>
+                                        </Flex>
                                     </Table.Td>
-                                    { isAdmin &&
-                                    <Table.Td style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                        <Group>
-                                            <IconEdit
-                                                color={"#199ff4"}
-                                                size={20}
-                                                stroke={2}
-                                                onClick={() => onClickEdit(camera)}
-                                                style={{ cursor: "pointer" }}
-                                            />
-                                        </Group>
-                                    </Table.Td>
+                                    {isAdmin &&
+                                        <Table.Td>
+                                            <Flex justify='center' align='center'>
+                                                <IconEdit
+                                                    color={"#199ff4"}
+                                                    size={20}
+                                                    stroke={2}
+                                                    onClick={() => onClickEdit(camera)}
+                                                    style={{ cursor: "pointer" }}
+                                                />
+                                            </Flex>
+                                        </Table.Td>
                                     }
                                 </Table.Tr>
                             ))}

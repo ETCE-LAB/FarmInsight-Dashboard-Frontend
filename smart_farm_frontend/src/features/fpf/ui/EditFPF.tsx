@@ -4,7 +4,7 @@ import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Accordion, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
+import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";
@@ -14,8 +14,11 @@ import { Camera } from "../../camera/models/camera";
 import { useTranslation } from "react-i18next";
 import { IconEdit } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
-import {useAppDispatch} from "../../../utils/Hooks";
-import {updatedFpf} from "../state/FpfSlice";
+import { useAppDispatch } from "../../../utils/Hooks";
+import { updatedFpf}  from "../state/FpfSlice";
+import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
+import {ResourceType} from "../../logMessages/models/LogMessage";
+
 
 export const EditFPF: React.FC = () => {
     const { organizationId, fpfId } = useParams();
@@ -27,12 +30,12 @@ export const EditFPF: React.FC = () => {
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
 
+
     const SensorEventListener = useSelector((state: RootState) => state.sensor.receivedSensorEvent);
     const CameraEventListener = useSelector((state: RootState) => state.camera.createdCameraEvent);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     const fpf = useSelector((state: RootState) => state.fpf.fpf);
-
 
     const dispatch = useAppDispatch();
 
@@ -85,7 +88,6 @@ export const EditFPF: React.FC = () => {
         }
     }, [fpf, organization]);
 
-
     return (
         <Stack gap={"md"}>
             <Card padding="xl" radius="md">
@@ -95,19 +97,17 @@ export const EditFPF: React.FC = () => {
                             <Title order={2}>
                                 {'FPF-' + t("header.name")}: {fpf.name}
                             </Title>
-                            <Flex align="center" style={{ marginLeft: "auto" }}>
-                                {isAdmin && (
-                                    <IconEdit
-                                        size={24}
-                                        onClick={() => setEditModalOpen(true)}
-                                        style={{
-                                            cursor: 'pointer',
-                                            color: '#199ff4',
-                                            marginLeft: 10,
-                                        }}
-                                    />
-                                )}
-                            </Flex>
+                            {isAdmin && (
+                                <IconEdit
+                                    size={24}
+                                    onClick={() => setEditModalOpen(true)}
+                                    style={{
+                                        cursor: 'pointer',
+                                        color: '#199ff4',
+                                        marginLeft: "auto",
+                                    }}
+                                />
+                            )}
                         </Flex>
                     </Grid.Col>
                     <Grid.Col span={12}>
@@ -119,11 +119,22 @@ export const EditFPF: React.FC = () => {
                         </Text>
                     </Grid.Col>
                     <Grid.Col span={12}>
-                        <Text size="lg" fw="bold" c="dimmed">
-                            {t('fpf.address')}: {fpf.address || t('fpf.noAddress')}
-                        </Text>
+                        <Flex justify="space-between">
+                            <Text size="lg" fw="bold" c="dimmed">
+                                {t('fpf.address')}: {fpf.address || t('fpf.noAddress')}
+                            </Text>
+                            <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpfId}></LogMessageModalButton>
+                        </Flex>
                     </Grid.Col>
                 </Grid>
+            </Card>
+
+            <Card padding="lg" radius="md">
+                <SensorList sensorsToDisplay={sensors} fpfId={fpf.id} isAdmin={isAdmin} />
+            </Card>
+
+            <Card padding="lg" radius="md">
+                <CameraList camerasToDisplay={cameras} isAdmin={isAdmin} />
             </Card>
 
             {/* Edit FPF Modal */}
@@ -135,30 +146,6 @@ export const EditFPF: React.FC = () => {
             >
                 <FpfForm toEditFpf={fpf} close={setEditModalOpen} />
             </Modal>
-
-            {/* Accordion for Sensor List */}
-            <Accordion variant="separated">
-                <Accordion.Item value="sensors">
-                    <Accordion.Control>{t('sensor.title')}</Accordion.Control>
-                    <Accordion.Panel>
-                        <Card padding="lg" radius="md">
-                            <SensorList sensorsToDisplay={sensors} fpfId={fpf.id} isAdmin={isAdmin} />
-                        </Card>
-                    </Accordion.Panel>
-                </Accordion.Item>
-            </Accordion>
-
-            {/* Accordion for Camera List */}
-            <Accordion variant="separated">
-                <Accordion.Item value="cameras">
-                    <Accordion.Control>{t('camera.cameras')}</Accordion.Control>
-                    <Accordion.Panel>
-                        <Card padding="lg" radius="md">
-                            <CameraList camerasToDisplay={cameras} isAdmin={isAdmin} />
-                        </Card>
-                    </Accordion.Panel>
-                </Accordion.Item>
-            </Accordion>
         </Stack>
     );
 };
