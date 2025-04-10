@@ -80,6 +80,8 @@ export const FpfOverview = () => {
             {isMobile ? (
                 // Single scrollable container for mobile devices
                 <Box style={{ ...scrollableStyle, height: '88vh' }}>
+                    {/*Weather Forcast*/}
+                    +
                     {/* Camera Carousel comes first */}
                     {fpf?.Cameras && fpf.Cameras.length > 0 && isCameraActive && (
                         <Box

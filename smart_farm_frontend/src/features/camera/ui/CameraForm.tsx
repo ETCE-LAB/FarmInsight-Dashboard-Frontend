@@ -48,7 +48,7 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, setClosed: React.
             const id = notifications.show({
                 loading: true,
                 title: 'Loading',
-                message: 'Updating Sensor on your FPF',
+                message: 'Updating Camera on your FPF',
                 autoClose: false,
                 withCloseButton: false,
             });
