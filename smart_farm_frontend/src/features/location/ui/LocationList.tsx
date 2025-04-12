@@ -48,7 +48,6 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
             latitude: location.latitude,
             longitude: location.longitude,
             organizationId: organizationId || "",
-            isPublic: location.isPublic,
         };
 
         setSelectedLocation(editLocation);

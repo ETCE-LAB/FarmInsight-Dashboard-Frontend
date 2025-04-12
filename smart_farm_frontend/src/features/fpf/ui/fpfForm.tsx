@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { updateFpf } from "../useCase/updateFpf";
 import { notifications } from "@mantine/notifications";
 import {IconEye, IconEyeOff} from "@tabler/icons-react";
+import {SelectFPFLocation} from "../../location/ui/SelectFPFLocation";
+import { Location } from "../../location/models/location";
 
 export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close: React.Dispatch<React.SetStateAction<boolean>>; }> = ({ organizationId, toEditFpf , close}) => {
     const auth = useAuth();
@@ -18,7 +20,16 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
     const [name, setName] = useState("");
     const [isPublic, setIsPublic] = useState(false);
     const [sensorServiceIp, setSensorServiceIp] = useState("");
-    const [address, setAddress] = useState("");
+    const [location, setLocation] = useState<Location>({
+        id: "",
+        name: "",
+        latitude: 0,
+        longitude: 0,
+        city: "",
+        street: "",
+        houseNumber: "",
+        organizationId: organizationId || "",
+    });
     const [errors, setErrors] = useState<{ sensorServiceIp?: string; cameraServiceIp?: string }>({});
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -28,12 +39,12 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
             setName(toEditFpf.name);
             setIsPublic(toEditFpf.isPublic);
             setSensorServiceIp(toEditFpf.sensorServiceIp);
-            setAddress(toEditFpf.address);
+            setLocation(toEditFpf.Location);
         }
     }, [toEditFpf]);
 
     const handleSave = () => {
-        if (organizationId) {
+        if (organizationId && location) {
             const id = notifications.show({
                 loading: true,
                 title: 'Loading',
@@ -42,7 +53,8 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                 withCloseButton: false,
             });
 
-            createFpf({ name, isPublic, sensorServiceIp, address, organizationId }).then(fpf => {
+            const locationId = location.id;
+            createFpf({ name, isPublic, sensorServiceIp, locationId , organizationId }).then(fpf => {
                 if (fpf) {
                     dispatch(createdFpf());
 
@@ -80,10 +92,13 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                 autoClose: false,
                 withCloseButton: false,
             });
-
-            updateFpf(toEditFpf.id, { name, isPublic, sensorServiceIp, address }).then(fpf => {
+            console.log("FPFForm Location: ", location);
+            console.log("Original FPF: ",toEditFpf)
+            const locationId= location.id;
+            updateFpf(toEditFpf.id, { name, isPublic, sensorServiceIp, locationId }).then(fpf => {
                 if (fpf) {
                     dispatch(updatedFpf(fpf));
+                    dispatch(createdFpf());
                     notifications.update({
                         id,
                         title: 'Success',
@@ -133,30 +148,6 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                                 />
                             </Grid.Col>
 
-                            {/* Address Input */}
-                            <Grid.Col span={6}>
-                                <TextInput
-                                    label={t("header.location")}
-                                    placeholder={t("header.enterLocation")}
-                                    required
-                                    value={address}
-                                    onChange={(e) => setAddress(e.currentTarget.value)}
-                                />
-                            </Grid.Col>
-
-                            {/* SensorServiceIP Input */}
-                            <Grid.Col span={6}>
-                                <TextInput
-                                    label="FPF Backend IP/URL"
-                                    placeholder="Enter IP or URL"
-                                    required
-                                    value={sensorServiceIp}
-                                    onChange={(e) => setSensorServiceIp(e.currentTarget.value)}
-                                    description={t("fpf.hint.sensorServiceIpHint")}
-                                    error={errors.sensorServiceIp}
-                                />
-                            </Grid.Col>
-
                             {/* Public Switch */}
                             <Grid.Col span={6}>
                                 <Box
@@ -178,6 +169,26 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                                         onChange={(e) => setIsPublic(e.currentTarget.checked)}
                                     />
                                 </Box>
+                            </Grid.Col>
+
+                            {/* SensorServiceIP Input */}
+                            <Grid.Col span={6}>
+                                <TextInput
+                                    label="FPF Backend IP/URL"
+                                    placeholder="Enter IP or URL"
+                                    required
+                                    value={sensorServiceIp}
+                                    onChange={(e) => setSensorServiceIp(e.currentTarget.value)}
+                                    description={t("fpf.hint.sensorServiceIpHint")}
+                                    error={errors.sensorServiceIp}
+                                />
+                            </Grid.Col>
+
+
+
+                            {/* Address Input */}
+                            <Grid.Col span={12}>
+                                <SelectFPFLocation setLocation={setLocation} organizationIdParam={organizationId}/>
                             </Grid.Col>
 
                             {/* Save Button */}

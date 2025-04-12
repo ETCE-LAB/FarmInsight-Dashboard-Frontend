@@ -3,7 +3,7 @@ import APIClient from "../../../utils/APIClient";
 import {BACKEND_URL} from "../../../env-config";
 
 
-export const getLocationByOrganization = async (organizationId: string) => {
+export const getLocationByOrganization = async (organizationId: string | undefined) => {
     try {
         const apiClient = new APIClient();
         const user = getUser();

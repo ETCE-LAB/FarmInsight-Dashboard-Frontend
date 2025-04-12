@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { IconEdit } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
 import { useAppDispatch } from "../../../utils/Hooks";
-import { updatedFpf}  from "../state/FpfSlice";
+import {createdFpf, updatedFpf} from "../state/FpfSlice";
 import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 
@@ -33,6 +33,8 @@ export const EditFPF: React.FC = () => {
 
     const SensorEventListener = useSelector((state: RootState) => state.sensor.receivedSensorEvent);
     const CameraEventListener = useSelector((state: RootState) => state.camera.createdCameraEvent);
+    const fpfCreatedEventListener = useSelector((state: RootState) => state.fpf.createdFpfEvent);
+
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     const fpf = useSelector((state: RootState) => state.fpf.fpf);
@@ -45,7 +47,7 @@ export const EditFPF: React.FC = () => {
                 dispatch(updatedFpf(resp));
             });
         }
-    }, [fpfId]);
+    }, [fpfId, fpfCreatedEventListener]);
 
     useEffect(() => {
         if (fpf?.Sensors && fpf.Sensors.length >= 1) {
@@ -76,6 +78,8 @@ export const EditFPF: React.FC = () => {
             });
         }
     }, [CameraEventListener]);
+
+
 
     useEffect(() => {
         if (fpf && organization) {
@@ -118,14 +122,16 @@ export const EditFPF: React.FC = () => {
                             </Badge>
                         </Text>
                     </Grid.Col>
+                    {fpf.Location && (
                     <Grid.Col span={12}>
                         <Flex justify="space-between">
                             <Text size="lg" fw="bold" c="dimmed">
-                                {t('fpf.address')}: {fpf.address || t('fpf.noAddress')}
+                                {t('fpf.address')}: {fpf.Location.name || t('fpf.noAddress')}
                             </Text>
                             <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpfId}></LogMessageModalButton>
                         </Flex>
                     </Grid.Col>
+                    )}
                 </Grid>
             </Card>
 
