@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
 import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex} from "@mantine/core";
 import { IconCirclePlus, IconEdit, } from "@tabler/icons-react";
@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import {getBackendTranslation, getSensorStateColor} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
+import {ThresholdList} from "../../threshold/ui/thresholdList";
+import {Threshold} from "../../threshold/models/threshold";
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
     const [sensorModalOpen, setSensorModalOpen] = useState(false);
@@ -39,6 +41,23 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
         setSensorModalOpen(true);
     }
 
+    const [selectedThresholds, setSelectedThresholds] = useState<Threshold[]>([]);
+    const [selectedSensorId, setSelectedSensorId] = useState<string>('');
+    const [thresholdModalOpen, setThresholdModalOpen] = useState(false);
+
+    const onClickThresholds = (sensor:Sensor) => {
+        setSelectedSensorId(sensor.id);
+        setSelectedThresholds(sensor.thresholds);
+        setThresholdModalOpen(true);
+    }
+
+    useEffect(() => {
+        if (sensorsToDisplay && selectedSensorId !== '') {
+            const sensor = sensorsToDisplay.filter((e) => e.id === selectedSensorId)[0];
+            setSelectedThresholds(sensor.thresholds);
+        }
+    }, [sensorsToDisplay]);
+
     return (
         <Box>
             {/* Add Sensor Modal */}
@@ -50,6 +69,16 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 size="40%"
             >
                 <SensorForm toEditSensor={selectedSensor} setClosed={setSensorModalOpen} />
+            </Modal>
+
+            <Modal
+                opened={thresholdModalOpen}
+                onClose={() => setThresholdModalOpen(false)}
+                title={t('threshold.title')}
+                centered
+                size="40%"
+            >
+                <ThresholdList sensorId={selectedSensorId} thresholds={selectedThresholds} />
             </Modal>
 
             {/* Header with Add Button */}
@@ -116,6 +145,13 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                                             size={20}
                                             stroke={2}
                                             onClick={() => onClickEdit(sensor)}
+                                            style={{ cursor: "pointer" }}
+                                        />
+                                        <IconEdit
+                                            color={"green"}
+                                            size={20}
+                                            stroke={2}
+                                            onClick={() => onClickThresholds(sensor)}
                                             style={{ cursor: "pointer" }}
                                         />
                                     </Flex>

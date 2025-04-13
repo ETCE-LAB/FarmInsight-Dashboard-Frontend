@@ -7,6 +7,18 @@ i18n
         resources: {
             en: {
                 translation: {
+                    threshold: {
+                        title: 'Thresholds',
+                        lowerBound: 'lower bound',
+                        upperBound: 'upper bound',
+                        color: 'color',
+                        description: 'description',
+                        failedToSave: 'Failed to save the threshold',
+                        successSave: 'Saved',
+                        addTitle: 'Add Threshold',
+                        editTitle: 'Edit Threshold',
+                        colorHint: 'named (red, blue, ...) or hex code: (#FFFFFF, ...) ',
+                    },
                     log: {
                         logListTitle: 'Log Messages',
                         lastMessage: 'Last Log Message',
@@ -220,6 +232,18 @@ i18n
             },
             de: {
                 translation: {
+                    threshold: {
+                        title: 'Grenzwerte',
+                        lowerBound: 'untere Grenze',
+                        upperBound: 'obere Grenze',
+                        color: 'Farbe',
+                        description: 'Beschreibung',
+                        failedToSave: 'Fehler beim Speichern des Grenzwertes',
+                        successSave: 'Gespeichert',
+                        addTitle: 'Grenzwert hinzufügen',
+                        editTitle: 'Grenzwert bearbeiten',
+                        colorHint: 'Name (rot, blau, ...) oder Hexcode: (#FFFFFF, ...) ',
+                    },
                     log: {
                         logListTitle: 'Protokoll Nachrichten',
                         lastMessage: 'Letzte Protokoll Nachricht',

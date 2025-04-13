@@ -1,3 +1,4 @@
+import {Threshold} from "../../threshold/models/threshold";
 
 
 export interface Sensor {
@@ -21,7 +22,9 @@ export interface Sensor {
             measuredAt: Date
             value:number
         }
-    ]
+    ],
+
+    thresholds: Threshold[],
 }
 
 export interface EditSensor {

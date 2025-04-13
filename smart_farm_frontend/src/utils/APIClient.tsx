@@ -69,7 +69,7 @@ class APIClient {
             if (!response.ok) {
                 throw new Error("Network response not ok");
             }
-            return await response;
+            return response;
         } catch (error) {
             console.error("Failed to receive Response: " + error);
         }
