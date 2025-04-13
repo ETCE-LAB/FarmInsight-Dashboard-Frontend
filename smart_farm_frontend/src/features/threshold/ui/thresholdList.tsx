@@ -2,13 +2,32 @@ import React, {useState} from "react";
 import {Threshold} from "../models/threshold";
 import {Modal, Table} from "@mantine/core";
 import {useTranslation} from "react-i18next";
-import {IconCirclePlus, IconEdit} from "@tabler/icons-react";
+import {IconCirclePlus, IconEdit, IconSquareRoundedMinus} from "@tabler/icons-react";
+import {showNotification} from "@mantine/notifications";
+import {receivedSensor} from "../../sensor/state/SensorSlice";
+import {deleteThreshold} from "../useCase/deleteThreshold";
+import {useAppDispatch} from "../../../utils/Hooks";
 import {ThresholdForm} from "./thresholdForm";
 
 export const ThresholdList: React.FC<{ sensorId: string, thresholds: Threshold[] }> = ({ sensorId, thresholds }) => {
     const { t } = useTranslation();
+    const dispatch = useAppDispatch();
+
     const [editThresholdModalOpen, setEditThresholdModalOpen] = useState(false);
     const [toEditThreshold, setToEditThreshold] = useState<Threshold | null>(null);
+
+    const handleDelete = async (threshold: Threshold)=> {
+        try {
+            await deleteThreshold(threshold.id);
+            dispatch(receivedSensor());
+        } catch (error) {
+            showNotification({
+                title: t('threshold.failedToSave'),
+                message: `${error}`,
+                color: "red",
+            });
+        }
+    }
 
     return (
         <>
@@ -58,6 +77,15 @@ export const ThresholdList: React.FC<{ sensorId: string, thresholds: Threshold[]
                                         setEditThresholdModalOpen(true);
                                     }}
                                     style={{ cursor: "pointer" }}
+                                />
+                                <IconSquareRoundedMinus
+                                    onClick={() => handleDelete(threshold)}
+                                    size={20}
+                                    style={{
+                                        cursor: "pointer",
+                                        marginRight: "0.5rem",
+                                        color: "#a53737",
+                                    }}
                                 />
                             </Table.Td>
                         </Table.Tr>
