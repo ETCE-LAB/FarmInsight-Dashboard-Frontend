@@ -20,7 +20,8 @@ const initialState: FpfSlice = {
         Cameras: [],
         sensorServiceIp: "",
         address: "",
-        GrowingCycles: []
+        GrowingCycles: [],
+        ControllableAction: []
     }
 }
 

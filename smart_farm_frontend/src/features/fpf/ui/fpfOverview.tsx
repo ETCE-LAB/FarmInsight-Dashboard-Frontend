@@ -23,6 +23,8 @@ import { useMediaQuery } from "@mantine/hooks";
 import { IconPlant } from "@tabler/icons-react";
 import { useAuth } from 'react-oidc-context';
 import TimeRangeSelector from "../../../utils/TimeRangeSelector";
+import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
+import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -42,6 +44,7 @@ export const FpfOverview = () => {
             getFpf(params.fpfId).then(resp => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
+                dispatch(setControllableAction(resp.ControllableAction));
             });
         }
     }, [params, dispatch]);
@@ -116,6 +119,18 @@ export const FpfOverview = () => {
                             <Text c="dimmed">{t("No sensors added yet")}</Text>
                         </Center>
                     )}
+
+                    {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                        <Box
+                            style={{
+                                borderRadius: '10px',
+                                marginBottom: '20px',
+                            }}
+                        >
+                            <ControllableActionOverview fpfId={fpf.id} />
+                        </Box>
+                    )}
+
                     {/* Growing Cycle Section: only render if cycles exist or user is signed in */}
                     {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
                         <Box
@@ -168,7 +183,7 @@ export const FpfOverview = () => {
                         )}
                     </Box>
 
-                    {/* Right section: Camera Carousel & Growing Cycle Section */}
+                    {/* Right section: Camera Carousel, Controllables & Growing Cycle Section */}
                     <Box style={scrollableStyle}>
                         {fpf?.Cameras && fpf.Cameras.length > 0 && isCameraActive && (
                             <Box
@@ -180,6 +195,20 @@ export const FpfOverview = () => {
                                 <CameraCarousel camerasToDisplay={fpf.Cameras} />
                             </Box>
                         )}
+
+                        {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                            <Box
+                                style={{
+                                    borderRadius: '10px',
+                                    padding: '1rem',
+                                }}
+                            >
+                                <ControllableActionOverview fpfId={fpf.id} />
+                            </Box>
+                        )}
+
+
+
                         {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
                             <Box
                                 style={{
