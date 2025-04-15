@@ -7,7 +7,7 @@ import {updateLocation} from "../useCase/updateLocation";
 import {createLocation} from "../useCase/createLocation";
 import {Box, Button, Grid, NumberInput, Switch, TextInput} from "@mantine/core";
 import {useAuth} from "react-oidc-context";
-import {IconEye, IconEyeOff, IconVideo, IconVideoOff} from "@tabler/icons-react";
+import {IconCloud, IconCloudOff} from "@tabler/icons-react";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {changedMembership} from "../../membership/state/MembershipSlice";
 import {receivedLocation} from "../state/LocationSlice";
@@ -19,13 +19,13 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
 
     const {organizationId} = useParams();
     const {t} = useTranslation();
-    const [location, setLocation] = useState<Location | undefined>(toEditLocation);
     const [name, setName] = useState<string>("");
     const [latitude, setLatitude] = useState<number | string >(0);
     const [longitude, setLongitude] = useState<number | string >(0);
     const [city, setCity] = useState<string>("");
     const [street, setStreet] = useState<string>("");
     const [houseNumber, setHouseNumber] = useState<string>("");
+    const [gatherForecasts, setGatherForecasts] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -37,6 +37,7 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
             setCity(toEditLocation.city);
             setStreet(toEditLocation.street);
             setHouseNumber(toEditLocation.houseNumber);
+            setGatherForecasts(toEditLocation.gatherForecasts);
         }
     }, [toEditLocation]);
 
@@ -58,6 +59,7 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                 street: street,
                 houseNumber: houseNumber,
                 organizationId: organizationId ? organizationId : "",
+                gatherForecasts: gatherForecasts,
             }).then(() => {
                 notifications.update({
                     id,
@@ -108,6 +110,7 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                 street: street,
                 houseNumber: houseNumber,
                 organizationId: orgId,
+                gatherForecasts: gatherForecasts,
             }).then(() => {
                 notifications.update({
                     id,
@@ -195,6 +198,27 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                                 onChange={(e) => setHouseNumber(e.currentTarget.value)}
                                 required
                             />
+                        </Grid.Col>
+                        {/* Gather Forecast */}
+                        <Grid.Col span={6}>
+                            <Box
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    justifyContent: "flex-end",
+                                    height: "100%",
+                                }}
+                            >
+                                <span style={{ marginBottom: 5 }}>{t("location.gatherForecasts")}</span>
+                                <Switch
+                                    onLabel={<IconCloud size={16} stroke={2.5} />}
+                                    offLabel={<IconCloudOff size={16} stroke={2.5} />}
+                                    size="md"
+                                    checked={gatherForecasts}
+                                    onChange={(e) => setGatherForecasts(e.currentTarget.checked)}
+                                />
+                            </Box>
                         </Grid.Col>
                         {/* Submit Button */}
                         <Grid.Col span={12}>

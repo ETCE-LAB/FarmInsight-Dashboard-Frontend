@@ -19,7 +19,7 @@ const initialState: FpfSlice = {
         Sensors: [],
         Cameras: [],
         sensorServiceIp: "",
-        Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: ""},
+        Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false},
         GrowingCycles: []
     }
 }

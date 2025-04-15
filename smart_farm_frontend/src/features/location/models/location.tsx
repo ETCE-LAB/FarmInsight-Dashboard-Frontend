@@ -9,4 +9,5 @@ export interface Location{
     street:string,
     houseNumber:string,
     organizationId:string,
+    gatherForecasts:boolean,
 }

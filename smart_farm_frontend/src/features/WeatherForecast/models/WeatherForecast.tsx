@@ -1,7 +1,7 @@
 
 
 
-export interface WeatherForcast {
+export interface WeatherForecast {
     fetchDate: Date,
     forecastDate:Date,
     rainMM:number

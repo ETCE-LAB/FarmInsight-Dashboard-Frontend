@@ -29,6 +29,7 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
         street: "",
         houseNumber: "",
         organizationId: organizationId || "",
+        gatherForecasts: false,
     });
     const [errors, setErrors] = useState<{ sensorServiceIp?: string; cameraServiceIp?: string }>({});
     const dispatch = useDispatch();
@@ -92,8 +93,6 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                 autoClose: false,
                 withCloseButton: false,
             });
-            console.log("FPFForm Location: ", location);
-            console.log("Original FPF: ",toEditFpf)
             const locationId= location.id;
             updateFpf(toEditFpf.id, { name, isPublic, sensorServiceIp, locationId }).then(fpf => {
                 if (fpf) {

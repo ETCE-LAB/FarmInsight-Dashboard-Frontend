@@ -23,6 +23,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { IconPlant } from "@tabler/icons-react";
 import { useAuth } from 'react-oidc-context';
 import TimeRangeSelector from "../../../utils/TimeRangeSelector";
+import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDisplay";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -80,8 +81,6 @@ export const FpfOverview = () => {
             {isMobile ? (
                 // Single scrollable container for mobile devices
                 <Box style={{ ...scrollableStyle, height: '88vh' }}>
-                    {/*Weather Forcast*/}
-                    +
                     {/* Camera Carousel comes first */}
                     {fpf?.Cameras && fpf.Cameras.length > 0 && isCameraActive && (
                         <Box
@@ -91,6 +90,18 @@ export const FpfOverview = () => {
                             }}
                         >
                             <CameraCarousel camerasToDisplay={fpf?.Cameras ?? []} />
+                        </Box>
+                    )}
+
+                    {/* Weather forecast section */}
+                    {fpf?.Location?.gatherForecasts && (
+                        <Box
+                            style={{
+                                borderRadius: '10px',
+                                marginBottom: '20px',
+                            }}
+                        >
+                            <WeatherForecastDisplay location={fpf.Location} />
                         </Box>
                     )}
 
@@ -146,8 +157,22 @@ export const FpfOverview = () => {
             ) : (
                 // Desktop layout with two separate scrollable areas
                 <SimpleGrid cols={2} spacing="lg" style={{ height: '88vh', overflow: 'hidden' }}>
+                    {/* Weather forecast section */}
+                    {/* Weather forecast section */}
+
                     {/* Left section: Sensor Graphs */}
                     <Box style={scrollableStyle}>
+                        {fpf?.Location && fpf?.Location.gatherForecasts && (
+                            <Box
+                                style={{
+                                    borderRadius: '10px',
+                                    marginBottom: '30px',
+                                }}
+                            >
+                                <WeatherForecastDisplay location={fpf.Location} />
+                            </Box>
+                        )}
+
                         <TimeRangeSelector onDateChange={setDateRange}/>
                         {fpf?.Sensors && fpf.Sensors.length > 0 ? (
 

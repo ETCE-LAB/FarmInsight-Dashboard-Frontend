@@ -20,8 +20,6 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
     const locationEventListener = useSelector((state: RootState) => state.location.receivedLocationEvent);
 
     useEffect(() => {
-        console.log("Location Event Listener: ", locationEventListener);
-        console.log("Organization ID: ", organizationId);
         if (organizationId) {
             getOrganization(organizationId).then((orga) => {
                 if (orga !== undefined) {
@@ -34,6 +32,7 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
     useEffect(() => {
         if (locationsToDisplay && locationsToDisplay.length > 0) {
             setLocations(locationsToDisplay);
+            console.log("Locations to display: ", locationsToDisplay);
         }
     }, [locationsToDisplay]);
 
@@ -48,6 +47,7 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
             latitude: location.latitude,
             longitude: location.longitude,
             organizationId: organizationId || "",
+            gatherForecasts: location.gatherForecasts,
         };
 
         setSelectedLocation(editLocation);
@@ -88,6 +88,7 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
                             <Table.Th>{t('location.houseNumber')}</Table.Th>
                             <Table.Th>{t('location.latitude')}</Table.Th>
                             <Table.Th>{t('location.longitude')}</Table.Th>
+                            <Table.Th>{t('location.gatherForecasts')}</Table.Th>
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
@@ -99,6 +100,7 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
                                 <Table.Td>{location.houseNumber}</Table.Td>
                                 <Table.Td>{location.latitude}</Table.Td>
                                 <Table.Td>{location.longitude}</Table.Td>
+                                <Table.Td>{location.gatherForecasts? (t("location.IsActive")):(t("location.isNotActive"))}</Table.Td>
                                 {isAdmin &&
                                     <Table.Td>
                                         <Flex justify='center' align='center'>

@@ -1,9 +1,9 @@
-import { WeatherForcast } from "../models/WeatherForcast";
+import { WeatherForecast } from "../models/WeatherForecast";
 import {BACKEND_URL} from "../../../env-config";
 
-export const getWeatherForcast = async (locationId: string): Promise<WeatherForcast[]> => {
+export const getWeatherForecast = async (locationId: string): Promise<WeatherForecast[]> => {
 
-    const response = await fetch(`${BACKEND_URL}/weatherforecast/${locationId}`, {
+    const response = await fetch(`${BACKEND_URL}/api/weather-forecasts/${locationId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -15,5 +15,6 @@ export const getWeatherForcast = async (locationId: string): Promise<WeatherForc
     }
 
     const data = await response.json();
-    return data as WeatherForcast[];
+
+    return data as WeatherForecast[];
 }

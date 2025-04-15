@@ -27,6 +27,7 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
             street: "",
             houseNumber: "",
             organizationId: organizationId || "",
+            gatherForecasts: false,
         }
     );
     const [isLoading, setIsLoading] = useState<boolean>(true);
