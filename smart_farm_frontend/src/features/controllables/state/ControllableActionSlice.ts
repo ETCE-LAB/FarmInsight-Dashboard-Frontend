@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {ControllableAction} from "../models/controllableAction";
+import {ActionTrigger} from "../models/actionTrigger";
 
 
 interface ControllableActionState{
@@ -56,7 +57,14 @@ const ControllableActionSlice = createSlice({
 
         // Action Trigger logic
 
-        // add
+        addActionTrigger(state, action: PayloadAction<{ actionId: string; trigger: ActionTrigger }>) {
+            const { actionId, trigger } = action.payload;
+            const actionIndex = state.controllableAction.findIndex(ca => ca.id === actionId);
+            if (actionIndex !== -1) {
+                state.controllableAction[actionIndex].trigger.push(trigger);
+            }
+        }
+
 
         // modify
 
@@ -71,7 +79,8 @@ export const {
     updateControllableAction,
     deleteControllableAction,
     updateControllableActionStatus,
-    updateIsAutomated
+    updateIsAutomated,
+    addActionTrigger
 } = ControllableActionSlice.actions
 export default ControllableActionSlice.reducer
 

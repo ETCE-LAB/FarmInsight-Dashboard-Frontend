@@ -16,6 +16,7 @@ import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScript
 import {createControllableAction} from "../useCase/createControllableAction";
 import {ActionTrigger} from "../models/actionTrigger";
 import {createActionTrigger} from "../useCase/createActionTrigger";
+import {addActionTrigger} from "../state/ControllableActionSlice";
 
 export type ActionScriptField = {
   name: string;
@@ -116,8 +117,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                 isActive: isActive,
                 description: description,
             }).then((response) => {
-
-                // TODO dispatch add event
+                dispatch(addActionTrigger({actionId:actionId,trigger: response}))
 
                 if (response) {
                     notifications.update({
@@ -158,26 +158,28 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
                         {/* Type */}
                         <Grid.Col span={6}>
-                            <TextInput
-                                label={t("controllableActionList.trigger.type")}
-                                placeholder={t("controllableActionList.trigger.enterType")}
-                                required
-                                value={type}
-                                onChange={(e) => setType(e.currentTarget.value)}
-                                description={t("controllableActionList.trigger.hint.typeHint")}
-                            />
+                          <Autocomplete
+                            label={t("controllableActionList.trigger.type")}
+                            placeholder={t("controllableActionList.trigger.enterType")}
+                            required
+                            data={["manual", "timer", "sensor", "event"]}
+                            value={type}
+                            onChange={setType}
+                            description={t("controllableActionList.trigger.hint.typeHint")}
+                          />
                         </Grid.Col>
 
                         {/* actionValueType */}
                         <Grid.Col span={6}>
-                            <TextInput
-                                label={t("controllableActionList.trigger.actionValueType")}
-                                placeholder={t("controllableActionList.trigger.enterActionValueType")}
-                                required
-                                value={actionValueType}
-                                onChange={(e) => setActionValueType(e.currentTarget.value)}
-                                description={t("controllableActionList.trigger.hint.actionValueTypeHint")}
-                            />
+                          <Autocomplete
+                            label={t("controllableActionList.trigger.actionValueType")}
+                            placeholder={t("controllableActionList.trigger.enterActionValueType")}
+                            required
+                            data={["bool", "int", "float", "string", "range"]}
+                            value={actionValueType}
+                            onChange={setActionValueType}
+                            description={t("controllableActionList.trigger.hint.actionValueTypeHint")}
+                          />
                         </Grid.Col>
 
                         {/* actionValue */}
