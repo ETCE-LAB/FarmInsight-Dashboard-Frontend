@@ -6,13 +6,13 @@ import {Badge, Box, Card, Group, Text} from "@mantine/core";
 import {getWeatherForecast} from "../useCase/getWeatherForecast";
 import {Location} from "../../location/models/location";
 import {FaBolt, FaCloud, FaCloudRain, FaSmog, FaSnowflake, FaSun} from "react-icons/fa";
-import {IconArrowsDiagonalMinimize2} from "@tabler/icons-react";
+import {IconArrowsDiagonalMinimize2, IconSunFilled, IconWind} from "@tabler/icons-react";
 
 
 export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ location }) => {
     const { t } = useTranslation();
     const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
-    const [isDetailedView, setIsDetailedView] = useState(false);
+    const [isDetailedView, setIsDetailedView] = useState<number>(0);
 
     useEffect(() => {
         if(location) {
@@ -45,9 +45,22 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
     }
 
     const formatDate = (dateString: string): string => {
+        /*
+        * return: "YYYY-MM-DD HH:MM:SS" || "YYYY-MM-DD"
+        * */
 
-        return dateString.substring(0, 10) + " " + dateString.substring(11, 19);
+        return dateString.substring(0, 10) + " " +  (dateString.substring(11, 19) != "00:00:00" ? dateString.substring(11, 19) : "");
 
+    }
+
+    const formatTimeText = (seconds: number): string => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        const returnString = `${hrs != 0 ? hrs + "h " : ""}${mins != 0 ? mins + "m " : "" } ${secs != 0 ? secs.toFixed(0) + "s": ""}`
+
+        return returnString.trim() === "" ? "0h" : returnString.trim();
     }
 
     function getWeatherDescription(code: string): string {
@@ -162,41 +175,41 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
 
     return (
         <Box>
-            {(weatherForecasts && isDetailedView) ? (
-                <Carousel   withIndicators >
+            {(weatherForecasts && isDetailedView != -1) ? (
+                <Carousel   withIndicators loop initialSlide={isDetailedView} >
                     { weatherForecasts.map((forecast, index) => (
                         <Carousel.Slide key={index} >
                                 <Card shadow="sm" padding="lg" radius="md" withBorder>
-                                    <Box style={{marginLeft:"2vw"}}>
-                                        <Group mb="xs">
-                                            <Text>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
-                                            <Badge color="blue" variant="light">{getWeatherDescription(forecast.weatherCode)}</Badge>
-                                            <IconArrowsDiagonalMinimize2 style={{marginLeft:"auto", cursor:"pointer"}} onClick={() => {setIsDetailedView(false)}}/>
+                                    <Box style={{marginLeft:"2vw", marginBottom:"0.5vh"} }>
+                                        <Group mb="xs" >
+                                            <Text  size={"xl"}>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
+                                            <Badge   color={forecast.weatherCode === "0" ? "yellow" : "blue"} variant="light">{getWeatherDescription(forecast.weatherCode)}</Badge>
+                                            <IconArrowsDiagonalMinimize2 style={{marginLeft:"auto", cursor:"pointer"}} onClick={() => {setIsDetailedView(-1)}}/>
                                         </Group>
-                                        <Text size="sm" color="dimmed">
+                                        <Text size="sm" color="dimmed"  >
                                             {t('weatherForecast.forecastDate')}: {formatDate(forecast.forecastDate.toString())}
                                         </Text>
-                                        <Text size="sm" color="dimmed">
+                                        <Text size="xs" color="dimmed">
                                             {t('weatherForecast.fetchDate')}: {formatDate(forecast.fetchDate.toString())}
                                         </Text>
-                                        <Text mt="md">
+                                        <Text>
                                             {t('weatherForecast.text.temperature')}: {forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C
                                         </Text>
-                                        <Text mt="md">
+                                        <Text>
                                             {t('weatherForecast.rainMM')}: {forecast.rainMM} mm
                                         </Text>
-                                        <Text mt="md">
-                                            {t('weatherForecast.sunshineDurationSeconds')}: {formatDuration(forecast.sunshineDurationSeconds)}
-                                        </Text>
-                                        <Text mt="md">
+                                        <Text>
                                             {t('weatherForecast.windSpeedMax')}: {forecast.windSpeedMax} km/h
                                         </Text>
-                                        <Text mt="md">
+                                        <Text>
+                                            {t('weatherForecast.sunshineDurationSeconds')}: {formatDuration(forecast.sunshineDurationSeconds)}
+                                        </Text>
+                                        <Text >
                                             {t('weatherForecast.sunrise')}: {formatTimeManually(forecast.sunrise.toString())} | {t('weatherForecast.sunset')}: {formatTimeManually(forecast.sunset.toString())}
                                         </Text>
-                                        <Text mt="md">
+                                        <Text>
                                             {t('weatherForecast.text.precipitation')}: {forecast.precipitationMM} mm ({forecast.precipitationProbability}%)
-                                    </Text>
+                                        </Text>
                                     </Box>
                                 </Card>
                         </Carousel.Slide>
@@ -205,12 +218,22 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                 </Carousel>
 
             ): (
-                    <Group onClick={() => setIsDetailedView(!isDetailedView)} mb="xs" justify="space-between">
+                    <Group  mb="xs" justify="space-between">
                         { weatherForecasts.map((forecast, index) => (
-                            <Card  padding="lg" radius="lg" withBorder key={index} style={{ width: "200px", cursor: "pointer" }}>
-                                <Text>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
-                                <Text>{getWeatherDescription(forecast.weatherCode)}</Text>
-                                <Box>{getWeatherIcon(forecast.weatherCode)}</Box>
+                            <Card  padding="md" radius="lg" withBorder key={index} style={{ width: "200px", cursor: "pointer" } } onClick={() => setIsDetailedView(index)}>
+                                <Box style={{display:"flex", justifyContent:"space-between"}} >
+                                    <Text size={"xl"} style={{display:"flex", textAlign:"left", alignSelf:"flex-start"}}>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
+                                    {forecast.windSpeedMax > 20 && (<IconWind/>)}
+                                </Box>
+                                <Text size={"sm"}>{getWeatherDescription(forecast.weatherCode)}</Text>
+                                <Box style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"0.5vh", marginTop:"0.5vh"}}>
+                                    {getWeatherIcon(forecast.weatherCode)}
+                                    <Box style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
+                                    <Text style={{textAlign:"right", marginRight:"0.1vw"}}>{formatTimeText(forecast.sunshineDurationSeconds)}</Text>
+                                    <IconSunFilled ></IconSunFilled>
+                                    </Box>
+                                </Box>
+
                                 <Text>{forecast.temperatureMinC}°C ~ {forecast.temperatureMaxC}°C</Text>
                             </Card>
                             )
