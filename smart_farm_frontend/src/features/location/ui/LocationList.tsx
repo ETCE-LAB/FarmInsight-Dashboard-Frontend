@@ -32,7 +32,6 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
     useEffect(() => {
         if (locationsToDisplay && locationsToDisplay.length > 0) {
             setLocations(locationsToDisplay);
-            console.log("Locations to display: ", locationsToDisplay);
         }
     }, [locationsToDisplay]);
 
@@ -60,13 +59,13 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
             <Modal
                 opened={locationModalOpen}
                 onClose={() => setLocationModalOpen(false)}
-                title={t("location.addLocation")}
+                title={t("location.text.addLocation")}
                 >
                 <LocationForm toEditLocation={selectedLocation} setClosed={setLocationModalOpen} />
             </Modal>
             {/*Header*/}
             <Group mb="md" justify="space-between">
-                <h2>{t('location.locations')}</h2>
+                <h2>{t('location.text.locations')}</h2>
                 {isAdmin &&
                 <IconCirclePlus
                     size={25}
@@ -100,7 +99,7 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
                                 <Table.Td>{location.houseNumber}</Table.Td>
                                 <Table.Td>{location.latitude}</Table.Td>
                                 <Table.Td>{location.longitude}</Table.Td>
-                                <Table.Td>{location.gatherForecasts? (t("location.IsActive")):(t("location.isNotActive"))}</Table.Td>
+                                <Table.Td>{location.gatherForecasts? (t("location.text.isActive")):(t("location.text.isNotActive"))}</Table.Td>
                                 {isAdmin &&
                                     <Table.Td>
                                         <Flex justify='center' align='center'>

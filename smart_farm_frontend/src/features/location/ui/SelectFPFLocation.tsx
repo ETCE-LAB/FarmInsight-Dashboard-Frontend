@@ -63,7 +63,7 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                     variant="outline"
                     color="blue"
                 >
-                    {isFormVisible ? t("location.HideForm") : t("location.ShowForm")}
+                    {isFormVisible ? t("location.buttons.hideForm") : t("location.buttons.showForm")}
                 </Button>
             </Box>
             <Collapse in={isFormVisible}>
@@ -82,7 +82,7 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                                     <Table.Th>{t("location.name")}</Table.Th>
                                     <Table.Th>{t("location.city")}</Table.Th>
                                     <Table.Th>{t("location.street")}</Table.Th>
-                                    <Table.Th>{t("location.house_number")}</Table.Th>
+                                    <Table.Th>{t("location.houseNumber")}</Table.Th>
                                     <Table.Th>{t("location.latitude")}</Table.Th>
                                     <Table.Th>{t("location.longitude")}</Table.Th>
                                 </Table.Tr>

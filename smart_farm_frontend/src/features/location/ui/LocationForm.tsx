@@ -45,8 +45,8 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
         if (toEditLocation) {
             const id = notifications.show({
                 loading: true,
-                title: t('location.NotificationTitle'),
-                message: t('location.NotificationMessage'),
+                title: t('location.notifications.loading.title'),
+                message: t('location.notifications.loading.message'),
                 autoClose: false,
                 withCloseButton: false,
             })
@@ -64,8 +64,8 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                 notifications.update({
                     id,
                     color: 'teal',
-                    title: t('location.NotificationTitle'),
-                    message: t('location.NotificationMessageSuccess'),
+                    title: t('location.notifications.success.title'),
+                    message: t('location.notifications.success.message'),
                     autoClose: 2000,
                     withCloseButton: true,
                 });
@@ -74,8 +74,8 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                 notifications.update({
                     id,
                     color: 'red',
-                    title: t('location.NotificationTitle'),
-                    message: t('location.NotificationMessageError', { error }),
+                    title: t('location.notifications.error.title'),
+                    message: t('location.notifications.error.message', { error }),
                     autoClose: 2000,
                     withCloseButton: true,
                 });
@@ -95,8 +95,8 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
         }
             const id = notifications.show({
                 loading: true,
-                title: t('location.NotificationTitle'),
-                message: t('location.NotificationMessage'),
+                title: t('location.notifications.loading.title'),
+                message: t('location.notifications.loading.message'),
                 autoClose: false,
                 withCloseButton: false,
             })
@@ -115,8 +115,8 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                 notifications.update({
                     id,
                     color: 'teal',
-                    title: t('location.NotificationTitle'),
-                    message: t('location.NotificationMessageSuccess'),
+                    title: t('location.notifications.success.title'),
+                    message: t('location.notifications.success.message'),
                     autoClose: 2000,
                     withCloseButton: true,
                 });
@@ -125,8 +125,8 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                 notifications.update({
                     id,
                     color: 'red',
-                    title: t('location.NotificationTitle'),
-                    message: t('location.NotificationMessageError', {error}),
+                    title: t('location.notifications.error.title'),
+                    message: {error} ? t('location.notifications.error.message', {error}) : t('location.notifications.error.message'),
                     autoClose: 2000,
                     withCloseButton: true,
                 });
@@ -229,7 +229,7 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                                     color="#105385"
                                     style={{ margin: '10px' }}
                                 >
-                                    {toEditLocation?.id ? t("userprofile.saveChanges") : t("location.AddCamera")}
+                                    {toEditLocation?.id ? t("userprofile.saveChanges") : t("location.buttons.addLocation")}
                                 </Button>
                             </Box>
                         </Grid.Col>

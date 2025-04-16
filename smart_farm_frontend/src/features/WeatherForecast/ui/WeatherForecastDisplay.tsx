@@ -5,6 +5,8 @@ import {Carousel} from "@mantine/carousel";
 import {Badge, Box, Card, Group, Text} from "@mantine/core";
 import {getWeatherForecast} from "../useCase/getWeatherForecast";
 import {Location} from "../../location/models/location";
+import {FaBolt, FaCloud, FaCloudRain, FaSmog, FaSnowflake, FaSun} from "react-icons/fa";
+import {IconArrowsDiagonalMinimize2} from "@tabler/icons-react";
 
 //Design Idea:
 // Display the weather forecast in a Carousel Format
@@ -17,6 +19,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
+    const [isDetailedView, setIsDetailedView] = useState(false);
 
     useEffect(() => {
         if(location) {
@@ -37,58 +40,203 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
-        return `${hrs}h ${mins}m ${secs}s`;
+        return `${hrs}h ${mins}m ${secs.toFixed(0)}s`;
     };
-    const formatDate = (date: Date) => {
-        return date.toString();
-    };
+    function formatTimeManually(dateString: string): string {
+        // Validate format: the function expects "T" at position 10.
+        if (dateString.length < 19 || dateString[10] !== 'T') {
+            throw new Error("Invalid date string format: WeatherForecastDisplay. Expected 'YYYY-MM-DDTHH:MM:SS'");
+        }
+
+        // Extract the hour, minute, and second parts using substring indices.
+        const hours = dateString.substring(11, 13);   // Characters from index 11 to 12.
+        const minutes = dateString.substring(14, 16);   // Characters from index 14 to 15.
+        const seconds = dateString.substring(17, 19);   // Characters from index 17 to 18.
+
+        // Combine them into a formatted string.
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
+    const formatDate = (dateString: string): string => {
+
+        return dateString.substring(0, 10) + " " + dateString.substring(11, 19);
+
+    }
+
+    function getWeatherDescription(code: string): string {
+        switch (code) {
+            case "0":
+                return t('weatherForecast.weatherCode.clear');
+            case "1":
+                return t('weatherForecast.weatherCode.mainlyClear');
+            case "2":
+                return t('weatherForecast.weatherCode.partlyCloudy');
+            case "3":
+                return t('weatherForecast.weatherCode.overcast');
+            case "45":
+                return t('weatherForecast.weatherCode.fog');
+            case "48":
+                return t('weatherForecast.weatherCode.fogWithRime');
+            case "51":
+                return t('weatherForecast.weatherCode.drizzleLight');
+            case "53":
+                return t('weatherForecast.weatherCode.drizzleModerate');
+            case "55":
+                return t('weatherForecast.weatherCode.drizzleDense');
+            case "56":
+                return t('weatherForecast.weatherCode.freezingDrizzleLight');
+            case "57":
+                return t('weatherForecast.weatherCode.freezingDrizzleDense');
+            case "61":
+                return t('weatherForecast.weatherCode.rainLight');
+            case "63":
+                return t('weatherForecast.weatherCode.rainModerate');
+            case "65":
+                return t('weatherForecast.weatherCode.rainHeavy');
+            case "66":
+                return t('weatherForecast.weatherCode.freezingRainLight');
+            case "67":
+                return t('weatherForecast.weatherCode.freezingRainHeavy');
+            case "71":
+                return t('weatherForecast.weatherCode.snowFallSlight');
+            case "73":
+                return t('weatherForecast.weatherCode.snowFallModerate');
+            case "75":
+                return t('weatherForecast.weatherCode.snowFallHeavy');
+            case "77":
+                return t('weatherForecast.weatherCode.snowGrains');
+            case "80":
+                return t('weatherForecast.weatherCode.rainShowersLight');
+            case "81":
+                return t('weatherForecast.weatherCode.rainShowersModerate');
+            case "82":
+                return t('weatherForecast.weatherCode.rainShowersHeavy');
+            case "85":
+                return t('weatherForecast.weatherCode.snowShowersLight');
+            case "86":
+                return t('weatherForecast.weatherCode.snowShowersHeavy');
+            case "95":
+                return t('weatherForecast.weatherCode.thunderstormWithLightHail');
+            case "96":
+                return t('weatherForecast.weatherCode.thunderstormWithModerateHail');
+            case "99":
+                return t('weatherForecast.weatherCode.thunderstormWithHeavyHail');
+            default:
+                return t('weatherForecast.weatherCode.unknownWeatherCode');
+        }
+    }
+
+    function getWeatherIcon(weatherCode: string): JSX.Element {
+        switch (weatherCode) {
+            case "0":
+                return <FaSun size={24} />;
+            case "1":
+            case "2":
+            case "3":
+                return <FaCloud size={24} />;
+            case "45":
+            case "48":
+                return <FaSmog size={24} />;
+            case "51":
+            case "53":
+            case "55":
+                return <FaCloudRain size={24} />;
+            case "56":
+            case "57":
+                return <FaCloudRain size={24} />; // Consider using a different icon if desired
+            case "61":
+            case "63":
+            case "65":
+                return <FaCloudRain size={24} />;
+            case "66":
+            case "67":
+                return <FaCloudRain size={24} />; // Adjust if a distinct freezing rain icon is available
+            case "71":
+            case "73":
+            case "75":
+                return <FaSnowflake size={24} />;
+            case "77":
+                return <FaSnowflake size={24} />; // You might want a different icon for snow grains
+            case "80":
+            case "81":
+            case "82":
+                return <FaCloudRain size={24} />;
+            case "85":
+            case "86":
+                return <FaSnowflake size={24} />;
+            case "95":
+                return <FaBolt size={24} />;
+            case "96":
+            case "99":
+                return <FaBolt size={24} />; // Or use a variant if available
+            default:
+                return <FaSun size={24} />;
+        }
+    }
 
     return (
-        <>
-        {weatherForecasts && weatherForecasts.length > 0 && (
         <Box>
-            <Carousel>
-                { weatherForecasts.map((forecast, index) => (
-                    <Carousel.Slide key={index}>
+            {(weatherForecasts && isDetailedView) ? (
+                <Carousel   withIndicators >
+                    { weatherForecasts.map((forecast, index) => (
+                        <Carousel.Slide key={index} >
+                                <Card shadow="sm" padding="lg" radius="md" withBorder>
+                                    <Box style={{marginLeft:"2vw"}}>
+                                        <Group mb="xs">
+                                            <Text >{t('weatherForecast.title')}</Text>
+                                            <Badge color="blue" variant="light">{getWeatherDescription(forecast.weatherCode)}</Badge>
+                                            <IconArrowsDiagonalMinimize2 style={{marginLeft:"auto", cursor:"pointer"}} onClick={() => {setIsDetailedView(false)}}/>
 
-                            <Card shadow="sm" padding="lg" radius="md" withBorder >
-                                <Group mb="xs">
-                                    <Text >Weather Forecast</Text>
-                                    <Badge color="blue" variant="light">{forecast.weatherCode}</Badge>
-                                </Group>
+                                        </Group>
 
-                                <Text size="sm" color="dimmed">
-                                    Forecast Date: {formatDate(forecast.forecastDate)}
-                                </Text>
-                                <Text size="sm" color="dimmed">
-                                    Fetch Date: {formatDate(forecast.fetchDate)}
-                                </Text>
+                                        <Text size="sm" color="dimmed">
+                                            {t('weatherForecast.forecastDate')}: {formatDate(forecast.forecastDate.toString())}
+                                        </Text>
+                                        <Text size="sm" color="dimmed">
+                                            {t('weatherForecast.fetchDate')}: {formatDate(forecast.fetchDate.toString())}
+                                        </Text>
 
-                                <Text mt="md">
-                                    Temperature: {forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C
-                                </Text>
-                                <Text mt="md">
-                                    Rain: {forecast.rainMM} mm
-                                </Text>
-                                <Text mt="md">
-                                    Sunshine Duration: {formatDuration(forecast.sunshineDurationSeconds)}
-                                </Text>
-                                <Text mt="md">
-                                    Wind Speed Max: {forecast.windSpeedMax} km/h
-                                </Text>
-                                <Text mt="md">
-                                    Sunrise: {formatDate(forecast.sunrise)} | Sunset: {formatDate(forecast.sunset)}
-                                </Text>
-                                <Text mt="md">
-                                    Precipitation: {forecast.precipitationMM} mm ({forecast.precipitationProbability}%)
-                                </Text>
+                                        <Text mt="md">
+                                            {t('weatherForecast.text.temperature')}: {forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C
+                                        </Text>
+                                        <Text mt="md">
+                                            {t('weatherForecast.rainMM')}: {forecast.rainMM} mm
+                                        </Text>
+                                        <Text mt="md">
+                                            {t('weatherForecast.sunshineDuration')}: {formatDuration(forecast.sunshineDurationSeconds)}
+                                        </Text>
+                                        <Text mt="md">
+                                            {t('weatherForecast.windSpeedMax')}: {forecast.windSpeedMax} km/h
+                                        </Text>
+                                        <Text mt="md">
+                                            {t('weatherForecast.sunrise')}: {formatTimeManually(forecast.sunrise.toString())} | {t('weatherForecast.sunset')}: {formatTimeManually(forecast.sunset.toString())}
+                                        </Text>
+                                        <Text mt="md">
+                                            {t('weatherForecast.text.precipitation')}: {forecast.precipitationMM} mm ({forecast.precipitationProbability}%)
+                                    </Text>
+                                    </Box>
+                                </Card>
+                        </Carousel.Slide>
+                    ))
+                    }
+                </Carousel>
+
+            ): (
+
+                    <Group onClick={() => setIsDetailedView(!isDetailedView)} mb="xs" justify="space-between">
+                        { weatherForecasts.map((forecast, index) => (
+                            <Card  padding="lg" radius="lg" withBorder key={index} style={{ width: "200px", cursor: "pointer" }}>
+                                <Text>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
+                                <Text>{getWeatherDescription(forecast.weatherCode)}</Text>
+                                <Box>{getWeatherIcon("55")}</Box>
+                                <Text>{forecast.temperatureMinC}°C ~ {forecast.temperatureMaxC}°C</Text>
+
                             </Card>
-                    </Carousel.Slide>
-                ))
-                }
-            </Carousel>
+                            )
+                        )}
+                    </Group>
+
+            )}
         </Box>
-        )}
-        </>
     );
 }
