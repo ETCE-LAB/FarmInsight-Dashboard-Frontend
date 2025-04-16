@@ -186,7 +186,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                             {t('weatherForecast.rainMM')}: {forecast.rainMM} mm
                                         </Text>
                                         <Text mt="md">
-                                            {t('weatherForecast.sunshineDuration')}: {formatDuration(forecast.sunshineDurationSeconds)}
+                                            {t('weatherForecast.sunshineDurationSeconds')}: {formatDuration(forecast.sunshineDurationSeconds)}
                                         </Text>
                                         <Text mt="md">
                                             {t('weatherForecast.windSpeedMax')}: {forecast.windSpeedMax} km/h
