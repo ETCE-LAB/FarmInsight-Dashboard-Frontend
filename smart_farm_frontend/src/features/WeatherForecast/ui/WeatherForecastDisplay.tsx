@@ -183,19 +183,16 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                 <Card shadow="sm" padding="lg" radius="md" withBorder>
                                     <Box style={{marginLeft:"2vw"}}>
                                         <Group mb="xs">
-                                            <Text >{t('weatherForecast.title')}</Text>
+                                            <Text>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
                                             <Badge color="blue" variant="light">{getWeatherDescription(forecast.weatherCode)}</Badge>
                                             <IconArrowsDiagonalMinimize2 style={{marginLeft:"auto", cursor:"pointer"}} onClick={() => {setIsDetailedView(false)}}/>
-
                                         </Group>
-
                                         <Text size="sm" color="dimmed">
                                             {t('weatherForecast.forecastDate')}: {formatDate(forecast.forecastDate.toString())}
                                         </Text>
                                         <Text size="sm" color="dimmed">
                                             {t('weatherForecast.fetchDate')}: {formatDate(forecast.fetchDate.toString())}
                                         </Text>
-
                                         <Text mt="md">
                                             {t('weatherForecast.text.temperature')}: {forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C
                                         </Text>
@@ -228,7 +225,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                             <Card  padding="lg" radius="lg" withBorder key={index} style={{ width: "200px", cursor: "pointer" }}>
                                 <Text>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
                                 <Text>{getWeatherDescription(forecast.weatherCode)}</Text>
-                                <Box>{getWeatherIcon("55")}</Box>
+                                <Box>{getWeatherIcon(forecast.weatherCode)}</Box>
                                 <Text>{forecast.temperatureMinC}°C ~ {forecast.temperatureMaxC}°C</Text>
 
                             </Card>

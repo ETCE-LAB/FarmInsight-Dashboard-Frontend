@@ -325,7 +325,7 @@ i18n
                         },
                     },
                     location:{
-
+                        noLocation: 'No Location',
                         name: 'Name',
                         city: 'City',
                         street: 'Street',
@@ -643,6 +643,7 @@ i18n
                         },
                     },
                     location: {
+                        noLocation: 'Kein Standort',
                         name: 'Name',
                         city: 'Stadt',
                         street: 'Straße',
@@ -946,6 +947,7 @@ i18n
                     },
                 },
                 location: {
+                    noLocation: 'Aucun emplacement',
                     name: 'Nom',
                     city: 'Ville',
                     street: 'Rue',
@@ -1231,6 +1233,7 @@ i18n
                     },
                 },
                 location: {
+                    noLocation: 'Nessuna posizione',
                     name: 'Nome',
                     city: 'Città',
                     street: 'Via',
@@ -1533,6 +1536,7 @@ i18n
                     },
                 },
                 location: {
+                    noLocation: '没有位置',
                     name: '名称',
                     city: '城市',
                     street: '街道',
@@ -1842,6 +1846,7 @@ i18n
                     latitude: 'Широта',
                     longitude: 'Долгота',
                     gatherForecasts: 'Собрать прогнозы',
+                    noLocation:'Nет местоположения',
                     buttons: {
                         showForm: 'Создать новое местоположение',
                         hideForm: 'Скрыть ',

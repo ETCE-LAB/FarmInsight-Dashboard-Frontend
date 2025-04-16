@@ -21,6 +21,7 @@ export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) =
         )
     }, [members]);
 
+
     return (
         <Table striped highlightOnHover withColumnBorders>
             <Table.Thead>
