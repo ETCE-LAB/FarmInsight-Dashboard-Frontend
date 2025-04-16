@@ -49,7 +49,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
         * return: "YYYY-MM-DD HH:MM:SS" || "YYYY-MM-DD"
         * */
 
-        return dateString.substring(0, 10) + " " +  (dateString.substring(11, 19) != "00:00:00" ? dateString.substring(11, 19) : "");
+        return dateString.substring(0, 10) + " " +  (dateString.substring(11, 19) !== "00:00:00" ? dateString.substring(11, 19) : "");
 
     }
 
@@ -58,7 +58,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
 
-        const returnString = `${hrs != 0 ? hrs + "h " : ""}${mins != 0 ? mins + "m " : "" } ${secs != 0 ? secs.toFixed(0) + "s": ""}`
+        const returnString = `${hrs !== 0 ? hrs + "h " : ""}${mins !== 0 ? mins + "m " : "" } ${secs !== 0 ? secs.toFixed(0) + "s": ""}`
 
         return returnString.trim() === "" ? "0h" : returnString.trim();
     }
@@ -175,7 +175,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
 
     return (
         <Box>
-            {(weatherForecasts && isDetailedView != -1) ? (
+            {(weatherForecasts && isDetailedView !== -1) ? (
                 <Carousel   withIndicators loop initialSlide={isDetailedView} >
                     { weatherForecasts.map((forecast, index) => (
                         <Carousel.Slide key={index} >
