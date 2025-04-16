@@ -1,5 +1,5 @@
 import {WeatherForecast} from "../models/WeatherForecast";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Carousel} from "@mantine/carousel";
 import {Badge, Box, Card, Group, Text} from "@mantine/core";
@@ -8,31 +8,18 @@ import {Location} from "../../location/models/location";
 import {FaBolt, FaCloud, FaCloudRain, FaSmog, FaSnowflake, FaSun} from "react-icons/fa";
 import {IconArrowsDiagonalMinimize2} from "@tabler/icons-react";
 
-//Design Idea:
-// Display the weather forecast in a Carousel Format
-// Reload Function? (Get newest Forcast from backend?) -> Niche use case
-
-
 
 export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ location }) => {
     const { t } = useTranslation();
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
     const [isDetailedView, setIsDetailedView] = useState(false);
 
     useEffect(() => {
         if(location) {
-            setIsLoading(true);
             getWeatherForecast(location.id)
                 .then(resp => {
                     setWeatherForecasts(resp.reverse());
-                    setIsLoading(false);
                 })
-                .catch(err => {
-                    setError(err.message);
-                    setIsLoading(false);
-                });
         }
     }, [location]);
 
@@ -143,20 +130,19 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                 return <FaCloudRain size={24} />;
             case "56":
             case "57":
-                return <FaCloudRain size={24} />; // Consider using a different icon if desired
-            case "61":
+                return <FaCloudRain size={24} />;
             case "63":
             case "65":
                 return <FaCloudRain size={24} />;
             case "66":
             case "67":
-                return <FaCloudRain size={24} />; // Adjust if a distinct freezing rain icon is available
+                return <FaCloudRain size={24} />;
             case "71":
             case "73":
             case "75":
                 return <FaSnowflake size={24} />;
             case "77":
-                return <FaSnowflake size={24} />; // You might want a different icon for snow grains
+                return <FaSnowflake size={24} />;
             case "80":
             case "81":
             case "82":
@@ -219,7 +205,6 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                 </Carousel>
 
             ): (
-
                     <Group onClick={() => setIsDetailedView(!isDetailedView)} mb="xs" justify="space-between">
                         { weatherForecasts.map((forecast, index) => (
                             <Card  padding="lg" radius="lg" withBorder key={index} style={{ width: "200px", cursor: "pointer" }}>
@@ -227,12 +212,10 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                 <Text>{getWeatherDescription(forecast.weatherCode)}</Text>
                                 <Box>{getWeatherIcon(forecast.weatherCode)}</Box>
                                 <Text>{forecast.temperatureMinC}°C ~ {forecast.temperatureMaxC}°C</Text>
-
                             </Card>
                             )
                         )}
                     </Group>
-
             )}
         </Box>
     );
