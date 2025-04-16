@@ -72,6 +72,9 @@ i18n
                         organizationUpdated: 'Organization updated successfully!',
                         userAdded: 'User added',
                         status: 'Status',
+                        on: 'On',
+                        off: 'Off',
+                        auto: 'Auto',
                         table: {
                             name: 'Name',
                             planted: 'Planted on',
@@ -135,6 +138,47 @@ i18n
                         intervalSeconds: 'Interval in Seconds',
                         isActive: 'Is Active?',
                         actions: 'Actions',
+                    },
+                    controllableActionList:{
+                        auto: 'Auto',
+                        title: 'Controllable Actions',
+                        name: 'Name',
+                        isActive: 'Is Active?',
+                        actionClassId: 'Script Id',
+                        actionScriptName: 'Script',
+                        maximumDurationSeconds: 'Maximum Duration in seconds',
+                        hardware: 'Hardware',
+                        addAction: 'Add Controllable Action',
+                        editAction: 'Edit Controllable Action',
+                        triggerTitle: 'Trigger',
+                        addControllable: 'Add controllable',
+                        hint: {
+                            nameHint: 'Name of the controllable action',
+                            maximumDurationSeconds: 'The maximum duration',
+                            actionClassId: 'The id of the script class',
+                        },
+                        trigger: {
+                            addAction: 'Add Action Trigger',
+                            editAction: 'Edit Action Trigger',
+                            type: 'Type',
+                            enterType: 'Enter type',
+                            actionValueType: 'Action value type',
+                            enterActionValueType: 'Enter action value type',
+                            actionValue: 'Action value',
+                            enterActionValue: 'Enter action value',
+                            triggerLogic: 'Trigger logic',
+                            enterTriggerLogic: 'Enter Trigger Logic',
+                            description: 'Description',
+                            enterDescription: 'Enter description',
+                            hint: {
+                                typeHint: 'Enter appropriate type',
+                                actionValueTypeHint: 'Action value type for the trigger',
+                                actionValueHint: 'The action value',
+                                triggerLogicHint: 'Trigger logic for the trigger',
+                                descriptionHint: 'Describe the trigger in more detail',
+                            }
+                        }
+
                     },
                     button: {
                         loginToManage: 'Login to manage organization',
@@ -387,6 +431,9 @@ i18n
                         organizationUpdated: 'Organisation erfolgreich aktualisiert!',
                         userAdded: 'Benutzer hinzugefügt',
                         status: 'Status',
+                        on: 'An',
+                        off: 'Aus',
+                        auto: 'Auto',
                         table: {
                             name: 'Name',
                             planted: 'Gepflanzt am',

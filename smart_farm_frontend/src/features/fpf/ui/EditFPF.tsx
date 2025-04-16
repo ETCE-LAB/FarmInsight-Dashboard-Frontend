@@ -18,6 +18,8 @@ import { useAppDispatch } from "../../../utils/Hooks";
 import {createdFpf, updatedFpf} from "../state/FpfSlice";
 import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
+import {ControllableActionList} from "../../controllables/ui/controllableActionList";
+import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 
 
 export const EditFPF: React.FC = () => {
@@ -45,6 +47,8 @@ export const EditFPF: React.FC = () => {
         if (fpfId) {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
+                console.log(resp)
+                dispatch(setControllableAction(resp.ControllableAction));
             });
         }
     }, [fpfId, fpfCreatedEventListener]);
@@ -141,6 +145,10 @@ export const EditFPF: React.FC = () => {
 
             <Card padding="lg" radius="md">
                 <CameraList camerasToDisplay={cameras} isAdmin={isAdmin} />
+            </Card>
+
+            <Card padding="lg" radius="md">
+                <ControllableActionList isAdmin={isAdmin} />
             </Card>
 
             {/* Edit FPF Modal */}

@@ -24,6 +24,8 @@ import { IconPlant } from "@tabler/icons-react";
 import { useAuth } from 'react-oidc-context';
 import TimeRangeSelector from "../../../utils/TimeRangeSelector";
 import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDisplay";
+import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
+import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -43,6 +45,7 @@ export const FpfOverview = () => {
             getFpf(params.fpfId).then(resp => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
+                dispatch(setControllableAction(resp.ControllableAction));
             });
         }
     }, [params, dispatch]);
@@ -129,6 +132,18 @@ export const FpfOverview = () => {
                             <Text c="dimmed">{t("No sensors added yet")}</Text>
                         </Center>
                     )}
+
+                    {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                        <Box
+                            style={{
+                                borderRadius: '10px',
+                                marginBottom: '20px',
+                            }}
+                        >
+                            <ControllableActionOverview fpfId={fpf.id} />
+                        </Box>
+                    )}
+
                     {/* Growing Cycle Section: only render if cycles exist or user is signed in */}
                     {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
                         <Box
@@ -157,11 +172,9 @@ export const FpfOverview = () => {
             ) : (
                 // Desktop layout with two separate scrollable areas
                 <SimpleGrid cols={2} spacing="lg" style={{ height: '88vh', overflow: 'hidden' }}>
-                    {/* Weather forecast section */}
-                    {/* Weather forecast section */}
-
                     {/* Left section: Sensor Graphs */}
                     <Box style={scrollableStyle}>
+                        {/*Weather Forecast */}
                         {fpf?.Location && fpf?.Location.gatherForecasts && (
                             <Box
                                 style={{
@@ -195,8 +208,9 @@ export const FpfOverview = () => {
                         )}
                     </Box>
 
-                    {/* Right section: Camera Carousel & Growing Cycle Section */}
+                    {/* Right section: Camera Carousel, Controllables & Growing Cycle Section */}
                     <Box style={scrollableStyle}>
+                        {/*Camera Section*/}
                         {fpf?.Cameras && fpf.Cameras.length > 0 && isCameraActive && (
                             <Box
                                 style={{
@@ -207,6 +221,18 @@ export const FpfOverview = () => {
                                 <CameraCarousel camerasToDisplay={fpf.Cameras} />
                             </Box>
                         )}
+                        {/*Controllable Sectiojn*/}
+                        {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                            <Box
+                                style={{
+                                    borderRadius: '10px',
+                                    padding: '1rem',
+                                }}
+                            >
+                                <ControllableActionOverview fpfId={fpf.id} />
+                            </Box>
+                        )}
+                        {/*Growing Cycle Section*/}
                         {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
                             <Box
                                 style={{

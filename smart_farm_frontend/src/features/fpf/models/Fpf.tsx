@@ -2,6 +2,8 @@ import {Sensor} from "../../sensor/models/Sensor";
 import {Camera} from "../../camera/models/camera";
 import {GrowingCycle} from "../../growthCycle/models/growingCycle";
 import {Location} from "../../location/models/location";
+import {ControllableAction} from "../../controllables/models/controllableAction";
+
 
 export interface Fpf {
     id:string,
@@ -11,5 +13,6 @@ export interface Fpf {
     Sensors: Sensor[],
     Cameras: Camera[]
     GrowingCycles: GrowingCycle[]
+    ControllableAction: ControllableAction[]
     Location: Location
 }
