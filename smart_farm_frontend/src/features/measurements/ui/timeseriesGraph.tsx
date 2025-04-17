@@ -98,7 +98,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
 
 
     useEffect(() => {
-        if (sensor && false) {
+        if (sensor) {
             reconnectSocket();
         } else {
             setSocketUrl(null);
