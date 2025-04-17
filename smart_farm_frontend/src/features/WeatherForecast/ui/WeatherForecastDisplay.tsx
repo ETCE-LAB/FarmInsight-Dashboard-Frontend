@@ -12,7 +12,7 @@ import {IconArrowsDiagonalMinimize2, IconSunFilled, IconWind} from "@tabler/icon
 export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ location }) => {
     const { t } = useTranslation();
     const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
-    const [isDetailedView, setIsDetailedView] = useState<number>(0);
+    const [isDetailedView, setIsDetailedView] = useState<number>(-1);
 
     useEffect(() => {
         if(location) {
@@ -220,7 +220,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
             ): (
                     <Group  mb="xs" justify="space-between">
                         { weatherForecasts.map((forecast, index) => (
-                            <Card  padding="md" radius="lg" withBorder key={index} style={{ width: "200px", cursor: "pointer" } } onClick={() => setIsDetailedView(index)}>
+                            <Card  padding="md" radius="lg" withBorder key={index} style={{ width: "20vH", height:"10vw", cursor: "pointer" } } onClick={() => setIsDetailedView(index)}>
                                 <Box style={{display:"flex", justifyContent:"space-between"}} >
                                     <Text size={"xl"} style={{display:"flex", textAlign:"left", alignSelf:"flex-start"}}>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
                                     {forecast.windSpeedMax > 20 && (<IconWind/>)}
