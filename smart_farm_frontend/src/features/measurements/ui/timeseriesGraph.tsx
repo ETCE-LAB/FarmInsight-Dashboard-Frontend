@@ -21,6 +21,7 @@ import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
+import {BACKEND_URL} from "../../../env-config";
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string }| null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
@@ -59,7 +60,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
         try {
             const resp = await getWebSocketToken();
             if (!resp) throw new Error("No WebSocket token received.");
-            let baseUrl = process.env.REACT_APP_BACKEND_URL;
+            let baseUrl = BACKEND_URL;
             if (!baseUrl) throw new Error("REACT_APP_BACKEND_URL is not configured.");
             if (baseUrl.startsWith("https")) { // If anyone wants to change this, at least make sure your change actually works...
                 baseUrl = baseUrl.replace("https", "wss");
