@@ -22,6 +22,8 @@ import useWebSocket from "react-use-websocket";
 import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
 import {getSensorStateColor} from "../../../utils/utils";
+import {Threshold} from "../../threshold/models/threshold";
+import {LabelPosition} from "recharts/types/component/Label";
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
     const theme = useMantineTheme();
@@ -141,6 +143,24 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
         ? measurements.slice(Math.max(0, measurements.length - 4), measurements.length - 1)
         : [];
 
+    const getThresholdLines = (thresholds: Threshold[]) => {
+        let lines = []
+        for (const t of thresholds) {
+            if (t.lowerBound && !t.upperBound) {
+                lines.push({y: t.lowerBound, label: t.description, color: t.color});
+            }
+            if (t.upperBound && !t.lowerBound) {
+                lines.push({y: t.upperBound, label: t.description, color: t.color, labelPosition: 'insideTopLeft' as LabelPosition});
+            }
+            if (t.upperBound && t.lowerBound) {
+                lines.push({y: t.lowerBound, label: t.description, color: t.color});
+                lines.push({y: t.upperBound, color: t.color});
+            }
+        }
+
+        return lines;
+    }
+
     return (
         <Flex style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
             <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
@@ -227,6 +247,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                             ) : (
                                 <LineChart
                                     key={measurements.length}
+                                    unit={sensor.unit}
                                     activeDotProps={{ r: 6, strokeWidth: 1 }}
                                     data={measurements.slice(-50)}
                                     dataKey="measuredAt"
@@ -267,6 +288,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                                             return null;
                                         },
                                     }}
+                                    referenceLines={getThresholdLines(sensor.thresholds)}
                                 />
                             )
                         )}
