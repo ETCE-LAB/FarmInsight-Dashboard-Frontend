@@ -26,6 +26,9 @@ import TimeRangeSelector from "../../../utils/TimeRangeSelector";
 import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDisplay";
 import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
+import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
+import {AppRoutes} from "../../../utils/appRoutes";
+import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -37,8 +40,25 @@ export const FpfOverview = () => {
     const isMobile = useMediaQuery('(max-width: 768px)');
     const [showGrowingCycleForm, setShowGrowingCycleForm] = useState(false);
     const auth = useAuth();
-
+    const { organizationId } = useParams<{ organizationId: string }>();
     const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
+    const [isMember, setIsMember] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (organizationId) {
+            getMyOrganizations().then((organizations) => {
+                let found = false;
+                organizations.forEach((org: any) => {
+                    console.log(org.id === organizationId)
+                    setIsMember(org.id === organizationId)
+                    found = true
+                });
+                if (!found) {
+                    setIsMember(false);
+                }
+            });
+        }
+    }, [organizationId]);
 
     useEffect(() => {
         if (params?.fpfId) {
@@ -55,6 +75,8 @@ export const FpfOverview = () => {
             setCameraActive(true);
         }
     }, [fpf]);
+
+
 
     // Explicitly type the style object as CSSProperties
     const scrollableStyle: CSSProperties = {
@@ -133,7 +155,7 @@ export const FpfOverview = () => {
                         </Center>
                     )}
 
-                    {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                    {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && isMember && (
                         <Box
                             style={{
                                 borderRadius: '10px',
@@ -222,7 +244,7 @@ export const FpfOverview = () => {
                             </Box>
                         )}
                         {/*Controllable Sectiojn*/}
-                        {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                        {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && isMember && (
                             <Box
                                 style={{
                                     borderRadius: '10px',
