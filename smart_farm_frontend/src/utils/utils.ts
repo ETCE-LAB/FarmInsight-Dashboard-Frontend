@@ -1,4 +1,4 @@
-import {Sensor} from "../features/sensor/models/Sensor";
+import {BACKEND_URL} from "../env-config";
 
 
 export const getIsoStringFromDate = (date: Date): string => {
@@ -12,19 +12,19 @@ export const getIsoStringFromDate = (date: Date): string => {
     return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
 }
 
-export const getSensorStateColor = (sensor: Sensor): string => {
-    const measured_ms = new Date(sensor.lastMeasurement.measuredAt).getTime();
+export const getSensorStateColor = (measuredAt: Date, isActive: boolean, intervalSeconds: number): string => {
+    const measured_ms = measuredAt.getTime();
     const now_ms = new Date().getTime();
     const difference_seconds = (now_ms - measured_ms) / 1000;
 
-    if (!sensor.isActive) {
+    if (!isActive) {
         return 'grey';
     }
 
-    if (difference_seconds < sensor.intervalSeconds) {
+    if (difference_seconds < intervalSeconds) {
         return 'green';
     }
-    if (difference_seconds < sensor.intervalSeconds * 2) {
+    if (difference_seconds < intervalSeconds * 2) {
         return 'yellow';
     }
 
@@ -51,4 +51,18 @@ export function getBackendTranslation(value: string, languageCode: string) {
     }
     // default return EN
     return split[0];
+}
+
+export function getWsUrl() {
+    let baseUrl = BACKEND_URL;
+    if (!baseUrl) throw new Error("BACKEND_URL is not configured.");
+    if (baseUrl.startsWith("https")) {
+        baseUrl = baseUrl.replace("https", "wss");
+    } else if (baseUrl.startsWith("http")) {
+        baseUrl = baseUrl.replace("http", "ws");
+    } else {
+        throw new Error(`Invalid BACKEND_URL: ${baseUrl}`);
+    }
+
+    return baseUrl;
 }

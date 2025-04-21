@@ -10,7 +10,8 @@ import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
 import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 import {useTranslation} from "react-i18next";
-import {getIsoStringFromDate, getSensorStateColor} from "../../../utils/utils";
+import {getIsoStringFromDate, getSensorStateColor, getWsUrl} from "../../../utils/utils";
+import useWebSocket from "react-use-websocket";
 
 export const StatusPage = () => {
     const auth = useAuth();
@@ -27,11 +28,27 @@ export const StatusPage = () => {
     },[auth.isAuthenticated]);
 
     const SensorOverview: React.FC<{sensor: Sensor}> = ({sensor})=> {
+        let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
+        const [statusColor, setStatusColor] = useState(getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds));
+        const [measuredAt, setMeasuredAt] = useState(new Date(sensor.lastMeasurement.measuredAt));
+
+        useEffect(() => {
+            if (!lastMessage) return;
+            try {
+                const data = JSON.parse(lastMessage.data);
+                const newDate = new Date(data.measurement.at(-1).measuredAt);
+                setStatusColor(getSensorStateColor(newDate, sensor.isActive, sensor.intervalSeconds));
+                setMeasuredAt(newDate);
+            } catch (err) {
+                console.error("Error processing WebSocket message:", err);
+            }
+        }, [lastMessage]);
+
         return (
             <Table.Tr>
                 <Table.Td>{sensor.name}</Table.Td>
-                <Table.Td><Badge color={getSensorStateColor(sensor)}>{!sensor.isActive && (<>{t("camera.inactive")}</>)}</Badge></Table.Td>
-                <Table.Td>{getIsoStringFromDate(new Date(sensor.lastMeasurement.measuredAt))}</Table.Td>
+                <Table.Td><Badge color={statusColor}>{!sensor.isActive && (<>{t("camera.inactive")}</>)}</Badge></Table.Td>
+                <Table.Td>{getIsoStringFromDate(measuredAt)}</Table.Td>
             </Table.Tr>
         )
     } 

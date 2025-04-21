@@ -19,9 +19,8 @@ import {
 } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
-import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
-import {getSensorStateColor} from "../../../utils/utils";
+import {getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import {Threshold} from "../../threshold/models/threshold";
 import {LabelPosition} from "recharts/types/component/Label";
 
@@ -29,8 +28,6 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
     const theme = useMantineTheme();
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
-    const [shouldReconnect, setShouldReconnect] = useState<boolean>(false);
-    const [socketURL, setSocketUrl] = useState<string | null>("ws://localhost");
     const [minXValue, setMinXValue] = useState<number>(10);
     const [maxXValue, setMaxXValue] = useState<number>(10);
     const [error, setError] = useState<string | null>(null);
@@ -52,31 +49,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
         return `${day}.${month}`;
     };
 
-    let { lastMessage } = useWebSocket(socketURL || "", {
-        shouldReconnect: () => shouldReconnect,
-    });
-
-    const reconnectSocket = async () => {
-        try {
-            const resp = await getWebSocketToken();
-            if (!resp) throw new Error("No WebSocket token received.");
-            let baseUrl = process.env.REACT_APP_BACKEND_URL;
-            if (!baseUrl) throw new Error("REACT_APP_BACKEND_URL is not configured.");
-            if (baseUrl.startsWith("https")) { // If anyone wants to change this, at least make sure your change actually works...
-                baseUrl = baseUrl.replace("https", "wss");
-            } else if (baseUrl.startsWith("http")) {
-                baseUrl = baseUrl.replace("http", "ws");
-            } else {
-                throw new Error(`Invalid REACT_APP_BACKEND_URL: ${baseUrl}`);
-            }
-            setSocketUrl(`${baseUrl}/ws/sensor/${sensor?.id}?token=${encodeURIComponent(resp.token)}`);
-            setShouldReconnect(true);
-        } catch (err) {
-            console.error(err);
-            //setError("Failed to reconnect WebSocket.");
-            setShouldReconnect(false);
-        }
-    };
+    let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, { shouldReconnect: () => true });
 
     useEffect(() => {
         if (lastMessage) {
@@ -94,15 +67,6 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
             }
         }
     }, [lastMessage]);
-
-    useEffect(() => {
-        if (sensor) {
-            reconnectSocket();
-        } else {
-            setSocketUrl(null);
-            setShouldReconnect(false);
-        }
-    }, [sensor]);
 
     useEffect(() => {
         setLoading(true);
@@ -176,7 +140,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor }> = ({ sensor }) => {
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
                     <HoverCard>
                         <HoverCard.Target>
-                            <Badge color={getSensorStateColor(sensor)}></Badge>
+                            <Badge color={getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds)}></Badge>
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
                             <Text size="sm">
