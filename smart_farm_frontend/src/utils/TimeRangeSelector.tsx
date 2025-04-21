@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Container, Flex, Group, SegmentedControl } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { t } from "i18next";
+import {getIsoStringFromDate} from "./utils";
 
 interface TimeRangeSelectorProps {
     onDateChange: (dates: { from: string; to: string } | null) => void;
@@ -13,48 +14,37 @@ export const TimeRangeSelector = ({ onDateChange }: TimeRangeSelectorProps) => {
     const [applyCustomDate, setApplyCustomDate] = useState<boolean>(false);
     const [customDate, setCustomDate] = useState<{ from: string; to: string }>({ from: '', to: '' });
 
-    const convertDateFormat = (date: Date) => {
-        const year = date.getUTCFullYear();
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(date.getUTCDate()).padStart(2, '0');
-        const hour = String(date.getUTCHours()).padStart(2, '0');
-        const minute = String(date.getUTCMinutes()).padStart(2, '0');
-        const second = String(date.getUTCSeconds()).padStart(2, '0');
-
-        return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
-    }
-
     useEffect(() => {
         if (selectedRange !== 'Custom') {
             const toDay = new Date();
-            const to = convertDateFormat(toDay);
+            const to = getIsoStringFromDate(toDay);
             let from: string;
             setShowCalendar(false);
 
             switch (selectedRange) {
                 case '24h': {
                     const fromDate = new Date(toDay.getTime() - 24 * 60 * 60 * 1000);
-                    from = convertDateFormat(fromDate);
+                    from = getIsoStringFromDate(fromDate);
                     break;
                 }
                 case 'Week': {
                     const fromDate = new Date(toDay.getTime() - 7 * 24 * 60 * 60 * 1000);
-                    from = convertDateFormat(fromDate);
+                    from = getIsoStringFromDate(fromDate);
                     break;
                 }
                 case 'Month': {
                     const fromDate = new Date(toDay.getTime() - 30 * 24 * 60 * 60 * 1000);
-                    from = convertDateFormat(fromDate);
+                    from = getIsoStringFromDate(fromDate);
                     break;
                 }
                 case 'Year': {
                     const fromDate = new Date(toDay.getTime() - 365 * 24 * 60 * 60 * 1000);
-                    from = convertDateFormat(fromDate);
+                    from = getIsoStringFromDate(fromDate);
                     break;
                 }
                 default:
                     const fromDate = new Date(toDay.getTime() - 24 * 60 * 60 * 1000);
-                    from = convertDateFormat(fromDate);
+                    from = getIsoStringFromDate(fromDate);
                     break;
             }
             onDateChange({ from, to });
@@ -93,7 +83,7 @@ export const TimeRangeSelector = ({ onDateChange }: TimeRangeSelectorProps) => {
                                 placeholder={t("timeRangeSelector.datePlaceholder")}
                                 valueFormat="YYYY-MM-DD HH:mm:ss"
                                 value={new Date(customDate?.from)}
-                                onChange={(date) => { if (date) { setCustomDate({ ...customDate, from: convertDateFormat(date) }) } }}
+                                onChange={(date) => { if (date) { setCustomDate({ ...customDate, from: getIsoStringFromDate(date) }) } }}
                                 style={{ width: "35%", marginBottom: "15px" }}
                             />
                             <DateTimePicker
@@ -101,7 +91,7 @@ export const TimeRangeSelector = ({ onDateChange }: TimeRangeSelectorProps) => {
                                 placeholder={t("timeRangeSelector.datePlaceholder")}
                                 valueFormat="YYYY-MM-DD HH:mm:ss"
                                 value={new Date(customDate?.to)}
-                                onChange={(date) => { if (date) { setCustomDate({ ...customDate, to: convertDateFormat(date) }) } }}
+                                onChange={(date) => { if (date) { setCustomDate({ ...customDate, to: getIsoStringFromDate(date) }) } }}
                                 style={{ width: "35%", marginBottom: "15px" }}
                             />
                             <Button

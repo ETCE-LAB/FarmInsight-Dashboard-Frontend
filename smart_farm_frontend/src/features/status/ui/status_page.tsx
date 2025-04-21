@@ -52,7 +52,7 @@ export const StatusPage = () => {
             <Table.Tr>
                 <Table.Td>{sensor.name}</Table.Td>
                 <Table.Td><Badge color={statusColor}>{!isActive && (<>{t("camera.inactive")}</>)}</Badge></Table.Td>
-                <Table.Td>{getIsoStringFromDate(measuredAt)}</Table.Td>
+                <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>
             </Table.Tr>
         )
     } 
