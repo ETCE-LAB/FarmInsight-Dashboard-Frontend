@@ -26,6 +26,7 @@ i18n
                         logLevel: 'Log Level',
                         message: 'Message',
                         showMessages: 'Logs',
+                        systemMessages: 'System messages',
                     },
                     fpf: {
                         address: 'Location',
@@ -92,7 +93,8 @@ i18n
                             date: 'Date',
                             amount: 'Amount (kg)',
                             details: 'Details for',
-                        }
+                        },
+                        statusOverview: 'Status overview',
                     },
                     sensor: {
                         addSensor: 'Add Sensor',
@@ -111,6 +113,7 @@ i18n
                         },
                         title: 'Sensors',
                         noSensorsFound: 'No Sensor found',
+                        lastMeasurementAt: 'Last measurement at',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -250,7 +253,8 @@ i18n
                         created: 'Datum',
                         logLevel: 'Protokollierungsstufe',
                         message: 'Nachricht',
-                        showMessages: 'Protokoll Nachrichten'
+                        showMessages: 'Protokoll Nachrichten',
+                        systemMessages: 'System Protokoll Nachrichten',
                     },
                     fpf: {
                         address: 'Standort',
@@ -316,7 +320,8 @@ i18n
                             date: 'Datum',
                             amount: 'Menge (kg)',
                             details: 'Details für',
-                        }
+                        },
+                        statusOverview: 'Status Übersicht',
                     },
                     sensor: {
                         addSensor: 'Sensor hinzufügen',
@@ -335,6 +340,7 @@ i18n
                         },
                         title: 'Sensoren',
                         noSensorsFound: 'Kein Sensor gefunden',
+                        lastMeasurementAt: "Letzer Wert empfangen",
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',

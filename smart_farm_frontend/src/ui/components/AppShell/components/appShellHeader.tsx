@@ -7,6 +7,7 @@ import { UserProfileComponent } from '../../../../features/userProfile/ui/UserPr
 import { LoginButton } from '../../../../features/auth/ui/loginButton';
 import { LogoutButton } from '../../../../features/auth/ui/logoutButton';
 import { useMediaQuery } from '@mantine/hooks';
+import {useAuth} from "react-oidc-context";
 
 export const AppShellHeader: React.FC = () => {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ export const AppShellHeader: React.FC = () => {
     const [selectedLanguage, setSelectedLanguage] = useState('English');
     const [currentFlag, setCurrentFlag] = useState('us');
     const [drawerOpened, setDrawerOpened] = useState(false); // State to manage Drawer visibility
+    const auth = useAuth();
 
     // Detect mobile devices (viewport widths 768px or less)
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -124,6 +126,7 @@ export const AppShellHeader: React.FC = () => {
                             padding="md"
                         >
                             <Flex direction="column" gap="md">
+                                {auth.isAuthenticated && <Button onClick={() => navigate(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
                                 <UserProfileComponent />
                                 <LoginButton />
                                 <LogoutButton />
@@ -131,7 +134,8 @@ export const AppShellHeader: React.FC = () => {
                         </Drawer>
                     </Flex>
                 ) : (
-                    <Group gap={isMobile ? 'xs' : 'md'}>
+                    <Group gap='md'>
+                        {auth.isAuthenticated && <Button onClick={() => navigate(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
                         <UserProfileComponent />
                         <LoginButton />
                         <LogoutButton />
