@@ -4,7 +4,13 @@ import {getUser} from "../../../utils/getUser";
 import {Fpf} from "../models/Fpf";
 import {BACKEND_URL} from "../../../env-config";
 
-export const createFpf = async (data: { name:string, isPublic:boolean, sensorServiceIp:string, address:string, organizationId:string }) => {
+export const createFpf = async (data: {
+    organizationId: string;
+    name: string;
+    isPublic: boolean;
+    sensorServiceIp: string;
+    locationId: string
+}) => {
     try {
         //const response = await fetch(`${BACKEND_URL}/api/organizations`, {
         const apiClient = new APIClient()

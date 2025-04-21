@@ -22,6 +22,10 @@ import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconPlant } from "@tabler/icons-react";
 import { useAuth } from 'react-oidc-context';
+import TimeRangeSelector from "../../../utils/TimeRangeSelector";
+import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDisplay";
+import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
+import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -34,11 +38,14 @@ export const FpfOverview = () => {
     const [showGrowingCycleForm, setShowGrowingCycleForm] = useState(false);
     const auth = useAuth();
 
+    const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
+
     useEffect(() => {
         if (params?.fpfId) {
             getFpf(params.fpfId).then(resp => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
+                dispatch(setControllableAction(resp.ControllableAction));
             });
         }
     }, [params, dispatch]);
@@ -88,25 +95,55 @@ export const FpfOverview = () => {
                             <CameraCarousel camerasToDisplay={fpf?.Cameras ?? []} />
                         </Box>
                     )}
+
+                    {/* Weather forecast section */}
+                    {fpf?.Location?.gatherForecasts && (
+                        <Box
+                            style={{
+                                borderRadius: '10px',
+                                marginBottom: '20px',
+                            }}
+                        >
+                            <WeatherForecastDisplay location={fpf.Location} />
+                        </Box>
+                    )}
+
                     {/* Sensor graphs come next */}
                     {fpf?.Sensors && fpf.Sensors.length > 0 ? (
-                        fpf.Sensors.map((sensor) => (
-                            <Box
-                                key={sensor.id}
-                                style={{
-                                    borderRadius: '10px',
-                                    marginBottom: '20px',
-                                }}
-                            >
-                                <TimeseriesGraph sensor={sensor} />
+                        <>
+                            <Box style={{ marginBottom: '20px' }}>
+                                <TimeRangeSelector onDateChange={setDateRange} />
                             </Box>
-                        ))
+                            {fpf.Sensors.map((sensor) => (
+                                <Box
+                                    key={sensor.id}
+                                    style={{
+                                        borderRadius: '10px',
+                                        marginBottom: '20px',
+                                    }}
+                                >
+                                    <TimeseriesGraph sensor={sensor} dates={dateRange}/>
+                                </Box>
+                            ))}
+                        </>
                     ) : (
                         <Center style={{ padding: '20px', minHeight: '100px' }}>
                             <IconPlant size={24} style={{ marginRight: '8px' }} />
                             <Text c="dimmed">{t("No sensors added yet")}</Text>
                         </Center>
                     )}
+
+                    {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                        <Box
+                            style={{
+                                borderRadius: '10px',
+                                marginBottom: '20px',
+                            }}
+                        >
+                            <ControllableActionOverview fpfId={fpf.id} />
+                        </Box>
+                    )}
+
                     {/* Growing Cycle Section: only render if cycles exist or user is signed in */}
                     {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
                         <Box
@@ -137,8 +174,22 @@ export const FpfOverview = () => {
                 <SimpleGrid cols={2} spacing="lg" style={{ height: '88vh', overflow: 'hidden' }}>
                     {/* Left section: Sensor Graphs */}
                     <Box style={scrollableStyle}>
+                        {/*Weather Forecast */}
+                        {fpf?.Location && fpf?.Location.gatherForecasts && (
+                            <Box
+                                style={{
+                                    borderRadius: '10px',
+                                    marginBottom: '30px',
+                                }}
+                            >
+                                <WeatherForecastDisplay location={fpf.Location} />
+                            </Box>
+                        )}
+
+                        <TimeRangeSelector onDateChange={setDateRange}/>
                         {fpf?.Sensors && fpf.Sensors.length > 0 ? (
-                            fpf.Sensors.map((sensor) => (
+
+                             fpf.Sensors.map((sensor) => (
                                 <Box
                                     key={sensor.id}
                                     style={{
@@ -146,7 +197,7 @@ export const FpfOverview = () => {
                                         marginBottom: '20px',
                                     }}
                                 >
-                                    <TimeseriesGraph sensor={sensor} />
+                                    <TimeseriesGraph sensor={sensor} dates={dateRange} />
                                 </Box>
                             ))
                         ) : (
@@ -157,8 +208,9 @@ export const FpfOverview = () => {
                         )}
                     </Box>
 
-                    {/* Right section: Camera Carousel & Growing Cycle Section */}
+                    {/* Right section: Camera Carousel, Controllables & Growing Cycle Section */}
                     <Box style={scrollableStyle}>
+                        {/*Camera Section*/}
                         {fpf?.Cameras && fpf.Cameras.length > 0 && isCameraActive && (
                             <Box
                                 style={{
@@ -169,6 +221,18 @@ export const FpfOverview = () => {
                                 <CameraCarousel camerasToDisplay={fpf.Cameras} />
                             </Box>
                         )}
+                        {/*Controllable Sectiojn*/}
+                        {fpf?.ControllableAction && fpf.ControllableAction.length > 0 && (
+                            <Box
+                                style={{
+                                    borderRadius: '10px',
+                                    padding: '1rem',
+                                }}
+                            >
+                                <ControllableActionOverview fpfId={fpf.id} />
+                            </Box>
+                        )}
+                        {/*Growing Cycle Section*/}
                         {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
                             <Box
                                 style={{

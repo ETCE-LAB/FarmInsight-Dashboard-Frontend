@@ -4,7 +4,7 @@ import {getUser} from "../../../utils/getUser";
 import {Fpf} from "../models/Fpf";
 import {BACKEND_URL} from "../../../env-config";
 
-export const updateFpf = async (fpfId:string, data: {name:string, isPublic:boolean, sensorServiceIp:string, address:string}) => {
+export const updateFpf = async (fpfId:string, data: {name:string, isPublic:boolean, sensorServiceIp:string, locationId:string}) => {
     try {
         //const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/organizations`, {
         const apiClient = new APIClient()

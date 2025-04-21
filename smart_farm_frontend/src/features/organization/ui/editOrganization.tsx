@@ -19,6 +19,7 @@ import {RootState} from "../../../utils/store";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
+import {LocationList} from "../../location/ui/LocationList";
 
 export const EditOrganization = () => {
     const { organizationId } = useParams();
@@ -43,6 +44,7 @@ export const EditOrganization = () => {
                     setNewOrganizationName(org.name);
                     setIsPublic(org.isPublic);
                     setIsModified(false);
+                    console.log("Organization fetched:", org);
                 })
                 .catch((error) => {
                     console.error("Failed to fetch organization:", error);
@@ -191,6 +193,9 @@ export const EditOrganization = () => {
                             </Flex>
                             <MembershipList members={organization.memberships} />
                         </Box>
+                    </Card>
+                    <Card padding={"lg"} radius={"md"} mt="lg">
+                        <LocationList locationsToDisplay={organization.locations} isAdmin={isAdmin}/>
                     </Card>
 
                     <Modal
