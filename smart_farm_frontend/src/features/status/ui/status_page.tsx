@@ -31,14 +31,18 @@ export const StatusPage = () => {
         let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
         const [statusColor, setStatusColor] = useState(getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds));
         const [measuredAt, setMeasuredAt] = useState(new Date(sensor.lastMeasurement.measuredAt));
+        const [isActive, setIsActive] = useState(sensor.isActive);
 
         useEffect(() => {
             if (!lastMessage) return;
             try {
                 const data = JSON.parse(lastMessage.data);
                 const newDate = new Date(data.measurement.at(-1).measuredAt);
-                setStatusColor(getSensorStateColor(newDate, sensor.isActive, sensor.intervalSeconds));
+                // we don't get a full on sensor changed message, but if it receives values it is clearly active
+                // this won't realize when it gets turned off but there's no mechanism for that and won't really be noticed
+                setStatusColor(getSensorStateColor(newDate, true, sensor.intervalSeconds));
                 setMeasuredAt(newDate);
+                setIsActive(true);
             } catch (err) {
                 console.error("Error processing WebSocket message:", err);
             }
@@ -47,7 +51,7 @@ export const StatusPage = () => {
         return (
             <Table.Tr>
                 <Table.Td>{sensor.name}</Table.Td>
-                <Table.Td><Badge color={statusColor}>{!sensor.isActive && (<>{t("camera.inactive")}</>)}</Badge></Table.Td>
+                <Table.Td><Badge color={statusColor}>{!isActive && (<>{t("camera.inactive")}</>)}</Badge></Table.Td>
                 <Table.Td>{getIsoStringFromDate(measuredAt)}</Table.Td>
             </Table.Tr>
         )
