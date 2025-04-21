@@ -130,7 +130,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                                         </HoverCard.Target>
                                         <HoverCard.Dropdown>
                                             <Text size="sm">
-                                                {`last value: ${new Date(sensor.lastMeasurement.measuredAt)}`}
+                                                {`last value: ${new Date(sensor.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
                                             </Text>
                                         </HoverCard.Dropdown>
                                     </HoverCard>

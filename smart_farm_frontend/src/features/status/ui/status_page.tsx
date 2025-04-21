@@ -123,6 +123,17 @@ export const StatusPage = () => {
                 {organizations && (organizations.map(org =>
                     <OrgOverview id={org.id} />
                 ))}
+                <Flex gap='lg' justify="end" mr="md">
+                    <Flex gap="sm" align="center">
+                        <Badge color="green"></Badge> {t('overview.green')}
+                    </Flex>
+                    <Flex gap="sm" align="center">
+                        <Badge color="yellow"></Badge> {t('overview.yellow')}
+                    </Flex>
+                    <Flex gap="sm" align="center">
+                        <Badge color="red"></Badge> {t('overview.red')}
+                    </Flex>
+                </Flex>
             </Flex>
         </Container>
     );

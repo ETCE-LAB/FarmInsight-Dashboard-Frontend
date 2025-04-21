@@ -144,7 +144,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
                             <Text size="sm">
-                                {`last value: ${new Date(sensor?.lastMeasurement.measuredAt)}`}
+                                {`last value: ${new Date(sensor?.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
                             </Text>
                         </HoverCard.Dropdown>
                     </HoverCard>

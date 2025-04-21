@@ -376,8 +376,13 @@ i18n
                                 title: 'Unable to update location',
                                 message: 'Unable to send location',
                             }
-                        }
-                    }
+                        },
+                    },
+                    overview: {
+                        green: 'All good',
+                        yellow: 'One missed value',
+                        red: 'Multiple missed values',
+                    },
                 },
             },
             de: {
@@ -710,8 +715,12 @@ i18n
                                 message: 'Standort konnte nicht gesendet werden',
                             },
                         },
-                    }
-
+                    },
+                    overview: {
+                        green: 'Alles gut',
+                        yellow: 'Ein Wert verspätet',
+                        red: 'Mehrere Werte fehlen',
+                    },
                 },
             },
             fr: {
