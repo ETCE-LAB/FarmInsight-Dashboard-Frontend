@@ -234,7 +234,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                     </Box>
                                 </Box>
 
-                                <Text>{forecast.temperatureMinC}°C ~ {forecast.temperatureMaxC}°C</Text>
+                                <Text>{forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C</Text>
                             </Card>
                             )
                         )}
