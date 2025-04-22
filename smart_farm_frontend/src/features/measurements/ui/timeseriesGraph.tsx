@@ -19,16 +19,15 @@ import {
 } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
-import { getWebSocketToken } from "../../../utils/WebSocket/getWebSocketToken";
 import { useMediaQuery } from '@mantine/hooks';
-import {BACKEND_URL} from "../../../env-config";
+import {getSensorStateColor, getWsUrl} from "../../../utils/utils";
+import {Threshold} from "../../threshold/models/threshold";
+import {LabelPosition} from "recharts/types/component/Label";
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string }| null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
-    const [shouldReconnect, setShouldReconnect] = useState<boolean>(false);
-    const [socketURL, setSocketUrl] = useState<string | null>("ws://localhost");
     const [minXValue, setMinXValue] = useState<number>(10);
     const [maxXValue, setMaxXValue] = useState<number>(10);
     const [error, setError] = useState<string | null>(null);
@@ -50,34 +49,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
         return `${day}.${month}`;
     };
 
-
-    let { lastMessage } = useWebSocket(socketURL || "", {
-        shouldReconnect: () => shouldReconnect,
-        });
-
-
-    const reconnectSocket = async () => {
-        try {
-            const resp = await getWebSocketToken();
-            if (!resp) throw new Error("No WebSocket token received.");
-            let baseUrl = BACKEND_URL;
-            if (!baseUrl) throw new Error("REACT_APP_BACKEND_URL is not configured.");
-            if (baseUrl.startsWith("https")) { // If anyone wants to change this, at least make sure your change actually works...
-                baseUrl = baseUrl.replace("https", "wss");
-            } else if (baseUrl.startsWith("http")) {
-                baseUrl = baseUrl.replace("http", "ws");
-            } else {
-                throw new Error(`Invalid REACT_APP_BACKEND_URL: ${baseUrl}`);
-            }
-            setSocketUrl(`${baseUrl}/ws/sensor/${sensor?.id}?token=${encodeURIComponent(resp.token)}`);
-            setShouldReconnect(true);
-        } catch (err) {
-            console.error(err);
-            //setError("Failed to reconnect WebSocket.");
-            setShouldReconnect(false);
-        }
-    };
-
+    let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, { shouldReconnect: () => true });
 
     useEffect(() => {
         if (lastMessage) {
@@ -95,17 +67,6 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
             }
         }
     }, [lastMessage]);
-
-
-
-    useEffect(() => {
-        if (sensor) {
-            reconnectSocket();
-        } else {
-            setSocketUrl(null);
-            setShouldReconnect(false);
-        }
-    }, [sensor]);
 
     useEffect(() => {
         setLoading(true);
@@ -146,6 +107,24 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
         ? measurements.slice(Math.max(0, measurements.length - 4), measurements.length - 1)
         : [];
 
+    const getThresholdLines = (thresholds: Threshold[]) => {
+        let lines = []
+        for (const t of thresholds) {
+            if (t.lowerBound && !t.upperBound) {
+                lines.push({y: t.lowerBound, label: t.description, color: t.color});
+            }
+            if (t.upperBound && !t.lowerBound) {
+                lines.push({y: t.upperBound, label: t.description, color: t.color, labelPosition: 'insideTopLeft' as LabelPosition});
+            }
+            if (t.upperBound && t.lowerBound) {
+                lines.push({y: t.lowerBound, label: t.description, color: t.color});
+                lines.push({y: t.upperBound, color: t.color});
+            }
+        }
+
+        return lines;
+    }
+
     return (
         <Flex style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
             <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
@@ -161,11 +140,11 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
                     <HoverCard>
                         <HoverCard.Target>
-                            <Badge color={sensor.status}></Badge>
+                            <Badge color={getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds)}></Badge>
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
                             <Text size="sm">
-                                {`last value: ${new Date(sensor?.lastMeasurement.measuredAt)}`}
+                                {`last value: ${new Date(sensor?.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
                             </Text>
                         </HoverCard.Dropdown>
                     </HoverCard>
@@ -232,6 +211,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                             ) : (
                                 <LineChart
                                     key={measurements.length}
+                                    unit={sensor.unit}
                                     activeDotProps={{ r: 6, strokeWidth: 1 }}
                                     data={measurements.slice(-50)}
                                     dataKey="measuredAt"
@@ -244,7 +224,6 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                                             return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit' });
                                         }
                                     }}
-
                                     yAxisProps={{ domain: [minXValue, maxXValue] }}
                                     h={250}
                                     tooltipAnimationDuration={200}
@@ -273,6 +252,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                                             return null;
                                         },
                                     }}
+                                    referenceLines={getThresholdLines(sensor.thresholds)}
                                 />
                             )
                         )}

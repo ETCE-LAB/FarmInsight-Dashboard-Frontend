@@ -7,6 +7,18 @@ i18n
         resources: {
             en: {
                 translation: {
+                    threshold: {
+                        title: 'Thresholds',
+                        lowerBound: 'lower bound',
+                        upperBound: 'upper bound',
+                        color: 'color',
+                        description: 'description',
+                        failedToSave: 'Failed to save the threshold',
+                        successSave: 'Saved',
+                        addTitle: 'Add Threshold',
+                        editTitle: 'Edit Threshold',
+                        colorHint: 'named (red, blue, ...) or hex code: (#FFFFFF, ...) ',
+                    },
                     log: {
                         logListTitle: 'Log Messages',
                         lastMessage: 'Last Log Message',
@@ -14,6 +26,7 @@ i18n
                         logLevel: 'Log Level',
                         message: 'Message',
                         showMessages: 'Logs',
+                        systemMessages: 'System messages',
                     },
                     fpf: {
                         address: 'Location',
@@ -83,7 +96,8 @@ i18n
                             date: 'Date',
                             amount: 'Amount (kg)',
                             details: 'Details for',
-                        }
+                        },
+                        statusOverview: 'Status overview',
                     },
                     sensor: {
                         addSensor: 'Add Sensor',
@@ -102,6 +116,7 @@ i18n
                         },
                         title: 'Sensors',
                         noSensorsFound: 'No Sensor found',
+                        lastMeasurementAt: 'Last measurement at',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -361,19 +376,37 @@ i18n
                                 title: 'Unable to update location',
                                 message: 'Unable to send location',
                             }
-                        }
-                    }
+                        },
+                    },
+                    overview: {
+                        green: 'All good',
+                        yellow: 'One missed value',
+                        red: 'Multiple missed values',
+                    },
                 },
             },
             de: {
                 translation: {
+                    threshold: {
+                        title: 'Grenzwerte',
+                        lowerBound: 'untere Grenze',
+                        upperBound: 'obere Grenze',
+                        color: 'Farbe',
+                        description: 'Beschreibung',
+                        failedToSave: 'Fehler beim Speichern des Grenzwertes',
+                        successSave: 'Gespeichert',
+                        addTitle: 'Grenzwert hinzufügen',
+                        editTitle: 'Grenzwert bearbeiten',
+                        colorHint: 'Name (rot, blau, ...) oder Hexcode: (#FFFFFF, ...) ',
+                    },
                     log: {
                         logListTitle: 'Protokoll Nachrichten',
                         lastMessage: 'Letzte Protokoll Nachricht',
                         created: 'Datum',
                         logLevel: 'Protokollierungsstufe',
                         message: 'Nachricht',
-                        showMessages: 'Protokoll Nachrichten'
+                        showMessages: 'Protokoll Nachrichten',
+                        systemMessages: 'System Protokoll Nachrichten',
                     },
                     fpf: {
                         address: 'Standort',
@@ -442,7 +475,8 @@ i18n
                             date: 'Datum',
                             amount: 'Menge (kg)',
                             details: 'Details für',
-                        }
+                        },
+                        statusOverview: 'Status Übersicht',
                     },
                     sensor: {
                         addSensor: 'Sensor hinzufügen',
@@ -461,6 +495,7 @@ i18n
                         },
                         title: 'Sensoren',
                         noSensorsFound: 'Kein Sensor gefunden',
+                        lastMeasurementAt: "Letzer Wert empfangen",
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
@@ -680,8 +715,12 @@ i18n
                                 message: 'Standort konnte nicht gesendet werden',
                             },
                         },
-                    }
-
+                    },
+                    overview: {
+                        green: 'Alles gut',
+                        yellow: 'Ein Wert verspätet',
+                        red: 'Mehrere Werte fehlen',
+                    },
                 },
             },
             fr: {

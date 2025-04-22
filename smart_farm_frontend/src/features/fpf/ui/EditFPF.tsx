@@ -27,8 +27,8 @@ export const EditFPF: React.FC = () => {
     const { t } = useTranslation();
     const [organization, setOrganization] = useState<Organization>();
 
-    const [sensors, setSensor] = useState<Sensor[]>();
-    const [cameras, setCamera] = useState<Camera[]>();
+    const [sensors, setSensors] = useState<Sensor[]>();
+    const [cameras, setCameras] = useState<Camera[]>();
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
 
@@ -55,7 +55,7 @@ export const EditFPF: React.FC = () => {
 
     useEffect(() => {
         if (fpf?.Sensors && fpf.Sensors.length >= 1) {
-            setSensor(fpf.Sensors);
+            setSensors(fpf.Sensors);
         }
     }, [fpf]);
 
@@ -70,7 +70,7 @@ export const EditFPF: React.FC = () => {
     useEffect(() => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
-                setSensor(resp.Sensors);
+                setSensors(resp.Sensors);
             });
         }
     }, [SensorEventListener]);
@@ -78,7 +78,7 @@ export const EditFPF: React.FC = () => {
     useEffect(() => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
-                setCamera(resp.Cameras);
+                setCameras(resp.Cameras);
             });
         }
     }, [CameraEventListener]);

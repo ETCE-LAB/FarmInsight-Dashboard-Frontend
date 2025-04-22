@@ -70,8 +70,6 @@ export const HarvestEntityForm: React.FC<{
         }
     }, [toEditHarvestEntity]);
 
-
-
     return (
         <>
             <DateInput
