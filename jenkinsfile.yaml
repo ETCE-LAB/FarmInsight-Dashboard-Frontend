@@ -29,7 +29,7 @@ pipeline {
           . ./app/.env.development
           cp -R smart_farm_frontend/* app/
           cd app
-          npm install --force
+          npm install
           npm run build
           ls -l build/
         '''
