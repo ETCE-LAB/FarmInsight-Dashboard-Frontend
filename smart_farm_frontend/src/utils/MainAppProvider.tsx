@@ -12,7 +12,7 @@ import {BACKEND_URL} from "../env-config";
 
 export const oidcConfig = {
     authority: `${BACKEND_URL}/o`,
-    client_id: "interactive",
+    client_id: "Farminsight",
     redirect_uri: window.location.origin + "/auth/callback",
     post_logout_redirect_uri: window.location.origin + "/auth/signout-callback",
     scopes: "profile openId offline_access",
