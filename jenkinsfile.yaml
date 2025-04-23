@@ -29,7 +29,8 @@ pipeline {
           . ./app/.env.development
           cp -R smart_farm_frontend/* app/
           cd app
-          npm install --loglevel verbose
+          npm install
+          npm install react-icons@5.4.0
           npm run build
           ls -l build/
         '''
