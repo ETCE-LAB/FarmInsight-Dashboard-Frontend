@@ -30,7 +30,7 @@ pipeline {
           cp -R smart_farm_frontend/* app/
           cd app
           npm install --force
-          npm install react-icons@5.4.0
+          npm install react-icons@5.4.0 --force
           npm run build
           ls -l build/
         '''
