@@ -109,17 +109,27 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
 
     const getThresholdLines = (thresholds: Threshold[]) => {
         let lines = []
-        for (const t of thresholds) {
-            if (t.lowerBound && !t.upperBound) {
-                lines.push({y: t.lowerBound, label: t.description, color: t.color});
+        try {
+            for (const t of thresholds) {
+                if (t.lowerBound && !t.upperBound) {
+                    lines.push({y: t.lowerBound, label: t.description, color: t.color});
+                }
+                if (t.upperBound && !t.lowerBound) {
+                    lines.push({
+                        y: t.upperBound,
+                        label: t.description,
+                        color: t.color,
+                        labelPosition: 'insideTopLeft' as LabelPosition
+                    });
+                }
+                if (t.upperBound && t.lowerBound) {
+                    lines.push({y: t.lowerBound, label: t.description, color: t.color});
+                    lines.push({y: t.upperBound, color: t.color});
+                }
             }
-            if (t.upperBound && !t.lowerBound) {
-                lines.push({y: t.upperBound, label: t.description, color: t.color, labelPosition: 'insideTopLeft' as LabelPosition});
-            }
-            if (t.upperBound && t.lowerBound) {
-                lines.push({y: t.lowerBound, label: t.description, color: t.color});
-                lines.push({y: t.upperBound, color: t.color});
-            }
+        }
+        catch (e) {
+            console.error("Error processing thresholds:", e);
         }
 
         return lines;
