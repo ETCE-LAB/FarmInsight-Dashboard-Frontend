@@ -111,9 +111,6 @@ export const FpfOverview = () => {
                     {/* Sensor graphs come next */}
                     {fpf?.Sensors && fpf.Sensors.length > 0 ? (
                         <>
-                            <Box style={{ marginBottom: '20px' }}>
-                                <TimeRangeSelector onDateChange={setDateRange} />
-                            </Box>
                             {fpf.Sensors.map((sensor) => (
                                 <Box
                                     key={sensor.id}

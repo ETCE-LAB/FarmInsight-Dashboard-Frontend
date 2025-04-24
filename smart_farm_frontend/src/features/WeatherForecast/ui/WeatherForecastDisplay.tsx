@@ -7,12 +7,14 @@ import {getWeatherForecast} from "../useCase/getWeatherForecast";
 import {Location} from "../../location/models/location";
 import {FaBolt, FaCloud, FaCloudRain, FaSmog, FaSnowflake, FaSun} from "react-icons/fa";
 import {IconArrowsDiagonalMinimize2, IconSunFilled, IconWind} from "@tabler/icons-react";
+import {useMediaQuery} from "@mantine/hooks";
 
 
 export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ location }) => {
     const { t } = useTranslation();
     const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
     const [isDetailedView, setIsDetailedView] = useState<number>(-1);
+    const isMobile = useMediaQuery('(max-width: 768px)');
 
     useEffect(() => {
         if(location) {
@@ -27,7 +29,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
-        return `${hrs}h ${mins}m ${secs.toFixed(0)}s`;
+        return `${hrs}h ${mins}m`;
     };
     function formatTimeManually(dateString: string): string {
         // Validate format: the function expects "T" at position 10.
@@ -41,7 +43,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
         const seconds = dateString.substring(17, 19);   // Characters from index 17 to 18.
 
         // Combine them into a formatted string.
-        return `${hours}:${minutes}:${seconds}`;
+        return `${hours}:${minutes}`;
     }
 
     const formatDate = (dateString: string): string => {
@@ -58,7 +60,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
         const mins = Math.floor((seconds % 3600) / 60);
         const secs = seconds % 60;
 
-        const returnString = `${hrs !== 0 ? hrs + "h " : ""}${mins !== 0 ? mins + "m " : "" } ${secs !== 0 ? secs.toFixed(0) + "s": ""}`
+        const returnString = `${hrs !== 0 ? hrs + "h " : ""}${mins !== 0 ? mins + "m   " : " " }`
 
         return returnString.trim() === "" ? "0h" : returnString.trim();
     }
@@ -218,23 +220,32 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                 </Carousel>
 
             ): (
-                    <Group  mb="xs" justify="space-between">
+                    <Group  mb="xs"   justify={isMobile ? "center" : "space-between"} >
                         { weatherForecasts.map((forecast, index) => (
-                            <Card  padding="md" radius="lg" withBorder key={index} style={{ width: "20vH", height:"10vw", cursor: "pointer" } } onClick={() => setIsDetailedView(index)}>
+                            <Card  padding="md" radius="lg" withBorder key={index}
+                                   style={
+                                        isMobile
+                                            ? { width: '50vw', height: '18vh', cursor: 'pointer'  }
+                                            : { width: '12vw', height: '18vh', cursor: 'pointer' }
+                                        }
+                                   onClick={() => setIsDetailedView(index)}>
                                 <Box style={{display:"flex", justifyContent:"space-between"}} >
                                     <Text size={"xl"} style={{display:"flex", textAlign:"left", alignSelf:"flex-start"}}>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
-                                    {forecast.windSpeedMax > 20 && (<IconWind/>)}
+                                    <Box  style={{display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto', }}>
+                                        {getWeatherIcon(forecast.weatherCode)}
+                                        {forecast.windSpeedMax > 20 && (<IconWind/>)}
+                                    </Box>
                                 </Box>
                                 <Text size={"sm"}>{getWeatherDescription(forecast.weatherCode)}</Text>
                                 <Box style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"0.5vh", marginTop:"0.5vh"}}>
-                                    {getWeatherIcon(forecast.weatherCode)}
+
                                     <Box style={{display:"flex", justifyContent:"space-between", alignItems:"center"}}>
                                     <Text style={{textAlign:"right", marginRight:"0.1vw"}}>{formatTimeText(forecast.sunshineDurationSeconds)}</Text>
                                     <IconSunFilled ></IconSunFilled>
                                     </Box>
                                 </Box>
 
-                                <Text>{forecast.temperatureMinC}°C ~ {forecast.temperatureMaxC}°C</Text>
+                                <Text>{forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C</Text>
                             </Card>
                             )
                         )}
