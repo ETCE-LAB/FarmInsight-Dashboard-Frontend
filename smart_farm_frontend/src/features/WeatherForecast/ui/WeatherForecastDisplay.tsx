@@ -226,7 +226,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                    style={
                                         isMobile
                                             ? { width: '50vw', height: '18vh', cursor: 'pointer'  }
-                                            : { width: '12vw', height: '18vh', cursor: 'pointer' }
+                                            : { width: '12vw', cursor: 'pointer' }
                                         }
                                    onClick={() => setIsDetailedView(index)}>
                                 <Box style={{display:"flex", justifyContent:"space-between"}} >
