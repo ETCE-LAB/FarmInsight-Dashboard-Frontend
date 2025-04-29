@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Accordion, Card, Button} from "@mantine/core";
-import { IconCirclePlus, IconEdit, } from "@tabler/icons-react";
+import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit,} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import {getBackendTranslation} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
@@ -125,7 +125,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                               size="xs"
                               onClick={() => toggleRow(action.id)}
                             >
-                              {expandedRows.includes(action.id) ? "−" : "+"}
+                              {expandedRows.includes(action.id) ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
                             </Button>
                           </Table.Td>
                           <Table.Td>{action.name}</Table.Td>
@@ -175,11 +175,11 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                 <Table striped highlightOnHover withColumnBorders>
                                   <Table.Thead>
                                     <Table.Tr>
-                                      <Table.Th>Type</Table.Th>
-                                      <Table.Th>Value Type</Table.Th>
-                                      <Table.Th>Value</Table.Th>
-                                      <Table.Th>Trigger Logic</Table.Th>
-                                      <Table.Th>Status</Table.Th>
+                                      <Table.Th>{t("controllableActionList.trigger.type")}</Table.Th>
+                                      <Table.Th>{t("controllableActionList.trigger.valueType")}</Table.Th>
+                                      <Table.Th>{t("controllableActionList.trigger.value")}</Table.Th>
+                                      <Table.Th>{t("controllableActionList.trigger.triggerLogic")}</Table.Th>
+                                      <Table.Th>{t("controllableActionList.trigger.status")}</Table.Th>
                                       {isAdmin && <Table.Th />}
                                     </Table.Tr>
                                   </Table.Thead>
