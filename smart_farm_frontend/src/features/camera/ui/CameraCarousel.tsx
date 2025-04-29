@@ -41,40 +41,53 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({
     const auth = useAuth();
     const { t } = useTranslation();
 
-    useEffect(() => {
-        setObjectsToDisplay([]);
+    type DisplayObj = { url: string; title: string; isLiveStream: boolean };
 
-        if (camerasToDisplay.length > 0) {
-            camerasToDisplay.forEach((camera) => {
-                if (camera.isActive) {
+    useEffect(() => {
+        let cancelled = false;                       // verhindert Race-Conditions bei schnellem Wechsel
+
+        const load = async () => {
+            if (camerasToDisplay.length === 0) {
+                setObjectsToDisplay([]);
+                return;
+            }
+
+            const items: DisplayObj[] = [];
+
+            const tasks = camerasToDisplay
+                .filter((c) => c.isActive)
+                .map(async (camera) => {
                     if (showLivestream) {
-                        setObjectsToDisplay((prevObjects) => [
-                            ...prevObjects,
-                            {
-                                url: `${BACKEND_URL}/api/cameras/${camera.id}/livestream`,
-                                title: `${camera.name} LiveStream`,
-                                isLiveStream: true,
-                            },
-                        ]);
-                    } else {
-                        getImages(camera.id).then((resp) => {
-                            if (resp && resp.length > 0 ) {
-                                const filteredResp = resp.filter((item) => item.camera === camera.id);
-                                setObjectsToDisplay((prevObjects) => [
-                                    ...prevObjects,
-                                    {
-                                        url: filteredResp[0].url,
-                                        title: `${camera.name}`,
-                                        isLiveStream: false,
-                                    },
-                                ]);
-                            }
+                        items.push({
+                            url: `${BACKEND_URL}/api/cameras/${camera.id}/livestream`,
+                            title: `${camera.name} LiveStream`,
+                            isLiveStream: true,
                         });
+                    } else {
+                        const resp = await getImages(camera.id);
+                        const image = resp?.find((r) => r.camera === camera.id);
+                        if (image) {
+                            items.push({
+                                url: image.url,
+                                title: camera.name,
+                                isLiveStream: false,
+                            });
+                        }
                     }
-                }
-            });
-        }
-    }, [fpfId, camerasToDisplay, showLivestream]);
+                });
+
+            await Promise.all(tasks);
+
+            if (!cancelled) setObjectsToDisplay(items); // exakt **ein** State-Update
+        };
+
+        load();
+
+        // Cleanup: laufende Promises ignorieren, wenn die Abhängigkeiten sich ändern
+        return () => {
+            cancelled = true;
+        };
+    }, [camerasToDisplay, showLivestream]);
 
     const handleOpenFullscreen = (object: displayObject) => {
         setSelectedObject(object);
