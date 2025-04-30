@@ -4,6 +4,7 @@ import {getSensor} from "../../../sensor/useCase/getSensor";
 import {useParams} from "react-router-dom";
 import {getFpf} from "../../../fpf/useCase/getFpf";
 import {Box, Grid, NumberInput, Select, Text, TextInput} from "@mantine/core";
+import {IconHelp} from "@tabler/icons-react";
 
 
 export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.SetStateAction<string>> }> = ({setTriggerLogic} ) => {
@@ -19,7 +20,7 @@ export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.S
 
         if(sensorId != "" && operator != "" && value != ""){
             //{comparison: "between", from: 6:00, to:18:00}
-            let jsonString = "{sensorID:"+ sensorId + ", comparison:\""+ operator +"\", value: "+ value + " }"
+            let jsonString = "{\"sensorID\":"+ sensorId + ", \"comparison\":\""+ operator +"\", \"value\":\""+ value + "\"}"
             setTriggerLogic(jsonString)
         }
     }, [sensorId, operator, value]);
@@ -67,6 +68,7 @@ export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.S
                             value={operator}
                             onChange={setOperator}
                         />
+                        <IconHelp/>
                     </Grid.Col>
                     <Grid.Col span={4}>
                         <NumberInput

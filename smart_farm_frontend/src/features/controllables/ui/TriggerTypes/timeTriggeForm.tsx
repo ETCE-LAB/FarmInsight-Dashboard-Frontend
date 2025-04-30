@@ -12,7 +12,7 @@ export const TimeTriggeForm:React.FC<{setTriggerLogic:React.Dispatch<React.SetSt
     useEffect(() => {
         if(from != "" && to != ""){
             //{comparison: "between", from: 6:00, to:18:00}
-            let jsonString = "{comparison: \"between\", from:" + from + ", to:"+ to +"}"
+            let jsonString = "{\"comparison\": \"between\", \"from\":\"" + from + "\", \"to\":\""+ to +"\"}"
             setTriggerLogic(jsonString)
         }
     }, [from, to]);

@@ -228,7 +228,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                         </Grid.Col>
 
                          {/* Active Switch */}
-                        <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                        <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop:"-3vh" }}>
                             <Text style={{marginTop:"1rem"}}>{t("header.isActive")}</Text>
                             <Switch
                                 onLabel={<IconMobiledata size={16} />}
@@ -240,7 +240,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                         </Grid.Col>
 
                         {/* Submit Button */}
-                        <Grid.Col span={12}>
+                        <Grid.Col span={6}>
                             <Box mt="md" style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px' }}>
                                 <Button type="submit" variant="filled" color="#105385" style={{ margin: '10px' }}>
                                     {toEditTrigger?.id ? t("userprofile.saveChanges") : t("controllableActionList.addControllable")}

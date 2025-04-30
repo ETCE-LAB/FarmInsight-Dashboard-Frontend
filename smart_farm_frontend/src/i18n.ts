@@ -191,10 +191,10 @@ i18n
                             description: 'Description',
                             enterDescription: 'Enter description',
                             hint: {
-                                typeHint: 'Enter appropriate type. Manual triggers will only be triggered manual via the FPF overview by the admins. All other types are executing the action automatically.',
+                                typeHint: 'Select appropriate trigger type.',
                                 actionValueTypeHint: 'Set the correct type of the action value. For example the value "On" is string.',
-                                actionValueHint: 'The output value of the trigger which will be sent to the action. It defines the concrete action of the script. Check on your desired script for allowed values.',
-                                triggerLogicHint: 'Advanced trigger logic for the trigger in JSON format. Will be used to have more complex trigger events.',
+                                actionValueHint: 'Check on your desired action script for allowed values.',
+                                triggerLogicHint: 'Advanced trigger logic for the trigger in JSON format.',
                                 descriptionHint: 'Describe the trigger in more detail.',
                             }
                         }
@@ -575,11 +575,11 @@ i18n
                             description: "Beschreibung",
                             enterDescription: "Beschreibung eingeben",
                             hint: {
-                                typeHint: "Geeigneten Typ eingeben. Manuelle Auslöser werden nur manuell über die FPF-Übersicht von den Administratoren ausgelöst. Alle anderen Typen führen die Aktion automatisch aus.",
-                                actionValueTypeHint: "Den korrekten Typ des Aktionswerts festlegen. Zum Beispiel ist der Wert \"Ein\" ein String.",
-                                actionValueHint: "Der Ausgabewert des Auslösers, der an die Aktion gesendet wird. Er definiert die konkrete Aktion des Skripts. Überprüfen Sie bei Ihrem gewünschten Skript die erlaubten Werte.",
-                                triggerLogicHint: "Erweiterte Auslöserlogik für den Auslöser im JSON-Format. Wird verwendet, um komplexere Auslöserereignisse zu haben.",
-                                descriptionHint: "Beschreiben Sie den Auslöser detaillierter."
+                                typeHint: 'Wähle den passenden Auslöser-Typ.',
+                                    actionValueTypeHint: 'Lege den richtigen Typ des Aktionswerts fest. Zum Beispiel ist der Wert "On" ein String.',
+                                    actionValueHint: 'Prüfe in deinem gewünschten Aktions-Skript, welche Werte zulässig sind.',
+                                    triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
+                                    descriptionHint: 'Beschreibe den Auslöser näher.'
                             }
                         }
                     },
