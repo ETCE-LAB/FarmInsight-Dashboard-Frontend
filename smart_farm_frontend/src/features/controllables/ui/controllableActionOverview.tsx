@@ -7,10 +7,11 @@ import {useAuth} from "react-oidc-context";
 import {lowerFirst} from "@mantine/hooks";
 
 import {
+    Badge,
     Button,
     Card,
     Flex,
-    NumberInput,
+    NumberInput, Overlay,
     SegmentedControl, Slider,
     Switch,
     Text
@@ -18,6 +19,8 @@ import {
 import {executeTrigger} from "../useCase/executeTrigger";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
+import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
+import {useParams} from "react-router-dom";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -40,8 +43,26 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
     const dispatch = useAppDispatch();
     const controllableAction = useSelector((state: RootState) => state.controllableAction.controllableAction);
     const auth = useAuth();
-
+    const { organizationId } = useParams<{ organizationId: string }>();
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const fpf = useSelector((state: RootState) => state.fpf.fpf);
+
+        useEffect(() => {
+        if (organizationId) {
+            getMyOrganizations().then((organizations) => {
+                let found = false;
+                organizations.forEach((org: any) => {
+                    if (org.id === organizationId) {
+                        setIsAdmin(org.membership.role === 'admin');
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    setIsAdmin(false);
+                }
+            });
+        }
+    }, [organizationId]);
 
     const handleTriggerChange = async (actionId: string, triggerId: string, value: string) => {
         try {
@@ -55,7 +76,23 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
 
     return (
         <Card radius="md" padding="md">
-                <Flex direction="column" gap="sm" style={{ overflowX: 'auto' }}>
+              {!isAdmin && (
+                <Badge
+                  color="gray"
+                  variant="light"
+                  size="sm"
+                  style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    zIndex: 10,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  Read only
+                </Badge>
+              )}
+                <Flex direction="column" gap="sm" style={{ overflowX: 'auto', marginTop: 5 }}>
 
                     {controllableAction.map((action) => {
                         const manualTriggers = action.trigger.filter(t => t.type === 'manual' && t.isActive);
@@ -78,7 +115,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                       <Button
                                         key={trigger.id}
                                         size="xs"
-                                        style={!auth.user ? { pointerEvents: "none", opacity: 0.6 } : undefined}
+                                        style={!isAdmin ? { pointerEvents: "none", opacity: 0.6 } : undefined}
                                         variant={isActive ? "filled" : "light"}
                                         color={isActive ? getColor(trigger.actionValue) : "gray"}
                                         radius="xl"
@@ -95,7 +132,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                       variant={action.isAutomated ? "filled" : "light"}
                                       color={action.isAutomated ? "blue" : "gray"}
                                       radius="xl"
-                                      style={!auth.user ? { pointerEvents: "none", opacity: 0.6 } : undefined}
+                                      style={!isAdmin ? { pointerEvents: "none", opacity: 0.6 } : undefined}
                                       onClick={() => {
                                         executeTrigger(action.id, "auto", "").then(() => {
                                           dispatch(updateControllableActionStatus({ actionId: action.id, triggerId: "" }));

@@ -220,6 +220,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                               placeholder="Search hardware"
                               data={availableHardware}
                               value={hardwareInput}
+                              description={t("controllableActionList.hint.hardware")}
                               onChange={(val) => {
                                 setHardwareInput(val);
                                 const match = availableHardware?.find(h => h.label === val);
@@ -238,6 +239,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                   placeholder="Search action scripts"
                                   data={availableActionScripts}
                                   required
+                                  description={t("controllableActionList.hint.actionClass")}
                                   value={selectedActionClass?.label}
                                   onChange={(val) => {
                                     setActionCLassId(val);
