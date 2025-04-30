@@ -1,14 +1,13 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
-import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex} from "@mantine/core";
-import { IconCirclePlus, IconEdit, } from "@tabler/icons-react";
+import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Button, Card} from "@mantine/core";
+import {IconChevronDown, IconChevronLeft, IconCirclePlus, IconEdit,} from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
 import { useTranslation } from "react-i18next";
 import {getBackendTranslation, getSensorStateColor} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
-import {Threshold} from "../../threshold/models/threshold";
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
     const [sensorModalOpen, setSensorModalOpen] = useState(false);
@@ -41,22 +40,71 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
         setSensorModalOpen(true);
     }
 
-    const [selectedThresholds, setSelectedThresholds] = useState<Threshold[]>([]);
-    const [selectedSensorId, setSelectedSensorId] = useState<string>('');
-    const [thresholdModalOpen, setThresholdModalOpen] = useState(false);
+    const SensorRow: React.FC<{sensor: Sensor, index: number}> = ({ sensor, index }) => {
+        const [open, setOpen] = useState<boolean>(false);
 
-    const onClickThresholds = (sensor:Sensor) => {
-        setSelectedSensorId(sensor.id);
-        setSelectedThresholds(sensor.thresholds);
-        setThresholdModalOpen(true);
+        return (
+            <>
+                <Table.Tr key={index}>
+                    <Table.Td>{sensor.name}</Table.Td>
+                    <Table.Td>{sensor.location}</Table.Td>
+                    <Table.Td>{sensor.modelNr}</Table.Td>
+                    <Table.Td>{getBackendTranslation(sensor.parameter, i18n.language)}</Table.Td>
+                    <Table.Td>{sensor.unit}</Table.Td>
+                    <Table.Td>{sensor.intervalSeconds}</Table.Td>
+                    <Table.Td>
+                        <Flex justify='space-between' align='center'>
+                            <HoverCard>
+                                <HoverCard.Target>
+                                    <Badge color={getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds)}>
+                                        {!sensor.isActive && (<>{t("camera.inactive")}</>)}
+                                    </Badge>
+                                </HoverCard.Target>
+                                <HoverCard.Dropdown>
+                                    <Text size="sm">
+                                        {`last value: ${new Date(sensor.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
+                                    </Text>
+                                </HoverCard.Dropdown>
+                            </HoverCard>
+                            <LogMessageModalButton resourceType={ResourceType.SENSOR} resourceId={sensor.id}></LogMessageModalButton>
+                        </Flex>
+                    </Table.Td>
+                    <Table.Td>
+                        <Button
+                            variant="subtle"
+                            size="xs"
+                            onClick={() => setOpen(!open)}
+                        >
+                            {open ? <IconChevronDown size={16} /> : <IconChevronLeft size={16} />}
+                        </Button>
+                    </Table.Td>
+                    {isAdmin &&
+                        <Table.Td>
+                            <Flex justify='center' align='center'>
+                                <IconEdit
+                                    color={"#199ff4"}
+                                    size={20}
+                                    stroke={2}
+                                    onClick={() => onClickEdit(sensor)}
+                                    style={{ cursor: "pointer" }}
+                                />
+                            </Flex>
+                        </Table.Td>
+                    }
+                </Table.Tr>
+                {open &&
+                    <Table.Tr>
+                        <Table.Td colSpan={isAdmin ? 9 : 8} >
+                            <Card withBorder shadow="sm" p="sm">
+                                <ThresholdList sensorId={sensor.id} thresholds={sensor.thresholds} />
+                            </Card>
+                        </Table.Td>
+                    </Table.Tr>
+                }
+            </>
+        )
     }
 
-    useEffect(() => {
-        if (sensorsToDisplay && selectedSensorId !== '') {
-            const sensor = sensorsToDisplay.filter((e) => e.id === selectedSensorId)[0];
-            setSelectedThresholds(sensor.thresholds);
-        }
-    }, [sensorsToDisplay]);
 
     return (
         <Box>
@@ -69,16 +117,6 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 size="40%"
             >
                 <SensorForm toEditSensor={selectedSensor} setClosed={setSensorModalOpen} />
-            </Modal>
-
-            <Modal
-                opened={thresholdModalOpen}
-                onClose={() => setThresholdModalOpen(false)}
-                title={t('threshold.title')}
-                centered
-                size="40%"
-            >
-                <ThresholdList sensorId={selectedSensorId} thresholds={selectedThresholds} />
             </Modal>
 
             {/* Header with Add Button */}
@@ -106,6 +144,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                         <Table.Th>{t('sensorList.unit')}</Table.Th>
                         <Table.Th>{t('sensorList.intervalSeconds')}</Table.Th>
                         <Table.Th>{t('header.status')}</Table.Th>
+                        <Table.Th>{t('threshold.title')}</Table.Th>
                         {isAdmin &&
                         <Table.Th>{}</Table.Th>
                         }
@@ -113,51 +152,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                     </Table.Thead>
                     <Table.Tbody>
                     {sensorsToDisplay.map((sensor, index) => (
-                        <Table.Tr key={index}>
-                            <Table.Td>{sensor.name}</Table.Td>
-                            <Table.Td>{sensor.location}</Table.Td>
-                            <Table.Td>{sensor.modelNr}</Table.Td>
-                            <Table.Td>{getBackendTranslation(sensor.parameter, i18n.language)}</Table.Td>
-                            <Table.Td>{sensor.unit}</Table.Td>
-                            <Table.Td>{sensor.intervalSeconds}</Table.Td>
-                            <Table.Td>
-                                <Flex justify='space-between' align='center'>
-                                    <HoverCard>
-                                        <HoverCard.Target>
-                                            <Badge color={getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds)}>
-                                                {!sensor.isActive && (<>{t("camera.inactive")}</>)}
-                                            </Badge>
-                                        </HoverCard.Target>
-                                        <HoverCard.Dropdown>
-                                            <Text size="sm">
-                                                {`last value: ${new Date(sensor.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
-                                            </Text>
-                                        </HoverCard.Dropdown>
-                                    </HoverCard>
-                                    <LogMessageModalButton resourceType={ResourceType.SENSOR} resourceId={sensor.id}></LogMessageModalButton>
-                                </Flex>
-                            </Table.Td>
-                            {isAdmin &&
-                                <Table.Td>
-                                    <Flex justify='center' align='center'>
-                                        <IconEdit
-                                            color={"#199ff4"}
-                                            size={20}
-                                            stroke={2}
-                                            onClick={() => onClickEdit(sensor)}
-                                            style={{ cursor: "pointer" }}
-                                        />
-                                        <IconEdit
-                                            color={"green"}
-                                            size={20}
-                                            stroke={2}
-                                            onClick={() => onClickThresholds(sensor)}
-                                            style={{ cursor: "pointer" }}
-                                        />
-                                    </Flex>
-                                </Table.Td>
-                            }
-                        </Table.Tr>
+                        <SensorRow sensor={sensor} index={index}></SensorRow>
                     ))}
                     </Table.Tbody>
                 </Table>
