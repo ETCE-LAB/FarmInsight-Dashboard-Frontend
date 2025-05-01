@@ -159,7 +159,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                             label={t("controllableActionList.trigger.type")}
                             placeholder={t("controllableActionList.trigger.enterType")}
                             required
-                            data={["manual", "timer", "sensor", "event"]}
+                            data={["manual", "timeOfDay", "sensorValue", "event"]}
                             value={type}
                             onChange={setType}
                             description={t("controllableActionList.trigger.hint.typeHint")}

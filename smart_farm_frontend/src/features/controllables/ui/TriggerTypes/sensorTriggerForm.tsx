@@ -20,7 +20,7 @@ export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.S
 
         if(sensorId != "" && operator != "" && value != ""){
             //{comparison: "between", from: 6:00, to:18:00}
-            let jsonString = "{\"sensorID\":"+ sensorId + ", \"comparison\":\""+ operator +"\", \"value\":\""+ value + "\"}"
+            let jsonString = "{\"sensorId\":"+ sensorId + ", \"comparison\":\""+ operator +"\", \"value\":\""+ value + "\"}"
             setTriggerLogic(jsonString)
         }
     }, [sensorId, operator, value]);
