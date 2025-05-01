@@ -10,16 +10,24 @@ import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
 import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 import {useTranslation} from "react-i18next";
-import {getIsoStringFromDate, getSensorStateColor, getWsUrl} from "../../../utils/utils";
+import {getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import useWebSocket from "react-use-websocket";
+import {getUser} from "../../../utils/getUser";
+import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
+import {SystemRole} from "../../userProfile/models/UserProfile";
 
 export const StatusPage = () => {
     const auth = useAuth();
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const { t } = useTranslation();
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         if (auth.isAuthenticated) {
+            receiveUserProfile().then((user) => {
+                setIsAdmin(user.systemRole === SystemRole.ADMIN);
+            });
+
             getMyOrganizations().then(orgs => {
                 if (orgs !== undefined)
                     setOrganizations(orgs)
@@ -115,10 +123,12 @@ export const StatusPage = () => {
 
     return (
         <Container size="xl">
-            <Card>
-                <Title order={2}>{t('log.systemMessages')}</Title>
-                <LogMessageList resourceType={ResourceType.ADMIN} />
-            </Card>
+            {isAdmin &&
+                <Card>
+                    <Title order={2}>{t('log.systemMessages')}</Title>
+                    <LogMessageList resourceType={ResourceType.ADMIN} />
+                </Card>
+            }
             <Flex mt="lg" gap="lg" direction='column'>
                 {organizations && (organizations.map(org =>
                     <OrgOverview id={org.id} />

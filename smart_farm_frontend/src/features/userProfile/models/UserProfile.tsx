@@ -7,3 +7,7 @@ export interface UserProfile{
     systemRole:string
 }
 
+export enum SystemRole {
+    ADMIN = 'admin',
+    USER = 'user',
+}
