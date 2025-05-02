@@ -353,6 +353,8 @@ i18n
                         latitude: 'Latitude',
                         longitude: 'Longitude',
                         gatherForecasts: 'Gather Forecasts',
+                        gatherForecastsNotActive: 'No Forecasts',
+                        gatherForecastsActive: 'Gathers Forecast',
                         buttons:{
                             showForm: 'Create new Location',
                             hideForm: 'Hide ',
@@ -735,7 +737,9 @@ i18n
                         houseNumber: 'Hausnummer',
                         latitude: 'Breitengrad',
                         longitude: 'Längengrad',
-                        gatherForecasts: 'Vorhersagen abrufen',
+                        gatherForecasts:'Wettervorhersage',
+                        gatherForecastsActive: 'Vorhersagen werden gesammelt',
+                        gatherForecastsNotActive: 'Keine Vorhersagen',
                         buttons: {
                             showForm: 'Neuen Standort erstellen',
                             hideForm: 'Ausblenden',
@@ -1089,6 +1093,8 @@ i18n
                     latitude: 'Latitude',
                     longitude: 'Longitude',
                     gatherForecasts: 'Rassembler les prévisions',
+                    gatherForecastsNotActive: 'No Forecasts',
+                    gatherForecastsActive: 'Gathers Forecast',
                     buttons: {
                         showForm: 'Créer un nouvel emplacement',
                         hideForm: 'Masquer ',
@@ -1420,6 +1426,8 @@ i18n
                     latitude: 'Latitudine',
                     longitude: 'Longitudine',
                     gatherForecasts: 'Raccogli previsioni',
+                    gatherForecastsNotActive: 'No Forecasts',
+                    gatherForecastsActive: 'Gathers Forecast',
                     buttons: {
                         showForm: 'Crea nuova località',
                         hideForm: 'Nascondi ',
@@ -1768,6 +1776,8 @@ i18n
                     latitude: '纬度',
                     longitude: '经度',
                     gatherForecasts: '收集预报',
+                    gatherForecastsNotActive: 'No Forecasts',
+                    gatherForecastsActive: 'Gathers Forecast',
                     buttons: {
                         showForm: '创建新位置',
                         hideForm: '隐藏',
@@ -2115,6 +2125,8 @@ i18n
                     latitude: 'Широта',
                     longitude: 'Долгота',
                     gatherForecasts: 'Собрать прогнозы',
+                    gatherForecastsNotActive: 'No Forecasts',
+                    gatherForecastsActive: 'Gathers Forecast',
                     noLocation:'Nет местоположения',
                     buttons: {
                         showForm: 'Создать новое местоположение',
