@@ -32,7 +32,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
     const [type, setType] = useState<string>("");
     const [actionValueType, setActionValueType] = useState<string>("");
     const [actionValue, setActionValue] = useState<string>("");
-    const [triggerLogic, setTriggerLogic] = useState<string>("");
+    const [triggerLogic, setTriggerLogic] = useState<string>("{}");
     const [description, setDescription] = useState<string>("");
     const [isActive, setIsActive] = useState<boolean>(false);
 

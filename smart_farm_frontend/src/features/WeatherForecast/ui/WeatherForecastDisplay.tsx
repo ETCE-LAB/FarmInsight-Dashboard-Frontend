@@ -220,7 +220,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                 </Carousel>
 
             ): (
-                    <Group  mb="xs"   justify={isMobile ? "center" : "space-between"} >
+                    <Group  mb="xs" justify={isMobile ? "center" : "space-between"} >
                         { weatherForecasts.map((forecast, index) => (
                             <Card  padding="md" radius="lg" withBorder key={index}
                                    style={
