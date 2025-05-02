@@ -14,6 +14,7 @@ import {createActionTrigger} from "../useCase/createActionTrigger";
 import {addActionTrigger} from "../state/ControllableActionSlice";
 import {SensorTriggerForm} from "./TriggerTypes/sensorTriggerForm";
 import {TimeTriggeForm} from "./TriggerTypes/timeTriggeForm";
+import {triggerTypes} from "../models/triggerTypes";
 
 export type ActionScriptField = {
   name: string;
@@ -31,7 +32,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
     const [type, setType] = useState<string>("");
     const [actionValueType, setActionValueType] = useState<string>("");
     const [actionValue, setActionValue] = useState<string>("");
-    const [triggerLogic, setTriggerLogic] = useState<string>("");
+    const [triggerLogic, setTriggerLogic] = useState<string>("{}");
     const [description, setDescription] = useState<string>("");
     const [isActive, setIsActive] = useState<boolean>(false);
 
@@ -159,7 +160,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                             label={t("controllableActionList.trigger.type")}
                             placeholder={t("controllableActionList.trigger.enterType")}
                             required
-                            data={["manual", "timeOfDay", "sensorValue", "event"]}
+                            data={[triggerTypes.manuel, triggerTypes.sensorvalue, triggerTypes.timeofday, triggerTypes.event]}
                             value={type}
                             onChange={setType}
                             description={t("controllableActionList.trigger.hint.typeHint")}
@@ -205,13 +206,13 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
                         {/* triggerLogic */}
                         {/* ...For Sensor */}
-                        {type.toLowerCase() === 'sensorvalue' && (
+                        {type.toLowerCase() === triggerTypes.sensorvalue.toLowerCase() && (
                         <Grid.Col span={12}>
                             <SensorTriggerForm setTriggerLogic={setTriggerLogic}/>
                         </Grid.Col>
                         )}
                         {/* ...For Time */}
-                        {type.toLowerCase() === 'timeofday' && (
+                        {type.toLowerCase() === triggerTypes.timeofday.toLowerCase() && (
                             <Grid.Col span={12}>
                                 <TimeTriggeForm setTriggerLogic={setTriggerLogic}/>
                             </Grid.Col>

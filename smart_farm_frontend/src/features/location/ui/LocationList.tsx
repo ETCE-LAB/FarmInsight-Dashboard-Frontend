@@ -1,5 +1,5 @@
 import {useTranslation} from "react-i18next";
-import {Box, Flex, Group, Modal, Table} from "@mantine/core";
+import {Badge, Box, Flex, Group, Modal, Table} from "@mantine/core";
 import {IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import React, {useEffect, useState} from "react";
 import {Location} from "../models/location";
@@ -99,7 +99,11 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
                                 <Table.Td>{location.houseNumber}</Table.Td>
                                 <Table.Td>{location.latitude}</Table.Td>
                                 <Table.Td>{location.longitude}</Table.Td>
-                                <Table.Td>{location.gatherForecasts? (t("location.text.isActive")):(t("location.text.isNotActive"))}</Table.Td>
+                                <Table.Td>
+                                    <Badge color={location.gatherForecasts ? "green" : "gray"}>
+                                        {location.gatherForecasts ? t('location.gatherForecastsActive') : t('location.gatherForecastsNotActive')}
+                                    </Badge>
+                                </Table.Td>
                                 {isAdmin &&
                                     <Table.Td>
                                         <Flex justify='center' align='center'>

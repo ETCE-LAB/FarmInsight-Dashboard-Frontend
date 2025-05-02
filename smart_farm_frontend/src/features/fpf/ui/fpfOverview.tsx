@@ -190,7 +190,7 @@ export const FpfOverview = () => {
                 </Box>
             ) : (
                 // Desktop layout with two separate scrollable areas
-                <SimpleGrid cols={2} spacing="lg" style={{ height: '88vh', overflow: 'hidden' }}>
+                <SimpleGrid cols={2} spacing="xs" style={{ height: '88vh', overflow: 'hidden' }}>
                     {/* Left section: Sensor Graphs */}
                     <Box style={scrollableStyle}>
                         {/*Weather Forecast */}
