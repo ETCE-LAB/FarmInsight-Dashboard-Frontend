@@ -1,5 +1,6 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
+import {BACKEND_URL} from "../../../env-config";
 
 
 export const deleteThreshold = async (thresholdId:string) => {
@@ -13,7 +14,7 @@ export const deleteThreshold = async (thresholdId:string) => {
         'Content-Type': 'application/json', // Ensure proper content type for JSON payload
     };
 
-    const url = `${process.env.REACT_APP_BACKEND_URL}/api/thresholds/${thresholdId}`;
+    const url = `${BACKEND_URL}/api/thresholds/${thresholdId}`;
 
     const result: Promise<Response | undefined> = apiClient.delete(url, headers);
     return result;

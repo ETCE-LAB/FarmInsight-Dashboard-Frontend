@@ -80,7 +80,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                 onClose={() => setActionTriggerModalOpen(false)}
                 title={!selectedTrigger ? t("controllableActionList.trigger.addAction") : t("controllableActionList.trigger.editAction")}
                 centered
-                size="40%"
+                size="70%"
             >
                 <ActionTriggerForm actionId={selectedActionId} toEditTrigger={selectedTrigger} setClosed={setActionTriggerModalOpen} />
             </Modal>

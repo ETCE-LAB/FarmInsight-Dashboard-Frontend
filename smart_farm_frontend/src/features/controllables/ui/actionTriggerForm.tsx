@@ -9,14 +9,11 @@ import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
-import {ControllableAction} from "../models/controllableAction";
-import {Hardware} from "../models/hardware";
-import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
-import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
-import {createControllableAction} from "../useCase/createControllableAction";
 import {ActionTrigger} from "../models/actionTrigger";
 import {createActionTrigger} from "../useCase/createActionTrigger";
 import {addActionTrigger} from "../state/ControllableActionSlice";
+import {SensorTriggerForm} from "./TriggerTypes/sensorTriggerForm";
+import {TimeTriggeForm} from "./TriggerTypes/timeTriggeForm";
 
 export type ActionScriptField = {
   name: string;
@@ -162,11 +159,23 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                             label={t("controllableActionList.trigger.type")}
                             placeholder={t("controllableActionList.trigger.enterType")}
                             required
-                            data={["manual", "timer", "sensor", "event"]}
+                            data={["manual", "timeOfDay", "sensorValue", "event"]}
                             value={type}
                             onChange={setType}
                             description={t("controllableActionList.trigger.hint.typeHint")}
                           />
+                        </Grid.Col>
+
+                        {/* Description */}
+                        <Grid.Col span={6}>
+                            <TextInput
+                                label={t("controllableActionList.trigger.description")}
+                                placeholder={t("controllableActionList.trigger.enterDescription")}
+                                required
+                                value={description}
+                                onChange={(e) => setDescription(e.currentTarget.value)}
+                                description={t("controllableActionList.trigger.hint.descriptionHint")}
+                            />
                         </Grid.Col>
 
                         {/* actionValueType */}
@@ -195,19 +204,31 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                         </Grid.Col>
 
                         {/* triggerLogic */}
-                        <Grid.Col span={6}>
+                        {/* ...For Sensor */}
+                        {type.toLowerCase() === 'sensorvalue' && (
+                        <Grid.Col span={12}>
+                            <SensorTriggerForm setTriggerLogic={setTriggerLogic}/>
+                        </Grid.Col>
+                        )}
+                        {/* ...For Time */}
+                        {type.toLowerCase() === 'timeofday' && (
+                            <Grid.Col span={12}>
+                                <TimeTriggeForm setTriggerLogic={setTriggerLogic}/>
+                            </Grid.Col>
+                        )}
+
+                        {/* generated JSON String */}
+                        <Grid.Col span={12}>
                             <TextInput
                                 label={t("controllableActionList.trigger.triggerLogic")}
-                                placeholder={t("controllableActionList.trigger.enterTriggerLogic")}
-                                required
                                 value={triggerLogic}
-                                onChange={(e) => setTriggerLogic(e.currentTarget.value)}
+                                readOnly
                                 description={t("controllableActionList.trigger.hint.triggerLogicHint")}
                             />
                         </Grid.Col>
 
                          {/* Active Switch */}
-                        <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                        <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop:"-3vh" }}>
                             <Text style={{marginTop:"1rem"}}>{t("header.isActive")}</Text>
                             <Switch
                                 onLabel={<IconMobiledata size={16} />}
@@ -218,20 +239,8 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                             />
                         </Grid.Col>
 
-                        {/* Description */}
-                        <Grid.Col span={6}>
-                            <TextInput
-                                label={t("controllableActionList.trigger.description")}
-                                placeholder={t("controllableActionList.trigger.enterDescription")}
-                                required
-                                value={description}
-                                onChange={(e) => setDescription(e.currentTarget.value)}
-                                description={t("controllableActionList.trigger.hint.descriptionHint")}
-                            />
-                        </Grid.Col>
-
                         {/* Submit Button */}
-                        <Grid.Col span={12}>
+                        <Grid.Col span={6}>
                             <Box mt="md" style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px' }}>
                                 <Button type="submit" variant="filled" color="#105385" style={{ margin: '10px' }}>
                                     {toEditTrigger?.id ? t("userprofile.saveChanges") : t("controllableActionList.addControllable")}
