@@ -33,7 +33,7 @@ export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.S
                 const response = await getFpf(fpfId);
                 const sensors = (response?.Sensors ?? []).map((sensor: any): { value: string; label: string } => ({
                     value: sensor.id,
-                    label: sensor.name + " : " + sensor.id,
+                    label: sensor.name + " ; Unit: " + sensor.unit + " ; " + sensor.parameter,
                 }));
                 setSensorsToDisplay(sensors);  // update state once
                 // setAvailableSensors(response.Sensors); // if you still need this
@@ -68,7 +68,6 @@ export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.S
                             value={operator}
                             onChange={setOperator}
                         />
-                        <IconHelp/>
                     </Grid.Col>
                     <Grid.Col span={4}>
                         <NumberInput

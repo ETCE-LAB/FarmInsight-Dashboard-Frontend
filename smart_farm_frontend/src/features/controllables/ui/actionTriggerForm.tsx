@@ -205,13 +205,13 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
                         {/* triggerLogic */}
                         {/* ...For Sensor */}
-                        {type.toLowerCase() === 'sensor' && (
+                        {type.toLowerCase() === 'sensorvalue' && (
                         <Grid.Col span={12}>
                             <SensorTriggerForm setTriggerLogic={setTriggerLogic}/>
                         </Grid.Col>
                         )}
                         {/* ...For Time */}
-                        {type.toLowerCase() === 'timer' && (
+                        {type.toLowerCase() === 'timeofday' && (
                             <Grid.Col span={12}>
                                 <TimeTriggeForm setTriggerLogic={setTriggerLogic}/>
                             </Grid.Col>
@@ -222,7 +222,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                             <TextInput
                                 label={t("controllableActionList.trigger.triggerLogic")}
                                 value={triggerLogic}
-                                onChange={(e) => setTriggerLogic(e.currentTarget.value)}
+                                readOnly
                                 description={t("controllableActionList.trigger.hint.triggerLogicHint")}
                             />
                         </Grid.Col>
