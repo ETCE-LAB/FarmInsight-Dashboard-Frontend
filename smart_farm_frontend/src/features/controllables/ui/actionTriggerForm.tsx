@@ -206,13 +206,13 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
                         {/* triggerLogic */}
                         {/* ...For Sensor */}
-                        {type.toLowerCase() === triggerTypes.sensorvalue && (
+                        {type.toLowerCase() === triggerTypes.sensorvalue.toLowerCase() && (
                         <Grid.Col span={12}>
                             <SensorTriggerForm setTriggerLogic={setTriggerLogic}/>
                         </Grid.Col>
                         )}
                         {/* ...For Time */}
-                        {type.toLowerCase() === triggerTypes.timeofday && (
+                        {type.toLowerCase() === triggerTypes.timeofday.toLowerCase() && (
                             <Grid.Col span={12}>
                                 <TimeTriggeForm setTriggerLogic={setTriggerLogic}/>
                             </Grid.Col>
