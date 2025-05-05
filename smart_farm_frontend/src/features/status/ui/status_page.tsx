@@ -4,7 +4,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useAuth} from "react-oidc-context";
 import {Organization} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
-import {Badge, Card, Container, Flex, Table, Title} from "@mantine/core";
+import {Card, Container, Flex, Table, Title} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
 import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
@@ -15,6 +15,7 @@ import useWebSocket from "react-use-websocket";
 import {getUser} from "../../../utils/getUser";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
+import {IconCircleFilled} from "@tabler/icons-react";
 
 export const StatusPage = () => {
     const auth = useAuth();
@@ -59,7 +60,12 @@ export const StatusPage = () => {
         return (
             <Table.Tr>
                 <Table.Td>{sensor.name}</Table.Td>
-                <Table.Td><Badge color={statusColor}>{!isActive && (<>{t("camera.inactive")}</>)}</Badge></Table.Td>
+                <Table.Td>
+                    <Flex align="center" gap="xs">
+                        <IconCircleFilled size={16} color={statusColor} />
+                        {!isActive && <span>{t("camera.inactive")}</span>}
+                    </Flex>
+                </Table.Td>
                 <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>
             </Table.Tr>
         )
@@ -135,13 +141,13 @@ export const StatusPage = () => {
                 ))}
                 <Flex gap='lg' justify="end" mr="md">
                     <Flex gap="sm" align="center">
-                        <Badge color="green"></Badge> {t('overview.green')}
+                        <IconCircleFilled size={16} color="green" /> {t("overview.green")}
                     </Flex>
                     <Flex gap="sm" align="center">
-                        <Badge color="yellow"></Badge> {t('overview.yellow')}
+                        <IconCircleFilled size={16} color="yellow" /> {t('overview.yellow')}
                     </Flex>
                     <Flex gap="sm" align="center">
-                        <Badge color="red"></Badge> {t('overview.red')}
+                        <IconCircleFilled size={16} color="red" /> {t('overview.red')}
                     </Flex>
                 </Flex>
             </Flex>

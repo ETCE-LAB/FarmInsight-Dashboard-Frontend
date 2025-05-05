@@ -23,6 +23,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import {getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import {Threshold} from "../../threshold/models/threshold";
 import {LabelPosition} from "recharts/types/component/Label";
+import {IconCircleFilled} from "@tabler/icons-react";
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string }| null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
@@ -150,7 +151,14 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
                     <HoverCard>
                         <HoverCard.Target>
-                            <Badge color={getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds)}></Badge>
+                            <IconCircleFilled
+                                size={16}
+                                color={getSensorStateColor(
+                                    new Date(sensor.lastMeasurement.measuredAt),
+                                    sensor.isActive,
+                                    sensor.intervalSeconds
+                                )}
+                            />
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
                             <Text size="sm">
