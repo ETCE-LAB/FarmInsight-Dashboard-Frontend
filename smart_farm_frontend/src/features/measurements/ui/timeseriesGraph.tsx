@@ -16,12 +16,11 @@ import {
     Box,
     useMantineTheme,
     HoverCard,
-    Badge,
 } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import { useMediaQuery } from '@mantine/hooks';
-import { getSensorStateColor, getWsUrl } from "../../../utils/utils";
+import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
@@ -33,9 +32,6 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const isMobile = useMediaQuery('(max-width: 768px)');
-
-    const formatHarvestAmount = (value: number): string =>
-        value % 1 === 0 ? value.toString() : value.toFixed(2);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -159,7 +155,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                 {currentMeasurement ? (
                                     <>
                                         <Text size="xl" fw={700}>
-                                            {formatHarvestAmount(currentMeasurement.value)} {sensor.unit}
+                                            {formatFloatValue(currentMeasurement.value)} {sensor.unit}
                                         </Text>
                                         <Text size="sm" c="dimmed">
                                             {new Date(currentMeasurement.measuredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -172,7 +168,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                                 {previousMeasurements.map((m, idx) => (
                                                     <Box key={idx} p="sm" style={{ margin: '0 5px', minWidth: 85, textAlign: 'center' }}>
                                                         <Text size="md" fw={500}>
-                                                            {formatHarvestAmount(m.value)} {sensor.unit}
+                                                            {formatFloatValue(m.value)} {sensor.unit}
                                                         </Text>
                                                         <Text size="sm" c="dimmed">
                                                             {new Date(m.measuredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -251,7 +247,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                                         </strong>
                                                         {payload.map((item) => (
                                                             <Flex key={item.name}>
-                                                                {formatHarvestAmount(item.value)}{sensor.unit}
+                                                                {formatFloatValue(item.value)}{sensor.unit}
                                                             </Flex>
                                                         ))}
                                                     </Card>

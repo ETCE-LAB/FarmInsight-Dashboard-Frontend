@@ -10,12 +10,13 @@ import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
 import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 import {useTranslation} from "react-i18next";
-import {getSensorStateColor, getWsUrl} from "../../../utils/utils";
+import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import useWebSocket from "react-use-websocket";
 import {getUser} from "../../../utils/getUser";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
 import {IconCircleFilled} from "@tabler/icons-react";
+import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 
 export const StatusPage = () => {
     const auth = useAuth();
@@ -40,7 +41,7 @@ export const StatusPage = () => {
         let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
         const [statusColor, setStatusColor] = useState(getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds));
         const [measuredAt, setMeasuredAt] = useState(new Date(sensor.lastMeasurement.measuredAt));
-        const [isActive, setIsActive] = useState(sensor.isActive);
+        const [lastValue, setLastValue] = useState<string>(formatFloatValue(sensor.lastMeasurement?.value));
 
         useEffect(() => {
             if (!lastMessage) return;
@@ -51,7 +52,7 @@ export const StatusPage = () => {
                 // this won't realize when it gets turned off but there's no mechanism for that and won't really be noticed
                 setStatusColor(getSensorStateColor(newDate, true, sensor.intervalSeconds));
                 setMeasuredAt(newDate);
-                setIsActive(true);
+                setLastValue(data.measurement.at(-1).value);
             } catch (err) {
                 console.error("Error processing WebSocket message:", err);
             }
@@ -63,10 +64,11 @@ export const StatusPage = () => {
                 <Table.Td>
                     <Flex align="center" gap="xs">
                         <IconCircleFilled size={20} color={statusColor} />
-                        {!isActive && <span>{t("camera.inactive")}</span>}
                     </Flex>
                 </Table.Td>
                 <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>
+                <Table.Td>{lastValue}</Table.Td>
+                <Table.Td><LogMessageModalButton resourceType={ResourceType.SENSOR} resourceId={sensor.id} /></Table.Td>
             </Table.Tr>
         )
     } 
@@ -83,13 +85,18 @@ export const StatusPage = () => {
             <Card withBorder>
                 {fpf &&
                     <>
-                        <Title order={3}> {fpf.name} </Title>
+                        <Flex justify="space-between">
+                            <Title order={3}> {fpf.name} </Title>
+                            <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpf.id} />
+                        </Flex>
                         <Table withColumnBorders>
                             <Table.Thead>
                                 <Table.Tr>
                                     <Table.Th>{t('sensorList.name')}</Table.Th>
                                     <Table.Th>{t('header.status')}</Table.Th>
                                     <Table.Th>{t('sensor.lastMeasurementAt')}</Table.Th>
+                                    <Table.Th>{t('sensor.lastValue')}</Table.Th>
+                                    <Table.Th>{t('log.showMessages')}</Table.Th>
                                 </Table.Tr>
                             </Table.Thead>
                             <Table.Tbody>
@@ -116,7 +123,10 @@ export const StatusPage = () => {
             <Card >
                 {organization &&
                     <>
-                        <Title order={2}> {organization.name} </Title>
+                        <Flex justify="space-between">
+                            <Title order={2}> {organization.name} </Title>
+                            <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organization.id} />
+                        </Flex>
                         <Flex gap="lg" mt="lg">
                             {organization.FPFs.map(fpf =>
                                 <FpfOverview id={fpf.id} />
@@ -148,6 +158,9 @@ export const StatusPage = () => {
                     </Flex>
                     <Flex gap="sm" align="center">
                         <IconCircleFilled size={20} color="red" /> {t('overview.red')}
+                    </Flex>
+                    <Flex gap="sm" align="center">
+                        <IconCircleFilled size={20} color="grey" /> {t('camera.inactive')}
                     </Flex>
                 </Flex>
             </Flex>
