@@ -62,7 +62,7 @@ export const StatusPage = () => {
                 <Table.Td>{sensor.name}</Table.Td>
                 <Table.Td>
                     <Flex align="center" gap="xs">
-                        <IconCircleFilled size={16} color={statusColor} />
+                        <IconCircleFilled size={20} color={statusColor} />
                         {!isActive && <span>{t("camera.inactive")}</span>}
                     </Flex>
                 </Table.Td>
@@ -141,13 +141,13 @@ export const StatusPage = () => {
                 ))}
                 <Flex gap='lg' justify="end" mr="md">
                     <Flex gap="sm" align="center">
-                        <IconCircleFilled size={16} color="green" /> {t("overview.green")}
+                        <IconCircleFilled size={20} color="green" /> {t("overview.green")}
                     </Flex>
                     <Flex gap="sm" align="center">
-                        <IconCircleFilled size={16} color="yellow" /> {t('overview.yellow')}
+                        <IconCircleFilled size={20} color="yellow" /> {t('overview.yellow')}
                     </Flex>
                     <Flex gap="sm" align="center">
-                        <IconCircleFilled size={16} color="red" /> {t('overview.red')}
+                        <IconCircleFilled size={20} color="red" /> {t('overview.red')}
                     </Flex>
                 </Flex>
             </Flex>

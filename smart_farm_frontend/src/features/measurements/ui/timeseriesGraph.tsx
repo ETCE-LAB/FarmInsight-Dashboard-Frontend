@@ -15,34 +15,28 @@ import {
     Text,
     Box,
     useMantineTheme,
-    HoverCard, Badge
+    HoverCard,
+    Badge,
 } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import { useMediaQuery } from '@mantine/hooks';
-import {getSensorStateColor, getWsUrl} from "../../../utils/utils";
-import {Threshold} from "../../threshold/models/threshold";
-import {LabelPosition} from "recharts/types/component/Label";
-import {IconCircleFilled} from "@tabler/icons-react";
+import { getSensorStateColor, getWsUrl } from "../../../utils/utils";
+import { Threshold } from "../../threshold/models/threshold";
+import { LabelPosition } from "recharts/types/component/Label";
+import { IconCircleFilled } from "@tabler/icons-react";
 
-const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string }| null }> = ({ sensor, dates }) => {
+const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: string } | null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
-    const [minXValue, setMinXValue] = useState<number>(10);
-    const [maxXValue, setMaxXValue] = useState<number>(10);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const isMobile = useMediaQuery('(max-width: 768px)');
 
-    // Helper function to format the harvest amount
-    // If the value has a fractional part, display with two decimals;
-    // otherwise display as an integer.
-    const formatHarvestAmount = (value: number): string => {
-        return value % 1 === 0 ? value.toString() : value.toFixed(2);
-    };
+    const formatHarvestAmount = (value: number): string =>
+        value % 1 === 0 ? value.toString() : value.toFixed(2);
 
-    // Helper function to format date as dd.mm
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const day = date.getDate().toString().padStart(2, '0');
@@ -50,7 +44,9 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
         return `${day}.${month}`;
     };
 
-    let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, { shouldReconnect: () => true });
+    const { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, {
+        shouldReconnect: () => true,
+    });
 
     useEffect(() => {
         if (lastMessage) {
@@ -76,7 +72,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                 if (!resp) throw new Error("Failed to fetch measurements.");
                 const roundedMeasurements = resp.map(m => ({
                     ...m,
-                    value: parseFloat(m.value.toFixed(1))
+                    value: parseFloat(m.value.toFixed(1)),
                 }));
                 setMeasurements(roundedMeasurements);
             })
@@ -88,71 +84,52 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
     }, [measurementReceivedEventListener, dates]);
 
     useEffect(() => {
-        if (measurements.length > 0) {
-            const values = measurements.map(m => m.value);
-            setMinXValue(parseFloat((Math.min(...values) - 5).toFixed(1)));
-            setMaxXValue(parseFloat((Math.max(...values) + 5).toFixed(1)));
-        }
-    }, [measurements]);
-
-    useEffect(() => {
         if (error) {
             const timer = setTimeout(() => setError(null), 5000);
             return () => clearTimeout(timer);
         }
     }, [error]);
 
-    // Current measurement and previous three values
     const currentMeasurement = measurements.length > 0 ? measurements[measurements.length - 1] : null;
     const previousMeasurements = measurements.length > 1
         ? measurements.slice(Math.max(0, measurements.length - 4), measurements.length - 1)
         : [];
 
     const getThresholdLines = (thresholds: Threshold[]) => {
-        let lines = []
+        const lines: any[] = [];
         try {
             for (const t of thresholds) {
-                if (t.lowerBound && !t.upperBound) {
-                    lines.push({y: t.lowerBound, label: t.description, color: t.color});
+                if (t.lowerBound != null && t.upperBound == null) {
+                    lines.push({ y: t.lowerBound, label: t.description, color: t.color });
                 }
-                if (t.upperBound && !t.lowerBound) {
+                if (t.upperBound != null && t.lowerBound == null) {
                     lines.push({
                         y: t.upperBound,
                         label: t.description,
                         color: t.color,
-                        labelPosition: 'insideTopLeft' as LabelPosition
+                        labelPosition: 'insideTopLeft' as LabelPosition,
                     });
                 }
-                if (t.upperBound && t.lowerBound) {
-                    lines.push({y: t.lowerBound, label: t.description, color: t.color});
-                    lines.push({y: t.upperBound, color: t.color});
+                if (t.upperBound != null && t.lowerBound != null) {
+                    lines.push({ y: t.lowerBound, label: t.description, color: t.color });
+                    lines.push({ y: t.upperBound, color: t.color });
                 }
             }
-        }
-        catch (e) {
+        } catch (e) {
             console.error("Error processing thresholds:", e);
         }
-
         return lines;
-    }
+    };
 
     return (
         <Flex style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
             <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
-            <Card
-                p="md"
-                radius="md"
-                style={{
-                    marginBottom: '20px',
-                    width: "100%",
-                    boxSizing: 'border-box'
-                }}
-            >
+            <Card p="md" radius="md" style={{ marginBottom: '20px', width: "100%", boxSizing: 'border-box' }}>
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
                     <HoverCard>
                         <HoverCard.Target>
                             <IconCircleFilled
-                                size={16}
+                                size={20}
                                 color={getSensorStateColor(
                                     new Date(sensor.lastMeasurement.measuredAt),
                                     sensor.isActive,
@@ -162,12 +139,13 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
                             <Text size="sm">
-                                {`last value: ${new Date(sensor?.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
+                                {`last value: ${new Date(sensor.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
                             </Text>
                         </HoverCard.Dropdown>
                     </HoverCard>
-                    <Title order={4} c={theme.colors.blue[6]}>{sensor?.name}</Title>
+                    <Title order={4} c={theme.colors.blue[6]}>{sensor.name}</Title>
                 </Flex>
+
                 {error ? (
                     <Center style={{ height: '250px' }}>
                         <Notification color="red" onClose={() => setError(null)}>
@@ -177,12 +155,11 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                 ) : (
                     <>
                         {isMobile ? (
-                            // Mobile view: current value with time and date, and last three measurements with time and date
                             <Center style={{ flexDirection: 'column', width: '100%' }}>
                                 {currentMeasurement ? (
                                     <>
                                         <Text size="xl" fw={700}>
-                                            {formatHarvestAmount(currentMeasurement.value)} {sensor?.unit}
+                                            {formatHarvestAmount(currentMeasurement.value)} {sensor.unit}
                                         </Text>
                                         <Text size="sm" c="dimmed">
                                             {new Date(currentMeasurement.measuredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -192,18 +169,10 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                                         </Text>
                                         {previousMeasurements.length > 0 && (
                                             <Flex gap="xs" mt="sm" justify="center">
-                                                {previousMeasurements.map((m, index) => (
-                                                    <Box
-                                                        key={index}
-                                                        p="sm"
-                                                        style={{
-                                                            margin: '0 5px',
-                                                            minWidth: 85,
-                                                            textAlign: 'center',
-                                                        }}
-                                                    >
+                                                {previousMeasurements.map((m, idx) => (
+                                                    <Box key={idx} p="sm" style={{ margin: '0 5px', minWidth: 85, textAlign: 'center' }}>
                                                         <Text size="md" fw={500}>
-                                                            {formatHarvestAmount(m.value)} {sensor?.unit}
+                                                            {formatHarvestAmount(m.value)} {sensor.unit}
                                                         </Text>
                                                         <Text size="sm" c="dimmed">
                                                             {new Date(m.measuredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -221,7 +190,6 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                                 )}
                             </Center>
                         ) : (
-                            // Desktop view: show chart only if there are measurements, else show text
                             measurements.length === 0 ? (
                                 <Center style={{ height: '250px' }}>
                                     <Text c="dimmed">No data</Text>
@@ -233,16 +201,38 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                                     activeDotProps={{ r: 6, strokeWidth: 1 }}
                                     data={measurements.slice(-50)}
                                     dataKey="measuredAt"
-                                    series={[{ name: "value", color: theme.colors.blue[6], label: sensor?.unit }]}
+                                    series={[{ name: "value", color: theme.colors.blue[6], label: sensor.unit }]}
                                     curveType="monotone"
                                     style={{ borderRadius: '5px', padding: '10px', width: "100%" }}
                                     xAxisProps={{
-                                        tickFormatter: (dateString) => {
+                                        tickFormatter: (dateString: string) => {
                                             const date = new Date(dateString);
-                                            return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit' });
-                                        }
+                                            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        },
                                     }}
-                                    yAxisProps={{ domain: [minXValue, maxXValue] }}
+                                    // Hier die neue domain-Logik:
+                                    yAxisProps={{
+                                        domain: [
+                                            (dataMin: number) => {
+                                                const lowerBounds = sensor.thresholds
+                                                    .map(t => t.lowerBound)
+                                                    .filter((v): v is number => typeof v === 'number');
+                                                const thresholdMin = lowerBounds.length > 0
+                                                    ? Math.min(...lowerBounds)
+                                                    : dataMin;
+                                                return Math.min(dataMin, thresholdMin);
+                                            },
+                                            (dataMax: number) => {
+                                                const upperBounds = sensor.thresholds
+                                                    .map(t => t.upperBound)
+                                                    .filter((v): v is number => typeof v === 'number');
+                                                const thresholdMax = upperBounds.length > 0
+                                                    ? Math.max(...upperBounds)
+                                                    : dataMax;
+                                                return Math.max(dataMax, thresholdMax);
+                                            }
+                                        ]
+                                    }}
                                     h={250}
                                     tooltipAnimationDuration={200}
                                     tooltipProps={{
@@ -261,7 +251,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                                                         </strong>
                                                         {payload.map((item) => (
                                                             <Flex key={item.name}>
-                                                                {formatHarvestAmount(item.value)}{sensor?.unit}
+                                                                {formatHarvestAmount(item.value)}{sensor.unit}
                                                             </Flex>
                                                         ))}
                                                     </Card>

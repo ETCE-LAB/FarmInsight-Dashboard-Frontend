@@ -10,7 +10,7 @@ import { useAuth } from "react-oidc-context";
 export const BasicAppShell: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     const auth = useAuth();
     const location = useLocation();
-    const noNavbarRoutes = [AppRoutes.base, AppRoutes.statusOverview];
+    const noNavbarRoutes = [AppRoutes.base, AppRoutes.statusOverview, AppRoutes.legalNotice];
     const showNavbar = auth.isAuthenticated && !noNavbarRoutes.includes(location.pathname);
     const navigate = useNavigate();
     const [opened, setOpened] = useState(false);
