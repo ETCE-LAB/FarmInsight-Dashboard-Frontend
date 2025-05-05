@@ -152,7 +152,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor, dates:{from:string, to:string 
                     <HoverCard>
                         <HoverCard.Target>
                             <IconCircleFilled
-                                size={16}
+                                size={20}
                                 color={getSensorStateColor(
                                     new Date(sensor.lastMeasurement.measuredAt),
                                     sensor.isActive,
