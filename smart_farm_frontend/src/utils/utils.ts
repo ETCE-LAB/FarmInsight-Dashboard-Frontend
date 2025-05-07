@@ -1,5 +1,11 @@
 import {BACKEND_URL} from "../env-config";
 
+export const formatFloatValue = (value: number): string => {
+    if (value)
+        return value % 1 === 0 ? value.toString() : value.toFixed(2);
+
+    return '';
+}
 
 export const getIsoStringFromDate = (date: Date): string => {
     const year = date.getUTCFullYear();

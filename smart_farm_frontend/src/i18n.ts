@@ -117,6 +117,7 @@ i18n
                         title: 'Sensors',
                         noSensorsFound: 'No Sensor found',
                         lastMeasurementAt: 'Last measurement at',
+                        lastValue: 'Last value',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -503,6 +504,7 @@ i18n
                         title: 'Sensoren',
                         noSensorsFound: 'Kein Sensor gefunden',
                         lastMeasurementAt: "Letzer Wert empfangen",
+                        lastValue: 'Letzter Wert',
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
