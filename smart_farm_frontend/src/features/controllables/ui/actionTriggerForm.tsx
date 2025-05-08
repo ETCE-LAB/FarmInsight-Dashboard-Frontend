@@ -11,6 +11,8 @@ import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
 import {ActionTrigger} from "../models/actionTrigger";
 import {createActionTrigger} from "../useCase/createActionTrigger";
+import {updateActionTrigger} from "../useCase/updateActionTrigger";
+import {addActionTrigger, updateActionTriggerNotify} from "../state/ControllableActionSlice";
 import {addActionTrigger, selectControllableActionById} from "../state/ControllableActionSlice";
 import {SensorTriggerForm} from "./TriggerTypes/sensorTriggerForm";
 import {TimeTriggerForm} from "./TriggerTypes/timeTriggerForm";
@@ -32,11 +34,14 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
     const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch();
 
+    const [triggerId, setTriggerId] = useState<string>("")
     const [type, setType] = useState<string>("");
     const [actionValueType, setActionValueType] = useState<string>("");
     const [actionValue, setActionValue] = useState<string>("");
     const [triggerLogic, setTriggerLogic] = useState<string>("{}");
     const [description, setDescription] = useState<string>("");
+    const [isActive, setIsActive] = useState<boolean>(false);
+    const [actionIdState, setActionId] = useState<string>("")
     const [isActive, setIsActive] = useState<boolean>(true);
 
     const action = useSelector((state:RootState) =>
@@ -47,17 +52,19 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
     useEffect(() => {
         if (toEditTrigger) {
+            setTriggerId(toEditTrigger.id ||"")
             setType(toEditTrigger.type || "");
             setActionValueType(toEditTrigger.actionValueType || "");
             setActionValue(toEditTrigger.actionValue || "");
             setTriggerLogic(toEditTrigger.triggerLogic || "");
             setDescription(toEditTrigger.description || "");
+            setActionId(toEditTrigger.actionId)
         }
     }, [toEditTrigger]);
 
-    console.log(actionId)
+
     const handleEdit = () => {
-        /*if (toEditAction && hardwareConfiguration) {
+        if (toEditTrigger && fpfId) {
             setClosed(false);
             const id = notifications.show({
                 loading: true,
@@ -66,24 +73,23 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                 autoClose: false,
                 withCloseButton: false,
             });
-            updateSensor({
-                id: toEditSensor.id,
-                name,
-                unit,
-                parameter,
-                location,
-                modelNr,
-                intervalSeconds,
-                isActive,
-                fpfId: toEditSensor.fpfId,
-                hardwareConfiguration,
-            }).then((sensor) => {
-                if (sensor) {
-                    dispatch(receivedSensor());
+            updateActionTrigger({
+                fpfId: fpfId,
+                id: triggerId,
+                actionId: actionIdState,
+                type: type,
+                actionValueType: actionValueType,
+                actionValue: actionValue,
+                triggerLogic: triggerLogic,
+                isActive: isActive,
+                description: description,
+            }).then((actionTrigger) => {
+                if (actionTrigger) {
+                    dispatch(updateActionTriggerNotify({actionId: actionTrigger.actionId, trigger: actionTrigger}));
                     notifications.update({
                         id,
                         title: 'Success',
-                        message: `Sensor updated successfully.`,
+                        message: `ActionTrigger updated successfully.`,
                         color: 'green',
                         loading: false,
                         autoClose: 2000,
@@ -91,16 +97,16 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                 } else {
                     notifications.update({
                         id,
-                        title: 'There was an error updating the sensor.',
-                        message: `${sensor}`,
+                        title: 'There was an error updating the ActionTrigger.',
+                        message: `${actionTrigger}`,
                         color: 'red',
                         loading: false,
                         autoClose: 10000,
                     });
                 }
             });
-        }*/
-    };
+        }
+    }
 
     const handleSave = () => {
         if (fpfId && organizationId) {

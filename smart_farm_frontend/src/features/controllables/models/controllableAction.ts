@@ -24,6 +24,6 @@ export interface EditControllableAction{
     isActive: boolean,
     maximumDurationSeconds: number,
     additionalInformation: string,
-    hardwareId: string,
+    hardwareId: string | null,
     trigger: ActionTrigger[],
 }

@@ -45,7 +45,6 @@ const GrowingCycleSlice = createSlice({
               cycle.harvests = []; // Initialize if undefined
             }
             cycle.harvests.push(action.payload.harvestEntity);
-            console.log("added", JSON.stringify(action.payload.harvestEntity, null, 2));
           }
         },
         updateHarvestEntity(state, action: PayloadAction<HarvestEntity>) {

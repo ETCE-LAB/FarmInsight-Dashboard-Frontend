@@ -2,6 +2,7 @@
 export interface ActionTrigger{
     id:string;
     type: string;
+    actionId: string,
     description: string;
     actionValueType: string;
     actionValue: string;

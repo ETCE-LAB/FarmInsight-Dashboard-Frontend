@@ -47,7 +47,6 @@ export const EditFPF: React.FC = () => {
         if (fpfId) {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
-                console.log(resp)
                 dispatch(setControllableAction(resp.ControllableAction));
             });
         }

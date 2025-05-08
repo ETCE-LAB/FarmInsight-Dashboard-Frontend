@@ -17,7 +17,6 @@ export const promoteMember = async (data: { id:string, membershipRole:string }) 
 
         const response = await apiClient.put(url, data, headers)
 
-        console.log(response)
 
         return
 
