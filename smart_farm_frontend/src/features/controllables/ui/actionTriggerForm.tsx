@@ -11,10 +11,13 @@ import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
 import {ActionTrigger} from "../models/actionTrigger";
 import {createActionTrigger} from "../useCase/createActionTrigger";
-import {addActionTrigger} from "../state/ControllableActionSlice";
+import {addActionTrigger, selectControllableActionById} from "../state/ControllableActionSlice";
 import {SensorTriggerForm} from "./TriggerTypes/sensorTriggerForm";
-import {TimeTriggeForm} from "./TriggerTypes/timeTriggeForm";
+import {TimeTriggerForm} from "./TriggerTypes/timeTriggerForm";
 import {triggerTypes} from "../models/triggerTypes";
+import {IntervalTriggerForm} from "./TriggerTypes/intervalTriggerForm";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../utils/store";
 
 export type ActionScriptField = {
   name: string;
@@ -34,7 +37,13 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
     const [actionValue, setActionValue] = useState<string>("");
     const [triggerLogic, setTriggerLogic] = useState<string>("{}");
     const [description, setDescription] = useState<string>("");
-    const [isActive, setIsActive] = useState<boolean>(false);
+    const [isActive, setIsActive] = useState<boolean>(true);
+
+    const action = useSelector((state:RootState) =>
+        selectControllableActionById(state, actionId)
+    )
+
+    console.log(action)
 
     useEffect(() => {
         if (toEditTrigger) {
@@ -160,7 +169,12 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                             label={t("controllableActionList.trigger.type")}
                             placeholder={t("controllableActionList.trigger.enterType")}
                             required
-                            data={[triggerTypes.manuel, triggerTypes.sensorvalue, triggerTypes.timeofday, triggerTypes.event]}
+                            data={[
+                                triggerTypes.manual,
+                                triggerTypes.sensorvalue,
+                                triggerTypes.timeofday,
+                                triggerTypes.interval,
+                                triggerTypes.event]}
                             value={type}
                             onChange={setType}
                             description={t("controllableActionList.trigger.hint.typeHint")}
@@ -214,7 +228,13 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                         {/* ...For Time */}
                         {type.toLowerCase() === triggerTypes.timeofday.toLowerCase() && (
                             <Grid.Col span={12}>
-                                <TimeTriggeForm setTriggerLogic={setTriggerLogic}/>
+                                <TimeTriggerForm setTriggerLogic={setTriggerLogic}/>
+                            </Grid.Col>
+                        )}
+                        {/* ...For Interval */}
+                        {type.toLowerCase() === triggerTypes.interval.toLowerCase() && (
+                            <Grid.Col span={12}>
+                                <IntervalTriggerForm setTriggerLogic={setTriggerLogic} actionValue={actionValue}/>
                             </Grid.Col>
                         )}
 
@@ -224,6 +244,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                                 label={t("controllableActionList.trigger.triggerLogic")}
                                 value={triggerLogic}
                                 readOnly
+                                disabled
                                 description={t("controllableActionList.trigger.hint.triggerLogicHint")}
                             />
                         </Grid.Col>

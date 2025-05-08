@@ -33,7 +33,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [availableActionScripts, setAvailableActionScripts] = useState<{ value:string, label:string, fields:ActionScriptField[] }[]>();
     const [selectedActionClass, setSelectedActionClass] = useState<{value: string, label: string, fields:ActionScriptField[]}>(); // ??
     const [actionClassId, setActionCLassId] = useState<string>(""); // ??
-    const [isActive, setIsActive] = useState<boolean>(false);
+    const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
     const [additionalInformation, setAdditionalInformation] = useState<string>("");
     const [hardware, setHardware] = useState<{ value: string, label: string } | null>(null);
