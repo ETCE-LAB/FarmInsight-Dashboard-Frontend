@@ -9,12 +9,18 @@ import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
-import {ControllableAction} from "../models/controllableAction";
+import {ControllableAction, EditControllableAction} from "../models/controllableAction";
 import {Hardware} from "../models/hardware";
 import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 import {createControllableAction} from "../useCase/createControllableAction";
-import {addControllableAction, setControllableAction} from "../state/ControllableActionSlice";
+import {
+    addControllableAction,
+    setControllableAction,
+    updateControllableActionSlice
+} from "../state/ControllableActionSlice";
+import {updateControllableAction} from "../useCase/updateControllableAction";
+import {ActionTrigger} from "../models/actionTrigger";
 
 export type ActionScriptField = {
   name: string;
@@ -36,7 +42,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [isActive, setIsActive] = useState<boolean>(false);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
     const [additionalInformation, setAdditionalInformation] = useState<string>("");
-    const [hardware, setHardware] = useState<{ value: string, label: string } | null>(null);
+    const [hardware, setHardware] = useState<Hardware>({id: "", name: ""});
     const [availableHardware, setAvailableHardware] = useState<{ value:string, label:string }[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
@@ -47,22 +53,50 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             setName(toEditAction.name || "");
             setIsActive(toEditAction.isActive || false);
             setMaximumDurationSeconds(toEditAction.maximumDurationSeconds || 0);
-            setAdditionalInformation(toEditAction.additionalInformation || "");
-            setHardware({value: toEditAction.hardware.id, label: toEditAction.hardware.name}  || "");
+
+            if (toEditAction && toEditAction.hardware) {
+                const initial: Hardware = {
+                    id: toEditAction.hardware.id,
+                    name: toEditAction.hardware.name
+                };
+                setHardware(initial);
+                setHardwareInput(initial.name);
+            } else {
+                // Reset states when no hardware is present
+                setHardware({id: "", name: ""});
+                setHardwareInput("");
+            }
+
         }
     }, [toEditAction]);
 
     useEffect(() => {
-      if (toEditAction?.hardware) {
-        const initial = {
-          value: toEditAction.hardware.id,
-          label: toEditAction.hardware.name,
-        };
-        setHardware(initial);
-        setHardwareInput(initial.label);
-      }
-    }, [toEditAction]);
+        if(availableActionScripts && toEditAction){
+            console.log(availableActionScripts)
+            console.log(toEditAction)
+            console.log(toEditAction.actionScriptName)
+            const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
+                availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
 
+            console.log(match)
+
+            setSelectedActionClass({value: match?.value || "", label: match?.label || "", fields: match?.fields || []});
+
+            // JSON-String in ein Objekt umwandeln
+            const additionalInfo = JSON.parse(toEditAction.additionalInformation || "{}");
+            setAdditionalInformation(toEditAction.additionalInformation || "");
+
+            // Für jedes Feld aus match.fields den entsprechenden Wert aus additionalInfo setzen
+            match?.fields.forEach(field => {
+                setDynamicFieldValues(prev => ({
+                    ...prev,
+                    [field.name]: additionalInfo[field.name] || ""
+                }));
+            });
+
+
+        }
+    }, [availableActionScripts]);
 
     useEffect(() => {
         if (fpfId){
@@ -84,7 +118,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             })
         }
 
-    }, []);
+    }, [toEditAction, fpfId]);
 
     const handleDynamicFieldChange = (fieldName: string, value: string) => {
       setDynamicFieldValues(prev => ({
@@ -94,7 +128,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     };
 
     const handleEdit = () => {
-        /*if (toEditAction && hardwareConfiguration) {
+        if (toEditAction && fpfId && selectedActionClass) {
             setClosed(false);
             const id = notifications.show({
                 loading: true,
@@ -103,20 +137,20 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 autoClose: false,
                 withCloseButton: false,
             });
-            updateSensor({
-                id: toEditSensor.id,
-                name,
-                unit,
-                parameter,
-                location,
-                modelNr,
-                intervalSeconds,
-                isActive,
-                fpfId: toEditSensor.fpfId,
-                hardwareConfiguration,
-            }).then((sensor) => {
-                if (sensor) {
-                    dispatch(receivedSensor());
+            updateControllableAction({
+                fpfId: fpfId,
+                id: toEditAction.id,
+                name:name,
+                actionClassId:selectedActionClass.value,
+                isActive: isActive,
+                maximumDurationSeconds: maximumDurationSeconds,
+                additionalInformation: additionalInformation,
+                hardwareId: hardware ? hardware.id : null ,
+                trigger: [],
+
+            }).then((action) => {
+                if (action) {
+                    dispatch(updateControllableActionSlice(action));
                     notifications.update({
                         id,
                         title: 'Success',
@@ -129,14 +163,14 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                     notifications.update({
                         id,
                         title: 'There was an error updating the sensor.',
-                        message: `${sensor}`,
+                        message: `${action}`,
                         color: 'red',
                         loading: false,
                         autoClose: 10000,
                     });
                 }
             });
-        }*/
+        }
     };
 
     const handleSave = () => {
@@ -158,7 +192,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 isActive: isActive,
                 maximumDurationSeconds: interval,
                 additionalInformation: JSON.stringify(dynamicFieldValues),
-                hardwareId: hardware?.value || "",
+                hardwareId: hardware?.id || "",
                 trigger: []
             }).then((response) => {
                 if (response) {
@@ -223,8 +257,17 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                               description={t("controllableActionList.hint.hardware")}
                               onChange={(val) => {
                                 setHardwareInput(val);
-                                const match = availableHardware?.find(h => h.label === val);
-                                setHardware(match || null);
+                                  if (availableHardware && val) {
+                                      const foundItem = availableHardware.find(h => h.label === val);
+                                      if (foundItem) {
+                                          const hardware: Hardware = {
+                                              id: foundItem.value,
+                                              name: foundItem.label
+                                          };
+                                          setHardware(hardware);
+                                      }
+                                  }
+
                               }}
                             />
 
@@ -295,13 +338,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                 onChange={(value) => setMaximumDurationSeconds(value as number ?? 1)}
                                 description={t("controllableActionList.hint.maximumDurationSeconds")}
                             />
-                        </Grid.Col>
-
-                        {/* Additional Information */}
-                        <Grid.Col span={12}>
-                            {fpfId && (
-                                <></>
-                            )}
                         </Grid.Col>
 
                         {/* Active Switch */}

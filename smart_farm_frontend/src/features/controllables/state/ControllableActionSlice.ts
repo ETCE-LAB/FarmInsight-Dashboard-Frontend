@@ -26,9 +26,10 @@ const ControllableActionSlice = createSlice({
         addControllableAction(state, action: PayloadAction<ControllableAction>) {
             state.controllableAction.push(action.payload);
         },
-        updateControllableAction(state, action: PayloadAction<ControllableAction>) {
+        updateControllableActionSlice(state, action: PayloadAction<ControllableAction>) {
             const index = state.controllableAction.findIndex(cycle => cycle.id === action.payload.id);
             if (index !== -1) {
+                console.log(action.payload)
                 state.controllableAction[index] = action.payload;
             }
         },
@@ -63,11 +64,17 @@ const ControllableActionSlice = createSlice({
             if (actionIndex !== -1) {
                 state.controllableAction[actionIndex].trigger.push(trigger);
             }
-        }
-
+        },
 
         // modify
-
+        updateActionTriggerNotify(state, action: PayloadAction<{ actionId: string; trigger: ActionTrigger }>) {
+            const { actionId, trigger } = action.payload;
+            const actionIndex = state.controllableAction.findIndex(ca => ca.id === actionId);
+            if (actionIndex !== -1) {
+                const triggerIndex = state.controllableAction[actionIndex].trigger.findIndex(t => t.id = trigger.id)
+                state.controllableAction[actionIndex].trigger[triggerIndex] = trigger
+            }
+        },
         // remove
     }
 })
@@ -76,11 +83,13 @@ export const {
     changedControllableAction,
     setControllableAction,
     addControllableAction,
-    updateControllableAction,
+    updateControllableActionSlice,
     deleteControllableAction,
     updateControllableActionStatus,
     updateIsAutomated,
-    addActionTrigger
+    addActionTrigger,
+    updateActionTriggerNotify
+
 } = ControllableActionSlice.actions
 export default ControllableActionSlice.reducer
 

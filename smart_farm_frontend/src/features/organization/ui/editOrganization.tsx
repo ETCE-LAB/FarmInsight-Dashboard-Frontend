@@ -44,7 +44,6 @@ export const EditOrganization = () => {
                     setNewOrganizationName(org.name);
                     setIsPublic(org.isPublic);
                     setIsModified(false);
-                    console.log("Organization fetched:", org);
                 })
                 .catch((error) => {
                     console.error("Failed to fetch organization:", error);
