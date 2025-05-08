@@ -66,19 +66,13 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 setHardware({id: "", name: ""});
                 setHardwareInput("");
             }
-
         }
     }, [toEditAction]);
 
     useEffect(() => {
         if(availableActionScripts && toEditAction){
-            console.log(availableActionScripts)
-            console.log(toEditAction)
-            console.log(toEditAction.actionScriptName)
             const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
                 availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
-
-            console.log(match)
 
             setSelectedActionClass({value: match?.value || "", label: match?.label || "", fields: match?.fields || []});
 
@@ -137,6 +131,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 autoClose: false,
                 withCloseButton: false,
             });
+
             updateControllableAction({
                 fpfId: fpfId,
                 id: toEditAction.id,
@@ -144,7 +139,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 actionClassId:selectedActionClass.value,
                 isActive: isActive,
                 maximumDurationSeconds: maximumDurationSeconds,
-                additionalInformation: additionalInformation,
+                additionalInformation: JSON.stringify(dynamicFieldValues),
                 hardwareId: hardware ? hardware.id : null ,
                 trigger: [],
 
@@ -267,7 +262,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                           setHardware(hardware);
                                       }
                                   }
-
                               }}
                             />
 
@@ -286,7 +280,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                   value={selectedActionClass?.label}
                                   onChange={(val) => {
                                     setActionCLassId(val);
-
                                     const match = availableActionScripts?.find(h => h.label === val);
                                     setSelectedActionClass({value: match?.value || "", label:match?.label || "", fields: match?.fields || []}); // update selected script only if it matches
                                   }}

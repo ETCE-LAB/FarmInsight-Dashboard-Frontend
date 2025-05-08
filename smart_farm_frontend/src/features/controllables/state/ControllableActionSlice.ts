@@ -29,7 +29,6 @@ const ControllableActionSlice = createSlice({
         updateControllableActionSlice(state, action: PayloadAction<ControllableAction>) {
             const index = state.controllableAction.findIndex(cycle => cycle.id === action.payload.id);
             if (index !== -1) {
-                console.log(action.payload)
                 state.controllableAction[index] = action.payload;
             }
         },
