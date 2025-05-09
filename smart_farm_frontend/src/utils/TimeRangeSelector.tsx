@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Container, Flex, Group, SegmentedControl } from "@mantine/core";
+import { Button, Container, Flex, Group, SegmentedControl } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { t } from "i18next";
 import {getIsoStringFromDate} from "./utils";
 
 interface TimeRangeSelectorProps {
     onDateChange: (dates: { from: string; to: string } | null) => void;
+    defaultSelected: boolean;
 }
 
-export const TimeRangeSelector = ({ onDateChange }: TimeRangeSelectorProps) => {
-    const [selectedRange, setSelectedRange] = useState<string>("24h");
+export const TimeRangeSelector = ({ onDateChange, defaultSelected }: TimeRangeSelectorProps) => {
+    const [selectedRange, setSelectedRange] = useState<string>(defaultSelected ? "24h" : '');
     const [showCalendar, setShowCalendar] = useState<boolean>(false);
     const [applyCustomDate, setApplyCustomDate] = useState<boolean>(false);
     const [customDate, setCustomDate] = useState<{ from: string; to: string }>({ from: '', to: '' });
@@ -43,9 +44,7 @@ export const TimeRangeSelector = ({ onDateChange }: TimeRangeSelectorProps) => {
                     break;
                 }
                 default:
-                    const fromDate = new Date(toDay.getTime() - 24 * 60 * 60 * 1000);
-                    from = getIsoStringFromDate(fromDate);
-                    break;
+                    return;
             }
             onDateChange({ from, to });
             setCustomDate({ from, to });

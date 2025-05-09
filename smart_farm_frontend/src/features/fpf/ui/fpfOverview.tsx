@@ -204,7 +204,7 @@ export const FpfOverview = () => {
                             </Box>
                         )}
 
-                        <TimeRangeSelector onDateChange={setDateRange}/>
+                        <TimeRangeSelector onDateChange={setDateRange} defaultSelected={true} />
                         {fpf?.Sensors && fpf.Sensors.length > 0 ? (
 
                              fpf.Sensors.map((sensor) => (
