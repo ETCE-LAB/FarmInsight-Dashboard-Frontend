@@ -1,27 +1,32 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {LogMessage, ResourceType} from "../models/LogMessage";
 import {getLogMessages} from "../useCase/getLogMessages";
-import {Table, Text} from "@mantine/core";
+import {Flex, Table, Text} from "@mantine/core";
 import {useTranslation} from "react-i18next";
 import {getColorFromLogLevel} from "../../../utils/utils";
+import TimeRangeSelector from "../../../utils/TimeRangeSelector";
 
 
 export const LogMessageList: React.FC<{ resourceType: string, resourceId?: string }> = ({ resourceType, resourceId }) => {
     const [logMessages, setLogMessages] = React.useState<LogMessage[]>([]);
+    const [dateRange, setDateRange] = useState<{from:string, to:string} | null>(null);
 
     const { t } = useTranslation();
 
     useEffect(() => {
         if (resourceId || (resourceType === ResourceType.ADMIN))
-            getLogMessages(resourceType, resourceId, 10).then(resp => {
+            getLogMessages(resourceType, resourceId, 10, dateRange?.from, dateRange?.to).then(resp => {
                 setLogMessages(resp);
             });
-    }, [resourceType, resourceId]);
+    }, [resourceType, resourceId, dateRange]);
 
     return (
         <>
             {logMessages && (
               <>
+                  <Flex>
+                      <TimeRangeSelector onDateChange={setDateRange} defaultSelected={false}/>
+                  </Flex>
                   <Table withColumnBorders>
                       <Table.Thead>
                           <Table.Tr>

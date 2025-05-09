@@ -4,7 +4,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useAuth} from "react-oidc-context";
 import {Organization} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
-import {Button, Card, Container, Flex, Table, Title} from "@mantine/core";
+import {Button, Card, Container, Flex, Grid, Table, Title} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
 import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
@@ -14,7 +14,7 @@ import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/ut
 import useWebSocket from "react-use-websocket";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
-import {IconChevronDown, IconChevronLeft, IconChevronRight, IconCircleFilled} from "@tabler/icons-react";
+import {IconChevronDown, IconChevronRight, IconCircleFilled} from "@tabler/icons-react";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 
 export const StatusPage = () => {
@@ -84,7 +84,7 @@ export const StatusPage = () => {
             <>
                 {fpf &&
                     <Card withBorder miw="50ch">
-                        <Flex justify="space-between" mb="md" mr='sm'>
+                        <Flex justify="space-between" mb="md">
                             <Title order={3}> {fpf.name} </Title>
                             <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpf.id} />
                         </Flex>
@@ -121,9 +121,9 @@ export const StatusPage = () => {
         const [show, setShow] = useState(true);
 
         return (
-            <Card>
+            <>
                 {organization &&
-                    <>
+                    <Card>
                         <Flex justify="space-between">
                             <Flex align="center" gap="xs">
                                 <Button variant="subtle" size="xs" onClick={() => setShow(!show)}>
@@ -134,20 +134,20 @@ export const StatusPage = () => {
                             <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organization.id} />
                         </Flex>
                         {show &&
-                            <Flex gap="lg" mt="lg" flex={1}>
+                            <Flex gap="lg" mt="lg" flex={1} wrap='wrap' w='100%'>
                                 {organization.FPFs.map(fpf =>
                                     <FpfOverview id={fpf.id} />
                                 )}
                             </Flex>
                         }
-                    </>}
-            </Card>
+                    </Card>}
+            </>
         )
     }
 
     const SystemMessageView: React.FC = () => {
         const [showMessages, setShowMessages] = useState(false);
-                
+
         return (
             <>
                 {isAdmin &&
@@ -197,11 +197,11 @@ export const StatusPage = () => {
                     }
                 </Flex>
                 {showOverview &&
-                    <Flex mt="lg" gap="lg" direction='column'>
+                    <Grid grow gutter='lg' mt='lg'>
                         {organizations && (organizations.map(org =>
                             <OrgOverview id={org.id} />
                         ))}
-                    </Flex>
+                    </Grid>
                 }
             </Card>
             <SystemMessageView />
