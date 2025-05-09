@@ -25,6 +25,8 @@ import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
 
+const graphPadding: number = 3;
+
 const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: string } | null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
@@ -215,20 +217,20 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                             (dataMin: number) => {
                                                 const lowerBounds = sensor.thresholds
                                                     .map(t => t.lowerBound)
-                                                    .filter((v): v is number => typeof v === 'number');
+                                                    .filter((v): v is number => v !== null);
                                                 const thresholdMin = lowerBounds.length > 0
                                                     ? Math.min(...lowerBounds)
                                                     : dataMin;
-                                                return Math.min(dataMin, thresholdMin);
+                                                return Math.min(dataMin, thresholdMin) - graphPadding;
                                             },
                                             (dataMax: number) => {
                                                 const upperBounds = sensor.thresholds
                                                     .map(t => t.upperBound)
-                                                    .filter((v): v is number => typeof v === 'number');
+                                                    .filter((v): v is number => v !== null);
                                                 const thresholdMax = upperBounds.length > 0
                                                     ? Math.max(...upperBounds)
                                                     : dataMax;
-                                                return Math.max(dataMax, thresholdMax);
+                                                return Math.max(dataMax, thresholdMax) + graphPadding;
                                             }
                                         ]
                                     }}
