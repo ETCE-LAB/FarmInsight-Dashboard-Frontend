@@ -33,44 +33,45 @@ export const IntervalTriggerForm:React.FC<{setTriggerLogic:React.Dispatch<React.
     }, [delay, delayUnit, duration, durationUnit]);
 
     return (
-      <Stack>
-        <Group align="flex-end">
-            <NumberInput
-              value={duration}
-              onChange={(value) => setDuration(value as number ?? 1)}
-              min={0}
-              step={1}
-              description={"How long the action will be active."}
-              hideControls
-              label={"Duration for " + actionValue}
-              style={{width: "48%"}}
-            />
-            <Select
-              data={timeUnits}
-              value={durationUnit}
-              onChange={(value) => setDurationUnit(value!)}
-              style={{width: "48%"}}
-            />
-        </Group>
-          <Group align="flex-end">
-            <NumberInput
-              value={delay}
-              onChange={(value) => setDelay(value as number ?? 1)}
-              min={0}
-              step={1}
-              description={"How long until the actionValue will be triggered again."}
-              hideControls
-              label={"Delay"}
-              style={{width: "48%"}}
-            />
+
+          <Grid gutter="md" align="flex-end">
+                  <Grid.Col span={6}>
+                      <NumberInput
+                          value={duration}
+                          onChange={(value) => setDuration(value as number ?? 1)}
+                          min={0}
+                          step={1}
+                          description={"How long the action will be active."}
+                          hideControls
+                          label={"Duration for " + actionValue}
+                      />
+                  </Grid.Col>
+                  <Grid.Col span={6}>
+                      <Select
+                          data={timeUnits}
+                          value={durationUnit}
+                          onChange={(value) => setDurationUnit(value!)}
+                      />
+                  </Grid.Col>
+
+           <Grid.Col span={6}>
+                <NumberInput
+                  value={delay}
+                  onChange={(value) => setDelay(value as number ?? 1)}
+                  min={0}
+                  step={1}
+                  description={"How long until the actionValue will be triggered again."}
+                  hideControls
+                  label={"Delay"}
+                />
+           </Grid.Col>
+           <Grid.Col span={6}>
             <Select
               data={timeUnits}
               value={delayUnit}
               onChange={(value) => setDelayUnit(value!)}
-              style={{width: "48%"}}
             />
-        </Group>
-      </Stack>
-
+           </Grid.Col>
+      </Grid>
   );
 }

@@ -13,7 +13,7 @@ import {ActionTrigger} from "../models/actionTrigger";
 import {createActionTrigger} from "../useCase/createActionTrigger";
 import {updateActionTrigger} from "../useCase/updateActionTrigger";
 import {addActionTrigger, updateActionTriggerNotify} from "../state/ControllableActionSlice";
-import {addActionTrigger, selectControllableActionById} from "../state/ControllableActionSlice";
+import {selectControllableActionById} from "../state/ControllableActionSlice";
 import {SensorTriggerForm} from "./TriggerTypes/sensorTriggerForm";
 import {TimeTriggerForm} from "./TriggerTypes/timeTriggerForm";
 import {triggerTypes} from "../models/triggerTypes";
@@ -40,7 +40,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
     const [actionValue, setActionValue] = useState<string>("");
     const [triggerLogic, setTriggerLogic] = useState<string>("{}");
     const [description, setDescription] = useState<string>("");
-    const [isActive, setIsActive] = useState<boolean>(false);
+
     const [actionIdState, setActionId] = useState<string>("")
     const [isActive, setIsActive] = useState<boolean>(true);
 

@@ -1,5 +1,18 @@
 import React, { useEffect, useState } from "react";
-import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Autocomplete, Card, Flex, Tooltip} from "@mantine/core";
+import {
+    Box,
+    Button,
+    Grid,
+    NumberInput,
+    Switch,
+    TextInput,
+    Text,
+    Autocomplete,
+    Card,
+    Flex,
+    Tooltip,
+    Collapse, Accordion
+} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
 import { useParams } from "react-router-dom";
@@ -24,8 +37,10 @@ import {ActionTrigger} from "../models/actionTrigger";
 
 export type ActionScriptField = {
   name: string;
+  description: string;
   type: string;
   rules?: { name: string }[];
+  defaultValue : any
 };
 
 export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditAction, setClosed }) => {
@@ -47,6 +62,9 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
 
+    const [expanded, setExpanded] = useState(false);
+
+    // Somewhere in your UI add a toggle (button, switch, or click on the header)
 
     useEffect(() => {
         if (toEditAction) {
@@ -290,35 +308,36 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                         {selectedActionClass && (
                           <Grid.Col span={12}>
                             <Text fw={500} mb="sm">Additional Configuration</Text>
-
-                            <Flex direction="column" gap="sm">
-                              {selectedActionClass.fields.map((field, index) => {
-                                switch (field.type) {
-                                  case "str":
-                                  default:
-                                    return (
-                                      <TextInput
-                                          key={index}
-                                          required
-                                          label={
-                                            <Flex align="center" gap="xs">
-                                              <Text size="sm">{field.name}</Text>
-                                              {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
-                                                <Tooltip label="Must be a valid HTTP URL">
-                                                  <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
-                                                </Tooltip>
-                                              )}
-                                            </Flex>
-                                          }
-                                          value={dynamicFieldValues[field.name] || ""}
-                                          onChange={(event) =>
-                                            handleDynamicFieldChange(field.name, event.currentTarget.value)
-                                          }
-                                        />
-                                    );
-                                }
-                              })}
-                            </Flex>
+                                <Flex direction="column" gap="sm">
+                                  {selectedActionClass.fields.map((field, index) => {
+                                    switch (field.type) {
+                                      case "str":
+                                      default:
+                                        return (
+                                          <TextInput
+                                              key={index}
+                                              required={field.defaultValue == ""}
+                                              description={field.description}
+                                              placeholder={field.defaultValue}
+                                              label={
+                                                <>
+                                                  {field.name}
+                                                  {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
+                                                    <Tooltip label="Must be a valid HTTP URL">
+                                                      <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
+                                                    </Tooltip>
+                                                  )}
+                                                </>
+                                              }
+                                              value={dynamicFieldValues[field.name] || ""}
+                                              onChange={(event) =>
+                                                  handleDynamicFieldChange(field.name, event.currentTarget.value)
+                                              }
+                                            />
+                                        );
+                                    }
+                                  })}
+                                </Flex>
                           </Grid.Col>
                         )}
 
