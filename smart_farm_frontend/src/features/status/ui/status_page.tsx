@@ -145,8 +145,29 @@ export const StatusPage = () => {
         )
     }
 
+    const SystemMessageView: React.FC = () => {
+        const [showMessages, setShowMessages] = useState(false);
+                
+        return (
+            <>
+                {isAdmin &&
+                    <Card mt="lg">
+                        <Flex gap="lg" align="center" mb={showMessages ? 'md' : ''}>
+                            <Button variant="subtle" size="xs" onClick={() => setShowMessages(!showMessages)}>
+                                {showMessages ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
+                            </Button>
+                            <Title order={1}>{t('log.systemMessages')}</Title>
+                        </Flex>
+                        {showMessages &&
+                            <LogMessageList resourceType={ResourceType.ADMIN} />
+                        }
+                    </Card>
+                }
+            </>
+        )
+    }
+
     const [showOverview, setShowOverview] = useState(true);
-    const [showMessages, setShowMessages] = useState(false);
 
     return (
         <Container size="xl">
@@ -183,19 +204,7 @@ export const StatusPage = () => {
                     </Flex>
                 }
             </Card>
-            {isAdmin &&
-                <Card mt="lg">
-                    <Flex gap="lg" align="center" mb={showMessages ? 'md' : ''}>
-                        <Button variant="subtle" size="xs" onClick={() => setShowMessages(!showMessages)}>
-                            {showMessages ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
-                        </Button>
-                        <Title order={1}>{t('log.systemMessages')}</Title>
-                    </Flex>
-                    {showMessages &&
-                        <LogMessageList resourceType={ResourceType.ADMIN} />
-                    }
-                </Card>
-            }
+            <SystemMessageView />
         </Container>
     );
 }
