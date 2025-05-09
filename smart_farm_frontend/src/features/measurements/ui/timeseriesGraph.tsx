@@ -19,8 +19,8 @@ import {
 } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
-import { useMediaQuery } from '@mantine/hooks';
-import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/utils";
+import {useInterval, useMediaQuery} from '@mantine/hooks';
+import {formatFloatValue, getSensorStateColor, getSensorStateColorHint, getWsUrl} from "../../../utils/utils";
 import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
@@ -32,6 +32,8 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const isMobile = useMediaQuery('(max-width: 768px)');
+    const [sensorStatus, setSensorStatus] = useState<{ measuredAt: Date, isActive: boolean }>({ measuredAt: new Date(sensor.lastMeasurement.measuredAt), isActive: sensor.isActive });
+    const [statusColor, setStatusColor] = useState(getSensorStateColor(sensorStatus.measuredAt, sensorStatus.isActive, sensor.intervalSeconds));
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -54,6 +56,13 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                     measuredAt: m.measuredAt,
                 }));
                 setMeasurements((prev) => [...prev, ...newMeasurements]);
+
+                setSensorStatus({
+                    measuredAt: new Date(newMeasurements.at(-1).measuredAt),
+                    isActive: true,
+                });
+
+                setStatusColor(getSensorStateColor(new Date(newMeasurements.at(-1).measuredAt), true, sensor.intervalSeconds));
             } catch (err) {
                 console.error("Error processing WebSocket message:", err);
                 setError("Failed to process incoming data.");
@@ -117,6 +126,8 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         return lines;
     };
 
+    useInterval(() => setStatusColor(getSensorStateColor(sensorStatus.measuredAt, sensorStatus.isActive, sensor.intervalSeconds)), Math.min((sensor.intervalSeconds / 2) * 1000, 10 * 1000), { autoInvoke: true });
+
     return (
         <Flex style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>
             <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
@@ -124,21 +135,13 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
                     <HoverCard>
                         <HoverCard.Target>
-                            <IconCircleFilled
-                                size={20}
-                                color={getSensorStateColor(
-                                    new Date(sensor.lastMeasurement.measuredAt),
-                                    sensor.isActive,
-                                    sensor.intervalSeconds
-                                )}
-                            />
+                            <IconCircleFilled size={20} color={statusColor} />
                         </HoverCard.Target>
                         <HoverCard.Dropdown>
-                            <Text size="sm">
-                                {`last value: ${new Date(sensor.lastMeasurement.measuredAt).toLocaleString(navigator.language)}`}
-                            </Text>
+                            <Text size="sm">{getSensorStateColorHint((statusColor))}</Text>
                         </HoverCard.Dropdown>
                     </HoverCard>
+
                     <Title order={4} c={theme.colors.blue[6]}>{sensor.name}</Title>
                 </Flex>
 

@@ -156,6 +156,7 @@ i18n
                         actions: 'Actions',
                     },
                     controllableActionList:{
+                        noAction:'No Action found',
                         auto: 'Auto',
                         title: 'Controllable Actions',
                         name: 'Action name',
@@ -390,6 +391,8 @@ i18n
                         green: 'All good',
                         yellow: 'One missed value',
                         red: 'Multiple missed values',
+                        grey: 'Inactive',
+                        other: 'Unknown',
                     },
                 },
             },
@@ -543,6 +546,7 @@ i18n
                         actions: 'Aktionen',
                     },
                     controllableActionList: {
+                        noAction:'Keine Aktion gefunden',
                         auto: "Auto",
                         title: "Steuerbare Aktionen",
                         name: "Aktionsname",
@@ -776,6 +780,8 @@ i18n
                         green: 'Alles gut',
                         yellow: 'Ein Wert verspätet',
                         red: 'Mehrere Werte fehlen',
+                        grey: 'Inaktiv',
+                        other: 'Unbekannt',
                     },
                 },
             },
