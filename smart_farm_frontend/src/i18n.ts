@@ -156,6 +156,7 @@ i18n
                         actions: 'Actions',
                     },
                     controllableActionList:{
+                        noAction:'No Action found',
                         auto: 'Auto',
                         title: 'Controllable Actions',
                         name: 'Action name',
@@ -543,6 +544,7 @@ i18n
                         actions: 'Aktionen',
                     },
                     controllableActionList: {
+                        noAction:'Keine Aktion gefunden',
                         auto: "Auto",
                         title: "Steuerbare Aktionen",
                         name: "Aktionsname",
