@@ -160,7 +160,7 @@ export const StatusPage = () => {
                         <IconCircleFilled size={20} color="red" /> {t('overview.red')}
                     </Flex>
                     <Flex gap="sm" align="center">
-                        <IconCircleFilled size={20} color="grey" /> {t('camera.inactive')}
+                        <IconCircleFilled size={20} color="grey" /> {t('overview.grey')}
                     </Flex>
                 </Flex>
             </Flex>
