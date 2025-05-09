@@ -126,11 +126,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         return lines;
     };
 
-    const interval = useInterval(() => setStatusColor(getSensorStateColor(sensorStatus.measuredAt, sensorStatus.isActive, sensor.intervalSeconds)), (sensor.intervalSeconds / 2) * 1000);
-
-    useEffect(() => {
-        interval.start();
-    }, []);
+    useInterval(() => setStatusColor(getSensorStateColor(sensorStatus.measuredAt, sensorStatus.isActive, sensor.intervalSeconds)), Math.min((sensor.intervalSeconds / 2) * 1000, 10 * 1000), { autoInvoke: true });
 
     return (
         <Flex style={{ position: 'relative', width: '100%', boxSizing: 'border-box' }}>

@@ -12,7 +12,6 @@ import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 import {useTranslation} from "react-i18next";
 import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import useWebSocket from "react-use-websocket";
-import {getUser} from "../../../utils/getUser";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
 import {IconCircleFilled} from "@tabler/icons-react";
