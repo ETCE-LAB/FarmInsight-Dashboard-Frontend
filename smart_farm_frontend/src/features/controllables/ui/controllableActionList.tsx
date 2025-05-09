@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Accordion, Card, Button} from "@mantine/core";
 import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit,} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
@@ -8,16 +8,18 @@ import {ResourceType} from "../../logMessages/models/LogMessage";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 import {useAuth} from "react-oidc-context";
-import {ControllableAction} from "../models/controllableAction";
+import {ControllableAction, EditControllableAction} from "../models/controllableAction";
 import {Hardware} from "../models/hardware";
 import {ActionTrigger} from "../models/actionTrigger";
 import {ControllableActionForm} from "./controllableActionForm";
 import {ActionTriggerForm} from "./actionTriggerForm";
+import {useParams} from "react-router-dom";
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
     const { t, i18n } = useTranslation();
     const controllableAction = useSelector((state: RootState) => state.controllableAction.controllableAction);
     const auth = useAuth();
+    const { organizationId, fpfId } = useParams();
 
     const [controllableActionModalOpen, setControllableActionModalOpen] = useState(false);
     const [actionTriggerModalOpen, setActionTriggerModalOpen] = useState(false);
@@ -32,18 +34,21 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
       );
     };
 
+
+
+
     const onClickEdit = (action: ControllableAction) => {
         const editAction: ControllableAction = {
             id: action.id,
             name: action.name,
             actionClassId: action.actionClassId,
-            actionScriptName: action.actionScriptName,
             isActive: action.isActive,
-            isAutomated: action.isAutomated,
             maximumDurationSeconds: action.maximumDurationSeconds,
             additionalInformation: action.additionalInformation,
             hardware: action.hardware,
             trigger: action.trigger,
+            isAutomated: action.isAutomated,
+            actionScriptName: action.actionScriptName,
             status: action.status
         };
 
@@ -59,6 +64,23 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         setSelectedActionId(id);
         setSelectedTrigger(undefined);
         setActionTriggerModalOpen(true);
+    }
+
+    const onClickEditTrigger = (trigger: ActionTrigger) => {
+        const editTrigger: ActionTrigger = {
+            id:                 trigger.id,
+            isActive:           trigger.isActive,
+            actionId:           trigger.actionId,
+            triggerLogic:       trigger.triggerLogic,
+            description:        trigger.description,
+            actionValue:        trigger.actionValue,
+            type:               trigger.type,
+            actionValueType:    trigger.actionValueType
+
+        }
+
+        setSelectedTrigger(editTrigger)
+        setActionTriggerModalOpen(true)
     }
 
     return (
@@ -204,7 +226,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                 color={"#199ff4"}
                                                 size={20}
                                                 stroke={2}
-                                                onClick={() => onClickEdit(action)}
+                                                onClick={() => onClickEditTrigger(t)}
                                                 style={{ cursor: "pointer" }}
                                               />
                                             </Flex>

@@ -13,8 +13,6 @@ export const getUserProfilesBySearchString = (searchString:string, orgaID:string
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    console.log(orgaID)
-
     let exclude = "";
     if (orgaID) {
         exclude = `?exclude_organization_id=${orgaID}`
@@ -22,7 +20,7 @@ export const getUserProfilesBySearchString = (searchString:string, orgaID:string
 
     const url = `${BACKEND_URL}/api/userprofiles/${searchString}${exclude}`;
 
-    console.log(url)
+
 
     const result:  Promise<UserProfile[]> = apiClient.get(url, headers)
 

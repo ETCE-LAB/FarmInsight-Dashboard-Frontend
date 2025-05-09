@@ -49,7 +49,6 @@ export const FpfOverview = () => {
             getMyOrganizations().then((organizations) => {
                 let found = false;
                 organizations.forEach((org: any) => {
-                    console.log(org.id === organizationId)
                     setIsMember(org.id === organizationId)
                     found = true
                 });
