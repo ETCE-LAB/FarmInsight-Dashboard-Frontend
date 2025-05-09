@@ -4,7 +4,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useAuth} from "react-oidc-context";
 import {Organization} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
-import {Card, Container, Flex, Table, Title} from "@mantine/core";
+import {Button, Card, Container, Flex, Table, Title} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
 import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
@@ -14,7 +14,7 @@ import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/ut
 import useWebSocket from "react-use-websocket";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
-import {IconCircleFilled} from "@tabler/icons-react";
+import {IconChevronDown, IconChevronLeft, IconChevronRight, IconCircleFilled} from "@tabler/icons-react";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 
 export const StatusPage = () => {
@@ -81,10 +81,10 @@ export const StatusPage = () => {
         }, [id]);
 
         return (
-            <Card withBorder>
+            <>
                 {fpf &&
-                    <>
-                        <Flex justify="space-between">
+                    <Card withBorder miw="50ch">
+                        <Flex justify="space-between" mb="md" mr='sm'>
                             <Title order={3}> {fpf.name} </Title>
                             <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpf.id} />
                         </Flex>
@@ -104,9 +104,9 @@ export const StatusPage = () => {
                                 )}
                             </Table.Tbody>
                         </Table>
-                    </>
+                    </Card>
                 }
-            </Card>
+            </>
         )
     }
 
@@ -118,51 +118,84 @@ export const StatusPage = () => {
             })
         }, [id]);
 
+        const [show, setShow] = useState(true);
+
         return (
-            <Card >
+            <Card>
                 {organization &&
                     <>
                         <Flex justify="space-between">
-                            <Title order={2}> {organization.name} </Title>
+                            <Flex align="center" gap="xs">
+                                <Button variant="subtle" size="xs" onClick={() => setShow(!show)}>
+                                    {show ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
+                                </Button>
+                                <Title order={2}> {organization.name} </Title>
+                            </Flex>
                             <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organization.id} />
                         </Flex>
-                        <Flex gap="lg" mt="lg">
-                            {organization.FPFs.map(fpf =>
-                                <FpfOverview id={fpf.id} />
-                            )}
-                        </Flex>
+                        {show &&
+                            <Flex gap="lg" mt="lg" flex={1}>
+                                {organization.FPFs.map(fpf =>
+                                    <FpfOverview id={fpf.id} />
+                                )}
+                            </Flex>
+                        }
                     </>}
             </Card>
         )
     }
 
+    const [showOverview, setShowOverview] = useState(true);
+    const [showMessages, setShowMessages] = useState(false);
+
     return (
         <Container size="xl">
+            <Card>
+                <Flex justify="space-between">
+                    <Flex gap="lg" align="center">
+                        <Button variant="subtle" size="xs" onClick={() => setShowOverview(!showOverview)}>
+                            {showOverview ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
+                        </Button>
+                        <Title order={1}>{t('header.statusOverview')}</Title>
+                    </Flex>
+                    {showOverview &&
+                        <Flex gap='lg' justify="end" mr="md">
+                            <Flex gap="sm" align="center">
+                                <IconCircleFilled size={20} color="green" /> {t("overview.green")}
+                            </Flex>
+                            <Flex gap="sm" align="center">
+                                <IconCircleFilled size={20} color="yellow" /> {t('overview.yellow')}
+                            </Flex>
+                            <Flex gap="sm" align="center">
+                                <IconCircleFilled size={20} color="red" /> {t('overview.red')}
+                            </Flex>
+                            <Flex gap="sm" align="center">
+                                <IconCircleFilled size={20} color="grey" /> {t('overview.grey')}
+                            </Flex>
+                        </Flex>
+                    }
+                </Flex>
+                {showOverview &&
+                    <Flex mt="lg" gap="lg" direction='column'>
+                        {organizations && (organizations.map(org =>
+                            <OrgOverview id={org.id} />
+                        ))}
+                    </Flex>
+                }
+            </Card>
             {isAdmin &&
-                <Card>
-                    <Title order={2}>{t('log.systemMessages')}</Title>
-                    <LogMessageList resourceType={ResourceType.ADMIN} />
+                <Card mt="lg">
+                    <Flex gap="lg" align="center" mb={showMessages ? 'md' : ''}>
+                        <Button variant="subtle" size="xs" onClick={() => setShowMessages(!showMessages)}>
+                            {showMessages ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
+                        </Button>
+                        <Title order={1}>{t('log.systemMessages')}</Title>
+                    </Flex>
+                    {showMessages &&
+                        <LogMessageList resourceType={ResourceType.ADMIN} />
+                    }
                 </Card>
             }
-            <Flex mt="lg" gap="lg" direction='column'>
-                {organizations && (organizations.map(org =>
-                    <OrgOverview id={org.id} />
-                ))}
-                <Flex gap='lg' justify="end" mr="md">
-                    <Flex gap="sm" align="center">
-                        <IconCircleFilled size={20} color="green" /> {t("overview.green")}
-                    </Flex>
-                    <Flex gap="sm" align="center">
-                        <IconCircleFilled size={20} color="yellow" /> {t('overview.yellow')}
-                    </Flex>
-                    <Flex gap="sm" align="center">
-                        <IconCircleFilled size={20} color="red" /> {t('overview.red')}
-                    </Flex>
-                    <Flex gap="sm" align="center">
-                        <IconCircleFilled size={20} color="grey" /> {t('overview.grey')}
-                    </Flex>
-                </Flex>
-            </Flex>
         </Container>
     );
 }
