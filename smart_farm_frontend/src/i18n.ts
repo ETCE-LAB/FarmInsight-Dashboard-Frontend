@@ -98,6 +98,7 @@ i18n
                             details: 'Details for',
                         },
                         statusOverview: 'Status overview',
+                        ping: 'Ping',
                     },
                     sensor: {
                         addSensor: 'Add Sensor',
@@ -393,6 +394,8 @@ i18n
                         red: 'Multiple missed values',
                         grey: 'Inactive',
                         other: 'Unknown',
+                        lastPing: 'Last ping',
+                        pingResult: 'Ping result',
                     },
                 },
             },
@@ -488,6 +491,7 @@ i18n
                             details: 'Details für',
                         },
                         statusOverview: 'Status Übersicht',
+                        ping: 'Ping',
                     },
                     sensor: {
                         addSensor: 'Sensor hinzufügen',
@@ -782,6 +786,8 @@ i18n
                         red: 'Mehrere Werte fehlen',
                         grey: 'Inaktiv',
                         other: 'Unbekannt',
+                        lastPing: 'Letzter Ping',
+                        pingResult: 'Ping Ergebnis',
                     },
                 },
             },
