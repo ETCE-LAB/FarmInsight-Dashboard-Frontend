@@ -4,7 +4,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useAuth} from "react-oidc-context";
 import {Organization} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
-import {Button, Card, Container, Flex, Grid, Table, Title} from "@mantine/core";
+import {Button, Card, Container, Flex, Grid, Table, Title, Text} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
 import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
@@ -16,6 +16,8 @@ import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
 import {IconChevronDown, IconChevronRight, IconCircleFilled} from "@tabler/icons-react";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
+import {pingSensor} from "../useCase/ping";
+import {showNotification} from "@mantine/notifications";
 
 export const StatusPage = () => {
     const auth = useAuth();
@@ -41,6 +43,7 @@ export const StatusPage = () => {
         const [statusColor, setStatusColor] = useState(getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds));
         const [measuredAt, setMeasuredAt] = useState(new Date(sensor.lastMeasurement.measuredAt));
         const [lastValue, setLastValue] = useState<string>(formatFloatValue(sensor.lastMeasurement?.value));
+        const [currentlyPinging, setCurrentlyPinging] = useState(false);
 
         useEffect(() => {
             if (!lastMessage) return;
@@ -57,6 +60,20 @@ export const StatusPage = () => {
             }
         }, [lastMessage]);
 
+        const getSensorPing = () => {
+            if (currentlyPinging) return;
+
+            setCurrentlyPinging(true);
+            pingSensor(sensor.id).then((result) => {
+                setCurrentlyPinging(false);
+                showNotification({
+                    title: t('overview.pingResult'),
+                    message: `${JSON.stringify(result)}`,
+                    color: 'blue',
+                });
+            });
+        }
+
         return (
             <Table.Tr>
                 <Table.Td>{sensor.name}</Table.Td>
@@ -68,6 +85,7 @@ export const StatusPage = () => {
                 <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>
                 <Table.Td>{lastValue}</Table.Td>
                 <Table.Td><LogMessageModalButton resourceType={ResourceType.SENSOR} resourceId={sensor.id} /></Table.Td>
+                <Table.Td><Button onClick={getSensorPing} variant="default" disabled={currentlyPinging}>{t('header.ping')}</Button></Table.Td>
             </Table.Tr>
         )
     } 
@@ -96,6 +114,7 @@ export const StatusPage = () => {
                                     <Table.Th>{t('sensor.lastMeasurementAt')}</Table.Th>
                                     <Table.Th>{t('sensor.lastValue')}</Table.Th>
                                     <Table.Th>{t('log.showMessages')}</Table.Th>
+                                    <Table.Th>{t('header.ping')}</Table.Th>
                                 </Table.Tr>
                             </Table.Thead>
                             <Table.Tbody>
@@ -166,7 +185,6 @@ export const StatusPage = () => {
             </>
         )
     }
-
     const [showOverview, setShowOverview] = useState(true);
 
     return (
@@ -197,11 +215,13 @@ export const StatusPage = () => {
                     }
                 </Flex>
                 {showOverview &&
-                    <Grid grow gutter='lg' mt='lg'>
-                        {organizations && (organizations.map(org =>
-                            <OrgOverview id={org.id} />
-                        ))}
-                    </Grid>
+                    <>
+                        <Grid grow gutter='lg' mt='lg'>
+                            {organizations && (organizations.map(org =>
+                                <OrgOverview id={org.id} />
+                            ))}
+                        </Grid>
+                    </>
                 }
             </Card>
             <SystemMessageView />
