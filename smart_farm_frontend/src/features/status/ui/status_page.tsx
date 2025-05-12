@@ -20,6 +20,7 @@ import {pingSensor} from "../useCase/ping";
 import {showNotification} from "@mantine/notifications";
 import {AppRoutes} from "../../../utils/appRoutes";
 import {useNavigate} from "react-router-dom";
+import {useInterval} from "@mantine/hooks";
 
 export const StatusPage = () => {
     const auth = useAuth();
@@ -45,8 +46,10 @@ export const StatusPage = () => {
         let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
         const [statusColor, setStatusColor] = useState(getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds));
         const [measuredAt, setMeasuredAt] = useState(new Date(sensor.lastMeasurement.measuredAt));
+        const [isActive, setIsActive] = useState(sensor.isActive);
         const [lastValue, setLastValue] = useState<string>(formatFloatValue(sensor.lastMeasurement?.value));
         const [currentlyPinging, setCurrentlyPinging] = useState(false);
+        useInterval(() => setStatusColor(getSensorStateColor(measuredAt, isActive, sensor.intervalSeconds)), Math.min((sensor.intervalSeconds / 2) * 1000, 10 * 1000), { autoInvoke: true });
 
         useEffect(() => {
             if (!lastMessage) return;
@@ -56,6 +59,7 @@ export const StatusPage = () => {
                 // we don't get a full on sensor changed message, but if it receives values it is clearly active
                 // this won't realize when it gets turned off but there's no mechanism for that and won't really be noticed
                 setStatusColor(getSensorStateColor(newDate, true, sensor.intervalSeconds));
+                setIsActive(true);
                 setMeasuredAt(newDate);
                 setLastValue(data.measurement.at(-1).value);
             } catch (err) {
