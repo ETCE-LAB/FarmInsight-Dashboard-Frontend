@@ -56,12 +56,14 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
         if (organizationId) {
             getMyOrganizations().then((organizations) => {
                 let found = false;
-                organizations.forEach((org: any) => {
-                    if (org.id === organizationId) {
-                        setIsAdmin(org.membership.role === 'admin');
-                        found = true;
-                    }
-                });
+                if(organizations.length > 0) {
+                    organizations.forEach((org: any) => {
+                        if (org.id === organizationId) {
+                            setIsAdmin(org.membership.role === 'admin');
+                            found = true;
+                        }
+                    });
+                }
                 if (!found) {
                     setIsAdmin(false);
                 }
