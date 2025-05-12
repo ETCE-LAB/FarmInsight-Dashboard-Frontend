@@ -90,7 +90,7 @@ export const StatusPage = () => {
                     </Flex>
                 </Table.Td>
                 <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>
-                <Table.Td>{lastValue}</Table.Td>
+                <Table.Td>{lastValue}{sensor.unit}</Table.Td>
                 <Table.Td><LogMessageModalButton resourceType={ResourceType.SENSOR} resourceId={sensor.id} /></Table.Td>
                 <Table.Td><Button onClick={getSensorPing} variant="default" disabled={currentlyPinging}>{t('header.ping')}</Button></Table.Td>
             </Table.Tr>
