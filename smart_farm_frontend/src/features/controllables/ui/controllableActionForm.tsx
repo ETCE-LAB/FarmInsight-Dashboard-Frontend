@@ -14,7 +14,7 @@ import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScript
 import {createControllableAction} from "../useCase/createControllableAction";
 import {
     addControllableAction,
-    setControllableAction,
+
     updateControllableActionSlice
 } from "../state/ControllableActionSlice";
 import {updateControllableAction} from "../useCase/updateControllableAction";
