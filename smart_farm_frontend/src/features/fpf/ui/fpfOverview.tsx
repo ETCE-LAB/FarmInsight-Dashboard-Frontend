@@ -45,7 +45,7 @@ export const FpfOverview = () => {
     const [isMember, setIsMember] = useState<boolean>(false);
 
     useEffect(() => {
-        if (organizationId) {
+        if (organizationId && auth.isAuthenticated) {
             getMyOrganizations().then((organizations) => {
                 let found = false;
                 organizations.forEach((org: any) => {

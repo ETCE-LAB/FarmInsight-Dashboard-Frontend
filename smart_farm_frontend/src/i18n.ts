@@ -7,6 +7,10 @@ i18n
         resources: {
             en: {
                 translation: {
+                    common: {
+                        cancel: 'Cancel',
+                        confirm: 'Confirm'
+                    },
                     threshold: {
                         title: 'Thresholds',
                         lowerBound: 'lower bound',
@@ -156,8 +160,8 @@ i18n
                         isActive: 'Is Active?',
                         actions: 'Actions',
                     },
-                    controllableActionList:{
-                        noAction:'No Action found',
+                    controllableActionList: {
+                        noAction: 'No Action found',
                         auto: 'Auto',
                         title: 'Controllable Actions',
                         name: 'Action name',
@@ -170,6 +174,9 @@ i18n
                         editAction: 'Edit Controllable Action',
                         triggerTitle: 'Trigger',
                         addControllable: 'Add controllable',
+                        confirmTitle: 'Confirm Action',
+                        confirmMessage: 'Are you sure you want to execute this action?',
+
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -401,6 +408,10 @@ i18n
             },
             de: {
                 translation: {
+                    common: {
+                        cancel: 'Abbrechen',
+                        confirm: 'Bestätigen'
+                    },
                     threshold: {
                         title: 'Grenzwerte',
                         lowerBound: 'untere Grenze',
@@ -563,6 +574,9 @@ i18n
                         editAction: "Steuerbare Aktion bearbeiten",
                         triggerTitle: "Auslöser",
                         addControllable: "Steuerbares Element hinzufügen",
+                        confirmTitle: 'Bestätige Ausführung',
+                        confirmMessage: 'Sind Sie sicher, dass Sie eine Aktion ausführen wollen?',
+
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",
