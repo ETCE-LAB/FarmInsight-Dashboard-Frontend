@@ -64,11 +64,17 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
         }
     }, [organizationId]);
 
-    const handleTriggerChange = async (actionId: string, triggerId: string, value: string) => {
+    const handleTriggerChange = async (actionId: string, triggerId: string, value: string, isActive:boolean) => {
         try {
             await executeTrigger(actionId, triggerId, value);
-            dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
-            dispatch(updateControllableActionStatus({ actionId, triggerId }));
+            if (!isActive){
+                dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
+                dispatch(updateControllableActionStatus({ actionId, triggerId }));
+            }
+            else{
+                dispatch(updateIsAutomated({ actionId: actionId, isAutomated: true }));
+                dispatch(updateControllableActionStatus({ actionId: actionId, triggerId: "" }));
+            }
             } catch (error) {
                 console.error("Failed to execute trigger", error);
         }
@@ -110,7 +116,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                               <Flex direction="row" gap="xs" align="center" wrap="wrap">
                                   {manualTriggers.map((trigger) => {
                                     const isActive = trigger.id === action.status && !action.isAutomated;
-
+                                    console.log(isActive)
                                     return (
                                       <Button
                                         key={trigger.id}
@@ -119,7 +125,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                         variant={isActive ? "filled" : "light"}
                                         color={isActive ? getColor(trigger.actionValue) : "gray"}
                                         radius="xl"
-                                        onClick={() => handleTriggerChange(action.id, trigger.id, trigger.actionValue)}
+                                        onClick={() => handleTriggerChange(action.id, trigger.id, trigger.actionValue, isActive)}
                                       >
                                         {trigger.actionValue}
                                       </Button>

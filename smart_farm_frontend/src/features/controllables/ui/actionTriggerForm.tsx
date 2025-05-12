@@ -20,6 +20,8 @@ import {triggerTypes} from "../models/triggerTypes";
 import {IntervalTriggerForm} from "./TriggerTypes/intervalTriggerForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
+import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
+import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 
 export type ActionScriptField = {
   name: string;
@@ -43,12 +45,10 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
     const [actionIdState, setActionId] = useState<string>("")
     const [isActive, setIsActive] = useState<boolean>(true);
-
+    const [actionValueList, setActionValueList] = useState<string[]>([]);
     const action = useSelector((state:RootState) =>
         selectControllableActionById(state, actionId)
     )
-
-    console.log(action)
 
     useEffect(() => {
         if (toEditTrigger) {
@@ -62,6 +62,30 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
         }
     }, [toEditTrigger]);
 
+    useEffect(() => {
+        if (actionId && fpfId){
+
+            fetchAvailableActionScripts(fpfId).then(scripts => {
+                const actionScripts = scripts?.map(s => ({
+                  value: s.action_script_class_id,
+                  label: s.name,
+                  description: s.description,
+                  action_values: s.action_values,
+                  fields: s.fields
+                })) ?? [];
+                // Find the matching script
+              const matchedScript = actionScripts.find(
+                (script) => script.value === action?.actionClassId
+              );
+
+              // Set the action values if found
+              if (matchedScript) {
+                setActionValueList(matchedScript.action_values);
+              }
+            })
+        }
+
+    }, [actionId, fpfId]);
 
     const handleEdit = () => {
         if (toEditTrigger && fpfId) {
@@ -214,6 +238,17 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
                         {/* actionValue */}
                         <Grid.Col span={6}>
+                            {actionValueList.length > 0 ?
+                            <Autocomplete
+                                label={t("controllableActionList.trigger.actionValue")}
+                                placeholder={t("controllableActionList.trigger.enterActionValue")}
+                                required
+                                data={actionValueList}
+                                value={actionValue}
+                                onChange={setActionValue}
+                                description={t("controllableActionList.trigger.hint.actionValueHint")}
+                            />
+                            :
                             <TextInput
                                 label={t("controllableActionList.trigger.actionValue")}
                                 placeholder={t("controllableActionList.trigger.enterActionValue")}
@@ -222,6 +257,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                                 onChange={(e) => setActionValue(e.currentTarget.value)}
                                 description={t("controllableActionList.trigger.hint.actionValueHint")}
                             />
+                            }
                         </Grid.Col>
 
                         {/* triggerLogic */}

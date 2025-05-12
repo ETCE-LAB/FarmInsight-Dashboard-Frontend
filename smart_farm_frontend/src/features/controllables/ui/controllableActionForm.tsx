@@ -11,7 +11,7 @@ import {
     Card,
     Flex,
     Tooltip,
-    Collapse, Accordion
+    Collapse, Accordion, Group
 } from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
@@ -51,8 +51,8 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const dispatch = useAppDispatch();
 
     const [name, setName] = useState<string>("");
-    const [availableActionScripts, setAvailableActionScripts] = useState<{ value:string, label:string, fields:ActionScriptField[] }[]>();
-    const [selectedActionClass, setSelectedActionClass] = useState<{value: string, label: string, fields:ActionScriptField[]}>(); // ??
+    const [availableActionScripts, setAvailableActionScripts] = useState<{ value:string, label:string, description:string, action_values:[], fields:ActionScriptField[] }[]>();
+    const [selectedActionClass, setSelectedActionClass] = useState<{value: string, label: string, description:string, action_values:[], fields:ActionScriptField[]}>(); // ??
     const [actionClassId, setActionCLassId] = useState<string>(""); // ??
     const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
@@ -92,7 +92,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
                 availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
 
-            setSelectedActionClass({value: match?.value || "", label: match?.label || "", fields: match?.fields || []});
+            setSelectedActionClass({value: match?.value || "", label: match?.label || "", description: match?.description || "", action_values: match?.action_values || [], fields: match?.fields || []});
 
             // JSON-String in ein Objekt umwandeln
             const additionalInfo = JSON.parse(toEditAction.additionalInformation || "{}");
@@ -124,6 +124,8 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 const actionScripts = scripts?.map(s => ({
                   value: s.action_script_class_id,
                   label: s.name,
+                  description: s.description,
+                  action_values: s.action_values,
                   fields: s.fields
                 })) ?? [];
                 setAvailableActionScripts(actionScripts)
@@ -159,6 +161,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 maximumDurationSeconds: maximumDurationSeconds,
                 additionalInformation: JSON.stringify(dynamicFieldValues),
                 hardwareId: hardware ? hardware.id : null ,
+                hardware: hardware,
                 trigger: [],
 
             }).then((action) => {
@@ -206,6 +209,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 maximumDurationSeconds: interval,
                 additionalInformation: JSON.stringify(dynamicFieldValues),
                 hardwareId: hardware?.id || "",
+                hardware: hardware,
                 trigger: []
             }).then((response) => {
                 if (response) {
@@ -270,6 +274,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                               description={t("controllableActionList.hint.hardware")}
                               onChange={(val) => {
                                 setHardwareInput(val);
+                                setHardware({ id: "", name: val })
                                   if (availableHardware && val) {
                                       const foundItem = availableHardware.find(h => h.label === val);
                                       if (foundItem) {
@@ -280,12 +285,17 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                           setHardware(hardware);
                                       }
                                   }
+                                  else{
+                                      console.log(val)
+                                      console.log(hardwareInput)
+                                      setHardware({ id: "", name: hardwareInput })
+                                  }
                               }}
                             />
 
                           )}
                         </Grid.Col>
-
+                        {hardware.name}
                         {/* ActionClass */}
                         <Grid.Col span={12}>
                             {fpfId && (
@@ -299,7 +309,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                   onChange={(val) => {
                                     setActionCLassId(val);
                                     const match = availableActionScripts?.find(h => h.label === val);
-                                    setSelectedActionClass({value: match?.value || "", label:match?.label || "", fields: match?.fields || []}); // update selected script only if it matches
+                                    setSelectedActionClass({value: match?.value || "", label:match?.label || "", description:match?.description || "", action_values:match?.action_values || [], fields: match?.fields || []}); // update selected script only if it matches
                                   }}
                                 />
                           )}
@@ -307,10 +317,48 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
                         {selectedActionClass && (
                           <Grid.Col span={12}>
+                                  <Box
+                                      p="md"
+                                      mb={"sm"}
+                                      style={{
+                                        border: '1px solid',
+                                        borderColor: '#228be6',
+                                        borderRadius: 8,
+                                      }}
+                                    >
+                                      <Group align="center">
+                                        <IconInfoCircle size={20} color="#228be6" />
+                                        <Text size="sm" >
+                                            {selectedActionClass.description}
+                                        </Text>
+                                    </Group>
+                                </Box>
                             <Text fw={500} mb="sm">Additional Configuration</Text>
                                 <Flex direction="column" gap="sm">
                                   {selectedActionClass.fields.map((field, index) => {
                                     switch (field.type) {
+                                    case "int":
+                                        return (
+                                            <NumberInput
+                                              key={index}
+                                              required={field.defaultValue == ""}
+                                              description={field.description}
+                                              placeholder={field.defaultValue}
+                                              label={
+                                                <>
+                                                  {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+
+                                                  {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
+                                                    <Tooltip label="Must be a valid HTTP URL">
+                                                      <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
+                                                    </Tooltip>
+                                                  )}
+                                                </>
+                                              }
+                                              value={dynamicFieldValues[field.name] || ""}
+                                              onChange={(value) => handleDynamicFieldChange(field.name, String(value ?? ""))}
+                                            />
+                                        );
                                       case "str":
                                       default:
                                         return (

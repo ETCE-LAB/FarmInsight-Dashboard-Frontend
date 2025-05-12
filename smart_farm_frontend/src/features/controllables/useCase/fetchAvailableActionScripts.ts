@@ -15,7 +15,7 @@ export const fetchAvailableActionScripts = (fpfId:string) => {
         {'Authorization': `Bearer ${token}`}
 
     const url = `${BACKEND_URL}/api/action-scripts/types`;
-    const result:  Promise<{action_script_class_id:string, name:string, fields:ActionScriptField[]}[]> = apiClient.get(url, headers)
+    const result:  Promise<{action_script_class_id:string, name:string, description:string, action_values:[], fields:ActionScriptField[]}[]> = apiClient.get(url, headers)
 
     return result
 }
