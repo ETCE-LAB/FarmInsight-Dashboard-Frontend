@@ -4,7 +4,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useAuth} from "react-oidc-context";
 import {Organization} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
-import {Button, Card, Container, Flex, Grid, Table, Title, Text} from "@mantine/core";
+import {Button, Card, Container, Flex, Grid, Table, Title} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
 import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
@@ -14,16 +14,19 @@ import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/ut
 import useWebSocket from "react-use-websocket";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
-import {IconChevronDown, IconChevronRight, IconCircleFilled} from "@tabler/icons-react";
+import {IconChevronDown, IconChevronRight, IconCircleFilled, IconSettings} from "@tabler/icons-react";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {pingSensor} from "../useCase/ping";
 import {showNotification} from "@mantine/notifications";
+import {AppRoutes} from "../../../utils/appRoutes";
+import {useNavigate} from "react-router-dom";
 
 export const StatusPage = () => {
     const auth = useAuth();
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const { t } = useTranslation();
     const [isAdmin, setIsAdmin] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (auth.isAuthenticated) {
@@ -90,7 +93,7 @@ export const StatusPage = () => {
         )
     } 
     
-    const FpfOverview: React.FC<{id: string}> = ({id})=> {
+    const FpfOverview: React.FC<{orgId: string, id: string}> = ({orgId, id})=> {
         const [fpf, setFpf] = useState<Fpf>();
         useEffect(() => {
             getFpf(id).then(f => {
@@ -104,7 +107,21 @@ export const StatusPage = () => {
                     <Card withBorder miw="50ch">
                         <Flex justify="space-between" mb="md">
                             <Title order={3}> {fpf.name} </Title>
-                            <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpf.id} />
+                            <Flex align="center" gap="xs">
+                                <IconSettings
+                                    size={20}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        navigate(
+                                            AppRoutes.editFpf
+                                                .replace(":organizationId", orgId)
+                                                .replace(":fpfId", fpf.id)
+                                        );
+                                    }}
+                                />
+                                <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpf.id} />
+                            </Flex>
                         </Flex>
                         <Table withColumnBorders>
                             <Table.Thead>
@@ -150,12 +167,26 @@ export const StatusPage = () => {
                                 </Button>
                                 <Title order={2}> {organization.name} </Title>
                             </Flex>
-                            <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organization.id} />
+                            <Flex align="center" gap="xs">
+                                <IconSettings
+                                    size={24}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                        navigate(
+                                            AppRoutes.organization.replace(
+                                                ":organizationId",
+                                                organization.id
+                                            )
+                                        )
+                                    }
+                                />
+                                <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organization.id} />
+                            </Flex>
                         </Flex>
-                        {show &&
+                            {show &&
                             <Flex gap="lg" mt="lg" flex={1} wrap='wrap' w='100%'>
                                 {organization.FPFs.map(fpf =>
-                                    <FpfOverview id={fpf.id} />
+                                    <FpfOverview orgId={organization.id} id={fpf.id} />
                                 )}
                             </Flex>
                         }
@@ -188,7 +219,7 @@ export const StatusPage = () => {
     const [showOverview, setShowOverview] = useState(true);
 
     return (
-        <Container size="xl">
+        <Container fluid>
             <Card>
                 <Flex justify="space-between">
                     <Flex gap="lg" align="center">
