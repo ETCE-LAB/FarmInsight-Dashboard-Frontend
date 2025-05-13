@@ -120,7 +120,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                         {t("common.cancel")}
                     </Button>
                     <Button onClick={() => {
-                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined) {
+                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value && confirmModal.isActive) {
                             handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value, confirmModal.isActive);
                         }
                     }}>
@@ -145,12 +145,25 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                     Read only
                 </Badge>
             )}
-            <Flex direction="column" gap="sm" style={{overflowX: 'auto', marginTop: 5}}>
-
-                {controllableAction.map((action) => {
+             <Flex direction="column" gap="sm" style={{ overflowX: 'auto', marginTop: 5 }}>
+                  {Object.entries(groupedActions).map(([hardwareId, actions]) => (
+                    <Card key={hardwareId} shadow="sm" p="md" withBorder>
+                      {/* Group Header */}
+                        {actions[0].hardware?.name &&
+                            <Text fw={700} size="lg" mb="sm">
+                                {actions[0].hardware?.name}
+                            </Text>
+                        }
+                      {/* Group Actions */}
+                      <Flex direction="column" gap="sm">
+                        {actions.map((action) => {
                     const manualTriggers = action.trigger.filter(t => t.type === 'manual' && t.isActive);
                     const hasAuto = action.trigger.some(t => t.type !== 'manual' && t.isActive);
-
+                    const hasActiveManualInGroup = actions.some((a) =>
+                                      a.trigger.some(
+                                        (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
+                                      )
+                                    );
                     return (
                         <Card key={action.id} p="sm">
                             <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
@@ -201,14 +214,18 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                                             })}
                                         >
                                             {t("controllableActionList.auto")}
-                                        </Button>
-                                    )}
+                                    </Button>
+                                  )}
                                 </Flex>
-                            </Flex>
-                        </Card>
-                    );
-                })}
-            </Flex>
+                              </Flex>
+                            </Card>
+                          );
+                        })}
+                      </Flex>
+                    </Card>
+                  ))}
+                </Flex>
+
         </Card>
     );
 };
