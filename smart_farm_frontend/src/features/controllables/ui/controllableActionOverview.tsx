@@ -120,7 +120,8 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                         {t("common.cancel")}
                     </Button>
                     <Button onClick={() => {
-                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value && confirmModal.isActive) {
+                        console.log(confirmModal.actionId , confirmModal.triggerId , confirmModal.value , confirmModal.isActive)
+                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined && confirmModal.isActive !== undefined) {
                             handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value, confirmModal.isActive);
                         }
                     }}>
@@ -205,6 +206,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                                             color={action.isAutomated ? "blue" : "gray"}
                                             radius="xl"
                                             style={!isAdmin ? {pointerEvents: "none", opacity: 0.6} : undefined}
+                                            disabled={hasActiveManualInGroup}
                                             onClick={() => setConfirmModal({
                                                 open: true,
                                                 actionId: action.id,
