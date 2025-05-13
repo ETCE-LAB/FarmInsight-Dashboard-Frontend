@@ -12,15 +12,15 @@ export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.S
     const [sensorsToDisplay, setSensorsToDisplay] = useState<{ value: string, label: string }[]>([])
     const {organizationId, fpfId} = useParams();
 
-    const[sensorId, setSensorId] = useState<string | null>(null)
-    const[operator, setOperator] = useState<string | null>(null)
+    const [sensorId, setSensorId] = useState<string | null>(null)
+    const [operator, setOperator] = useState<string | null>(null)
     const [value, setValue] = useState<string | number>("null")
 
     useEffect(() => {
 
         if(sensorId != "" && operator != "" && value != ""){
             //{comparison: "between", from: 6:00, to:18:00}
-            let jsonString = "{\"sensorId\":"+ sensorId + ", \"comparison\":\""+ operator +"\", \"value\":\""+ value + "\"}"
+            let jsonString = "{\"sensorId\":\""+ sensorId + "\", \"comparison\":\""+ operator +"\", \"value\":"+ value + "}"
             setTriggerLogic(jsonString)
         }
     }, [sensorId, operator, value]);

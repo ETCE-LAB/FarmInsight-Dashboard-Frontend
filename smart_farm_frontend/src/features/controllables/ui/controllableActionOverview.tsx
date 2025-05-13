@@ -80,6 +80,13 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
         }
     };
 
+    const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
+      const key = action.hardware?.id ?? 'unassigned';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(action);
+      return acc;
+    }, {});
+
     return (
         <Card radius="md" padding="md">
               {!isAdmin && (
@@ -99,24 +106,36 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                 </Badge>
               )}
                 <Flex direction="column" gap="sm" style={{ overflowX: 'auto', marginTop: 5 }}>
+                  {Object.entries(groupedActions).map(([hardwareId, actions]) => (
+                    <Card key={hardwareId} shadow="sm" p="md" withBorder>
+                      {/* Group Header */}
+                        {actions[0].hardware?.name &&
+                            <Text fw={700} size="lg" mb="sm">
+                                {actions[0].hardware?.name}
+                            </Text>
+                        }
+                      {/* Group Actions */}
+                      <Flex direction="column" gap="sm">
+                        {actions.map((action) => {
+                          const manualTriggers = action.trigger.filter(t => t.type === 'manual' && t.isActive);
+                          const hasAuto = action.trigger.some(t => t.type !== 'manual' && t.isActive);
+                            const hasActiveManualInGroup = actions.some((a) =>
+                                      a.trigger.some(
+                                        (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
+                                      )
+                                    );
+                          return (
+                            <Card key={action.id} p="sm">
+                              <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
+                                {/* Left: Name */}
+                                <Text fw={600} tt="capitalize" style={{ whiteSpace: 'nowrap', minWidth: 150 }}>
+                                  {truncateText(action.name, 30)}
+                                </Text>
 
-                    {controllableAction.map((action) => {
-                        const manualTriggers = action.trigger.filter(t => t.type === 'manual' && t.isActive);
-                        const hasAuto = action.trigger.some(t => t.type !== 'manual' && t.isActive);
-
-                        return (
-                          <Card key={action.id} p="sm" >
-                            <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
-                              {/* Left: Name */}
-                              <Text fw={600} tt="capitalize" style={{ whiteSpace: 'nowrap', minWidth: 150 }}>
-                                {truncateText(action.name, 30)}
-                              </Text>
-
-                              {/* Right: Controls */}
-                              <Flex direction="row" gap="xs" align="center" wrap="wrap">
+                                {/* Right: Controls */}
+                                <Flex direction="row" gap="xs" align="center" wrap="wrap">
                                   {manualTriggers.map((trigger) => {
                                     const isActive = trigger.id === action.status && !action.isAutomated;
-                                    console.log(isActive)
                                     return (
                                       <Button
                                         key={trigger.id}
@@ -125,19 +144,22 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                         variant={isActive ? "filled" : "light"}
                                         color={isActive ? getColor(trigger.actionValue) : "gray"}
                                         radius="xl"
-                                        onClick={() => handleTriggerChange(action.id, trigger.id, trigger.actionValue, isActive)}
+                                        onClick={() =>
+                                          handleTriggerChange(action.id, trigger.id, trigger.actionValue, isActive)
+                                        }
                                       >
                                         {trigger.actionValue}
                                       </Button>
                                     );
                                   })}
 
-                                  {hasAuto && (
+                                  { hasAuto && (
                                     <Button
                                       size="xs"
                                       variant={action.isAutomated ? "filled" : "light"}
                                       color={action.isAutomated ? "blue" : "gray"}
                                       radius="xl"
+                                      disabled={hasActiveManualInGroup}
                                       style={!isAdmin ? { pointerEvents: "none", opacity: 0.6 } : undefined}
                                       onClick={() => {
                                         executeTrigger(action.id, "auto", "").then(() => {
@@ -150,11 +172,15 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
                                     </Button>
                                   )}
                                 </Flex>
-                            </Flex>
-                          </Card>
-                        );
-                    })}
-             </Flex>
+                              </Flex>
+                            </Card>
+                          );
+                        })}
+                      </Flex>
+                    </Card>
+                  ))}
+                </Flex>
+
         </Card>
     );
 };

@@ -23,6 +23,7 @@ import {RootState} from "../../../utils/store";
 import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 
+
 export type ActionScriptField = {
   name: string;
   type: string;

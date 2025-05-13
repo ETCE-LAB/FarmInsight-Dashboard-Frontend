@@ -13,6 +13,7 @@ import {
     Tooltip,
     Collapse, Accordion, Group
 } from "@mantine/core";
+
 import { useAuth } from "react-oidc-context";
 import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
 import { useParams } from "react-router-dom";
@@ -34,8 +35,11 @@ import {
 } from "../state/ControllableActionSlice";
 import {updateControllableAction} from "../useCase/updateControllableAction";
 import {ActionTrigger} from "../models/actionTrigger";
+import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
+import i18n from "i18next";
 
 export type ActionScriptField = {
+  id: string;
   name: string;
   description: string;
   type: string;
@@ -238,6 +242,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
         }
     };
 
+
     return (
         <>
             {!auth.isAuthenticated ? (
@@ -329,7 +334,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                       <Group align="center">
                                         <IconInfoCircle size={20} color="#228be6" />
                                         <Text size="sm" >
-                                            {selectedActionClass.description}
+                                            {capitalizeFirstLetter(getBackendTranslation(selectedActionClass.description, i18n.language))}
                                         </Text>
                                     </Group>
                                 </Box>
@@ -342,12 +347,11 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                             <NumberInput
                                               key={index}
                                               required={field.defaultValue == ""}
-                                              description={field.description}
+                                              description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
                                               placeholder={field.defaultValue}
                                               label={
                                                 <>
-                                                  {field.name.charAt(0).toUpperCase() + field.name.slice(1)}
-
+                                                {capitalizeFirstLetter(getBackendTranslation(field.name, i18n.language))}
                                                   {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
                                                     <Tooltip label="Must be a valid HTTP URL">
                                                       <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
@@ -365,11 +369,11 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                           <TextInput
                                               key={index}
                                               required={field.defaultValue == ""}
-                                              description={field.description}
+                                              description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
                                               placeholder={field.defaultValue}
                                               label={
                                                 <>
-                                                  {field.name}
+                                                  {capitalizeFirstLetter(getBackendTranslation(field.name, i18n.language))}
                                                   {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
                                                     <Tooltip label="Must be a valid HTTP URL">
                                                       <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
