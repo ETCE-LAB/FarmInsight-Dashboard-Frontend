@@ -17,12 +17,12 @@ export const getLogMessages = (type:string, id?: string, amount?: number, from?:
     }
 
     let query = '';
-    if (amount) {
-        query = `amount=${amount}`;
-    } else if (from && to) {
+    if (from && to) {
         query = `from=${from}&to=${to}`;
     } else if (from) {
         query = `from=${from}`;
+    } else if (amount) {
+        query = `amount=${amount}`;
     } else {
         return Promise.reject(new Error("Invalid query params amount or from is required."));
     }

@@ -45,7 +45,7 @@ export const FpfOverview = () => {
     const [isMember, setIsMember] = useState<boolean>(false);
 
     useEffect(() => {
-        if (organizationId) {
+        if (organizationId && auth.isAuthenticated) {
             getMyOrganizations().then((organizations) => {
                 let found = false;
                 organizations.forEach((org: any) => {
@@ -204,7 +204,7 @@ export const FpfOverview = () => {
                             </Box>
                         )}
 
-                        <TimeRangeSelector onDateChange={setDateRange}/>
+                        <TimeRangeSelector onDateChange={setDateRange} defaultSelected={true} />
                         {fpf?.Sensors && fpf.Sensors.length > 0 ? (
 
                              fpf.Sensors.map((sensor) => (

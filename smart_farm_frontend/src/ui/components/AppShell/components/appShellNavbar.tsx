@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
     Container,
     Menu,
-    TextInput,
     Text,
     Flex,
     Divider,
@@ -13,7 +12,6 @@ import {
 } from "@mantine/core";
 import {
     IconSettings,
-    IconSearch,
     IconSquareRoundedPlus,
 } from "@tabler/icons-react";
 import { Organization } from "../../../../features/organization/models/Organization";

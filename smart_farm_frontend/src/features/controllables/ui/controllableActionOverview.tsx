@@ -11,10 +11,8 @@ import {
     Button,
     Card,
     Flex,
-    NumberInput, Overlay,
-    SegmentedControl, Slider,
-    Switch,
-    Text
+    Text,
+    Modal
 } from "@mantine/core";
 import {executeTrigger} from "../useCase/executeTrigger";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
@@ -37,26 +35,35 @@ const getColor = (value: string) => {
 const truncateText = (text: string, limit: number): string =>
     text.length > limit ? `${text.slice(0, limit)}...` : text;
 
-const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
+const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
 
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const dispatch = useAppDispatch();
     const controllableAction = useSelector((state: RootState) => state.controllableAction.controllableAction);
     const auth = useAuth();
-    const { organizationId } = useParams<{ organizationId: string }>();
+    const {organizationId} = useParams<{ organizationId: string }>();
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const fpf = useSelector((state: RootState) => state.fpf.fpf);
+    const [confirmModal, setConfirmModal] = useState<{
+        open: boolean,
+        actionId?: string,
+        triggerId?: string,
+        value?: string,
+        isActive?: boolean
+    }>({open: false});
 
-        useEffect(() => {
+    useEffect(() => {
         if (organizationId) {
             getMyOrganizations().then((organizations) => {
                 let found = false;
-                organizations.forEach((org: any) => {
-                    if (org.id === organizationId) {
-                        setIsAdmin(org.membership.role === 'admin');
-                        found = true;
-                    }
-                });
+                if(organizations.length > 0) {
+                    organizations.forEach((org: any) => {
+                        if (org.id === organizationId) {
+                            setIsAdmin(org.membership.role === 'admin');
+                            found = true;
+                        }
+                    });
+                }
                 if (!found) {
                     setIsAdmin(false);
                 }
@@ -66,17 +73,30 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
 
     const handleTriggerChange = async (actionId: string, triggerId: string, value: string, isActive:boolean) => {
         try {
-            await executeTrigger(actionId, triggerId, value);
-            if (!isActive){
-                dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
-                dispatch(updateControllableActionStatus({ actionId, triggerId }));
+            if( triggerId==="auto")
+            {
+                setConfirmModal({open: false});
+                dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
+                dispatch(updateControllableActionStatus({actionId, triggerId: ""}));
+                await executeTrigger(actionId, triggerId, "");
             }
             else{
-                dispatch(updateIsAutomated({ actionId: actionId, isAutomated: true }));
-                dispatch(updateControllableActionStatus({ actionId: actionId, triggerId: "" }));
+                if(!isActive){
+                    setConfirmModal({open: false});
+                    dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
+                    dispatch(updateControllableActionStatus({ actionId, triggerId }));
+                    await executeTrigger(actionId, triggerId, value);
+                }
+                else{ // Disable the manual action by setting it to isAutomated (without an auto trigger available)
+                    setConfirmModal({open: false});
+                    dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
+                    dispatch(updateControllableActionStatus({ actionId: actionId, triggerId: "" }));
+                    await executeTrigger(actionId, triggerId, value);
+                }
             }
-            } catch (error) {
-                console.error("Failed to execute trigger", error);
+
+        } catch (error) {
+            console.error("Failed to execute trigger", error);
         }
     };
 
@@ -89,98 +109,106 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
 
     return (
         <Card radius="md" padding="md">
-              {!isAdmin && (
-                <Badge
-                  color="gray"
-                  variant="light"
-                  size="sm"
-                  style={{
-                    position: 'absolute',
-                    top: 10,
-                    right: 10,
-                    zIndex: 10,
-                    pointerEvents: 'none',
-                  }}
-                >
-                  Read only
-                </Badge>
-              )}
-                <Flex direction="column" gap="sm" style={{ overflowX: 'auto', marginTop: 5 }}>
-                  {Object.entries(groupedActions).map(([hardwareId, actions]) => (
-                    <Card key={hardwareId} shadow="sm" p="md" withBorder>
-                      {/* Group Header */}
-                        {actions[0].hardware?.name &&
-                            <Text fw={700} size="lg" mb="sm">
-                                {actions[0].hardware?.name}
-                            </Text>
+            <Modal
+                opened={confirmModal.open}
+                onClose={() => setConfirmModal({open: false})}
+                title={t("controllableActionList.confirmTitle")}
+            >
+                <Text>{t("controllableActionList.confirmMessage")}</Text>
+                <Flex justify="flex-end" gap="md" mt="md">
+                    <Button variant="light" onClick={() => setConfirmModal({open: false})}>
+                        {t("common.cancel")}
+                    </Button>
+                    <Button onClick={() => {
+                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined) {
+                            handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value, confirmModal.isActive);
                         }
-                      {/* Group Actions */}
-                      <Flex direction="column" gap="sm">
-                        {actions.map((action) => {
-                          const manualTriggers = action.trigger.filter(t => t.type === 'manual' && t.isActive);
-                          const hasAuto = action.trigger.some(t => t.type !== 'manual' && t.isActive);
-                            const hasActiveManualInGroup = actions.some((a) =>
-                                      a.trigger.some(
-                                        (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
-                                      )
-                                    );
-                          return (
-                            <Card key={action.id} p="sm">
-                              <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
+                    }}>
+                        {t("common.confirm")}
+                    </Button>
+                </Flex>
+            </Modal>
+
+            {!isAdmin && (
+                <Badge
+                    color="gray"
+                    variant="light"
+                    size="sm"
+                    style={{
+                        position: 'absolute',
+                        top: 10,
+                        right: 10,
+                        zIndex: 10,
+                        pointerEvents: 'none',
+                    }}
+                >
+                    Read only
+                </Badge>
+            )}
+            <Flex direction="column" gap="sm" style={{overflowX: 'auto', marginTop: 5}}>
+
+                {controllableAction.map((action) => {
+                    const manualTriggers = action.trigger.filter(t => t.type === 'manual' && t.isActive);
+                    const hasAuto = action.trigger.some(t => t.type !== 'manual' && t.isActive);
+
+                    return (
+                        <Card key={action.id} p="sm">
+                            <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
                                 {/* Left: Name */}
-                                <Text fw={600} tt="capitalize" style={{ whiteSpace: 'nowrap', minWidth: 150 }}>
-                                  {truncateText(action.name, 30)}
+                                <Text fw={600} tt="capitalize" style={{whiteSpace: 'nowrap', minWidth: 150}}>
+                                    {truncateText(action.name, 30)}
                                 </Text>
 
                                 {/* Right: Controls */}
                                 <Flex direction="row" gap="xs" align="center" wrap="wrap">
-                                  {manualTriggers.map((trigger) => {
-                                    const isActive = trigger.id === action.status && !action.isAutomated;
-                                    return (
-                                      <Button
-                                        key={trigger.id}
-                                        size="xs"
-                                        style={!isAdmin ? { pointerEvents: "none", opacity: 0.6 } : undefined}
-                                        variant={isActive ? "filled" : "light"}
-                                        color={isActive ? getColor(trigger.actionValue) : "gray"}
-                                        radius="xl"
-                                        onClick={() =>
-                                          handleTriggerChange(action.id, trigger.id, trigger.actionValue, isActive)
-                                        }
-                                      >
-                                        {trigger.actionValue}
-                                      </Button>
-                                    );
-                                  })}
+                                    {manualTriggers.map((trigger) => {
+                                        const isActive = trigger.id === action.status && !action.isAutomated;
 
-                                  { hasAuto && (
-                                    <Button
-                                      size="xs"
-                                      variant={action.isAutomated ? "filled" : "light"}
-                                      color={action.isAutomated ? "blue" : "gray"}
-                                      radius="xl"
-                                      disabled={hasActiveManualInGroup}
-                                      style={!isAdmin ? { pointerEvents: "none", opacity: 0.6 } : undefined}
-                                      onClick={() => {
-                                        executeTrigger(action.id, "auto", "").then(() => {
-                                          dispatch(updateControllableActionStatus({ actionId: action.id, triggerId: "" }));
-                                          dispatch(updateIsAutomated({ actionId: action.id, isAutomated: true }));
-                                        });
-                                      }}
-                                    >
-                                      {t("controllableActionList.auto")}
-                                    </Button>
-                                  )}
+                                        return (
+                                            <Button
+                                                key={trigger.id}
+                                                size="xs"
+                                                style={!isAdmin ? {pointerEvents: "none", opacity: 0.6} : undefined}
+                                                variant={isActive ? "filled" : "light"}
+                                                color={isActive ? getColor(trigger.actionValue) : "gray"}
+                                                radius="xl"
+                                                onClick={() => setConfirmModal({
+                                                    open: true,
+                                                    actionId: action.id,
+                                                    triggerId: trigger.id,
+                                                    value: trigger.actionValue,
+                                                    isActive: isActive
+                                                })}
+                                            >
+                                                {trigger.actionValue}
+                                            </Button>
+                                        );
+                                    })}
+
+                                    {hasAuto && (
+                                        <Button
+                                            size="xs"
+                                            variant={action.isAutomated ? "filled" : "light"}
+                                            color={action.isAutomated ? "blue" : "gray"}
+                                            radius="xl"
+                                            style={!isAdmin ? {pointerEvents: "none", opacity: 0.6} : undefined}
+                                            onClick={() => setConfirmModal({
+                                                open: true,
+                                                actionId: action.id,
+                                                triggerId: "auto",
+                                                value: "",
+                                                isActive: true
+                                            })}
+                                        >
+                                            {t("controllableActionList.auto")}
+                                        </Button>
+                                    )}
                                 </Flex>
-                              </Flex>
-                            </Card>
-                          );
-                        })}
-                      </Flex>
-                    </Card>
-                  ))}
-                </Flex>
-
+                            </Flex>
+                        </Card>
+                    );
+                })}
+            </Flex>
         </Card>
     );
 };

@@ -1,4 +1,6 @@
 import {BACKEND_URL} from "../env-config";
+import i18n from "i18next";
+
 
 export const formatFloatValue = (value: number): string => {
     if (value)
@@ -23,25 +25,27 @@ export const getSensorStateColor = (measuredAt: Date, isActive: boolean, interva
     const now_ms = new Date().getTime();
     const difference_seconds = (now_ms - measured_ms) / 1000;
 
-    if (!isActive) {
-        return 'grey';
-    }
-
-    if (difference_seconds < intervalSeconds) {
-        return 'green';
-    }
-    if (difference_seconds < intervalSeconds * 2) {
-        return 'yellow';
-    }
+    if (!isActive) return 'grey';
+    if (difference_seconds < intervalSeconds) return 'green';
+    if (difference_seconds < intervalSeconds * 2) return 'yellow';
 
     return 'red';
 }
 
+export const getSensorStateColorHint = (color: string)=> {
+    if (color === 'green')  return i18n.t("overview.green");
+    if (color === 'yellow') return i18n.t('overview.yellow');
+    if (color === 'red')    return i18n.t('overview.red');
+    if (color === 'grey')   return i18n.t('overview.grey');
+
+    return i18n.t('overview.other');
+}
+
 export const getColorFromLogLevel = (logLevel: string): string => {
-    if (logLevel === 'DEBUG') return 'blue';
-    if (logLevel === 'INFO') return 'green';
+    if (logLevel === 'DEBUG')   return 'blue';
+    if (logLevel === 'INFO')    return 'green';
     if (logLevel === 'WARNING') return 'yellow';
-    if (logLevel === 'ERROR') return 'red';
+    if (logLevel === 'ERROR')   return 'red';
 
     return 'white';
 }

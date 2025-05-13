@@ -15,22 +15,20 @@ import {
 } from "@mantine/core";
 
 import { useAuth } from "react-oidc-context";
-import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
-import { AppRoutes } from "../../../utils/appRoutes";
 import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
-import {ControllableAction, EditControllableAction} from "../models/controllableAction";
+import {ControllableAction} from "../models/controllableAction";
 import {Hardware} from "../models/hardware";
 import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 import {createControllableAction} from "../useCase/createControllableAction";
 import {
     addControllableAction,
-    setControllableAction,
+
     updateControllableActionSlice
 } from "../state/ControllableActionSlice";
 import {updateControllableAction} from "../useCase/updateControllableAction";
@@ -93,6 +91,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
     useEffect(() => {
         if(availableActionScripts && toEditAction){
+            console.log(toEditAction.actionClassId)
             const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
                 availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
 

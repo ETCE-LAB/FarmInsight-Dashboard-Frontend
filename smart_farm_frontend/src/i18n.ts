@@ -7,6 +7,10 @@ i18n
         resources: {
             en: {
                 translation: {
+                    common: {
+                        cancel: 'Cancel',
+                        confirm: 'Confirm'
+                    },
                     threshold: {
                         title: 'Thresholds',
                         lowerBound: 'lower bound',
@@ -98,6 +102,7 @@ i18n
                             details: 'Details for',
                         },
                         statusOverview: 'Status overview',
+                        ping: 'Ping',
                     },
                     sensor: {
                         addSensor: 'Add Sensor',
@@ -155,7 +160,8 @@ i18n
                         isActive: 'Is Active?',
                         actions: 'Actions',
                     },
-                    controllableActionList:{
+                    controllableActionList: {
+                        noAction: 'No Action found',
                         auto: 'Auto',
                         title: 'Controllable Actions',
                         name: 'Action name',
@@ -168,6 +174,9 @@ i18n
                         editAction: 'Edit Controllable Action',
                         triggerTitle: 'Trigger',
                         addControllable: 'Add controllable',
+                        confirmTitle: 'Confirm Action',
+                        confirmMessage: 'Are you sure you want to execute this action?',
+
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -390,11 +399,19 @@ i18n
                         green: 'All good',
                         yellow: 'One missed value',
                         red: 'Multiple missed values',
+                        grey: 'Inactive',
+                        other: 'Unknown',
+                        lastPing: 'Last ping',
+                        pingResult: 'Ping result',
                     },
                 },
             },
             de: {
                 translation: {
+                    common: {
+                        cancel: 'Abbrechen',
+                        confirm: 'Bestätigen'
+                    },
                     threshold: {
                         title: 'Grenzwerte',
                         lowerBound: 'untere Grenze',
@@ -485,6 +502,7 @@ i18n
                             details: 'Details für',
                         },
                         statusOverview: 'Status Übersicht',
+                        ping: 'Ping',
                     },
                     sensor: {
                         addSensor: 'Sensor hinzufügen',
@@ -543,6 +561,7 @@ i18n
                         actions: 'Aktionen',
                     },
                     controllableActionList: {
+                        noAction:'Keine Aktion gefunden',
                         auto: "Auto",
                         title: "Steuerbare Aktionen",
                         name: "Aktionsname",
@@ -555,6 +574,9 @@ i18n
                         editAction: "Steuerbare Aktion bearbeiten",
                         triggerTitle: "Auslöser",
                         addControllable: "Steuerbares Element hinzufügen",
+                        confirmTitle: 'Bestätige Ausführung',
+                        confirmMessage: 'Sind Sie sicher, dass Sie eine Aktion ausführen wollen?',
+
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",
@@ -776,6 +798,10 @@ i18n
                         green: 'Alles gut',
                         yellow: 'Ein Wert verspätet',
                         red: 'Mehrere Werte fehlen',
+                        grey: 'Inaktiv',
+                        other: 'Unbekannt',
+                        lastPing: 'Letzter Ping',
+                        pingResult: 'Ping Ergebnis',
                     },
                 },
             },
