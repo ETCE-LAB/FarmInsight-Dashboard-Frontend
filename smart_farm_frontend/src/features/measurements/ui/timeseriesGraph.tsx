@@ -45,8 +45,8 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     };
 
     const { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, {
-        shouldReconnect: () => true,
-    });
+        shouldReconnect: () => false,
+    }, false);
 
     useEffect(() => {
         if (lastMessage) {
