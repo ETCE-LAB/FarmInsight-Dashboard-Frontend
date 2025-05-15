@@ -4,7 +4,7 @@ import {useParams} from "react-router-dom";
 
 import {Box, Grid, NumberInput, Select, Text} from "@mantine/core";
 
-export const TimeTriggeForm:React.FC<{setTriggerLogic:React.Dispatch<React.SetStateAction<string>> }> = ({setTriggerLogic}) => {
+export const TimeTriggerForm:React.FC<{setTriggerLogic:React.Dispatch<React.SetStateAction<string>> }> = ({setTriggerLogic}) => {
     const { organizationId, fpfId } = useParams();
     const[from, setFrom] = useState("")
     const[to, setTo] = useState("")
@@ -31,7 +31,6 @@ export const TimeTriggeForm:React.FC<{setTriggerLogic:React.Dispatch<React.SetSt
                     onChange={(event) => setTo(event.currentTarget.value)}
                 />
             </Grid.Col>
-
         </Grid>
     )
 }

@@ -2,6 +2,7 @@
 export const enum triggerTypes {
     sensorvalue = "sensorValue",
     timeofday = "timeOfDay",
-    manuel = "manual",
+    manual = "manual",
+    interval = "interval",
     event = "event"
 }

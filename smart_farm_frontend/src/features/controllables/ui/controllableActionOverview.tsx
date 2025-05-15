@@ -21,7 +21,6 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useParams} from "react-router-dom";
 
 const getColor = (value: string) => {
-    console.log(value);
     switch (lowerFirst(value)) {
         case 'on':
             return 'green';
@@ -49,7 +48,8 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
         open: boolean,
         actionId?: string,
         triggerId?: string,
-        value?: string
+        value?: string,
+        isActive?: boolean
     }>({open: false});
 
     useEffect(() => {
@@ -71,7 +71,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
         }
     }, [organizationId]);
 
-    const handleTriggerChange = async (actionId: string, triggerId: string, value: string) => {
+    const handleTriggerChange = async (actionId: string, triggerId: string, value: string, isActive:boolean) => {
         try {
             if( triggerId==="auto")
             {
@@ -81,21 +81,32 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                 await executeTrigger(actionId, triggerId, "");
             }
             else{
-                setConfirmModal({open: false});
-                dispatch(updateIsAutomated({actionId: actionId, isAutomated: false}));
-                dispatch(updateControllableActionStatus({actionId, triggerId}));
-                await executeTrigger(actionId, triggerId, value);
+                if(!isActive){
+                    setConfirmModal({open: false});
+                    dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
+                    dispatch(updateControllableActionStatus({ actionId, triggerId }));
+                    await executeTrigger(actionId, triggerId, value);
+                }
+                else{ // Disable the manual action by setting it to isAutomated (without an auto trigger available)
+                    setConfirmModal({open: false});
+                    dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
+                    dispatch(updateControllableActionStatus({ actionId: actionId, triggerId: "" }));
+                    await executeTrigger(actionId, triggerId, value);
+                }
             }
 
         } catch (error) {
             console.error("Failed to execute trigger", error);
         }
-
     };
 
-    useEffect(() => {
-        console.log(fpfId);
-    }, [fpfId]);
+    const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
+      const key = action.hardware?.id ?? 'unassigned';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(action);
+      return acc;
+    }, {});
+
 
     return (
         <Card radius="md" padding="md">
@@ -110,8 +121,9 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                         {t("common.cancel")}
                     </Button>
                     <Button onClick={() => {
-                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined) {
-                            handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value);
+                        console.log(confirmModal.actionId , confirmModal.triggerId , confirmModal.value , confirmModal.isActive)
+                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined && confirmModal.isActive !== undefined) {
+                            handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value, confirmModal.isActive);
                         }
                     }}>
                         {t("common.confirm")}
@@ -135,12 +147,25 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                     Read only
                 </Badge>
             )}
-            <Flex direction="column" gap="sm" style={{overflowX: 'auto', marginTop: 5}}>
-
-                {controllableAction.map((action) => {
+             <Flex direction="column" gap="sm" style={{ overflowX: 'auto', marginTop: 5 }}>
+                  {Object.entries(groupedActions).map(([hardwareId, actions]) => (
+                    <Card key={hardwareId} shadow="sm" p="md" withBorder>
+                      {/* Group Header */}
+                        {actions[0].hardware?.name &&
+                            <Text fw={700} size="lg" mb="sm">
+                                {actions[0].hardware?.name}
+                            </Text>
+                        }
+                      {/* Group Actions */}
+                      <Flex direction="column" gap="sm">
+                        {actions.map((action) => {
                     const manualTriggers = action.trigger.filter(t => t.type === 'manual' && t.isActive);
                     const hasAuto = action.trigger.some(t => t.type !== 'manual' && t.isActive);
-
+                    const hasActiveManualInGroup = actions.some((a) =>
+                                      a.trigger.some(
+                                        (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
+                                      )
+                                    );
                     return (
                         <Card key={action.id} p="sm">
                             <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
@@ -166,7 +191,8 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                                                     open: true,
                                                     actionId: action.id,
                                                     triggerId: trigger.id,
-                                                    value: trigger.actionValue
+                                                    value: trigger.actionValue,
+                                                    isActive: isActive
                                                 })}
                                             >
                                                 {trigger.actionValue}
@@ -181,22 +207,28 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                                             color={action.isAutomated ? "blue" : "gray"}
                                             radius="xl"
                                             style={!isAdmin ? {pointerEvents: "none", opacity: 0.6} : undefined}
+                                            disabled={hasActiveManualInGroup}
                                             onClick={() => setConfirmModal({
                                                 open: true,
                                                 actionId: action.id,
                                                 triggerId: "auto",
-                                                value: ""
+                                                value: "",
+                                                isActive: true
                                             })}
                                         >
                                             {t("controllableActionList.auto")}
-                                        </Button>
-                                    )}
+                                    </Button>
+                                  )}
                                 </Flex>
-                            </Flex>
-                        </Card>
-                    );
-                })}
-            </Flex>
+                              </Flex>
+                            </Card>
+                          );
+                        })}
+                      </Flex>
+                    </Card>
+                  ))}
+                </Flex>
+
         </Card>
     );
 };

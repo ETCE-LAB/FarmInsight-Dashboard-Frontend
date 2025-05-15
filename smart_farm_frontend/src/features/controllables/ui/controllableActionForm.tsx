@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Autocomplete, Card, Flex, Tooltip} from "@mantine/core";
+import {
+    Box,
+    Button,
+    Grid,
+    NumberInput,
+    Switch,
+    TextInput,
+    Text,
+    Autocomplete,
+    Card,
+    Flex,
+    Tooltip,
+    Collapse, Accordion, Group
+} from "@mantine/core";
+
 import { useAuth } from "react-oidc-context";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
@@ -19,11 +33,16 @@ import {
 } from "../state/ControllableActionSlice";
 import {updateControllableAction} from "../useCase/updateControllableAction";
 import {ActionTrigger} from "../models/actionTrigger";
+import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
+import i18n from "i18next";
 
 export type ActionScriptField = {
+  id: string;
   name: string;
+  description: string;
   type: string;
   rules?: { name: string }[];
+  defaultValue : any
 };
 
 export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditAction, setClosed }) => {
@@ -34,10 +53,10 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const dispatch = useAppDispatch();
 
     const [name, setName] = useState<string>("");
-    const [availableActionScripts, setAvailableActionScripts] = useState<{ value:string, label:string, fields:ActionScriptField[] }[]>();
-    const [selectedActionClass, setSelectedActionClass] = useState<{value: string, label: string, fields:ActionScriptField[]}>(); // ??
+    const [availableActionScripts, setAvailableActionScripts] = useState<{ value:string, label:string, description:string, action_values:[], fields:ActionScriptField[] }[]>();
+    const [selectedActionClass, setSelectedActionClass] = useState<{value: string, label: string, description:string, action_values:[], fields:ActionScriptField[]}>(); // ??
     const [actionClassId, setActionCLassId] = useState<string>(""); // ??
-    const [isActive, setIsActive] = useState<boolean>(false);
+    const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
     const [additionalInformation, setAdditionalInformation] = useState<string>("");
     const [hardware, setHardware] = useState<Hardware>({id: "", name: ""});
@@ -45,6 +64,9 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
 
+    const [expanded, setExpanded] = useState(false);
+
+    // Somewhere in your UI add a toggle (button, switch, or click on the header)
 
     useEffect(() => {
         if (toEditAction) {
@@ -69,11 +91,10 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
     useEffect(() => {
         if(availableActionScripts && toEditAction){
-            console.log(toEditAction.actionClassId)
             const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
                 availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
 
-            setSelectedActionClass({value: match?.value || "", label: match?.label || "", fields: match?.fields || []});
+            setSelectedActionClass({value: match?.value || "", label: match?.label || "", description: match?.description || "", action_values: match?.action_values || [], fields: match?.fields || []});
 
             // JSON-String in ein Objekt umwandeln
             const additionalInfo = JSON.parse(toEditAction.additionalInformation || "{}");
@@ -105,6 +126,8 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 const actionScripts = scripts?.map(s => ({
                   value: s.action_script_class_id,
                   label: s.name,
+                  description: s.description,
+                  action_values: s.action_values,
                   fields: s.fields
                 })) ?? [];
                 setAvailableActionScripts(actionScripts)
@@ -140,6 +163,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 maximumDurationSeconds: maximumDurationSeconds,
                 additionalInformation: JSON.stringify(dynamicFieldValues),
                 hardwareId: hardware ? hardware.id : null ,
+                hardware: hardware,
                 trigger: [],
 
             }).then((action) => {
@@ -187,6 +211,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 maximumDurationSeconds: interval,
                 additionalInformation: JSON.stringify(dynamicFieldValues),
                 hardwareId: hardware?.id || "",
+                hardware: hardware,
                 trigger: []
             }).then((response) => {
                 if (response) {
@@ -214,6 +239,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             });
         }
     };
+
 
     return (
         <>
@@ -251,6 +277,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                               description={t("controllableActionList.hint.hardware")}
                               onChange={(val) => {
                                 setHardwareInput(val);
+                                setHardware({ id: "", name: val })
                                   if (availableHardware && val) {
                                       const foundItem = availableHardware.find(h => h.label === val);
                                       if (foundItem) {
@@ -260,6 +287,9 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                           };
                                           setHardware(hardware);
                                       }
+                                  }
+                                  else{
+                                      setHardware({ id: "", name: hardwareInput })
                                   }
                               }}
                             />
@@ -280,7 +310,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                   onChange={(val) => {
                                     setActionCLassId(val);
                                     const match = availableActionScripts?.find(h => h.label === val);
-                                    setSelectedActionClass({value: match?.value || "", label:match?.label || "", fields: match?.fields || []}); // update selected script only if it matches
+                                    setSelectedActionClass({value: match?.value || "", label:match?.label || "", description:match?.description || "", action_values:match?.action_values || [], fields: match?.fields || []}); // update selected script only if it matches
                                   }}
                                 />
                           )}
@@ -288,36 +318,74 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
                         {selectedActionClass && (
                           <Grid.Col span={12}>
+                                  <Box
+                                      p="md"
+                                      mb={"sm"}
+                                      style={{
+                                        border: '1px solid',
+                                        borderColor: '#228be6',
+                                        borderRadius: 8,
+                                      }}
+                                    >
+                                      <Group align="center">
+                                        <IconInfoCircle size={20} color="#228be6" />
+                                        <Text size="sm" >
+                                            {capitalizeFirstLetter(getBackendTranslation(selectedActionClass.description, i18n.language))}
+                                        </Text>
+                                    </Group>
+                                </Box>
                             <Text fw={500} mb="sm">Additional Configuration</Text>
-
-                            <Flex direction="column" gap="sm">
-                              {selectedActionClass.fields.map((field, index) => {
-                                switch (field.type) {
-                                  case "str":
-                                  default:
-                                    return (
-                                      <TextInput
-                                          key={index}
-                                          required
-                                          label={
-                                            <Flex align="center" gap="xs">
-                                              <Text size="sm">{field.name}</Text>
-                                              {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
-                                                <Tooltip label="Must be a valid HTTP URL">
-                                                  <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
-                                                </Tooltip>
-                                              )}
-                                            </Flex>
-                                          }
-                                          value={dynamicFieldValues[field.name] || ""}
-                                          onChange={(event) =>
-                                            handleDynamicFieldChange(field.name, event.currentTarget.value)
-                                          }
-                                        />
-                                    );
-                                }
-                              })}
-                            </Flex>
+                                <Flex direction="column" gap="sm">
+                                  {selectedActionClass.fields.map((field, index) => {
+                                    switch (field.type) {
+                                    case "int":
+                                        return (
+                                            <NumberInput
+                                              key={index}
+                                              required={field.defaultValue == ""}
+                                              description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
+                                              placeholder={field.defaultValue}
+                                              label={
+                                                <>
+                                                {capitalizeFirstLetter(getBackendTranslation(field.name, i18n.language))}
+                                                  {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
+                                                    <Tooltip label="Must be a valid HTTP URL">
+                                                      <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
+                                                    </Tooltip>
+                                                  )}
+                                                </>
+                                              }
+                                              value={dynamicFieldValues[field.name] || ""}
+                                              onChange={(value) => handleDynamicFieldChange(field.name, String(value ?? ""))}
+                                            />
+                                        );
+                                      case "str":
+                                      default:
+                                        return (
+                                          <TextInput
+                                              key={index}
+                                              required={field.defaultValue == ""}
+                                              description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
+                                              placeholder={field.defaultValue}
+                                              label={
+                                                <>
+                                                  {capitalizeFirstLetter(getBackendTranslation(field.name, i18n.language))}
+                                                  {field.rules?.some(r => r.name === "ValidHttpEndpointRule") && (
+                                                    <Tooltip label="Must be a valid HTTP URL">
+                                                      <IconInfoCircle size={14} style={{ cursor: 'pointer' }} />
+                                                    </Tooltip>
+                                                  )}
+                                                </>
+                                              }
+                                              value={dynamicFieldValues[field.name] || ""}
+                                              onChange={(event) =>
+                                                  handleDynamicFieldChange(field.name, event.currentTarget.value)
+                                              }
+                                            />
+                                        );
+                                    }
+                                  })}
+                                </Flex>
                           </Grid.Col>
                         )}
 

@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {ControllableAction} from "../models/controllableAction";
 import {ActionTrigger} from "../models/actionTrigger";
-
+import { RootState } from '../../../utils/store';
 
 interface ControllableActionState{
     changeControllableActionEvent: number;
@@ -17,6 +17,7 @@ const ControllableActionSlice = createSlice({
     name: 'ControllableAction',
     initialState,
     reducers: {
+
         changedControllableAction(state) {
             state.changeControllableActionEvent += 1
         },
@@ -93,4 +94,12 @@ export const {
 export default ControllableActionSlice.reducer
 
 
+export const selectControllableActionById = (
+        state: RootState,
+        id: string
+    ): ControllableAction | undefined => {
+        return state.controllableAction.controllableAction.find(
+            (ca: ControllableAction) => ca.id === id
+        );
+};
 
