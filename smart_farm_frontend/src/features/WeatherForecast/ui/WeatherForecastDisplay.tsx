@@ -235,12 +235,15 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                             : { width: '12vw', cursor: 'pointer' }
                                         }
                                    onClick={() => setIsDetailedView(index)}>
+                                
                                 <Box style={{display:"flex", justifyContent:"space-between"}} >
                                     <Text size={"xl"} style={{display:"flex", textAlign:"left", alignSelf:"flex-start"}}>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
-                                    <Box  style={{display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto', }}>
-                                        {getWeatherIcon(forecast.weatherCode)}
-                                        {forecast.windSpeedMax > 20 && (<IconWind/>)}
-                                    </Box>
+                                    <Tooltip label={t('weatherForecast.weatherCode.tooltip')} withArrow>
+                                        <Box  style={{display: 'flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto', }}>
+                                            {getWeatherIcon(forecast.weatherCode)}
+                                            {forecast.windSpeedMax > 20 && (<IconWind/>)}
+                                        </Box>
+                                    </Tooltip>
                                 </Box>
                                 <Text size={"sm"}>{getWeatherDescription(forecast.weatherCode)}</Text>
                                 <Box style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"0.5vh", marginTop:"0.5vh"}}>
@@ -250,6 +253,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                     <IconSunFilled ></IconSunFilled>
                                     </Box>
                                 </Box>
+                  
 
                                 <Text>{forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C</Text>
                             </Card>

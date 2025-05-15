@@ -93,6 +93,10 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
 
     };
 
+    useEffect(() => {
+        console.log(fpfId);
+    }, [fpfId]);
+
     return (
         <Card radius="md" padding="md">
             <Modal
