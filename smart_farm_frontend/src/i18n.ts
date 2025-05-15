@@ -200,6 +200,9 @@ i18n
                             enterTriggerLogic: 'Enter Trigger Logic',
                             description: 'Description',
                             enterDescription: 'Enter description',
+                            active: 'Active',
+                            running: 'Running',
+                            inactive: 'Inactive',
                             hint: {
                                 typeHint: 'Select appropriate trigger type.',
                                 actionValueTypeHint: 'Set the correct type of the action value. For example the value "On" is string.',
@@ -600,6 +603,9 @@ i18n
                             enterTriggerLogic: "Auslöserlogik eingeben",
                             description: "Beschreibung",
                             enterDescription: "Beschreibung eingeben",
+                            active: 'Aktiv',
+                            running: 'Läuft',
+                            inactive: 'Inaktiv',
                             hint: {
                                 typeHint: 'Wähle den passenden Auslöser-Typ.',
                                     actionValueTypeHint: 'Lege den richtigen Typ des Aktionswerts fest. Zum Beispiel ist der Wert "On" ein String.',
@@ -961,6 +967,9 @@ i18n
                           enterTriggerLogic: "Entrer la logique de déclencheur",
                           description: "Description",
                           enterDescription: "Entrer la description",
+                          active: 'Actif',
+                          running: 'En cours',
+                          inactive: 'Inactif',
                           hint: {
                             typeHint: "Entrez le type approprié. Les déclencheurs manuels ne seront déclenchés manuellement que via l'aperçu FPF par les administrateurs. Tous les autres types exécutent l'action automatiquement.",
                             actionValueTypeHint: "Définissez le type correct de la valeur d'action. Par exemple, la valeur \"On\" est une chaîne.",
@@ -1309,6 +1318,9 @@ i18n
                             enterTriggerLogic: 'Inserisci logica trigger',
                             description: 'Descrizione',
                             enterDescription: 'Inserisci descrizione',
+                            active: 'Attivo',
+                            running: 'In esecuzione',
+                            inactive: 'Inattivo',
                             hint: {
                                 typeHint: 'Inserisci il tipo appropriato. I trigger manuali saranno attivati solo manualmente dagli amministratori tramite la panoramica FPF. Tutti gli altri tipi eseguono automaticamente l\'azione.',
                                 actionValueTypeHint: 'Imposta il tipo corretto del valore dell\'azione. Ad esempio, il valore "On" è una stringa.',
@@ -1643,6 +1655,9 @@ i18n
                         enterTriggerLogic: '输入触发逻辑',
                         description: '描述',
                         enterDescription: '输入描述',
+                        active: '活动',
+                        running: '运行中',
+                        inactive: '未激活',
                         hint: {
                           typeHint: '请输入正确的类型。手动触发器只能由管理员通过 FPF 总览手动触发。其他类型将自动执行操作。',
                           actionValueTypeHint: '设置操作值的正确类型。例如，值“On”是字符串类型。',
@@ -1993,6 +2008,9 @@ i18n
                         enterTriggerLogic: 'Введите логику триггера',
                         description: 'Описание',
                         enterDescription: 'Введите описание',
+                        active: 'Активный',
+                        running: 'Выполняется',
+                        inactive: 'Неактивный',
                         hint: {
                           typeHint: 'Введите подходящий тип. Ручные триггеры будут запускаться вручную администраторами через интерфейс FPF. Все остальные типы автоматически запускают действие.',
                           actionValueTypeHint: 'Укажите правильный тип значения действия. Например, значение "On" — это строка.',

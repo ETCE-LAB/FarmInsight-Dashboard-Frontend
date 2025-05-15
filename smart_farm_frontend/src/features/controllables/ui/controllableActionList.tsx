@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Accordion, Card, Button} from "@mantine/core";
-import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit,} from "@tabler/icons-react";
+import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Accordion, Card, Button, Chip} from "@mantine/core";
+import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit, IconLoader2, IconX,} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import {getBackendTranslation} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
@@ -14,6 +14,10 @@ import {ActionTrigger} from "../models/actionTrigger";
 import {ControllableActionForm} from "./controllableActionForm";
 import {ActionTriggerForm} from "./actionTriggerForm";
 import {useParams} from "react-router-dom";
+import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
+import {executeTrigger} from "../useCase/executeTrigger";
+import {useAppDispatch} from "../../../utils/Hooks";
+import {lowerFirst} from "@mantine/hooks";
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
     const { t, i18n } = useTranslation();
@@ -21,6 +25,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
     const auth = useAuth();
     const { organizationId, fpfId } = useParams();
 
+    const dispatch = useAppDispatch();
     const [controllableActionModalOpen, setControllableActionModalOpen] = useState(false);
     const [actionTriggerModalOpen, setActionTriggerModalOpen] = useState(false);
     const [selectedAction, setSelectedAction] = useState<ControllableAction | undefined>(undefined);
@@ -28,14 +33,32 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
     const [selectedActionId, setSelectedActionId] = useState<string>("");
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
+    const [confirmModal, setConfirmModal] = useState<{
+        open: boolean,
+        actionId?: string,
+        triggerId?: string,
+        value?: string,
+        isActive?: boolean
+    }>({open: false});
+
+
     const toggleRow = (id: string) => {
       setExpandedRows((prev) =>
         prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]
       );
     };
 
-
-
+    const getColor = (value: string) => {
+    switch (lowerFirst(value)) {
+        case 'on':
+            return 'green';
+        case 'off':
+            return 'red';
+        case 'auto':
+        default:
+            return 'blue';
+    }
+};
 
     const onClickEdit = (action: ControllableAction) => {
         const editAction: ControllableAction = {
@@ -83,6 +106,36 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         setActionTriggerModalOpen(true)
     }
 
+    const handleTriggerChange = async (actionId: string, triggerId: string, value: string, isActive:boolean) => {
+        try {
+            if( triggerId==="auto")
+            {
+                setConfirmModal({open: false});
+                dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
+                dispatch(updateControllableActionStatus({actionId, triggerId: ""}));
+                await executeTrigger(actionId, triggerId, "");
+            }
+            else{
+                if(!isActive){
+                    setConfirmModal({open: false});
+                    dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
+                    dispatch(updateControllableActionStatus({ actionId, triggerId }));
+                    await executeTrigger(actionId, triggerId, value);
+                }
+                else{
+                    setConfirmModal({open: false});
+                    dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
+                    dispatch(updateControllableActionStatus({ actionId: actionId, triggerId: "" }));
+                    await executeTrigger(actionId, triggerId, value);
+                }
+            }
+
+        } catch (error) {
+            console.error("Failed to execute trigger", error);
+        }
+    };
+
+
     return (
         <Box>
             {/* Add Controllable Action Modal */}
@@ -105,6 +158,27 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                 size="70%"
             >
                 <ActionTriggerForm actionId={selectedActionId} toEditTrigger={selectedTrigger} setClosed={setActionTriggerModalOpen} />
+            </Modal>
+
+            <Modal
+                opened={confirmModal.open}
+                onClose={() => setConfirmModal({open: false})}
+                title={t("controllableActionList.confirmTitle")}
+            >
+                <Text>{t("controllableActionList.confirmMessage")}</Text>
+                <Flex justify="flex-end" gap="md" mt="md">
+                    <Button variant="light" onClick={() => setConfirmModal({open: false})}>
+                        {t("common.cancel")}
+                    </Button>
+                    <Button onClick={() => {
+                        console.log(confirmModal.actionId , confirmModal.triggerId , confirmModal.value , confirmModal.isActive)
+                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined && confirmModal.isActive !== undefined) {
+                            handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value, confirmModal.isActive);
+                        }
+                    }}>
+                        {t("common.confirm")}
+                    </Button>
+                </Flex>
             </Modal>
 
             {/* Header with Add Button */}
@@ -137,111 +211,144 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                   </Table.Thead>
 
                   <Table.Tbody>
-                    {controllableAction.map((action) => (
-                      <React.Fragment key={action.id}>
-                        {/* Main Row */}
-                        <Table.Tr>
-                          <Table.Td>
-                            <Button
-                              variant="subtle"
-                              size="xs"
-                              onClick={() => toggleRow(action.id)}
-                            >
-                              {expandedRows.includes(action.id) ? <IconChevronDown size={16} /> : <IconChevronRight size={16} />}
-                            </Button>
-                          </Table.Td>
-                          <Table.Td>{action.name}</Table.Td>
-                          <Table.Td>
-                            <Flex justify="center" align="center">
-                              <Badge color={action.isActive ? "green" : "gray"}>
-                                {action.isActive ? "Active" : "Inactive"}
-                              </Badge>
-                            </Flex>
-                          </Table.Td>
-                          <Table.Td>{action.actionScriptName}</Table.Td>
-                          <Table.Td>{action.maximumDurationSeconds}</Table.Td>
-                          <Table.Td>{action.hardware?.name}</Table.Td>
-                          {isAdmin && (
-                            <Table.Td>
-                              <Flex justify="center" align="center">
-                                <IconEdit
-                                  color={"#199ff4"}
-                                  size={20}
-                                  stroke={2}
-                                  onClick={() => onClickEdit(action)}
-                                  style={{ cursor: "pointer" }}
-                                />
-                              </Flex>
-                            </Table.Td>
-                          )}
-                        </Table.Tr>
-
-                        {/* Expanded Row */}
-                        {expandedRows.includes(action.id) && (
-                          <Table.Tr>
-                            <Table.Td colSpan={isAdmin ? 7 : 6}>
-                              <Card withBorder shadow="sm" p="sm">
-                                <Group justify="space-between" mb="xs">
-                                  <Text fw={500}>{t("controllableActionList.triggerTitle")}</Text>
-                                  {isAdmin && (
-                                    <IconCirclePlus
-                                      size={20}
-                                      stroke={2}
-                                      color="#199ff4"
-                                      onClick={() => onClickAddTrigger(action.id)}
-                                      style={{ cursor: "pointer" }}
-                                    />
-                                  )}
-                                </Group>
-
-                                <Table striped highlightOnHover withColumnBorders>
-                                  <Table.Thead>
-                                    <Table.Tr>
-                                      <Table.Th>{t("controllableActionList.trigger.type")}</Table.Th>
-                                      <Table.Th>{t("controllableActionList.trigger.valueType")}</Table.Th>
-                                      <Table.Th>{t("controllableActionList.trigger.value")}</Table.Th>
-                                      <Table.Th>{t("controllableActionList.trigger.triggerLogic")}</Table.Th>
-                                      <Table.Th>{t("controllableActionList.trigger.status")}</Table.Th>
-                                      {isAdmin && <Table.Th />}
-                                    </Table.Tr>
-                                  </Table.Thead>
-                                  <Table.Tbody>
-                                    {action.trigger.map((t) => (
-                                      <Table.Tr key={t.id}>
-                                        <Table.Td>{t.type}</Table.Td>
-                                        <Table.Td>{t.actionValueType}</Table.Td>
-                                        <Table.Td>{t.actionValue}</Table.Td>
-                                        <Table.Td>{t.triggerLogic}</Table.Td>
-                                        <Table.Td>
-                                          <Flex justify="center" align="center">
-                                            <Badge color={t.isActive ? "green" : "gray"}>
-                                              {t.isActive ? "Active" : "Inactive"}
-                                            </Badge>
-                                          </Flex>
-                                        </Table.Td>
-                                        {isAdmin && (
-                                          <Table.Td>
-                                            <Flex justify="center" align="center">
-                                              <IconEdit
+                    {controllableAction.map((action) => {
+                        const hasActiveManualInGroup = controllableAction.some((a) =>
+                          a.trigger.some(
+                            (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
+                          )
+                        );
+                        return (
+                        <React.Fragment key={action.id}>
+                            {/* Main Row */}
+                            <Table.Tr>
+                                <Table.Td>
+                                    <Button
+                                        variant="subtle"
+                                        size="xs"
+                                        onClick={() => toggleRow(action.id)}
+                                    >
+                                        {expandedRows.includes(action.id) ? <IconChevronDown size={16}/> :
+                                            <IconChevronRight size={16}/>}
+                                    </Button>
+                                </Table.Td>
+                                <Table.Td>{action.name}</Table.Td>
+                                <Table.Td>
+                                    <Flex justify="center" align="center">
+                                        <Badge color={action.isActive ? "green" : "gray"}>
+                                            {action.isActive ? "Active" : "Inactive"}
+                                        </Badge>
+                                    </Flex>
+                                </Table.Td>
+                                <Table.Td>{action.actionScriptName}</Table.Td>
+                                <Table.Td>{action.maximumDurationSeconds}</Table.Td>
+                                <Table.Td>{action.hardware?.name}</Table.Td>
+                                {isAdmin && (
+                                    <Table.Td>
+                                        <Flex justify="center" align="center">
+                                            <IconEdit
                                                 color={"#199ff4"}
                                                 size={20}
                                                 stroke={2}
-                                                onClick={() => onClickEditTrigger(t)}
-                                                style={{ cursor: "pointer" }}
-                                              />
-                                            </Flex>
-                                          </Table.Td>
-                                        )}
-                                      </Table.Tr>
-                                    ))}
-                                  </Table.Tbody>
-                                </Table>
-                              </Card>
-                            </Table.Td>
-                          </Table.Tr>
-                        )}
-                      </React.Fragment>
-                    ))}
+                                                onClick={() => onClickEdit(action)}
+                                                style={{cursor: "pointer"}}
+                                            />
+                                        </Flex>
+                                    </Table.Td>
+                                )}
+                            </Table.Tr>
+
+                            {/* Expanded Row */}
+                            {expandedRows.includes(action.id) && (
+                                <Table.Tr>
+                                    <Table.Td colSpan={isAdmin ? 7 : 6}>
+                                        <Card withBorder shadow="sm" p="sm">
+                                            <Group justify="space-between" mb="xs">
+                                                <Text fw={500}>{t("controllableActionList.triggerTitle")}</Text>
+                                                {isAdmin && (
+                                                    <IconCirclePlus
+                                                        size={20}
+                                                        stroke={2}
+                                                        color="#199ff4"
+                                                        onClick={() => onClickAddTrigger(action.id)}
+                                                        style={{cursor: "pointer"}}
+                                                    />
+                                                )}
+                                            </Group>
+
+                                            <Table striped highlightOnHover withColumnBorders>
+                                                <Table.Thead>
+                                                    <Table.Tr>
+                                                        <Table.Th>{t("controllableActionList.trigger.active")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.type")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.valueType")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.value")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.triggerLogic")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.status")}</Table.Th>
+                                                        {isAdmin && <Table.Th/>}
+                                                    </Table.Tr>
+                                                </Table.Thead>
+                                                <Table.Tbody>
+                                                    {action.trigger.map((trigger) => {
+                                                        const isActive = trigger.id === action.status && !action.isAutomated || trigger.type !== 'manual' && action.isAutomated;
+                                                        return(
+                                                            <Table.Tr key={trigger.id}>
+                                                                <Table.Td>
+                                                                    <Button
+                                                                        size="xs"
+                                                                        variant={isActive ? "filled" : "light"}
+                                                                        color={isActive ? "blue" : "gray"}
+                                                                        radius="xl"
+                                                                        style={!isAdmin ? {
+                                                                            pointerEvents: "none",
+                                                                            opacity: 0.6
+                                                                        } : undefined}
+                                                                        disabled={hasActiveManualInGroup && trigger.type != 'manual'}
+                                                                        onClick={() => setConfirmModal({
+                                                                            open: true,
+                                                                            actionId: action.id,
+                                                                            triggerId: trigger.type !== 'manual' ? "auto" : trigger.id,
+                                                                            value: trigger.type !== 'manual' ? "" : trigger.actionValue,
+                                                                            isActive: isActive
+                                                                        })}
+                                                                    >{isActive ? t("controllableActionList.trigger.running") : t("controllableActionList.trigger.inactive")}
+                                                                    </Button>
+                                                                </Table.Td>
+                                                                <Table.Td>{trigger.type}</Table.Td>
+                                                                <Table.Td>{trigger.actionValueType}</Table.Td>
+                                                                <Table.Td>{trigger.actionValue}</Table.Td>
+                                                                <Table.Td>{trigger.triggerLogic}</Table.Td>
+                                                                <Table.Td>
+                                                                    <Flex justify="center" align="center">
+                                                                        <Badge color={trigger.isActive ? "green" : "gray"}>
+                                                                            {trigger.isActive ? "Active" : "Inactive"}
+                                                                        </Badge>
+                                                                    </Flex>
+                                                                </Table.Td>
+                                                                {isAdmin && (
+                                                                    <Table.Td>
+                                                                        <Flex justify="center" align="center">
+                                                                            <IconEdit
+                                                                                color={"#199ff4"}
+                                                                                size={20}
+                                                                                stroke={2}
+                                                                                onClick={() => onClickEditTrigger(trigger)}
+                                                                                style={{cursor: "pointer"}}
+                                                                            />
+                                                                        </Flex>
+                                                                    </Table.Td>
+                                                                )}
+                                                            </Table.Tr>
+                                                        )
+                                                    })}
+                                                </Table.Tbody>
+                                            </Table>
+                                        </Card>
+                                    </Table.Td>
+                                </Table.Tr>
+                            )}
+                        </React.Fragment>
+                        )
+                    })}
                   </Table.Tbody>
                 </Table>
 
