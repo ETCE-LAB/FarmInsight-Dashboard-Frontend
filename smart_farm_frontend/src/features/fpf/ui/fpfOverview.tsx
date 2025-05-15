@@ -49,10 +49,12 @@ export const FpfOverview = () => {
             getMyOrganizations().then((organizations) => {
                 let found = false;
                 organizations.forEach((org: any) => {
-                    setIsMember(org.id === organizationId)
-                    found = true
+                    if(org.id === organizationId) {
+                        setIsMember(true)
+                        found = true;
+                    }
                 });
-                if (!found) {
+                if(!found) {
                     setIsMember(false);
                 }
             });

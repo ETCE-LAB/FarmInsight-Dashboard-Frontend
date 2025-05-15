@@ -321,12 +321,14 @@ i18n
                         text: {
                             temperature: 'Temperature',
                             precipitation: 'Precipitation',
+                            probability: 'Probability of',
                             today: 'Today',
                             tomorrow: 'Tomorrow',
                             afterTomorrow: 'After Tomorrow',
                         },
                         weatherCode: {
                             weatherCode: 'Weather Code',
+                            tooltip: 'Shows the worst-case weather expected for the day',
                             clear: 'Clear',
                             mainlyClear: 'Mainly Clear',
                             partlyCloudy: 'Partly Cloudy',
@@ -713,22 +715,24 @@ i18n
                         fetchDate: 'Abrufdatum',
                         temperatureMinC: 'Mindesttemperatur (°C)',
                         temperatureMaxC: 'Höchsttemperatur (°C)',
-                        rainMM: 'Regen (mm)',
+                        rainMM: 'davon Regen:',
                         sunshineDurationSeconds: 'Sonnenscheindauer (Sekunden)',
-                        windSpeedMax: 'Maximale Windgeschwindigkeit (km/h)',
+                        windSpeedMax: 'Maximale Windgeschwindigkeit',
                         sunrise: 'Sonnenaufgang',
                         sunset: 'Sonnenuntergang',
-                        precipitationMM: 'Niederschlag (mm)',
+                        precipitationMM: 'Niederschlag',
                         precipitationProbability: 'Niederschlagswahrscheinlichkeit (%)',
                         text: {
                             temperature: 'Temperatur',
                             precipitation: 'Niederschlag',
+                            probability: 'Wahrscheinlichkeit für',
                             today: 'Heute',
                             tomorrow: 'Morgen',
                             afterTomorrow: 'Übermorgen',
                         },
                         weatherCode: {
                             weatherCode: 'Wettercode',
+                            tooltip: 'Zeigt das schlimmstmögliche Wetter, das für den Tag erwartet wird.',
                             clear: 'Klar',
                             mainlyClear: 'Überwiegend klar',
                             partlyCloudy: 'Teilweise bewölkt',
@@ -1068,7 +1072,7 @@ i18n
                         labelCustom: 'Date personnalisée'
                     }
                 },
-                weatherForecast: {
+                    weatherForecast: {
                     title: 'Prévisions météorologiques',
                     location: 'Localisation',
                     forecastDate: 'Date de prévision',
@@ -1085,12 +1089,14 @@ i18n
                     text: {
                         temperature: 'Température',
                         precipitation: 'Précipitations',
+                        probability: 'Probabilité de',
                         today: "Aujourd'hui",
                         tomorrow: 'Demain',
                         afterTomorrow: 'Après-demain',
                     },
                     weatherCode: {
                         weatherCode: 'Code météo',
+                        tooltip: 'Indique le pire temps attendu pour la journée.',
                         clear: 'Clair',
                         mainlyClear: 'Principalement clair',
                         partlyCloudy: 'Partiellement nuageux',
@@ -1121,7 +1127,7 @@ i18n
                         thunderstormWithHeavyHail: 'Orage avec grêle forte',
                     },
                 },
-                location: {
+                    location: {
                     noLocation: 'Aucun emplacement',
                     name: 'Nom',
                     city: 'Ville',
@@ -1421,12 +1427,14 @@ i18n
                     text: {
                         temperature: 'Temperatura',
                         precipitation: 'Precipitazioni',
+                        probability: 'Probabilità di',
                         today: 'Oggi',
                         tomorrow: 'Domani',
                         afterTomorrow: 'Dopodomani',
                     },
                     weatherCode: {
                         weatherCode: 'Codice Meteo',
+                        tooltip: 'Indica il peggior tempo previsto per la giornata.',
                         clear: 'Sereno',
                         mainlyClear: 'Prevalentemente sereno',
                         partlyCloudy: 'Parzialmente nuvoloso',
@@ -1774,12 +1782,14 @@ i18n
                     text: {
                         temperature: '温度',
                         precipitation: '降水',
+                        probability: '概率',
                         today: '今天',
                         tomorrow: '明天',
                         afterTomorrow: '后天',
                     },
                     weatherCode: {
                         weatherCode: '天气代码',
+                        tooltip: '显示当天可能出现的最恶劣天气。',
                         clear: '晴朗',
                         mainlyClear: '主要晴朗',
                         partlyCloudy: '局部多云',
@@ -2133,6 +2143,7 @@ i18n
                     },
                     weatherCode: {
                         weatherCode: 'Код погоды',
+                        tooltip: 'Показывает худшую погоду, ожидаемую в течение дня.',
                         clear: 'Ясно',
                         mainlyClear: 'В основном ясно',
                         partlyCloudy: 'Переменная облачность',
