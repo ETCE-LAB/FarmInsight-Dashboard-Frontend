@@ -91,7 +91,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
     useEffect(() => {
         if(availableActionScripts && toEditAction){
-            console.log(toEditAction.actionClassId)
             const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
                 availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
 
@@ -290,8 +289,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                       }
                                   }
                                   else{
-                                      console.log(val)
-                                      console.log(hardwareInput)
                                       setHardware({ id: "", name: hardwareInput })
                                   }
                               }}
@@ -299,7 +296,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
                           )}
                         </Grid.Col>
-                        {hardware.name}
+
                         {/* ActionClass */}
                         <Grid.Col span={12}>
                             {fpfId && (

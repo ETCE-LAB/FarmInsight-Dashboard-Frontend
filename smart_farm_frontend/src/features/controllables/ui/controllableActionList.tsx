@@ -135,6 +135,12 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         }
     };
 
+    const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
+      const key = action.hardware?.id ?? 'unassigned';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(action);
+      return acc;
+    }, {});
 
     return (
         <Box>
@@ -211,8 +217,9 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                   </Table.Thead>
 
                   <Table.Tbody>
-                    {controllableAction.map((action) => {
-                        const hasActiveManualInGroup = controllableAction.some((a) =>
+                    {Object.entries(groupedActions).map(([hardwareId, actions]) => (
+                        actions.map((action) => {
+                        const hasActiveManualInGroup = actions.some((a) =>
                           a.trigger.some(
                             (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
                           )
@@ -348,7 +355,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                             )}
                         </React.Fragment>
                         )
-                    })}
+                    })))}
                   </Table.Tbody>
                 </Table>
 
