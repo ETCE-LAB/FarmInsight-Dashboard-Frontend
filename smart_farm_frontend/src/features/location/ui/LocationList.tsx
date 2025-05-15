@@ -123,7 +123,7 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
 
                 </Table>
             ) : (
-                <p>{t('location.noLocations')}</p> // Display a message if no locations are available
+                <p>{t('location.noLocation')}</p> // Display a message if no locations are available
             )}
         </Box>
     )

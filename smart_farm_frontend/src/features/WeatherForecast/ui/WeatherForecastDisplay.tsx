@@ -2,7 +2,7 @@ import {WeatherForecast} from "../models/WeatherForecast";
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Carousel} from "@mantine/carousel";
-import {Badge, Box, Card, Group, Text} from "@mantine/core";
+import {Badge, Box, Card, Group, Text, Tooltip} from "@mantine/core";
 import {getWeatherForecast} from "../useCase/getWeatherForecast";
 import {Location} from "../../location/models/location";
 import {FaBolt, FaCloud, FaCloudRain, FaSmog, FaSnowflake, FaSun} from "react-icons/fa";
@@ -185,7 +185,12 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                     <Box style={{marginLeft:"2vw", marginBottom:"0.5vh"} }>
                                         <Group mb="xs" >
                                             <Text  size={"xl"}>{index === 0 ? (t('weatherForecast.text.today')):(index === 1 ? (t("weatherForecast.text.tomorrow")):(t('weatherForecast.text.afterTomorrow')))}</Text>
-                                            <Badge   color={forecast.weatherCode === "0" ? "yellow" : "blue"} variant="light">{getWeatherDescription(forecast.weatherCode)}</Badge>
+                                            <Tooltip label={t('weatherForecast.weatherCode.tooltip')} withArrow>
+                                                <Badge
+                                                    color={forecast.weatherCode === "0" ? "yellow" : "blue"}
+                                                    variant="light">{getWeatherDescription(forecast.weatherCode)}
+                                                </Badge>
+                                            </Tooltip>
                                             <IconArrowsDiagonalMinimize2 style={{marginLeft:"auto", cursor:"pointer"}} onClick={() => {setIsDetailedView(-1)}}/>
                                         </Group>
                                         <Text size="sm" color="dimmed"  >
@@ -196,6 +201,9 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                         </Text>
                                         <Text>
                                             {t('weatherForecast.text.temperature')}: {forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C
+                                        </Text>
+                                        <Text>
+                                            {t('weatherForecast.text.precipitation')}: {forecast.precipitationProbability}% {t('weatherForecast.text.probability')} {forecast.precipitationMM} mm
                                         </Text>
                                         <Text>
                                             {t('weatherForecast.rainMM')}: {forecast.rainMM} mm
@@ -209,9 +217,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                         <Text >
                                             {t('weatherForecast.sunrise')}: {formatTimeManually(forecast.sunrise.toString())} | {t('weatherForecast.sunset')}: {formatTimeManually(forecast.sunset.toString())}
                                         </Text>
-                                        <Text>
-                                            {t('weatherForecast.text.precipitation')}: {forecast.precipitationMM} mm ({forecast.precipitationProbability}%)
-                                        </Text>
+
                                     </Box>
                                 </Card>
                         </Carousel.Slide>
