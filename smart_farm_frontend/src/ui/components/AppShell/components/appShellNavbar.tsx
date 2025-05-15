@@ -137,32 +137,35 @@ export const AppShellNavbar: React.FC = () => {
                             }
                         />
                         <Group gap="xs">
-                            {organizations.map((org) => (
-                                <Menu
-                                    key={org.id}
-                                    trigger="hover"
-                                    openDelay={100}
-                                    closeDelay={100}
-                                    withinPortal
+                          <Menu
+                            trigger="hover"
+                            openDelay={100}
+                            closeDelay={100}
+                            withinPortal
+                          >
+                            <Menu.Target>
+                              <Text
+                                size="xl"
+                                style={{
+                                  cursor: 'pointer',
+                                  fontWeight: 600,
+                                }}
+                              >
+                                {selectedOrganization.name}
+                              </Text>
+                            </Menu.Target>
+
+                            <Menu.Dropdown>
+                              {organizations.map((org) => (
+                                <Menu.Item
+                                  key={org.id}
+                                  onClick={() => handleOrganizationSelect(org.name, org.id)}
                                 >
-                                    <Menu.Target>
-                                        <Text
-                                            size={'xl'}
-                                            style={{
-                                                cursor: "pointer",
-                                                fontWeight: org.id === selectedOrganization.id ? 600 : 400,
-                                            }}
-                                        >
-                                            {org.name}
-                                        </Text>
-                                    </Menu.Target>
-                                    <Menu.Dropdown>
-                                        <Menu.Item onClick={() => handleOrganizationSelect(org.name, org.id)}>
-                                            {org.name}
-                                        </Menu.Item>
-                                    </Menu.Dropdown>
-                                </Menu>
-                            ))}
+                                  {org.name}
+                                </Menu.Item>
+                              ))}
+                            </Menu.Dropdown>
+                          </Menu>
                         </Group>
                         {/*}
                         <TextInput
