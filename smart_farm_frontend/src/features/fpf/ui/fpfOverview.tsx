@@ -47,14 +47,13 @@ export const FpfOverview = () => {
     useEffect(() => {
         if (organizationId && auth.isAuthenticated) {
             getMyOrganizations().then((organizations) => {
-                let found = false;
+                setIsMember(false);
                 organizations.forEach((org: any) => {
-                    setIsMember(org.id === organizationId)
-                    found = true
+                    if(org.id === organizationId) {
+                        setIsMember(true)
+                        return
+                    }
                 });
-                if (!found) {
-                    setIsMember(false);
-                }
             });
         }
     }, [organizationId]);
@@ -72,6 +71,9 @@ export const FpfOverview = () => {
     useEffect(() => {
         if (fpf?.Cameras?.some(camera => camera.isActive)) {
             setCameraActive(true);
+            console.log(fpf)
+            console.log(fpf?.ControllableAction && fpf.ControllableAction.length > 0)
+            console.log(isMember)
         }
     }, [fpf]);
 
