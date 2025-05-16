@@ -24,10 +24,11 @@ export const getSensorStateColor = (measuredAt: Date, isActive: boolean, interva
     const measured_ms = measuredAt.getTime();
     const now_ms = new Date().getTime();
     const difference_seconds = (now_ms - measured_ms) / 1000;
+    const slack = 60; // to avoid sensors instantly turning yellow when the task is still working
 
     if (!isActive) return 'grey';
-    if (difference_seconds < intervalSeconds) return 'green';
-    if (difference_seconds < intervalSeconds * 2) return 'yellow';
+    if (difference_seconds < (intervalSeconds + slack)) return 'green';
+    if (difference_seconds < (intervalSeconds + slack) * 2) return 'yellow';
 
     return 'red';
 }
