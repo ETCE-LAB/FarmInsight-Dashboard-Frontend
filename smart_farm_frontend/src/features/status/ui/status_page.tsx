@@ -43,7 +43,7 @@ export const StatusPage = () => {
     },[auth.isAuthenticated]);
 
     const SensorOverview: React.FC<{sensor: Sensor}> = ({sensor})=> {
-        let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`, undefined, false);
+        let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
         const [statusColor, setStatusColor] = useState(getSensorStateColor(new Date(sensor.lastMeasurement.measuredAt), sensor.isActive, sensor.intervalSeconds));
         const [measuredAt, setMeasuredAt] = useState(new Date(sensor.lastMeasurement.measuredAt));
         const [isActive, setIsActive] = useState(sensor.isActive);
