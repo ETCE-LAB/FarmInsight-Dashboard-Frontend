@@ -8,16 +8,14 @@ import {
     TextInput,
     Text,
     Autocomplete,
-    Card,
     Flex,
     Tooltip,
-    Collapse, Accordion, Group
+    Group
 } from "@mantine/core";
 
 import { useAuth } from "react-oidc-context";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
-import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
@@ -26,13 +24,8 @@ import {Hardware} from "../models/hardware";
 import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 import {createControllableAction} from "../useCase/createControllableAction";
-import {
-    addControllableAction,
-
-    updateControllableActionSlice
-} from "../state/ControllableActionSlice";
+import {addControllableAction, updateControllableActionSlice} from "../state/ControllableActionSlice";
 import {updateControllableAction} from "../useCase/updateControllableAction";
-import {ActionTrigger} from "../models/actionTrigger";
 import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
 import i18n from "i18next";
 
@@ -47,7 +40,6 @@ export type ActionScriptField = {
 
 export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditAction, setClosed }) => {
     const auth = useAuth();
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch();
@@ -63,10 +55,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [availableHardware, setAvailableHardware] = useState<{ value:string, label:string }[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
-
-    const [expanded, setExpanded] = useState(false);
-
-    // Somewhere in your UI add a toggle (button, switch, or click on the header)
 
     useEffect(() => {
         if (toEditAction) {
@@ -124,7 +112,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 setAvailableHardware(hardwareOptions)
             });
 
-            fetchAvailableActionScripts(fpfId).then(scripts => {
+            fetchAvailableActionScripts().then(scripts => {
                 const actionScripts = scripts?.map(s => ({
                   value: s.action_script_class_id,
                   label: s.name,
@@ -349,7 +337,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                         return (
                                             <NumberInput
                                               key={index}
-                                              required={field.defaultValue == ""}
+                                              required={field.defaultValue === ""}
                                               description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
                                               placeholder={field.defaultValue}
                                               label={
@@ -371,7 +359,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                         return (
                                           <TextInput
                                               key={index}
-                                              required={field.defaultValue == ""}
+                                              required={field.defaultValue === ""}
                                               description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
                                               placeholder={field.defaultValue}
                                               label={

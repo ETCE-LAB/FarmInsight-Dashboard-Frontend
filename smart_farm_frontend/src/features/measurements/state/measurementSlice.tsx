@@ -3,12 +3,12 @@ import {RootState} from "../../../utils/store";
 
 
 //Currently: 2 States, Logged in and not logged in
-interface measurementSlice {
+interface MeasurementSlice {
     receivedMeasurementEvent: number;
 }
 
 //At beginning, the suer is not logged in
-const initialState: measurementSlice = {
+const initialState: MeasurementSlice = {
     receivedMeasurementEvent: 0
 }
 

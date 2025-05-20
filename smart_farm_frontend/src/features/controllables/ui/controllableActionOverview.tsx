@@ -3,9 +3,7 @@ import {useTranslation} from "react-i18next";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
-import {useAuth} from "react-oidc-context";
 import {lowerFirst} from "@mantine/hooks";
-
 import {
     Badge,
     Button,
@@ -16,7 +14,6 @@ import {
 } from "@mantine/core";
 import {executeTrigger} from "../useCase/executeTrigger";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
-import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {useParams} from "react-router-dom";
 
@@ -35,15 +32,12 @@ const getColor = (value: string) => {
 const truncateText = (text: string, limit: number): string =>
     text.length > limit ? `${text.slice(0, limit)}...` : text;
 
-const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
-
+const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
     const {t} = useTranslation();
     const dispatch = useAppDispatch();
     const controllableAction = useSelector((state: RootState) => state.controllableAction.controllableAction);
-    const auth = useAuth();
     const {organizationId} = useParams<{ organizationId: string }>();
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const fpf = useSelector((state: RootState) => state.fpf.fpf);
     const [confirmModal, setConfirmModal] = useState<{
         open: boolean,
         actionId?: string,
@@ -73,7 +67,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
 
     const handleTriggerChange = async (actionId: string, triggerId: string, value: string, isActive:boolean) => {
         try {
-            if( triggerId==="auto")
+            if (triggerId==="auto")
             {
                 setConfirmModal({open: false});
                 dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
@@ -81,7 +75,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                 await executeTrigger(actionId, triggerId, "");
             }
             else{
-                if(!isActive){
+                if (!isActive){
                     setConfirmModal({open: false});
                     dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
                     dispatch(updateControllableActionStatus({ actionId, triggerId }));
@@ -121,7 +115,6 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({fpfId}) => {
                         {t("common.cancel")}
                     </Button>
                     <Button onClick={() => {
-                        console.log(confirmModal.actionId , confirmModal.triggerId , confirmModal.value , confirmModal.isActive)
                         if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined && confirmModal.isActive !== undefined) {
                             handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value, confirmModal.isActive);
                         }

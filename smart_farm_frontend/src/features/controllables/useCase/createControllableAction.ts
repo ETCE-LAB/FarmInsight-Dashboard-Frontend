@@ -1,7 +1,6 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
-import {ActionTrigger} from "../models/actionTrigger";
 import {ControllableAction, EditControllableAction} from "../models/controllableAction";
 
 

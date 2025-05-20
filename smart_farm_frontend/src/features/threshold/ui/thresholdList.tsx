@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Threshold} from "../models/threshold";
-import {Flex, Modal, Table} from "@mantine/core";
+import {Modal, Table} from "@mantine/core";
 import {useTranslation} from "react-i18next";
 import {IconCirclePlus, IconEdit, IconSquareRoundedMinus} from "@tabler/icons-react";
 import {showNotification} from "@mantine/notifications";
