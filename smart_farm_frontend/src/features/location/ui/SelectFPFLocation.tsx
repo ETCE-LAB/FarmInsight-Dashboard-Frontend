@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {useAppDispatch} from "../../../utils/Hooks";
-import {notifications} from "@mantine/notifications";
 import {useTranslation} from "react-i18next";
 import {getLocationByOrganization} from "../useCase/getLocationByOrganization";
-import {useAuth} from "react-oidc-context";
 import {Box, Button, Collapse, Loader, ScrollArea, Table, Text} from "@mantine/core";
 import {Location} from "../models/location";
 import {LocationForm} from "./LocationForm";
@@ -31,7 +29,6 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
         }
     );
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const auth = useAuth();
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -92,7 +89,6 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                                     <Table.Tr
                                         key={location.id}
                                         onClick={(e) => {
-                                            console.log('geklickte Zeile – Daten-Objekt:', location);   // <-- Objekt ausgeben
                                             setLocation(location);
                                         }}
                                         onMouseEnter={(e) => {

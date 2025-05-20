@@ -1,10 +1,7 @@
-import {ControllableAction, EditControllableAction} from "../models/controllableAction";
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
 import {ActionTrigger, EditActionTrigger} from "../models/actionTrigger";
-import {Fpf} from "../../fpf/models/Fpf";
-
 
 export const updateActionTrigger = async (actionTrigger:EditActionTrigger) => {
     const apiClient = new APIClient()
@@ -18,6 +15,4 @@ export const updateActionTrigger = async (actionTrigger:EditActionTrigger) => {
     const result: ActionTrigger = await apiClient.put(url, actionTrigger, headers)
 
     return result
-
-
 }

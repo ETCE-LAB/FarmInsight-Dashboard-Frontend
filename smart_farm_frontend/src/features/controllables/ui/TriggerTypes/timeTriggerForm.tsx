@@ -1,16 +1,14 @@
 import React, {useEffect, useState} from "react";
 import { TimeInput } from '@mantine/dates';
-import {useParams} from "react-router-dom";
 
-import {Box, Grid, NumberInput, Select, Text} from "@mantine/core";
+import {Grid} from "@mantine/core";
 
 export const TimeTriggerForm:React.FC<{setTriggerLogic:React.Dispatch<React.SetStateAction<string>> }> = ({setTriggerLogic}) => {
-    const { organizationId, fpfId } = useParams();
     const[from, setFrom] = useState("")
     const[to, setTo] = useState("")
 
     useEffect(() => {
-        if(from != "" && to != ""){
+        if(from !== "" && to !== ""){
             //{comparison: "between", from: 6:00, to:18:00}
             let jsonString = "{\"comparison\": \"between\", \"from\":\"" + from + "\", \"to\":\""+ to +"\"}"
             setTriggerLogic(jsonString)

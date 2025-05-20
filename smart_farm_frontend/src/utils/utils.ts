@@ -2,11 +2,11 @@ import {BACKEND_URL} from "../env-config";
 import i18n from "i18next";
 
 
-export const formatFloatValue = (value: number): string => {
-    if (value)
-        return value % 1 === 0 ? value.toString() : value.toFixed(2);
+export const formatFloatValue = (value: number | undefined | null): string => {
+    if (value === undefined || value === null)
+        return '';
 
-    return '';
+    return value % 1 === 0 ? value.toString() : value.toFixed(2);
 }
 
 export const getIsoStringFromDate = (date: Date): string => {

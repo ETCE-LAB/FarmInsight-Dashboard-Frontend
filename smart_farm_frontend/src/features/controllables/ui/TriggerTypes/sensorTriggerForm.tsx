@@ -1,14 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Sensor} from "../../../sensor/models/Sensor";
-import {getSensor} from "../../../sensor/useCase/getSensor";
 import {useParams} from "react-router-dom";
 import {getFpf} from "../../../fpf/useCase/getFpf";
-import {Box, Grid, NumberInput, Select, Text, TextInput} from "@mantine/core";
-import {IconHelp} from "@tabler/icons-react";
+import {Grid, NumberInput, Select, Text} from "@mantine/core";
 
 
 export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.SetStateAction<string>> }> = ({setTriggerLogic} ) => {
-    const [availableSensors, setAvailableSensors] = useState<Sensor[]>([]);
     const [sensorsToDisplay, setSensorsToDisplay] = useState<{ value: string, label: string }[]>([])
     const {organizationId, fpfId} = useParams();
 
@@ -18,7 +14,7 @@ export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.S
 
     useEffect(() => {
 
-        if(sensorId != "" && operator != "" && value != ""){
+        if(sensorId !== "" && operator !== "" && value !== ""){
             //{comparison: "between", from: 6:00, to:18:00}
             let jsonString = "{\"sensorId\":\""+ sensorId + "\", \"comparison\":\""+ operator +"\", \"value\":"+ value + "}"
             setTriggerLogic(jsonString)

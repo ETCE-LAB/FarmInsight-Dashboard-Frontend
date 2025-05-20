@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Autocomplete, Card, Flex, Tooltip} from "@mantine/core";
+import {Box, Button, Grid, Switch, TextInput, Text, Autocomplete} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
-import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
-import { AppRoutes } from "../../../utils/appRoutes";
-import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
-import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
+import {IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
 import {ActionTrigger} from "../models/actionTrigger";
 import {createActionTrigger} from "../useCase/createActionTrigger";
 import {updateActionTrigger} from "../useCase/updateActionTrigger";
@@ -20,19 +17,11 @@ import {triggerTypes} from "../models/triggerTypes";
 import {IntervalTriggerForm} from "./TriggerTypes/intervalTriggerForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
-import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 
 
-export type ActionScriptField = {
-  name: string;
-  type: string;
-  rules?: { name: string }[];
-};
-
 export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: ActionTrigger, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ actionId, toEditTrigger, setClosed }) => {
     const auth = useAuth();
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch();
@@ -66,7 +55,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
     useEffect(() => {
         if (actionId && fpfId){
 
-            fetchAvailableActionScripts(fpfId).then(scripts => {
+            fetchAvailableActionScripts().then(scripts => {
                 const actionScripts = scripts?.map(s => ({
                   value: s.action_script_class_id,
                   label: s.name,

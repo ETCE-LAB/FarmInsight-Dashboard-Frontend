@@ -8,16 +8,14 @@ import {
     TextInput,
     Text,
     Autocomplete,
-    Card,
     Flex,
     Tooltip,
-    Collapse, Accordion, Group
+    Group
 } from "@mantine/core";
 
 import { useAuth } from "react-oidc-context";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
-import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
@@ -26,13 +24,8 @@ import {Hardware} from "../models/hardware";
 import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 import {createControllableAction} from "../useCase/createControllableAction";
-import {
-    addControllableAction,
-
-    updateControllableActionSlice
-} from "../state/ControllableActionSlice";
+import {addControllableAction, updateControllableActionSlice} from "../state/ControllableActionSlice";
 import {updateControllableAction} from "../useCase/updateControllableAction";
-import {ActionTrigger} from "../models/actionTrigger";
 import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
 import i18n from "i18next";
 
@@ -47,7 +40,6 @@ export type ActionScriptField = {
 
 export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditAction, setClosed }) => {
     const auth = useAuth();
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch();
@@ -63,10 +55,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [availableHardware, setAvailableHardware] = useState<{ value:string, label:string }[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
-
-    const [expanded, setExpanded] = useState(false);
-
-    // Somewhere in your UI add a toggle (button, switch, or click on the header)
 
     useEffect(() => {
         if (toEditAction) {
@@ -91,26 +79,28 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
     useEffect(() => {
         if(availableActionScripts && toEditAction){
-            const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
-                availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
+            const match = availableActionScripts.find(h => h.value === toEditAction.actionClassId);
 
-            setSelectedActionClass({value: match?.value || "", label: match?.label || "", description: match?.description || "", action_values: match?.action_values || [], fields: match?.fields || []});
+            setSelectedActionClass({
+              value: match?.value || "",
+              label: match?.label || "",
+              description: match?.description || "",
+              action_values: match?.action_values || [],
+              fields: match?.fields || []
+            });
 
-            // JSON-String in ein Objekt umwandeln
             const additionalInfo = JSON.parse(toEditAction.additionalInformation || "{}");
             setAdditionalInformation(toEditAction.additionalInformation || "");
 
-            // Für jedes Feld aus match.fields den entsprechenden Wert aus additionalInfo setzen
+
             match?.fields.forEach(field => {
                 setDynamicFieldValues(prev => ({
                     ...prev,
-                    [field.name]: additionalInfo[field.name] || ""
+                    [field.id]: additionalInfo[field.id] || ""
                 }));
             });
-
-
-        }
-    }, [availableActionScripts]);
+          }
+    }, [availableActionScripts, toEditAction]);
 
     useEffect(() => {
         if (fpfId){
@@ -122,7 +112,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 setAvailableHardware(hardwareOptions)
             });
 
-            fetchAvailableActionScripts(fpfId).then(scripts => {
+            fetchAvailableActionScripts().then(scripts => {
                 const actionScripts = scripts?.map(s => ({
                   value: s.action_script_class_id,
                   label: s.name,
@@ -146,6 +136,11 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const handleEdit = () => {
         if (toEditAction && fpfId && selectedActionClass) {
             setClosed(false);
+
+            const sanitizedAdditionalInfo = Object.fromEntries(
+              selectedActionClass.fields.map(field => [field.id, dynamicFieldValues[field.id] || ""])
+            );
+
             const id = notifications.show({
                 loading: true,
                 title: 'Loading',
@@ -161,7 +156,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 actionClassId:selectedActionClass.value,
                 isActive: isActive,
                 maximumDurationSeconds: maximumDurationSeconds,
-                additionalInformation: JSON.stringify(dynamicFieldValues),
+                additionalInformation: JSON.stringify(sanitizedAdditionalInfo),
                 hardwareId: hardware ? hardware.id : null ,
                 hardware: hardware,
                 trigger: [],
@@ -342,7 +337,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                         return (
                                             <NumberInput
                                               key={index}
-                                              required={field.defaultValue == ""}
+                                              required={field.defaultValue === ""}
                                               description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
                                               placeholder={field.defaultValue}
                                               label={
@@ -355,8 +350,8 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                                   )}
                                                 </>
                                               }
-                                              value={dynamicFieldValues[field.name] || ""}
-                                              onChange={(value) => handleDynamicFieldChange(field.name, String(value ?? ""))}
+                                              value={dynamicFieldValues[field.id] || ""}
+                                              onChange={(value) => handleDynamicFieldChange(field.id, String(value ?? ""))}
                                             />
                                         );
                                       case "str":
@@ -364,7 +359,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                         return (
                                           <TextInput
                                               key={index}
-                                              required={field.defaultValue == ""}
+                                              required={field.defaultValue === ""}
                                               description={capitalizeFirstLetter(getBackendTranslation(field.description, i18n.language))}
                                               placeholder={field.defaultValue}
                                               label={
@@ -377,9 +372,9 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                                   )}
                                                 </>
                                               }
-                                              value={dynamicFieldValues[field.name] || ""}
+                                              value={dynamicFieldValues[field.id] || ""}
                                               onChange={(event) =>
-                                                  handleDynamicFieldChange(field.name, event.currentTarget.value)
+                                                  handleDynamicFieldChange(field.id, event.currentTarget.value)
                                               }
                                             />
                                         );

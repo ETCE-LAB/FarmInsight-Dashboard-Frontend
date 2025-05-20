@@ -5,13 +5,11 @@ import {Location} from "../models/location";
 import {notifications} from "@mantine/notifications";
 import {updateLocation} from "../useCase/updateLocation";
 import {createLocation} from "../useCase/createLocation";
-import {Box, Button, Grid, NumberInput, Switch, TextInput} from "@mantine/core";
+import {Box, Button, Grid, Switch, TextInput} from "@mantine/core";
 import {useAuth} from "react-oidc-context";
 import {IconCloud, IconCloudOff} from "@tabler/icons-react";
 import {useAppDispatch} from "../../../utils/Hooks";
-import {changedMembership} from "../../membership/state/MembershipSlice";
 import {receivedLocation} from "../state/LocationSlice";
-
 
 export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: React.Dispatch<React.SetStateAction<boolean>>, organizationIdParam?:string }> = ({ toEditLocation, setClosed, organizationIdParam }) => {
     const auth = useAuth();
@@ -26,7 +24,6 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
     const [street, setStreet] = useState<string>("");
     const [houseNumber, setHouseNumber] = useState<string>("");
     const [gatherForecasts, setGatherForecasts] = useState<boolean>(false);
-
 
     useEffect(() => {
         if (toEditLocation) {

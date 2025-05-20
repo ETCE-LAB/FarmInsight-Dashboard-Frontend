@@ -14,12 +14,7 @@ export const promoteMember = async (data: { id:string, membershipRole:string }) 
             {'Authorization': `Bearer ${token}`}
         const url = `${BACKEND_URL}/api/memberships/${data.id}`;
 
-
-        const response = await apiClient.put(url, data, headers)
-
-
-        return
-
+        await apiClient.put(url, data, headers)
     }
     catch (error) {
         console.error("Error: " + error);

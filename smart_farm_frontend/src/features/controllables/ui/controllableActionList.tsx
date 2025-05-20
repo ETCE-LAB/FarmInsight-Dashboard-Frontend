@@ -1,29 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Accordion, Card, Button, Chip} from "@mantine/core";
-import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit, IconLoader2, IconX,} from "@tabler/icons-react";
+import React, {useState} from "react";
+import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button} from "@mantine/core";
+import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
-import {getBackendTranslation} from "../../../utils/utils";
-import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
-import {ResourceType} from "../../logMessages/models/LogMessage";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
-import {useAuth} from "react-oidc-context";
-import {ControllableAction, EditControllableAction} from "../models/controllableAction";
-import {Hardware} from "../models/hardware";
+import {ControllableAction} from "../models/controllableAction";
 import {ActionTrigger} from "../models/actionTrigger";
 import {ControllableActionForm} from "./controllableActionForm";
 import {ActionTriggerForm} from "./actionTriggerForm";
-import {useParams} from "react-router-dom";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
 import {executeTrigger} from "../useCase/executeTrigger";
 import {useAppDispatch} from "../../../utils/Hooks";
-import {lowerFirst} from "@mantine/hooks";
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const controllableAction = useSelector((state: RootState) => state.controllableAction.controllableAction);
-    const auth = useAuth();
-    const { organizationId, fpfId } = useParams();
 
     const dispatch = useAppDispatch();
     const [controllableActionModalOpen, setControllableActionModalOpen] = useState(false);
@@ -47,18 +38,6 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]
       );
     };
-
-    const getColor = (value: string) => {
-    switch (lowerFirst(value)) {
-        case 'on':
-            return 'green';
-        case 'off':
-            return 'red';
-        case 'auto':
-        default:
-            return 'blue';
-    }
-};
 
     const onClickEdit = (action: ControllableAction) => {
         const editAction: ControllableAction = {
@@ -296,7 +275,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                 </Table.Thead>
                                                 <Table.Tbody>
                                                     {action.trigger.map((trigger) => {
-                                                        const isActive = trigger.id === action.status && !action.isAutomated || trigger.type !== 'manual' && action.isAutomated;
+                                                        const isActive = (trigger.id === action.status && !action.isAutomated) || (trigger.type !== 'manual' && action.isAutomated);
                                                         return(
                                                             <Table.Tr key={trigger.id}>
                                                                 <Table.Td>
@@ -309,7 +288,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                             pointerEvents: "none",
                                                                             opacity: 0.6
                                                                         } : undefined}
-                                                                        disabled={hasActiveManualInGroup && trigger.type != 'manual'}
+                                                                        disabled={hasActiveManualInGroup && trigger.type !== 'manual'}
                                                                         onClick={() => setConfirmModal({
                                                                             open: true,
                                                                             actionId: action.id,
