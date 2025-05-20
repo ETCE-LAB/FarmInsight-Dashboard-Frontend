@@ -11,7 +11,7 @@ import {LocationForm} from "./LocationForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 
-export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>}> = ({ setLocation, organizationIdParam }) => {
+export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>, preSelectedLocation?: Location}> = ({ setLocation, organizationIdParam, preSelectedLocation }) => {
     const dispatch = useAppDispatch();
     const locationEvent = useSelector((state: RootState) => state.location.receivedLocationEvent);
     const [locations, setLocations] = useState<Location[]>([]);
@@ -45,10 +45,10 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
     }, [organizationId,organizationIdParam, locationEvent]);
 
     useEffect(() => {
-        if (selectedLocation.id) {
-            setLocation(selectedLocation);
+        if (preSelectedLocation && preSelectedLocation.id) {
+            setSelectedLocation(preSelectedLocation);
         }
-    }, [selectedLocation]);
+    }, [preSelectedLocation]);
 
     // 1. Zeile 3B3B3B
     // 2. Zeile 242424
@@ -91,8 +91,9 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                                 {locations.map((location, index) => (
                                     <Table.Tr
                                         key={location.id}
-                                        onClick={() => {
-                                            setSelectedLocation(location);
+                                        onClick={(e) => {
+                                            console.log('geklickte Zeile – Daten-Objekt:', location);   // <-- Objekt ausgeben
+                                            setLocation(location);
                                         }}
                                         onMouseEnter={(e) => {
                                                 e.currentTarget.style.backgroundColor = "#595959";

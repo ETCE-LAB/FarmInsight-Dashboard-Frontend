@@ -36,6 +36,11 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log(location);
+    }, [location]);
+
+
+    useEffect(() => {
         if (toEditFpf) {
             setName(toEditFpf.name);
             setIsPublic(toEditFpf.isPublic);
@@ -54,7 +59,8 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                 withCloseButton: false,
             });
 
-            const locationId = location.id;
+            const locationId = location.id
+
             createFpf({ name, isPublic, sensorServiceIp, locationId , organizationId }).then(fpf => {
                 if (fpf) {
                     dispatch(createdFpf());
@@ -94,6 +100,7 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                 withCloseButton: false,
             });
             const locationId= location.id;
+            console.log(locationId);
             updateFpf(toEditFpf.id, { name, isPublic, sensorServiceIp, locationId }).then(fpf => {
                 if (fpf) {
                     dispatch(updatedFpf(fpf));
@@ -187,7 +194,7 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
 
                             {/* Address Input */}
                             <Grid.Col span={12}>
-                                <SelectFPFLocation setLocation={setLocation} organizationIdParam={organizationId}/>
+                                <SelectFPFLocation setLocation={setLocation} organizationIdParam={organizationId} preSelectedLocation={location}/>
                             </Grid.Col>
 
                             {/* Save Button */}
