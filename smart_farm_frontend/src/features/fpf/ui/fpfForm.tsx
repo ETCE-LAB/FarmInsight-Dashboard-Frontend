@@ -50,7 +50,7 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
     }, [toEditFpf]);
 
     const handleSave = () => {
-        if (organizationId && location) {
+        if (organizationId && location.id && name) {
             const id = notifications.show({
                 loading: true,
                 title: 'Loading',
@@ -86,8 +86,8 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                     });
                 }
             });
+            close(false);
         }
-        close(false);
     };
 
     const onClickEdit = () => {
