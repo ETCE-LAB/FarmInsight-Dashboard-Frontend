@@ -91,26 +91,28 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
     useEffect(() => {
         if(availableActionScripts && toEditAction){
-            const match = availableActionScripts?.find(h => h.label === toEditAction.actionScriptName)?
-                availableActionScripts?.find(h => h.label === toEditAction.actionScriptName) : availableActionScripts?.find(h => h.value === toEditAction.actionClassId) ;
+            const match = availableActionScripts.find(h => h.value === toEditAction.actionClassId);
 
-            setSelectedActionClass({value: match?.value || "", label: match?.label || "", description: match?.description || "", action_values: match?.action_values || [], fields: match?.fields || []});
+            setSelectedActionClass({
+              value: match?.value || "",
+              label: match?.label || "",
+              description: match?.description || "",
+              action_values: match?.action_values || [],
+              fields: match?.fields || []
+            });
 
-            // JSON-String in ein Objekt umwandeln
             const additionalInfo = JSON.parse(toEditAction.additionalInformation || "{}");
             setAdditionalInformation(toEditAction.additionalInformation || "");
 
-            // Für jedes Feld aus match.fields den entsprechenden Wert aus additionalInfo setzen
+
             match?.fields.forEach(field => {
                 setDynamicFieldValues(prev => ({
                     ...prev,
-                    [field.name]: additionalInfo[field.name] || ""
+                    [field.id]: additionalInfo[field.id] || ""
                 }));
             });
-
-
-        }
-    }, [availableActionScripts]);
+          }
+    }, [availableActionScripts, toEditAction]);
 
     useEffect(() => {
         if (fpfId){
@@ -146,6 +148,11 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const handleEdit = () => {
         if (toEditAction && fpfId && selectedActionClass) {
             setClosed(false);
+
+            const sanitizedAdditionalInfo = Object.fromEntries(
+              selectedActionClass.fields.map(field => [field.id, dynamicFieldValues[field.id] || ""])
+            );
+
             const id = notifications.show({
                 loading: true,
                 title: 'Loading',
@@ -161,7 +168,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 actionClassId:selectedActionClass.value,
                 isActive: isActive,
                 maximumDurationSeconds: maximumDurationSeconds,
-                additionalInformation: JSON.stringify(dynamicFieldValues),
+                additionalInformation: JSON.stringify(sanitizedAdditionalInfo),
                 hardwareId: hardware ? hardware.id : null ,
                 hardware: hardware,
                 trigger: [],
@@ -355,8 +362,8 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                                   )}
                                                 </>
                                               }
-                                              value={dynamicFieldValues[field.name] || ""}
-                                              onChange={(value) => handleDynamicFieldChange(field.name, String(value ?? ""))}
+                                              value={dynamicFieldValues[field.id] || ""}
+                                              onChange={(value) => handleDynamicFieldChange(field.id, String(value ?? ""))}
                                             />
                                         );
                                       case "str":
@@ -377,9 +384,9 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                                   )}
                                                 </>
                                               }
-                                              value={dynamicFieldValues[field.name] || ""}
+                                              value={dynamicFieldValues[field.id] || ""}
                                               onChange={(event) =>
-                                                  handleDynamicFieldChange(field.name, event.currentTarget.value)
+                                                  handleDynamicFieldChange(field.id, event.currentTarget.value)
                                               }
                                             />
                                         );
