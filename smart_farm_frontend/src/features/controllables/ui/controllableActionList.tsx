@@ -11,6 +11,7 @@ import {ActionTriggerForm} from "./actionTriggerForm";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
 import {executeTrigger} from "../useCase/executeTrigger";
 import {useAppDispatch} from "../../../utils/Hooks";
+import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
     const { t } = useTranslation();
@@ -186,11 +187,12 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                   <Table.Thead>
                     <Table.Tr>
                       <Table.Th />
-                      <Table.Th>{t("controllableActionList.name")}</Table.Th>
-                      <Table.Th>{t("controllableActionList.isActive")}</Table.Th>
-                      <Table.Th>{t("controllableActionList.actionScriptName")}</Table.Th>
-                      <Table.Th>{t("controllableActionList.maximumDurationSeconds")}</Table.Th>
-                      <Table.Th>{t("controllableActionList.hardware")}</Table.Th>
+                        <Table.Th>{t("controllableActionList.name")}</Table.Th>
+                        <Table.Th>{t("controllableActionList.isActive")}</Table.Th>
+                        <Table.Th>{t("controllableActionList.actionScriptName")}</Table.Th>
+                        <Table.Th>{t("controllableActionList.maximumDurationSeconds")}</Table.Th>
+                        <Table.Th>{t("controllableActionList.hardware")}</Table.Th>
+                        <Table.Th>{t('log.logListTitleShort')}</Table.Th>
                       {isAdmin && <Table.Th />}
                     </Table.Tr>
                   </Table.Thead>
@@ -228,6 +230,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                 <Table.Td>{action.actionScriptName}</Table.Td>
                                 <Table.Td>{action.maximumDurationSeconds}</Table.Td>
                                 <Table.Td>{action.hardware?.name}</Table.Td>
+                                <Table.Td><LogMessageModalButton resourceType='action' resourceId={action.id} /></Table.Td>
                                 {isAdmin && (
                                     <Table.Td>
                                         <Flex justify="center" align="center">
@@ -268,6 +271,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                         <Table.Th>{t("controllableActionList.trigger.type")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.valueType")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.value")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.description")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.triggerLogic")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.status")}</Table.Th>
                                                         {isAdmin && <Table.Th/>}
@@ -302,9 +306,10 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                 <Table.Td>{trigger.type}</Table.Td>
                                                                 <Table.Td>{trigger.actionValueType}</Table.Td>
                                                                 <Table.Td>{trigger.actionValue}</Table.Td>
+                                                                <Table.Td>{trigger.description}</Table.Td>
                                                                 <Table.Td>{trigger.triggerLogic}</Table.Td>
                                                                 <Table.Td>
-                                                                    <Flex justify="center" align="center">
+                                                                    <Flex justify="space-between" align="center">
                                                                         <Badge color={trigger.isActive ? "green" : "gray"}>
                                                                             {trigger.isActive ? "Active" : "Inactive"}
                                                                         </Badge>

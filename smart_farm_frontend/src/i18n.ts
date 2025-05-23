@@ -31,6 +31,7 @@ i18n
                         message: 'Message',
                         showMessages: 'Logs',
                         systemMessages: 'System messages',
+                        logListTitleShort: 'Logs',
                     },
                     fpf: {
                         address: 'Location',
@@ -437,6 +438,7 @@ i18n
                         message: 'Nachricht',
                         showMessages: 'Protokoll Nachrichten',
                         systemMessages: 'System Protokoll Nachrichten',
+                        logListTitleShort: 'Protokolle',
                     },
                     fpf: {
                         address: 'Standort',

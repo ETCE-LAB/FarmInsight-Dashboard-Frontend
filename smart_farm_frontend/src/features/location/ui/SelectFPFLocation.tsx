@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {useAppDispatch} from "../../../utils/Hooks";
 import {useTranslation} from "react-i18next";
 import {getLocationByOrganization} from "../useCase/getLocationByOrganization";
 import {Box, Button, Collapse, Loader, ScrollArea, Table, Text} from "@mantine/core";
@@ -10,7 +9,6 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 
 export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>, preSelectedLocation?: Location}> = ({ setLocation, organizationIdParam, preSelectedLocation }) => {
-    const dispatch = useAppDispatch();
     const locationEvent = useSelector((state: RootState) => state.location.receivedLocationEvent);
     const [locations, setLocations] = useState<Location[]>([]);
     const [isFormVisible, setIsFormVisible] = useState(false);
