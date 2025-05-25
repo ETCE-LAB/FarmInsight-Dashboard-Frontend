@@ -20,6 +20,7 @@ import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButto
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ControllableActionList} from "../../controllables/ui/controllableActionList";
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
+import {ActionQueueList} from "../../controllables/ui/actionQueueList";
 
 
 export const EditFPF: React.FC = () => {
@@ -150,6 +151,12 @@ export const EditFPF: React.FC = () => {
             <Card padding="lg" radius="md">
                 <ControllableActionList isAdmin={isAdmin} />
             </Card>
+
+            {fpfId &&
+                <Card padding="lg" radius="md">
+                    <ActionQueueList fpfId={fpfId} />
+                </Card>
+            }
 
             {/* Edit FPF Modal */}
             <Modal

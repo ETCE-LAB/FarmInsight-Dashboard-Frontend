@@ -181,7 +181,7 @@ i18n
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
-                            actionClass: 'Select from all avaiable scripts at the FPF. The script will be executed by the triggers you define for this action.',
+                            actionClass: 'Select from all available scripts at the FPF. The script will be executed by the triggers you define for this action.',
                             maximumDurationSeconds: 'The maximum duration of how long this action should take. It acts like a timeout for following actions for the same FPF hardware.',
                             actionClassId: 'The id of the script class',
                         },
@@ -211,8 +211,13 @@ i18n
                                 triggerLogicHint: 'Advanced trigger logic for the trigger in JSON format.',
                                 descriptionHint: 'Describe the trigger in more detail.',
                             }
+                        },
+                        queue: {
+                            title: 'Action queue',
+                            createdAt: 'Queued at',
+                            startedAt: 'Started at',
+                            endedAt: 'Finished at',
                         }
-
                     },
                     button: {
                         loginToManage: 'Login to manage organization',
@@ -617,6 +622,12 @@ i18n
                                     triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
                                     descriptionHint: 'Beschreibe den Auslöser näher.'
                             }
+                        },
+                        queue: {
+                            title: 'Aktionswarteschlange',
+                            createdAt: 'Eingestellt am',
+                            startedAt: 'Begonnen am',
+                            endedAt: 'Beendet am',
                         }
                     },
                     button: {
