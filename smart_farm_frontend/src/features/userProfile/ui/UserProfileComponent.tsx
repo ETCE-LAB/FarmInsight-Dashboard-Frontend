@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {AppRoutes} from "../../../utils/appRoutes";
-import {Text, Group, Button} from '@mantine/core';
+import {Text, Group} from '@mantine/core';
 import {UserProfile} from "../models/UserProfile"
 import {useAppSelector} from "../../../utils/Hooks";
 import {changedUserProfileEvent, receivedUserProfileEvent} from "../state/UserProfileSlice";

@@ -4,7 +4,7 @@ import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button } from "@mantine/core";
+import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";
@@ -15,11 +15,12 @@ import { useTranslation } from "react-i18next";
 import { IconEdit } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
 import { useAppDispatch } from "../../../utils/Hooks";
-import {createdFpf, updatedFpf} from "../state/FpfSlice";
+import {updatedFpf} from "../state/FpfSlice";
 import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ControllableActionList} from "../../controllables/ui/controllableActionList";
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
+import {ActionQueueList} from "../../controllables/ui/actionQueueList";
 
 
 export const EditFPF: React.FC = () => {
@@ -150,6 +151,12 @@ export const EditFPF: React.FC = () => {
             <Card padding="lg" radius="md">
                 <ControllableActionList isAdmin={isAdmin} />
             </Card>
+
+            {fpfId &&
+                <Card padding="lg" radius="md">
+                    <ActionQueueList fpfId={fpfId} />
+                </Card>
+            }
 
             {/* Edit FPF Modal */}
             <Modal

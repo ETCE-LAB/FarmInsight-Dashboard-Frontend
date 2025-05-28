@@ -28,7 +28,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
     const formatDuration = (seconds: number) => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
+        //const secs = seconds % 60;
         return `${hrs}h ${mins}m`;
     };
     function formatTimeManually(dateString: string): string {
@@ -40,7 +40,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
         // Extract the hour, minute, and second parts using substring indices.
         const hours = dateString.substring(11, 13);   // Characters from index 11 to 12.
         const minutes = dateString.substring(14, 16);   // Characters from index 14 to 15.
-        const seconds = dateString.substring(17, 19);   // Characters from index 17 to 18.
+        //const seconds = dateString.substring(17, 19);   // Characters from index 17 to 18.
 
         // Combine them into a formatted string.
         return `${hours}:${minutes}`;
@@ -58,7 +58,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
     const formatTimeText = (seconds: number): string => {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
+        //const secs = seconds % 60;
 
         const returnString = `${hrs !== 0 ? hrs + "h " : ""}${mins !== 0 ? mins + "m   " : " " }`
 

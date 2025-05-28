@@ -4,7 +4,6 @@ import {IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import React, {useEffect, useState} from "react";
 import {Location} from "../models/location";
 import {LocationForm} from "./LocationForm";
-import {getLocationByOrganization} from "../useCase/getLocationByOrganization";
 import {useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";

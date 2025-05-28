@@ -1,18 +1,14 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {useAppDispatch} from "../../../utils/Hooks";
-import {notifications} from "@mantine/notifications";
 import {useTranslation} from "react-i18next";
 import {getLocationByOrganization} from "../useCase/getLocationByOrganization";
-import {useAuth} from "react-oidc-context";
 import {Box, Button, Collapse, Loader, ScrollArea, Table, Text} from "@mantine/core";
 import {Location} from "../models/location";
 import {LocationForm} from "./LocationForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 
-export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>}> = ({ setLocation, organizationIdParam }) => {
-    const dispatch = useAppDispatch();
+export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>, preSelectedLocation?: Location}> = ({ setLocation, organizationIdParam, preSelectedLocation }) => {
     const locationEvent = useSelector((state: RootState) => state.location.receivedLocationEvent);
     const [locations, setLocations] = useState<Location[]>([]);
     const [isFormVisible, setIsFormVisible] = useState(false);
@@ -31,7 +27,6 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
         }
     );
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const auth = useAuth();
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -45,10 +40,10 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
     }, [organizationId,organizationIdParam, locationEvent]);
 
     useEffect(() => {
-        if (selectedLocation.id) {
-            setLocation(selectedLocation);
+        if (preSelectedLocation && preSelectedLocation.id) {
+            setSelectedLocation(preSelectedLocation);
         }
-    }, [selectedLocation]);
+    }, [preSelectedLocation]);
 
     // 1. Zeile 3B3B3B
     // 2. Zeile 242424
@@ -91,8 +86,8 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                                 {locations.map((location, index) => (
                                     <Table.Tr
                                         key={location.id}
-                                        onClick={() => {
-                                            setSelectedLocation(location);
+                                        onClick={(e) => {
+                                            setLocation(location);
                                         }}
                                         onMouseEnter={(e) => {
                                                 e.currentTarget.style.backgroundColor = "#595959";

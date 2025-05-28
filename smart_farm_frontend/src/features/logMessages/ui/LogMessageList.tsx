@@ -38,7 +38,7 @@ export const LogMessageList: React.FC<{ resourceType: string, resourceId?: strin
                       <Table.Tbody>
                           {logMessages.map((message, index) => (
                               <Table.Tr key={index}>
-                                  <Table.Td>{new Date(message.createdAt).toLocaleString()}</Table.Td>
+                                  <Table.Td>{new Date(message.createdAt).toLocaleString(navigator.language)}</Table.Td>
                                   <Table.Td>
                                       <Text c={getColorFromLogLevel(message.logLevel)}>{message.logLevel}</Text>
                                   </Table.Td>

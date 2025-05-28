@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Camera } from "../models/camera";
-import { useParams } from "react-router-dom";
 import { Carousel } from "@mantine/carousel";
 import { getImages } from "../useCase/getImages";
 import {
@@ -29,10 +28,7 @@ export interface displayObject {
     isLiveStream: boolean;
 }
 
-export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({
-                                                                             camerasToDisplay,
-                                                                         }) => {
-    const { fpfId } = useParams();
+export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camerasToDisplay }) => {
     const [objectsToDisplay, setObjectsToDisplay] = useState<displayObject[]>([]);
     const [showLivestream, setShowLivestream] = useState<boolean>(false);
     const [isHovered, setIsHovered] = useState<boolean>(false);

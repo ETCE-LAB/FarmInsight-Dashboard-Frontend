@@ -15,7 +15,7 @@ const initialState: LocationSlice = {
 //Über reducer Events verschicken
 //reducer wäre der "Event-Bus"
 
-const LocationSlice = createSlice({
+const locationSlice = createSlice({
     name: 'location',
     initialState,
 
@@ -26,6 +26,6 @@ const LocationSlice = createSlice({
     }
 })
 
-export const {receivedLocation} = LocationSlice.actions
+export const {receivedLocation} = locationSlice.actions
 export const receivedLocationEvent = (state:RootState) => state.location.receivedLocationEvent;
-export default LocationSlice.reducer
+export default locationSlice.reducer

@@ -26,8 +26,6 @@ import TimeRangeSelector from "../../../utils/TimeRangeSelector";
 import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDisplay";
 import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
-import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
-import {AppRoutes} from "../../../utils/appRoutes";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 
 export const FpfOverview = () => {
@@ -76,8 +74,6 @@ export const FpfOverview = () => {
             setCameraActive(true);
         }
     }, [fpf]);
-
-
 
     // Explicitly type the style object as CSSProperties
     const scrollableStyle: CSSProperties = {

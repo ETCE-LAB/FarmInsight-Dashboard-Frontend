@@ -1,10 +1,10 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
-import {ControllableAction, EditControllableAction} from "../models/controllableAction";
+import {ActionQueue} from "../models/actionQueue";
 
 
-export const createControllableAction = (controllableAction:EditControllableAction) => {
+export const fetchActionQueue = (fpfId: string) => {
     const apiClient = new APIClient()
 
     const user = getUser();
@@ -13,8 +13,8 @@ export const createControllableAction = (controllableAction:EditControllableActi
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    const url = `${BACKEND_URL}/api/controllable-actions`;
-    const result:  Promise<ControllableAction> = apiClient.post(url, controllableAction, headers)
+    const url = `${BACKEND_URL}/api/action-queue/${fpfId}`;
+    const result:  Promise<ActionQueue[]> = apiClient.get(url, headers)
 
     return result
 }

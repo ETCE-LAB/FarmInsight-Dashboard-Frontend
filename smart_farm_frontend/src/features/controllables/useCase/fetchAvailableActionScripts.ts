@@ -1,11 +1,9 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
-import {Hardware} from "../models/hardware";
 import {ActionScriptField} from "../ui/controllableActionForm";
 
-
-export const fetchAvailableActionScripts = (fpfId:string) => {
+export const fetchAvailableActionScripts = () => {
     const apiClient = new APIClient()
 
     const user = getUser();

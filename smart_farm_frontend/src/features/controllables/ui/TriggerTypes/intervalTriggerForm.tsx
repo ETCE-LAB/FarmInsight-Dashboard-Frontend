@@ -15,8 +15,8 @@ export const IntervalTriggerForm:React.FC<{setTriggerLogic:React.Dispatch<React.
     useEffect(() => {
         let delayInSeconds = delay
 
-        if( delayUnit == "minutes") { delayInSeconds *= 60}
-        if( delayUnit == "hours") { delayInSeconds *= 60 * 60}
+        if( delayUnit === "minutes") { delayInSeconds *= 60}
+        if( delayUnit === "hours") { delayInSeconds *= 60 * 60}
         let jsonString = "{\"delayInSeconds\": "+ delayInSeconds +"}"
         setTriggerLogic(jsonString)
     }, [delay, delayUnit]);
