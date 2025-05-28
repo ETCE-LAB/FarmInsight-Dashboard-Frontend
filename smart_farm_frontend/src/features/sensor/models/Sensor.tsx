@@ -12,6 +12,7 @@ export interface Sensor {
     parameter:string;
     fpfId:string,
     status:string,
+    aggregate:boolean,
 
     lastMeasurement: {
         measuredAt: Date,
@@ -38,6 +39,7 @@ export interface EditSensor {
     intervalSeconds:number,
     isActive:boolean,
     fpfId:string,
+    aggregate:boolean,
 
     hardwareConfiguration: {
         sensorClassId:string,

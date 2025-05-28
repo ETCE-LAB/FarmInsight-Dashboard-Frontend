@@ -25,6 +25,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
             intervalSeconds: sensor.intervalSeconds,
             isActive: sensor.isActive,
             fpfId,
+            aggregate: sensor.aggregate,
             hardwareConfiguration: {
                 sensorClassId: "",
                 additionalInformation: {},
@@ -52,6 +53,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                     <Table.Td>{getBackendTranslation(sensor.parameter, i18n.language)}</Table.Td>
                     <Table.Td>{sensor.unit}</Table.Td>
                     <Table.Td>{sensor.intervalSeconds}</Table.Td>
+                    <Table.Td>{sensor.aggregate ? t("common.activated"): t("common.inactive")}</Table.Td>
                     <Table.Td>
                         <Flex justify='space-between' align='center'>
                             <HoverCard>
@@ -143,6 +145,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                         <Table.Th>{t('sensorList.parameter')}</Table.Th>
                         <Table.Th>{t('sensorList.unit')}</Table.Th>
                         <Table.Th>{t('sensorList.intervalSeconds')}</Table.Th>
+                        <Table.Th>{t('sensorList.aggregate')}</Table.Th>
                         <Table.Th>{t('header.status')}</Table.Th>
                         <Table.Th>{t('threshold.title')}</Table.Th>
                         {isAdmin &&

@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { updateSensor } from "../useCase/updateSensor";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
-import { IconMobiledata, IconMobiledataOff } from "@tabler/icons-react";
+import {IconMobiledata, IconMobiledataOff, IconSum, IconSumOff} from "@tabler/icons-react";
 
 export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditSensor, setClosed }) => {
     const auth = useAuth();
@@ -24,6 +24,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
     const [isActive, setIsActive] = useState<boolean>(false);
     const [intervalSeconds, setIntervalSeconds] = useState<number>(3600);
     const [location, setLocation] = useState<string>("");
+    const[aggregate, setAggregate] = useState<boolean>(false);
     const [hardwareConfiguration, setHardwareConfiguration] = useState<{ sensorClassId: string, additionalInformation: Record<string, any> } | undefined>(undefined);
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -39,6 +40,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
             setIsActive(toEditSensor.isActive || false);
             setIntervalSeconds(toEditSensor.intervalSeconds || 1);
             setLocation(toEditSensor.location || "");
+            setAggregate(toEditSensor.aggregate || false);
         }
     }, [toEditSensor]);
 
@@ -62,6 +64,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 intervalSeconds,
                 isActive,
                 fpfId: toEditSensor.fpfId,
+                aggregate,
                 hardwareConfiguration,
             }).then((sensor) => {
                 if (sensor) {
@@ -100,7 +103,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 withCloseButton: false,
             });
             createSensor({
-                id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, hardwareConfiguration,
+                id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, aggregate ,hardwareConfiguration,
             }).then((response) => {
                 if (response) {
                     notifications.update({
@@ -173,6 +176,19 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                                 value={intervalSeconds}
                                 onChange={(value) => setIntervalSeconds(value as number ?? 1)}
                                 description={t("sensor.hint.intervalSecondsHint")}
+                            />
+                        </Grid.Col>
+
+                        {/* Aggregate Switch */}
+                        <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                            <Text style={{marginBottom:"1rem"}}>{t("sensorList.aggregate")}</Text>
+                            <Switch
+
+                                onLabel={<IconSum size={16} />}
+                                offLabel={<IconSumOff size={16} />}
+                                size="md"
+                                checked={aggregate}
+                                onChange={() => setAggregate(!aggregate)}
                             />
                         </Grid.Col>
 

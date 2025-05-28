@@ -9,7 +9,9 @@ i18n
                 translation: {
                     common: {
                         cancel: 'Cancel',
-                        confirm: 'Confirm'
+                        confirm: 'Confirm',
+                        activated: 'Active',
+                        inactive: 'Inactive',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -124,6 +126,7 @@ i18n
                         noSensorsFound: 'No Sensor found',
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
+                        aggregatedValues: 'Aggregated values',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -160,6 +163,7 @@ i18n
                         intervalSeconds: 'Interval in Seconds',
                         isActive: 'Is Active?',
                         actions: 'Actions',
+                        aggregate: 'Display summed values?',
                     },
                     controllableActionList: {
                         noAction: 'No Action found',
@@ -421,7 +425,9 @@ i18n
                 translation: {
                     common: {
                         cancel: 'Abbrechen',
-                        confirm: 'Bestätigen'
+                        confirm: 'Bestätigen',
+                        activated: 'Aktiviert',
+                        inactive: 'Inaktiv',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -535,6 +541,7 @@ i18n
                         noSensorsFound: 'Kein Sensor gefunden',
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
+                        aggregatedValues: 'Zusammengefasste Werte',
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
@@ -571,6 +578,7 @@ i18n
                         intervalSeconds: 'Intervall in Sekunden',
                         isActive: 'Ist aktiv?',
                         actions: 'Aktionen',
+                        aggregate: 'Zusammenaddierter Werte ausgeben?'
                     },
                     controllableActionList: {
                         noAction:'Keine Aktion gefunden',
@@ -912,6 +920,7 @@ i18n
                         },
                         title: 'Capteurs',
                         noSensorsFound: 'Aucun capteur trouvé',
+                        aggregatedValues: 'Valeurs agrégées',
                     },
                     userManagement: {
                         userKicked: 'L’utilisateur a été retiré de l’organisation.',
@@ -947,6 +956,7 @@ i18n
                         intervalSeconds: 'Intervalle en secondes',
                         isActive: 'Est actif ?',
                         actions: 'Actions',
+                        aggregate: 'Afficher les valeurs sommées?'
                     },
                       controllableActionList: {
                         auto: "Auto",
@@ -1265,6 +1275,7 @@ i18n
                         },
                         title: 'Sensori',
                         noSensorsFound: 'Nessun sensore trovato',
+                        aggregatedValues: 'Valori aggregati',
                     },
                     userManagement: {
                         userKicked: 'L’utente è stato rimosso dall’organizzazione.',
@@ -1300,6 +1311,7 @@ i18n
                         intervalSeconds: 'Intervallo in secondi',
                         isActive: 'È attivo?',
                         actions: 'Azioni',
+                        aggregate:'Visualizzare i valori sommati?'
                     },
                     controllableActionList: {
                         auto: 'Auto',
@@ -1604,6 +1616,7 @@ i18n
                         },
                         title: '传感器',
                         noSensorsFound: '未找到传感器',
+                        aggregatedValues:'合计值'
                     },
                     userManagement: {
                         userKicked: '用户已从组织中移除。',
@@ -1639,6 +1652,7 @@ i18n
                         intervalSeconds: '间隔时间（秒）',
                         isActive: '是否活跃？',
                         actions: '操作',
+                        aggregate:'显示总和值？'
                     },
                     controllableActionList: {
                       auto: '自动',
@@ -1959,6 +1973,7 @@ i18n
                         },
                         title: 'Датчики',
                         noSensorsFound: 'Датчики не найдены',
+                        aggregatedValues:'Агрегированные значения'
                     },
                     userManagement: {
                         userKicked: 'Пользоват ель был удален из организации.',
@@ -1994,6 +2009,7 @@ i18n
                         intervalSeconds: 'Интервал в секундах',
                         isActive: 'Активен?',
                         actions: 'Действия',
+                        aggregate:'Отображать суммарные значения?'
                     },
                     controllableActionList: {
                       auto: 'Авто',
