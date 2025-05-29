@@ -110,6 +110,25 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                 title={t("controllableActionList.confirmTitle")}
             >
                 <Text>{t("controllableActionList.confirmMessage")}</Text>
+
+                {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
+                  // Check if any auto triggers are active in the same group (excluding current action)
+                  const currentGroup = groupedActions[controllableAction.find(a => a.id === confirmModal.actionId)?.hardware?.id ?? ''];
+                  const autoTriggersInGroup = currentGroup?.some(action =>
+                    action.trigger.some(t => t.type !== "manual" && t.isActive)
+                  );
+
+                  if (autoTriggersInGroup) {
+                    return (
+                      <Text color="red" size="sm">
+                        ⚠ {t("controllableActionList.manualDisablesAutoWarning", "Warning: Activating a manual trigger will disable auto triggers for this group. You must deactivate the manual trigger manually to re-enable the automated trigger.")}
+                      </Text>
+                    );
+                  }
+
+                  return null;
+                })()}
+
                 <Flex justify="flex-end" gap="md" mt="md">
                     <Button variant="light" onClick={() => setConfirmModal({open: false})}>
                         {t("common.cancel")}
@@ -149,6 +168,38 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                 {actions[0].hardware?.name}
                             </Text>
                         }
+
+                        {(() => {
+                          const hasActiveManualInGroup = actions.some(a =>
+                            a.trigger.some(
+                              t => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
+                            )
+                          );
+
+                          const hasAutoInGroup = actions.some(a =>
+                            a.trigger.some(t => t.type !== "manual")
+                          );
+
+                          if (hasActiveManualInGroup && hasAutoInGroup) {
+                            return (
+                              <Badge
+                                color="red"
+                                variant="light"
+                                size="sm"
+                                style={{
+                                  position: 'absolute',
+                                  top: 5,
+                                  right: 5,
+                                  zIndex: 10,
+                                }}
+                              >
+                                {t("controllableActionList.autoDisabledNote")}
+                              </Badge>
+                            );
+                          }
+
+                          return null;
+                        })()}
                       {/* Group Actions */}
                       <Flex direction="column" gap="sm">
                         {actions.map((action) => {
@@ -160,7 +211,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                       )
                                     );
                     return (
-                        <Card key={action.id} p="sm">
+                        <Card key={action.id} p="sm" shadow="none">
                             <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
                                 {/* Left: Name */}
                                 <Text fw={600} tt="capitalize" style={{whiteSpace: 'nowrap', minWidth: 150}}>
