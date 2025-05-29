@@ -177,7 +177,8 @@ i18n
                         addControllable: 'Add controllable',
                         confirmTitle: 'Confirm Action',
                         confirmMessage: 'Are you sure you want to execute this action?',
-
+                        autoDisabledNote: 'An active manual trigger is blocking other auto actions',
+                        manualDisablesAutoWarning: 'Warning: Activating a manual trigger will disable auto triggers for this group. You must deactivate the manual trigger manually to re-enable the automated trigger.',
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -201,8 +202,8 @@ i18n
                             enterTriggerLogic: 'Enter Trigger Logic',
                             description: 'Description',
                             enterDescription: 'Enter description',
-                            active: 'Active',
-                            running: 'Running',
+                            active: 'Status',
+                            running: 'Active',
                             inactive: 'Inactive',
                             hint: {
                                 typeHint: 'Select appropriate trigger type.',
@@ -588,7 +589,8 @@ i18n
                         addControllable: "Steuerbares Element hinzufügen",
                         confirmTitle: 'Bestätige Ausführung',
                         confirmMessage: 'Sind Sie sicher, dass Sie eine Aktion ausführen wollen?',
-
+                        autoDisabledNote: 'Ein activer manueller Trigger blockiert andere Auto-Aktionen',
+                        manualDisablesAutoWarning: 'Warnung: Das Aktivieren eines manuellen Triggers deaktiviert die automatischen Trigger für diese Gruppe. Du musst den manuellen Trigger manuell deaktivieren, um den automatischen Trigger wieder zu aktivieren.',
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",
@@ -612,8 +614,8 @@ i18n
                             enterTriggerLogic: "Auslöserlogik eingeben",
                             description: "Beschreibung",
                             enterDescription: "Beschreibung eingeben",
-                            active: 'Aktiv',
-                            running: 'Läuft',
+                            active: 'Status',
+                            running: 'Aktiv',
                             inactive: 'Inaktiv',
                             hint: {
                                 typeHint: 'Wähle den passenden Auslöser-Typ.',
@@ -961,6 +963,8 @@ i18n
                         editAction: "Modifier l'action contrôlable",
                         triggerTitle: "Déclencheur",
                         addControllable: "Ajouter un contrôlable",
+                        autoDisabledNote: 'Un déclencheur manuel actif bloque les autres actions automatiques.',
+                        manualDisablesAutoWarning: 'Avertissement : L’activation d’un déclencheur manuel désactivera les déclencheurs automatiques de ce groupe. Vous devez désactiver manuellement le déclencheur manuel pour réactiver l’automatisation.',
                         hint: {
                           nameHint: "Nom de l'action contrôlable",
                           hardware: "Optionnel : Si cette action bloque du matériel sur le FPF, définissez-le ici. Exemple : Un bras robotique qui ne peut exécuter qu'une action à la fois.",
@@ -984,8 +988,8 @@ i18n
                           enterTriggerLogic: "Entrer la logique de déclencheur",
                           description: "Description",
                           enterDescription: "Entrer la description",
-                          active: 'Actif',
-                          running: 'En cours',
+                          active: 'Statut',
+                          running: 'Actif',
                           inactive: 'Inactif',
                           hint: {
                             typeHint: "Entrez le type approprié. Les déclencheurs manuels ne seront déclenchés manuellement que via l'aperçu FPF par les administrateurs. Tous les autres types exécutent l'action automatiquement.",
@@ -1314,6 +1318,8 @@ i18n
                         editAction: 'Modifica azione controllabile',
                         triggerTitle: 'Trigger',
                         addControllable: 'Aggiungi controllabile',
+                        autoDisabledNote: 'Un trigger manuale attivo sta bloccando le altre azioni automatiche.',
+                        manualDisablesAutoWarning: 'Avviso: L’attivazione di un trigger manuale disattiverà i trigger automatici per questo gruppo. È necessario disattivare manualmente il trigger manuale per riattivare quello automatico.',
                         hint: {
                             nameHint: 'Nome dell\'azione controllabile',
                             hardware: 'Opzionale: Se questa azione blocca l\'hardware del FPF, impostalo qui. Esempio: Un braccio robotico che può eseguire solo un\'azione alla volta.',
@@ -1337,8 +1343,8 @@ i18n
                             enterTriggerLogic: 'Inserisci logica trigger',
                             description: 'Descrizione',
                             enterDescription: 'Inserisci descrizione',
-                            active: 'Attivo',
-                            running: 'In esecuzione',
+                            active: 'Stato',
+                            running: 'Attivo',
                             inactive: 'Inattivo',
                             hint: {
                                 typeHint: 'Inserisci il tipo appropriato. I trigger manuali saranno attivati solo manualmente dagli amministratori tramite la panoramica FPF. Tutti gli altri tipi eseguono automaticamente l\'azione.',
@@ -1653,6 +1659,8 @@ i18n
                       editAction: '编辑可控操作',
                       triggerTitle: '触发器',
                       addControllable: '添加可控项',
+                      autoDisabledNote: '一个激活的手动触发器正在阻止其他自动操作。',
+                      manualDisablesAutoWarning: '警告： 启用手动触发器将禁用该组的自动触发器。你必须手动关闭手动触发器，才能重新启用自动触发器。',
                       hint: {
                         nameHint: '可控操作的名称',
                         hardware: '可选：如果此操作会占用 FPF 上的硬件，请在此设置。例如：一个一次只能执行一个动作的机械臂。',
@@ -1676,7 +1684,7 @@ i18n
                         enterTriggerLogic: '输入触发逻辑',
                         description: '描述',
                         enterDescription: '输入描述',
-                        active: '活动',
+                        active: '状态',
                         running: '运行中',
                         inactive: '未激活',
                         hint: {
@@ -2008,6 +2016,8 @@ i18n
                       editAction: 'Редактировать управляемое действие',
                       triggerTitle: 'Триггер',
                       addControllable: 'Добавить управляемый объект',
+                      autoDisabledNote: 'Активный ручной триггер блокирует другие автоматические действия.',
+                      manualDisablesAutoWarning: 'Предупреждение: Активация ручного триггера отключит автоматические триггеры для этой группы. Необходимо вручную отключить ручной триггер, чтобы снова включить автоматический.',
                       hint: {
                         nameHint: 'Название управляемого действия',
                         hardware: 'Необязательно: если это действие блокирует оборудование на FPF, укажите его здесь. Пример: роботизированная рука, которая может выполнять только одно действие за раз.',
@@ -2031,8 +2041,8 @@ i18n
                         enterTriggerLogic: 'Введите логику триггера',
                         description: 'Описание',
                         enterDescription: 'Введите описание',
-                        active: 'Активный',
-                        running: 'Выполняется',
+                        active: 'Статус',
+                        running: 'Активен',
                         inactive: 'Неактивный',
                         hint: {
                           typeHint: 'Введите подходящий тип. Ручные триггеры будут запускаться вручную администраторами через интерфейс FPF. Все остальные типы автоматически запускают действие.',
