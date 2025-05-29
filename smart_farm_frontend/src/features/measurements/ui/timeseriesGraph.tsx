@@ -81,7 +81,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         if(sensor.aggregate && measurements.length > 0){
             let sum = 0;
             // Watt in Wh umrechnen
-            if(sensor.unit == 'W')
+            if(sensor.unit === 'W')
             {
                 sum = computeHourlyConsumption(measurements);
                 setAggregatedUnit('Wh');
@@ -92,7 +92,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
 
             setAggregatedValues(+sum.toFixed(2))
         }
-    }, [measurements, sensor.aggregate]);
+    }, [measurements, sensor.aggregate, sensor.unit]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -116,7 +116,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 setError("Failed to process incoming data.");
             }
         }
-    }, [lastMessage]);
+    }, [lastMessage, sensor.intervalSeconds]);
 
     useEffect(() => {
         setLoading(true);
@@ -134,7 +134,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 setError("Failed to fetch initial measurements.");
             })
             .finally(() => setLoading(false));
-    }, [measurementReceivedEventListener, dates]);
+    }, [measurementReceivedEventListener, dates, sensor.id]);
 
     useEffect(() => {
         if (error) {
