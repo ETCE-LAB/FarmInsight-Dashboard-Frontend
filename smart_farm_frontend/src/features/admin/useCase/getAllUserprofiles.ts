@@ -1,10 +1,10 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
-import {UserProfile} from "../models/UserProfile";
 import {BACKEND_URL} from "../../../env-config";
+import {UserProfile} from "../../userProfile/models/UserProfile";
 
 
-export const getUserProfilesBySearchString = (searchString: string, orgaId: string | undefined) => {
+export const getAllUserprofiles = () => {
     const apiClient = new APIClient()
 
     const user = getUser();
@@ -13,14 +13,8 @@ export const getUserProfilesBySearchString = (searchString: string, orgaId: stri
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    let exclude = "";
-    if (orgaId) {
-        exclude = `?exclude_organization_id=${orgaId}`
-    }
-
-    const url = `${BACKEND_URL}/api/userprofiles/${searchString}${exclude}`;
+    const url = `${BACKEND_URL}/api/admin/userprofiles-all`;
 
     const result:  Promise<UserProfile[]> = apiClient.get(url, headers)
-
     return result
 }

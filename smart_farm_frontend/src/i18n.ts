@@ -105,6 +105,7 @@ i18n
                             details: 'Details for',
                         },
                         statusOverview: 'Status overview',
+                        adminPage: 'Admin',
                         ping: 'Ping',
                     },
                     sensor: {
@@ -130,7 +131,7 @@ i18n
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
-                        userPromoted: 'User was promoted.'
+                        userPromoted: 'User was promoted.',
                     },
                     growingCycleForm: {
                         addCycle: 'Add Growing Cycle',
@@ -420,6 +421,9 @@ i18n
                         lastPing: 'Last ping',
                         pingResult: 'Ping result',
                     },
+                    admin: {
+                        resetPassword: 'Reset Password',
+                    }
                 },
             },
             de: {
@@ -521,6 +525,7 @@ i18n
                             details: 'Details für',
                         },
                         statusOverview: 'Status Übersicht',
+                        adminPage: 'Admin',
                         ping: 'Ping',
                     },
                     sensor: {
@@ -836,6 +841,9 @@ i18n
                         lastPing: 'Letzter Ping',
                         pingResult: 'Ping Ergebnis',
                     },
+                    admin: {
+                        resetPassword: 'Passwort zurücksetzten',
+                    }
                 },
             },
             fr: {

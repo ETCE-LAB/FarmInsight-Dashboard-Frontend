@@ -11,6 +11,7 @@ import {FpfOverview} from "../features/fpf/ui/fpfOverview";
 import {EditFPF} from "../features/fpf/ui/EditFPF";
 import LegalNoticePage from "../ui/components/footer/legalNoticePage";
 import {StatusPage} from "../features/status/ui/status_page";
+import {AdminPage} from "../features/admin/ui/adminPage";
 
 export class AuthRoutes {
     static callback = "auth/callback";
@@ -32,9 +33,10 @@ export const Router = () => {
                     <Route path={AppRoutes.editUserProfile} element={<EditUserProfile />} />
                     <Route path={AppRoutes.displayFpf} element={<FpfOverview />} />
                     <Route path={AppRoutes.editFpf} element={<EditFPF />} />
-                    <Route path={AppRoutes.legalNotice} element={<LegalNoticePage />} /> {/* Add this line */}
+                    <Route path={AppRoutes.legalNotice} element={<LegalNoticePage />} />
 
                     <Route path={AppRoutes.statusOverview} element={<StatusPage />} />
+                    <Route path={AppRoutes.adminPage} element={<AdminPage />} />
                 </Routes>
             </BasicAppShell>
         </BrowserRouter>

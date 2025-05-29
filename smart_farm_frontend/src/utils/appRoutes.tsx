@@ -6,4 +6,5 @@ export class AppRoutes {
     static editUserProfile = "/userprofile/edit"
     static legalNotice = "/legal-notice"
     static statusOverview = "/status-overview"
+    static adminPage = "/admin"
 }
