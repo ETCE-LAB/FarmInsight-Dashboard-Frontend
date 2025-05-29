@@ -65,6 +65,7 @@ export const FpfOverview = () => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
                 dispatch(setControllableAction(resp.ControllableAction));
+                dispatch(setControllableAction(resp.ControllableAction));
             });
         }
     }, [params, dispatch]);
