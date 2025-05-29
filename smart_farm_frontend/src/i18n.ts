@@ -208,6 +208,7 @@ i18n
                             active: 'Active',
                             running: 'Running',
                             inactive: 'Inactive',
+                            lastTriggered: 'Last triggered',
                             hint: {
                                 typeHint: 'Select appropriate trigger type.',
                                 actionValueTypeHint: 'Set the correct type of the action value. For example the value "On" is string.',
@@ -623,12 +624,13 @@ i18n
                             active: 'Aktiv',
                             running: 'Läuft',
                             inactive: 'Inaktiv',
+                            lastTriggered: 'Zuletzt ausgelöst',
                             hint: {
                                 typeHint: 'Wähle den passenden Auslöser-Typ.',
-                                    actionValueTypeHint: 'Lege den richtigen Typ des Aktionswerts fest. Zum Beispiel ist der Wert "On" ein String.',
-                                    actionValueHint: 'Prüfe in deinem gewünschten Aktions-Skript, welche Werte zulässig sind.',
-                                    triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
-                                    descriptionHint: 'Beschreibe den Auslöser näher.'
+                                actionValueTypeHint: 'Lege den richtigen Typ des Aktionswerts fest. Zum Beispiel ist der Wert "On" ein String.',
+                                actionValueHint: 'Prüfe in deinem gewünschten Aktions-Skript, welche Werte zulässig sind.',
+                                triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
+                                descriptionHint: 'Beschreibe den Auslöser näher.'
                             }
                         },
                         queue: {

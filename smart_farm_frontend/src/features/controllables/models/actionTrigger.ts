@@ -8,6 +8,7 @@ export interface ActionTrigger{
     actionValue: string;
     triggerLogic: string;
     isActive: boolean;
+    lastTriggered: string|null;
 }
 
 
