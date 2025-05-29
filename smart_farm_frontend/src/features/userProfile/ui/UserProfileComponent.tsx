@@ -18,7 +18,7 @@ const UserProfileComponent = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (auth.user) {
+        if (auth.isAuthenticated) {
             receiveUserProfile()
                 .then((resp) => {
                     if (resp) {
@@ -32,7 +32,7 @@ const UserProfileComponent = () => {
                     console.error('Error fetching user profile:', error);
                 });
         }
-    }, [auth.user, userProfileReceivedEventListener, changedUserProfile]);
+    }, [auth.isAuthenticated, userProfileReceivedEventListener, changedUserProfile]);
 
     const editProfile = () => {
         navigate(AppRoutes.editUserProfile);
