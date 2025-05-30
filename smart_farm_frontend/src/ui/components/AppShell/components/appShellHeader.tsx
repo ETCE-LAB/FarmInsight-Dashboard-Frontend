@@ -8,6 +8,8 @@ import { LoginButton } from '../../../../features/auth/ui/loginButton';
 import { LogoutButton } from '../../../../features/auth/ui/logoutButton';
 import { useMediaQuery } from '@mantine/hooks';
 import {useAuth} from "react-oidc-context";
+import {receiveUserProfile} from "../../../../features/userProfile/useCase/receiveUserProfile";
+import {SystemRole} from "../../../../features/userProfile/models/UserProfile";
 
 export const AppShellHeader: React.FC = () => {
     const navigate = useNavigate();
@@ -16,6 +18,7 @@ export const AppShellHeader: React.FC = () => {
     const [currentFlag, setCurrentFlag] = useState('us');
     const [drawerOpened, setDrawerOpened] = useState(false); // State to manage Drawer visibility
     const auth = useAuth();
+    const [isAdmin, setIsAdmin] = useState(false);
 
     // Detect mobile devices (viewport widths 768px or less)
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -45,6 +48,14 @@ export const AppShellHeader: React.FC = () => {
         setCurrentFlag(lang.flag);
         i18n.changeLanguage(lang.code);
     };
+
+    useEffect(() => {
+        if (auth.isAuthenticated) {
+            receiveUserProfile().then((user) => {
+                setIsAdmin(user.systemRole === SystemRole.ADMIN);
+            });
+        }
+    }, [auth.isAuthenticated]);
 
     const renderFlagImage = (flag: string, alt: string) => (
         <Image
@@ -127,6 +138,7 @@ export const AppShellHeader: React.FC = () => {
                         >
                             <Flex direction="column" gap="md">
                                 {auth.isAuthenticated && <Button onClick={() => navigate(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
+                                {isAdmin && <Button onClick={() => navigate(AppRoutes.adminPage)}>{t('header.adminPage')}</Button>}
                                 <UserProfileComponent />
                                 <LoginButton />
                                 <LogoutButton />
@@ -136,6 +148,7 @@ export const AppShellHeader: React.FC = () => {
                 ) : (
                     <Group gap='md'>
                         {auth.isAuthenticated && <Button onClick={() => navigate(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
+                        {isAdmin && <Button onClick={() => navigate(AppRoutes.adminPage)}>{t('header.adminPage')}</Button>}
                         <UserProfileComponent />
                         <LoginButton />
                         <LogoutButton />

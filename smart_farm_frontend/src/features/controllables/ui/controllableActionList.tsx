@@ -78,8 +78,8 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
             description:        trigger.description,
             actionValue:        trigger.actionValue,
             type:               trigger.type,
-            actionValueType:    trigger.actionValueType
-
+            actionValueType:    trigger.actionValueType,
+            lastTriggered: null
         }
 
         setSelectedTrigger(editTrigger)
@@ -274,6 +274,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                         <Table.Th>{t("controllableActionList.trigger.description")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.triggerLogic")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.status")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.lastTriggered")}</Table.Th>
                                                         {isAdmin && <Table.Th/>}
                                                     </Table.Tr>
                                                 </Table.Thead>
@@ -315,6 +316,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                         </Badge>
                                                                     </Flex>
                                                                 </Table.Td>
+                                                                <Table.Td>{trigger.lastTriggered && new Date(trigger.lastTriggered).toLocaleString(navigator.language)}</Table.Td>
                                                                 {isAdmin && (
                                                                     <Table.Td>
                                                                         <Flex justify="center" align="center">

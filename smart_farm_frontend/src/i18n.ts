@@ -9,7 +9,9 @@ i18n
                 translation: {
                     common: {
                         cancel: 'Cancel',
-                        confirm: 'Confirm'
+                        confirm: 'Confirm',
+                        activated: 'Active',
+                        inactive: 'Inactive',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -103,6 +105,7 @@ i18n
                             details: 'Details for',
                         },
                         statusOverview: 'Status overview',
+                        adminPage: 'Admin',
                         ping: 'Ping',
                     },
                     sensor: {
@@ -124,10 +127,11 @@ i18n
                         noSensorsFound: 'No Sensor found',
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
+                        aggregatedValues: 'Aggregated values',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
-                        userPromoted: 'User was promoted.'
+                        userPromoted: 'User was promoted.',
                     },
                     growingCycleForm: {
                         addCycle: 'Add Growing Cycle',
@@ -160,6 +164,7 @@ i18n
                         intervalSeconds: 'Interval in Seconds',
                         isActive: 'Is Active?',
                         actions: 'Actions',
+                        aggregate: 'Display summed values?',
                     },
                     controllableActionList: {
                         noAction: 'No Action found',
@@ -177,7 +182,8 @@ i18n
                         addControllable: 'Add controllable',
                         confirmTitle: 'Confirm Action',
                         confirmMessage: 'Are you sure you want to execute this action?',
-
+                        autoDisabledNote: 'An active manual trigger is blocking other auto actions',
+                        manualDisablesAutoWarning: 'Warning: Activating a manual trigger will disable auto triggers for this group. You must deactivate the manual trigger manually to re-enable the automated trigger.',
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -201,9 +207,10 @@ i18n
                             enterTriggerLogic: 'Enter Trigger Logic',
                             description: 'Description',
                             enterDescription: 'Enter description',
-                            active: 'Active',
-                            running: 'Running',
+                            active: 'Status',
+                            running: 'Active',
                             inactive: 'Inactive',
+                            lastTriggered: 'Last triggered',
                             hint: {
                                 typeHint: 'Select appropriate trigger type.',
                                 actionValueTypeHint: 'Set the correct type of the action value. For example the value "On" is string.',
@@ -415,13 +422,18 @@ i18n
                         lastPing: 'Last ping',
                         pingResult: 'Ping result',
                     },
+                    admin: {
+                        resetPassword: 'Reset Password',
+                    }
                 },
             },
             de: {
                 translation: {
                     common: {
                         cancel: 'Abbrechen',
-                        confirm: 'Bestätigen'
+                        confirm: 'Bestätigen',
+                        activated: 'Aktiviert',
+                        inactive: 'Inaktiv',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -514,6 +526,7 @@ i18n
                             details: 'Details für',
                         },
                         statusOverview: 'Status Übersicht',
+                        adminPage: 'Admin',
                         ping: 'Ping',
                     },
                     sensor: {
@@ -535,6 +548,7 @@ i18n
                         noSensorsFound: 'Kein Sensor gefunden',
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
+                        aggregatedValues: 'Zusammengefasste Werte',
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
@@ -571,6 +585,7 @@ i18n
                         intervalSeconds: 'Intervall in Sekunden',
                         isActive: 'Ist aktiv?',
                         actions: 'Aktionen',
+                        aggregate: 'Zusammenaddierter Werte ausgeben?'
                     },
                     controllableActionList: {
                         noAction:'Keine Aktion gefunden',
@@ -588,7 +603,8 @@ i18n
                         addControllable: "Steuerbares Element hinzufügen",
                         confirmTitle: 'Bestätige Ausführung',
                         confirmMessage: 'Sind Sie sicher, dass Sie eine Aktion ausführen wollen?',
-
+                        autoDisabledNote: 'Ein activer manueller Trigger blockiert andere Auto-Aktionen',
+                        manualDisablesAutoWarning: 'Warnung: Das Aktivieren eines manuellen Triggers deaktiviert die automatischen Trigger für diese Gruppe. Du musst den manuellen Trigger manuell deaktivieren, um den automatischen Trigger wieder zu aktivieren.',
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",
@@ -612,15 +628,16 @@ i18n
                             enterTriggerLogic: "Auslöserlogik eingeben",
                             description: "Beschreibung",
                             enterDescription: "Beschreibung eingeben",
-                            active: 'Aktiv',
-                            running: 'Läuft',
+                            active: 'Status',
+                            running: 'Aktiv',
                             inactive: 'Inaktiv',
+                            lastTriggered: 'Zuletzt ausgelöst',
                             hint: {
                                 typeHint: 'Wähle den passenden Auslöser-Typ.',
-                                    actionValueTypeHint: 'Lege den richtigen Typ des Aktionswerts fest. Zum Beispiel ist der Wert "On" ein String.',
-                                    actionValueHint: 'Prüfe in deinem gewünschten Aktions-Skript, welche Werte zulässig sind.',
-                                    triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
-                                    descriptionHint: 'Beschreibe den Auslöser näher.'
+                                actionValueTypeHint: 'Lege den richtigen Typ des Aktionswerts fest. Zum Beispiel ist der Wert "On" ein String.',
+                                actionValueHint: 'Prüfe in deinem gewünschten Aktions-Skript, welche Werte zulässig sind.',
+                                triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
+                                descriptionHint: 'Beschreibe den Auslöser näher.'
                             }
                         },
                         queue: {
@@ -826,6 +843,9 @@ i18n
                         lastPing: 'Letzter Ping',
                         pingResult: 'Ping Ergebnis',
                     },
+                    admin: {
+                        resetPassword: 'Passwort zurücksetzten',
+                    }
                 },
             },
             fr: {
@@ -912,6 +932,7 @@ i18n
                         },
                         title: 'Capteurs',
                         noSensorsFound: 'Aucun capteur trouvé',
+                        aggregatedValues: 'Valeurs agrégées',
                     },
                     userManagement: {
                         userKicked: 'L’utilisateur a été retiré de l’organisation.',
@@ -947,6 +968,7 @@ i18n
                         intervalSeconds: 'Intervalle en secondes',
                         isActive: 'Est actif ?',
                         actions: 'Actions',
+                        aggregate: 'Afficher les valeurs sommées?'
                     },
                       controllableActionList: {
                         auto: "Auto",
@@ -961,6 +983,8 @@ i18n
                         editAction: "Modifier l'action contrôlable",
                         triggerTitle: "Déclencheur",
                         addControllable: "Ajouter un contrôlable",
+                        autoDisabledNote: 'Un déclencheur manuel actif bloque les autres actions automatiques.',
+                        manualDisablesAutoWarning: 'Avertissement : L’activation d’un déclencheur manuel désactivera les déclencheurs automatiques de ce groupe. Vous devez désactiver manuellement le déclencheur manuel pour réactiver l’automatisation.',
                         hint: {
                           nameHint: "Nom de l'action contrôlable",
                           hardware: "Optionnel : Si cette action bloque du matériel sur le FPF, définissez-le ici. Exemple : Un bras robotique qui ne peut exécuter qu'une action à la fois.",
@@ -984,8 +1008,8 @@ i18n
                           enterTriggerLogic: "Entrer la logique de déclencheur",
                           description: "Description",
                           enterDescription: "Entrer la description",
-                          active: 'Actif',
-                          running: 'En cours',
+                          active: 'Statut',
+                          running: 'Actif',
                           inactive: 'Inactif',
                           hint: {
                             typeHint: "Entrez le type approprié. Les déclencheurs manuels ne seront déclenchés manuellement que via l'aperçu FPF par les administrateurs. Tous les autres types exécutent l'action automatiquement.",
@@ -1265,6 +1289,7 @@ i18n
                         },
                         title: 'Sensori',
                         noSensorsFound: 'Nessun sensore trovato',
+                        aggregatedValues: 'Valori aggregati',
                     },
                     userManagement: {
                         userKicked: 'L’utente è stato rimosso dall’organizzazione.',
@@ -1300,6 +1325,7 @@ i18n
                         intervalSeconds: 'Intervallo in secondi',
                         isActive: 'È attivo?',
                         actions: 'Azioni',
+                        aggregate:'Visualizzare i valori sommati?'
                     },
                     controllableActionList: {
                         auto: 'Auto',
@@ -1314,6 +1340,8 @@ i18n
                         editAction: 'Modifica azione controllabile',
                         triggerTitle: 'Trigger',
                         addControllable: 'Aggiungi controllabile',
+                        autoDisabledNote: 'Un trigger manuale attivo sta bloccando le altre azioni automatiche.',
+                        manualDisablesAutoWarning: 'Avviso: L’attivazione di un trigger manuale disattiverà i trigger automatici per questo gruppo. È necessario disattivare manualmente il trigger manuale per riattivare quello automatico.',
                         hint: {
                             nameHint: 'Nome dell\'azione controllabile',
                             hardware: 'Opzionale: Se questa azione blocca l\'hardware del FPF, impostalo qui. Esempio: Un braccio robotico che può eseguire solo un\'azione alla volta.',
@@ -1337,8 +1365,8 @@ i18n
                             enterTriggerLogic: 'Inserisci logica trigger',
                             description: 'Descrizione',
                             enterDescription: 'Inserisci descrizione',
-                            active: 'Attivo',
-                            running: 'In esecuzione',
+                            active: 'Stato',
+                            running: 'Attivo',
                             inactive: 'Inattivo',
                             hint: {
                                 typeHint: 'Inserisci il tipo appropriato. I trigger manuali saranno attivati solo manualmente dagli amministratori tramite la panoramica FPF. Tutti gli altri tipi eseguono automaticamente l\'azione.',
@@ -1604,6 +1632,7 @@ i18n
                         },
                         title: '传感器',
                         noSensorsFound: '未找到传感器',
+                        aggregatedValues:'合计值'
                     },
                     userManagement: {
                         userKicked: '用户已从组织中移除。',
@@ -1639,6 +1668,7 @@ i18n
                         intervalSeconds: '间隔时间（秒）',
                         isActive: '是否活跃？',
                         actions: '操作',
+                        aggregate:'显示总和值？'
                     },
                     controllableActionList: {
                       auto: '自动',
@@ -1653,6 +1683,8 @@ i18n
                       editAction: '编辑可控操作',
                       triggerTitle: '触发器',
                       addControllable: '添加可控项',
+                      autoDisabledNote: '一个激活的手动触发器正在阻止其他自动操作。',
+                      manualDisablesAutoWarning: '警告： 启用手动触发器将禁用该组的自动触发器。你必须手动关闭手动触发器，才能重新启用自动触发器。',
                       hint: {
                         nameHint: '可控操作的名称',
                         hardware: '可选：如果此操作会占用 FPF 上的硬件，请在此设置。例如：一个一次只能执行一个动作的机械臂。',
@@ -1676,7 +1708,7 @@ i18n
                         enterTriggerLogic: '输入触发逻辑',
                         description: '描述',
                         enterDescription: '输入描述',
-                        active: '活动',
+                        active: '状态',
                         running: '运行中',
                         inactive: '未激活',
                         hint: {
@@ -1959,6 +1991,7 @@ i18n
                         },
                         title: 'Датчики',
                         noSensorsFound: 'Датчики не найдены',
+                        aggregatedValues:'Агрегированные значения'
                     },
                     userManagement: {
                         userKicked: 'Пользоват ель был удален из организации.',
@@ -1994,6 +2027,7 @@ i18n
                         intervalSeconds: 'Интервал в секундах',
                         isActive: 'Активен?',
                         actions: 'Действия',
+                        aggregate:'Отображать суммарные значения?'
                     },
                     controllableActionList: {
                       auto: 'Авто',
@@ -2008,6 +2042,8 @@ i18n
                       editAction: 'Редактировать управляемое действие',
                       triggerTitle: 'Триггер',
                       addControllable: 'Добавить управляемый объект',
+                      autoDisabledNote: 'Активный ручной триггер блокирует другие автоматические действия.',
+                      manualDisablesAutoWarning: 'Предупреждение: Активация ручного триггера отключит автоматические триггеры для этой группы. Необходимо вручную отключить ручной триггер, чтобы снова включить автоматический.',
                       hint: {
                         nameHint: 'Название управляемого действия',
                         hardware: 'Необязательно: если это действие блокирует оборудование на FPF, укажите его здесь. Пример: роботизированная рука, которая может выполнять только одно действие за раз.',
@@ -2031,8 +2067,8 @@ i18n
                         enterTriggerLogic: 'Введите логику триггера',
                         description: 'Описание',
                         enterDescription: 'Введите описание',
-                        active: 'Активный',
-                        running: 'Выполняется',
+                        active: 'Статус',
+                        running: 'Активен',
                         inactive: 'Неактивный',
                         hint: {
                           typeHint: 'Введите подходящий тип. Ручные триггеры будут запускаться вручную администраторами через интерфейс FPF. Все остальные типы автоматически запускают действие.',

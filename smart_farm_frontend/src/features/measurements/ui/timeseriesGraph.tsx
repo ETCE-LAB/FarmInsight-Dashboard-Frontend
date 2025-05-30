@@ -24,6 +24,34 @@ import {formatFloatValue, getSensorStateColor, getSensorStateColorHint, getWsUrl
 import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
+import {t} from "i18next";
+
+export function computeHourlyConsumption(measurements: Measurement[]) {
+    if (measurements.length < 2) {
+        return 0;
+    }
+    const sorted = [...measurements].sort(
+        (a, b) => new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime()
+    );
+
+    let energyWh = 0;
+
+    for (let i = 0; i < sorted.length - 1; i++) {
+        const t0 = new Date(sorted[i].measuredAt).getTime();       // ms
+        const t1 = new Date(sorted[i + 1].measuredAt).getTime();   // ms
+        const dtSeconds = (t1 - t0) / 1_000;                       // s
+
+
+        const pAvg = (sorted[i].value + sorted[i + 1].value) / 2;  // W
+        energyWh += (pAvg * dtSeconds) / 3_600;                    // Wh
+    }
+
+    const durationSeconds =
+        (new Date(sorted.at(-1)!.measuredAt).getTime() -
+            new Date(sorted[0].measuredAt).getTime()) / 1_000;
+
+    return (energyWh * 3_600) / durationSeconds;
+}
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: string } | null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
@@ -34,6 +62,8 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     const isMobile = useMediaQuery('(max-width: 768px)');
     const [sensorStatus, setSensorStatus] = useState<{ measuredAt: Date, isActive: boolean }>({ measuredAt: new Date(sensor.lastMeasurement.measuredAt), isActive: sensor.isActive });
     const [statusColor, setStatusColor] = useState(getSensorStateColor(sensorStatus.measuredAt, sensorStatus.isActive, sensor.intervalSeconds));
+    const [aggregatedValues, setAggregatedValues] = useState<number>(0);
+    const [aggregatedUnit, setAggregatedUnit] = useState<string>(sensor.unit);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -45,6 +75,24 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     const { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, {
         shouldReconnect: () => true,
     }, true);
+
+    // Aggregate Function and hardcoded Units
+    useEffect(() => {
+        if(sensor.aggregate && measurements.length > 0){
+            let sum = 0;
+            // Watt in Wh umrechnen
+            if(sensor.unit === 'W')
+            {
+                sum = computeHourlyConsumption(measurements);
+                setAggregatedUnit('Wh');
+            }
+            else {
+                sum = measurements.reduce((acc, cur) => acc + cur.value, 0);
+            }
+
+            setAggregatedValues(+sum.toFixed(2))
+        }
+    }, [measurements, sensor.aggregate, sensor.unit]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -68,7 +116,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 setError("Failed to process incoming data.");
             }
         }
-    }, [lastMessage]);
+    }, [lastMessage, sensor.intervalSeconds]);
 
     useEffect(() => {
         setLoading(true);
@@ -86,7 +134,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 setError("Failed to fetch initial measurements.");
             })
             .finally(() => setLoading(false));
-    }, [measurementReceivedEventListener, dates]);
+    }, [measurementReceivedEventListener, dates, sensor.id]);
 
     useEffect(() => {
         if (error) {
@@ -194,77 +242,82 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                     <Text c="dimmed">No data</Text>
                                 </Center>
                             ) : (
-                                <LineChart
-                                    key={measurements.length}
-                                    unit={sensor.unit}
-                                    activeDotProps={{ r: 6, strokeWidth: 1 }}
-                                    data={measurements.slice(-50)}
-                                    dataKey="measuredAt"
-                                    series={[{ name: "value", color: theme.colors.blue[6], label: sensor.unit }]}
-                                    curveType="monotone"
-                                    style={{ borderRadius: '5px', padding: '10px', width: "100%" }}
-                                    xAxisProps={{
-                                        tickFormatter: (dateString: string) => {
-                                            const date = new Date(dateString);
-                                            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                        },
-                                    }}
-                                    // Hier die neue domain-Logik:
-                                    yAxisProps={{
-                                        domain: [
-                                            (dataMin: number) => {
-                                                const lowerBounds = sensor.thresholds
-                                                    .map(t => t.lowerBound)
-                                                    .filter((v): v is number => v !== null);
-                                                const thresholdMin = lowerBounds.length > 0
-                                                    ? Math.min(...lowerBounds)
-                                                    : dataMin;
-                                                return Math.min(dataMin, thresholdMin);
+                                <>
+                                    <LineChart
+                                        key={measurements.length}
+                                        unit={sensor.unit}
+                                        activeDotProps={{ r: 6, strokeWidth: 1 }}
+                                        data={measurements.slice(-50)}
+                                        dataKey="measuredAt"
+                                        series={[{ name: "value", color: theme.colors.blue[6], label: sensor.unit }]}
+                                        curveType="monotone"
+                                        style={{ borderRadius: '5px', padding: '10px', width: "100%" }}
+                                        xAxisProps={{
+                                            tickFormatter: (dateString: string) => {
+                                                const date = new Date(dateString);
+                                                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                                             },
-                                            (dataMax: number) => {
-                                                const upperBounds = sensor.thresholds
-                                                    .map(t => t.upperBound)
-                                                    .filter((v): v is number => v !== null);
-                                                const thresholdMax = upperBounds.length > 0
-                                                    ? Math.max(...upperBounds)
-                                                    : dataMax;
-                                                return Math.max(dataMax, thresholdMax);
-                                            }
-                                        ],
-                                        padding: {top: 3, bottom: 3},
-                                        tickFormatter: (numberStr: string) => {
-                                            return formatFloatValue(parseFloat(numberStr));
-                                        },
-                                    }}
-                                    h={250}
-                                    tooltipAnimationDuration={200}
-                                    tooltipProps={{
-                                        content: ({ label, payload }) => {
-                                            if (payload && payload.length > 0) {
-                                                return (
-                                                    <Card color="grey">
-                                                        <strong>
-                                                            {new Date(label).toLocaleDateString([], {
-                                                                year: 'numeric',
-                                                                month: '2-digit',
-                                                                day: '2-digit',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            })}
-                                                        </strong>
-                                                        {payload.map((item) => (
-                                                            <Flex key={item.name}>
-                                                                {formatFloatValue(item.value)}{sensor.unit}
-                                                            </Flex>
-                                                        ))}
-                                                    </Card>
-                                                );
-                                            }
-                                            return null;
-                                        },
-                                    }}
-                                    referenceLines={getThresholdLines(sensor.thresholds)}
-                                />
+                                        }}
+                                        // Hier die neue domain-Logik:
+                                        yAxisProps={{
+                                            domain: [
+                                                (dataMin: number) => {
+                                                    const lowerBounds = sensor.thresholds
+                                                        .map(t => t.lowerBound)
+                                                        .filter((v): v is number => v !== null);
+                                                    const thresholdMin = lowerBounds.length > 0
+                                                        ? Math.min(...lowerBounds)
+                                                        : dataMin;
+                                                    return Math.min(dataMin, thresholdMin);
+                                                },
+                                                (dataMax: number) => {
+                                                    const upperBounds = sensor.thresholds
+                                                        .map(t => t.upperBound)
+                                                        .filter((v): v is number => v !== null);
+                                                    const thresholdMax = upperBounds.length > 0
+                                                        ? Math.max(...upperBounds)
+                                                        : dataMax;
+                                                    return Math.max(dataMax, thresholdMax);
+                                                }
+                                            ],
+                                            padding: {top: 3, bottom: 3},
+                                            tickFormatter: (numberStr: string) => {
+                                                return formatFloatValue(parseFloat(numberStr));
+                                            },
+                                        }}
+                                        h={250}
+                                        tooltipAnimationDuration={200}
+                                        tooltipProps={{
+                                            content: ({ label, payload }) => {
+                                                if (payload && payload.length > 0) {
+                                                    return (
+                                                        <Card color="grey">
+                                                            <strong>
+                                                                {new Date(label).toLocaleDateString([], {
+                                                                    year: 'numeric',
+                                                                    month: '2-digit',
+                                                                    day: '2-digit',
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit'
+                                                                })}
+                                                            </strong>
+                                                            {payload.map((item) => (
+                                                                <Flex key={item.name}>
+                                                                    {formatFloatValue(item.value)}{sensor.unit}
+                                                                </Flex>
+                                                            ))}
+                                                        </Card>
+                                                    );
+                                                }
+                                                return null;
+                                            },
+                                        }}
+                                        referenceLines={getThresholdLines(sensor.thresholds)}
+                                    />
+                                    {sensor.aggregate && (
+                                        <Text>{t('sensor.aggregatedValues')}: {aggregatedValues} {aggregatedUnit}</Text>
+                                    )}
+                                </>
                             )
                         )}
                     </>
