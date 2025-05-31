@@ -1,18 +1,24 @@
 import React, {useState} from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
 import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Button, Card} from "@mantine/core";
-import {IconChevronDown, IconChevronLeft, IconCirclePlus, IconEdit,} from "@tabler/icons-react";
+import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
+import {IconChevronDown, IconChevronLeft, IconCirclePlus, IconEdit, IconGripVertical } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
 import { useTranslation } from "react-i18next";
 import {getBackendTranslation, getSensorStateColor} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
+import {postSensorOrder} from "../useCase/postSensorOrder";
+import {receivedSensor} from "../state/SensorSlice";
+import {useAppDispatch} from "../../../utils/Hooks";
+
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
     const [sensorModalOpen, setSensorModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState<EditSensor | undefined>(undefined);
     const { t, i18n } = useTranslation();
+    const dispatch = useAppDispatch();
 
     const onClickEdit = (sensor: Sensor) => {
         const editSensor: EditSensor = {
@@ -41,12 +47,19 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
         setSensorModalOpen(true);
     }
 
-    const SensorRow: React.FC<{sensor: Sensor, index: number}> = ({ sensor, index }) => {
+    const SensorRow: React.FC<{sensor: Sensor, provided: DraggableProvided}> = ({ sensor, provided }) => {
         const [open, setOpen] = useState<boolean>(false);
 
         return (
             <>
-                <Table.Tr key={index}>
+                <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
+                    {isAdmin &&
+                        <Table.Td>
+                            <div {...provided.dragHandleProps}>
+                                <IconGripVertical size={18} stroke={1.5} />
+                            </div>
+                        </Table.Td>
+                    }
                     <Table.Td>{sensor.name}</Table.Td>
                     <Table.Td>{sensor.location}</Table.Td>
                     <Table.Td>{sensor.modelNr}</Table.Td>
@@ -107,6 +120,13 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
         )
     }
 
+    const sensorItems = sensorsToDisplay?.map((sensor, index) => (
+        <Draggable key={sensor.id} index={index} draggableId={sensor.id}>
+            {(provided: DraggableProvided) => (
+                <SensorRow sensor={sensor} provided={provided}></SensorRow>
+            )}
+        </Draggable>
+        ))
 
     return (
         <Box>
@@ -134,30 +154,43 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 />
                 }
             </Group>
-            {/* Conditional Rendering of Table */}
             {sensorsToDisplay && sensorsToDisplay.length > 0 ? (
                 <Table highlightOnHover withColumnBorders>
-                    <Table.Thead>
-                    <Table.Tr>
-                        <Table.Th>{t('sensorList.name')}</Table.Th>
-                        <Table.Th>{t('sensorList.location')}</Table.Th>
-                        <Table.Th>{t('sensorList.modelNr')}</Table.Th>
-                        <Table.Th>{t('sensorList.parameter')}</Table.Th>
-                        <Table.Th>{t('sensorList.unit')}</Table.Th>
-                        <Table.Th>{t('sensorList.intervalSeconds')}</Table.Th>
-                        <Table.Th>{t('sensorList.aggregate')}</Table.Th>
-                        <Table.Th>{t('header.status')}</Table.Th>
-                        <Table.Th>{t('threshold.title')}</Table.Th>
-                        {isAdmin &&
-                        <Table.Th>{}</Table.Th>
-                        }
-                    </Table.Tr>
-                    </Table.Thead>
-                    <Table.Tbody>
-                    {sensorsToDisplay.map((sensor, index) => (
-                        <SensorRow sensor={sensor} index={index}></SensorRow>
-                    ))}
-                    </Table.Tbody>
+                    <DragDropContext
+                        onDragEnd={({ destination, source }) => {
+                            let sensor_ids = sensorsToDisplay?.map((sensor) => sensor.id);
+                            const temp = sensor_ids[destination?.index || 0];
+                            sensor_ids[destination?.index || 0] = sensor_ids[source.index];
+                            sensor_ids[source.index] = temp;
+                            postSensorOrder(fpfId, sensor_ids).then(() => {
+                                dispatch(receivedSensor());
+                            });
+                        }}
+                    >
+                        <Table.Thead>
+                        <Table.Tr>
+                            {isAdmin && <Table.Th />}
+                            <Table.Th>{t('sensorList.name')}</Table.Th>
+                            <Table.Th>{t('sensorList.location')}</Table.Th>
+                            <Table.Th>{t('sensorList.modelNr')}</Table.Th>
+                            <Table.Th>{t('sensorList.parameter')}</Table.Th>
+                            <Table.Th>{t('sensorList.unit')}</Table.Th>
+                            <Table.Th>{t('sensorList.intervalSeconds')}</Table.Th>
+                            <Table.Th>{t('sensorList.aggregate')}</Table.Th>
+                            <Table.Th>{t('header.status')}</Table.Th>
+                            <Table.Th>{t('threshold.title')}</Table.Th>
+                            {isAdmin && <Table.Th />}
+                        </Table.Tr>
+                        </Table.Thead>
+                        <Droppable droppableId="sensors" direction="vertical">
+                            {(provided) => (
+                                <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
+                                    {sensorItems}
+                                    {provided.placeholder}
+                                </Table.Tbody>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 </Table>
             ) : (
                 <Text>{t("sensor.noSensorsFound")}</Text>
