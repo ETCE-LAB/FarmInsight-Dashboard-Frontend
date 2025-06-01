@@ -40,7 +40,7 @@ export const FpfOverview = () => {
     const auth = useAuth();
     const { organizationId } = useParams<{ organizationId: string }>();
     const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
-    const [isMember, setIsMember] = useState<boolean>(false);
+    const [isMember, setIsMember] = useState<boolean | null>(null);
 
     useEffect(() => {
         if (organizationId && auth.isAuthenticated) {
@@ -57,14 +57,13 @@ export const FpfOverview = () => {
                 }
             });
         }
-    }, [organizationId]);
+    }, [organizationId, auth.isAuthenticated]);
 
     useEffect(() => {
         if (params?.fpfId) {
             getFpf(params.fpfId).then(resp => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
-                dispatch(setControllableAction(resp.ControllableAction));
                 dispatch(setControllableAction(resp.ControllableAction));
             });
         }

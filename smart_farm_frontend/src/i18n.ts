@@ -184,6 +184,7 @@ i18n
                         confirmMessage: 'Are you sure you want to execute this action?',
                         autoDisabledNote: 'An active manual trigger is blocking other auto actions',
                         manualDisablesAutoWarning: 'Warning: Activating a manual trigger will disable auto triggers for this group. You must deactivate the manual trigger manually to re-enable the automated trigger.',
+                        enableAutoMode: 'Activate Auto Trigger',
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -207,9 +208,9 @@ i18n
                             enterTriggerLogic: 'Enter Trigger Logic',
                             description: 'Description',
                             enterDescription: 'Enter description',
-                            active: 'Status',
+                            active: 'Executable',
                             running: 'Active',
-                            inactive: 'Inactive',
+                            inactive: 'Execute',
                             lastTriggered: 'Last triggered',
                             hint: {
                                 typeHint: 'Select appropriate trigger type.',
@@ -603,8 +604,9 @@ i18n
                         addControllable: "Steuerbares Element hinzufügen",
                         confirmTitle: 'Bestätige Ausführung',
                         confirmMessage: 'Sind Sie sicher, dass Sie eine Aktion ausführen wollen?',
-                        autoDisabledNote: 'Ein activer manueller Trigger blockiert andere Auto-Aktionen',
+                        autoDisabledNote: 'Ein aktiver manueller Trigger blockiert andere Auto-Aktionen',
                         manualDisablesAutoWarning: 'Warnung: Das Aktivieren eines manuellen Triggers deaktiviert die automatischen Trigger für diese Gruppe. Du musst den manuellen Trigger manuell deaktivieren, um den automatischen Trigger wieder zu aktivieren.',
+                        enableAutoMode: 'Aktiviere Auto Trigger',
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",
@@ -628,9 +630,9 @@ i18n
                             enterTriggerLogic: "Auslöserlogik eingeben",
                             description: "Beschreibung",
                             enterDescription: "Beschreibung eingeben",
-                            active: 'Status',
+                            active: 'Ausführbar',
                             running: 'Aktiv',
-                            inactive: 'Inaktiv',
+                            inactive: 'Ausführen',
                             lastTriggered: 'Zuletzt ausgelöst',
                             hint: {
                                 typeHint: 'Wähle den passenden Auslöser-Typ.',

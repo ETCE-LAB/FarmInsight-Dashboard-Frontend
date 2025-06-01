@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button} from "@mantine/core";
+import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button, Switch} from "@mantine/core";
 import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import {useSelector} from "react-redux";
@@ -205,8 +205,11 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                             (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
                           )
                         );
+                        const hasAutoInGroup = actions.some((a) => a.trigger.some((t) => t.type !== "manual"));
+
                         return (
                         <React.Fragment key={action.id}>
+
                             {/* Main Row */}
                             <Table.Tr>
                                 <Table.Td>
@@ -264,10 +267,39 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                 )}
                                             </Group>
 
+                                            {hasAutoInGroup && hasActiveManualInGroup && (
+                                                <Switch
+                                                    size="sm"
+                                                    label={t("controllableActionList.enableAutoMode")}
+                                                    checked={!hasActiveManualInGroup}
+                                                    onChange={() => {
+                                                        const activeManual = actions.find((a) =>
+                                                            a.trigger.some(
+                                                                (t) =>
+                                                                    t.type === "manual" &&
+                                                                    t.isActive &&
+                                                                    t.id === a.status &&
+                                                                    !a.isAutomated
+                                                            )
+                                                        );
+
+                                                        if (activeManual) {
+                                                            setConfirmModal({
+                                                                open: true,
+                                                                actionId: activeManual.id,
+                                                                triggerId: "auto",
+                                                                value: "",
+                                                                isActive: true
+                                                            });
+                                                        }
+                                                    }}
+                                                />
+                                            )}
+
                                             <Table striped highlightOnHover withColumnBorders>
                                                 <Table.Thead>
                                                     <Table.Tr>
-                                                        <Table.Th>{t("controllableActionList.trigger.active")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.status")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.type")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.valueType")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.value")}</Table.Th>
@@ -312,7 +344,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                 <Table.Td>
                                                                     <Flex justify="space-between" align="center">
                                                                         <Badge color={trigger.isActive ? "green" : "gray"}>
-                                                                            {trigger.isActive ? "Active" : "Inactive"}
+                                                                            {trigger.isActive ? t("controllableActionList.trigger.active") : t("controllableActionList.trigger.inactive")}
                                                                         </Badge>
                                                                     </Flex>
                                                                 </Table.Td>
