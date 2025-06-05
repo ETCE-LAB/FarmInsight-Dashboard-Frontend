@@ -268,32 +268,34 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                             </Group>
 
                                             {hasAutoInGroup && hasActiveManualInGroup && (
-                                                <Switch
-                                                    size="sm"
-                                                    label={t("controllableActionList.enableAutoMode")}
-                                                    checked={!hasActiveManualInGroup}
-                                                    onChange={() => {
-                                                        const activeManual = actions.find((a) =>
-                                                            a.trigger.some(
-                                                                (t) =>
-                                                                    t.type === "manual" &&
-                                                                    t.isActive &&
-                                                                    t.id === a.status &&
-                                                                    !a.isAutomated
-                                                            )
-                                                        );
+                                                <Group justify="flex-start" mt="5px">
+                                                    <Button
+                                                        size="compact-xs"
 
-                                                        if (activeManual) {
-                                                            setConfirmModal({
-                                                                open: true,
-                                                                actionId: activeManual.id,
-                                                                triggerId: "auto",
-                                                                value: "",
-                                                                isActive: true
-                                                            });
-                                                        }
-                                                    }}
-                                                />
+
+                                                        onClick={() => {
+                                                            const activeManual = actions.find((a) =>
+                                                                a.trigger.some(
+                                                                    (t) =>
+                                                                        t.type === "manual" &&
+                                                                        t.isActive &&
+                                                                        t.id === a.status &&
+                                                                        !a.isAutomated
+                                                                )
+                                                            );
+
+                                                            if (activeManual) {
+                                                                setConfirmModal({
+                                                                    open: true,
+                                                                    actionId: activeManual.id,
+                                                                    triggerId: "auto",
+                                                                    value: "",
+                                                                    isActive: true
+                                                                });
+                                                            }
+                                                        }}
+                                                    >{t("controllableActionList.enableAutoMode")}</Button>
+                                                </Group>
                                             )}
 
                                             <Table striped highlightOnHover withColumnBorders>
@@ -343,8 +345,8 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                 <Table.Td>{trigger.triggerLogic}</Table.Td>
                                                                 <Table.Td>
                                                                     <Flex justify="space-between" align="center">
-                                                                        <Badge color={trigger.isActive ? "green" : "gray"}>
-                                                                            {trigger.isActive ? t("controllableActionList.trigger.active") : t("controllableActionList.trigger.inactive")}
+                                                                        <Badge color={isActive ? "blue" : trigger.isActive ? "green" : "gray"}>
+                                                                            {isActive ? t("controllableActionList.trigger.running") :trigger.isActive ? t("controllableActionList.trigger.active") : t("controllableActionList.trigger.inactive")}
                                                                         </Badge>
                                                                     </Flex>
                                                                 </Table.Td>
