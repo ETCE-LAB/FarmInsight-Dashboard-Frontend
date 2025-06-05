@@ -234,11 +234,10 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                             <Flex justify="space-between" align="center" mb="sm" style={{ overflowX: "auto", marginTop: 5 }}>
                                 <Text fw={700} size="lg">{actions[0].hardware?.name}</Text>
                                 {hasAutoInGroup && hasActiveManualInGroup && (
-                                    <Switch
-                                        size="sm"
-                                        label={t("controllableActionList.enableAutoMode")}
-                                        checked={!hasActiveManualInGroup}
-                                        onChange={() => {
+                                    <Button
+                                        size="compact-xs"
+                                        mt='5px'
+                                        onClick={() => {
                                             const activeManual = actions.find((a) =>
                                                 a.trigger.some(
                                                     (t) =>
@@ -259,7 +258,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                                 });
                                             }
                                         }}
-                                    />
+                                    >{t("controllableActionList.enableAutoMode")}</Button>
                                 )}
                             </Flex>
 
