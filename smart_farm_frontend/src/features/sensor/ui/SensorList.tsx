@@ -159,9 +159,20 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                     <DragDropContext
                         onDragEnd={({ destination, source }) => {
                             let sensor_ids = sensorsToDisplay?.map((sensor) => sensor.id);
-                            const temp = sensor_ids[destination?.index || 0];
-                            sensor_ids[destination?.index || 0] = sensor_ids[source.index];
-                            sensor_ids[source.index] = temp;
+                            const temp = sensor_ids[source.index];
+
+                            // remove moved item from its original position
+                            sensor_ids.splice(source.index, 1);
+
+                            let dest_idx = destination?.index || 0;
+                            // place item in new position
+                            if (source.index > dest_idx) {
+                                sensor_ids.splice(dest_idx, 0, temp);
+                            } else if (source.index < dest_idx) {
+                                // since we removed the item first the dest now moved forward one spot
+                                sensor_ids.splice(dest_idx - 1, 0, temp);
+                            } else return;
+
                             postSensorOrder(fpfId, sensor_ids).then(() => {
                                 dispatch(receivedSensor());
                             });
