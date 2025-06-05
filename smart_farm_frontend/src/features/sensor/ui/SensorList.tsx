@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
 import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Button, Card} from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
@@ -10,16 +10,16 @@ import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton"
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
 import {postSensorOrder} from "../useCase/postSensorOrder";
-import {receivedSensor} from "../state/SensorSlice";
-import {useAppDispatch} from "../../../utils/Hooks";
-
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
-    const [sensors, setSensors] = useState<Sensor[] | undefined>(sensorsToDisplay);
+    const [sensors, setSensors] = useState<Sensor[] | undefined>(undefined);
     const [sensorModalOpen, setSensorModalOpen] = useState(false);
     const [selectedSensor, setSelectedSensor] = useState<EditSensor | undefined>(undefined);
     const { t, i18n } = useTranslation();
-    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        setSensors(sensorsToDisplay);
+    }, [sensorsToDisplay]);
 
     const onClickEdit = (sensor: Sensor) => {
         const editSensor: EditSensor = {
@@ -168,12 +168,12 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             let dest_idx = destination?.index || 0;
 
                             if (source.index === dest_idx) return;
-                                
+
                             // place item in new position
                             sensors_.splice(dest_idx, 0, temp);
                             setSensors(sensors_);
                             postSensorOrder(fpfId, sensors_.map((x: Sensor) => x.id)).then(() => {
-                                dispatch(receivedSensor());
+                                // don't need to get list again since we keep the order locally
                             });
                         }}
                     >
