@@ -1,5 +1,5 @@
 import {useTranslation} from "react-i18next";
-import {Badge, Box, Flex, Group, Modal, Table} from "@mantine/core";
+import {Badge, Box, Flex, Group, Modal, Table, Title} from "@mantine/core";
 import {IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import React, {useEffect, useState} from "react";
 import {Location} from "../models/location";
@@ -64,7 +64,7 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
             </Modal>
             {/*Header*/}
             <Group mb="md" justify="space-between">
-                <h2>{t('location.text.locations')}</h2>
+                <Title order={2}>{t('location.text.locations')}</Title>
                 {isAdmin &&
                 <IconCirclePlus
                     size={25}

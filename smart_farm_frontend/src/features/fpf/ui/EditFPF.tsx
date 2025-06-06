@@ -33,7 +33,6 @@ export const EditFPF: React.FC = () => {
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
 
-
     const SensorEventListener = useSelector((state: RootState) => state.sensor.receivedSensorEvent);
     const CameraEventListener = useSelector((state: RootState) => state.camera.createdCameraEvent);
     const fpfCreatedEventListener = useSelector((state: RootState) => state.fpf.createdFpfEvent);
@@ -82,8 +81,6 @@ export const EditFPF: React.FC = () => {
             });
         }
     }, [CameraEventListener]);
-
-
 
     useEffect(() => {
         if (fpf && organization) {
