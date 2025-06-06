@@ -34,9 +34,10 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const [fullscreenView, setFullscreenView] = useState<boolean>(false);
     const [selectedObject, setSelectedObject] = useState<displayObject | null>(null);
-    const [activeSlide, setActiveSlide] = useState(0);
     const auth = useAuth();
     const { t } = useTranslation();
+
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
     type DisplayObj = { url: string; title: string; isLiveStream: boolean };
 
@@ -124,7 +125,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                     </>
                 )}
                 {auth.isAuthenticated && objectToDisplay.isLiveStream && (
-                    <Livestream src={objectToDisplay} isMounted={activeSlide === index} />
+                    <Livestream src={objectToDisplay} showing={currentSlideIndex === index}/>
                 )}
                 {/* Fullscreen icon overlay */}
                 <ActionIcon
@@ -181,13 +182,13 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                                 loop
                                 controlSize={32}
                                 slideSize="100%"
-                                onSlideChange={(index) => setActiveSlide(index)}
                                 styles={{
                                     controls: {
                                         opacity: isHovered ? 1 : 0,
                                         transition: "opacity 0.3s ease",
                                     },
                                 }}
+                                onSlideChange={setCurrentSlideIndex}
                             >
                                 {slides}
                             </Carousel>
@@ -223,7 +224,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                     />
                 )}
                 {selectedObject && selectedObject.isLiveStream && (
-                    <Livestream src={selectedObject} isMounted={true} />
+                    <Livestream src={selectedObject} showing={true}/>
                 )}
             </Modal>
         </>

@@ -3,19 +3,17 @@ import {getUser} from "../../../utils/getUser";
 import {Badge, rem} from "@mantine/core";
 import {displayObject} from "./CameraCarousel";
 
-export const Livestream: React.FC<{ src : displayObject, isMounted: boolean }> = ({src, isMounted}) => {
+export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = ({src, showing}) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
+        if (!showing) return;
+
+        let isMounted = true;
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext("2d");
         abortControllerRef.current = new AbortController();
-
-        if(!isMounted){
-            return
-        }
-
 
         const fetchStream = async () => {
             try {
@@ -90,7 +88,7 @@ export const Livestream: React.FC<{ src : displayObject, isMounted: boolean }> =
                 abortControllerRef.current.abort();
             }
         };
-    }, [src]);
+    }, [src, showing]);
 
     return (
         <>
