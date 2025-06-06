@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button} from "@mantine/core";
+import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button, Title} from "@mantine/core";
 import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import {useSelector} from "react-redux";
@@ -169,7 +169,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
 
             {/* Header with Add Button */}
             <Group mb="md" justify="space-between">
-                <h2>{t('controllableActionList.title')}</h2>
+                <Title order={2}>{t('controllableActionList.title')}</Title>
                 {isAdmin &&
                 <IconCirclePlus
                     size={25}
@@ -182,7 +182,6 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
             </Group>
             {/* Conditional Rendering of Table */}
             {controllableAction && controllableAction.length > 0 ? (
-                <>
                 <Table striped highlightOnHover withColumnBorders>
                   <Table.Thead>
                     <Table.Tr>
@@ -344,11 +343,8 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                     })))}
                   </Table.Tbody>
                 </Table>
-
-
-                </>
             ) : (
-                <Text>{t("sensor.noSensorsFound")}</Text>
+                <Text>{t("controllableActionList.noActionFound")}</Text>
             )}
         </Box>
     );

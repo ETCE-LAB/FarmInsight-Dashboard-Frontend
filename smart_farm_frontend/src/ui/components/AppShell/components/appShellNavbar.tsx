@@ -14,7 +14,7 @@ import {
     IconSettings,
     IconSquareRoundedPlus,
 } from "@tabler/icons-react";
-import { Organization } from "../../../../features/organization/models/Organization";
+import { OrganizationMembership } from "../../../../features/organization/models/Organization";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppRoutes } from "../../../../utils/appRoutes";
 import { getMyOrganizations } from "../../../../features/organization/useCase/getMyOrganizations";
@@ -34,7 +34,7 @@ export const AppShellNavbar: React.FC = () => {
         name: string;
         id: string;
     }>({ name: t("header.myOrganizations"), id: "" });
-    const [organizations, setMyOrganizations] = useState<Organization[]>([]);
+    const [organizations, setMyOrganizations] = useState<OrganizationMembership[]>([]);
     const [selectedFPFId, setSelectedFPFId] = useState<string | null>(null);
     const [fpfList, setFpfList] = useState<Fpf[]>([]);
     const [fpfModalOpen, setFpfModalOpen] = useState(false);

@@ -17,7 +17,7 @@ import {
 import { IconPlant } from '@tabler/icons-react';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { getMyOrganizations } from '../../../features/organization/useCase/getMyOrganizations';
-import { Organization } from '../../../features/organization/models/Organization';
+import {OrganizationMembership} from '../../../features/organization/models/Organization';
 import { useAuth } from 'react-oidc-context';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../utils/store';
@@ -32,7 +32,7 @@ import { useMediaQuery } from '@mantine/hooks';
 
 const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     const auth = useAuth();
-    const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [organizations, setOrganizations] = useState<OrganizationMembership[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
     const organizationEventListener = useSelector(
         (state: RootState) => state.organization.createdOrganizationEvent

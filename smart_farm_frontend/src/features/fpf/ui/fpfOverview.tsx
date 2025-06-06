@@ -41,19 +41,15 @@ export const FpfOverview = () => {
     const { organizationId } = useParams<{ organizationId: string }>();
     const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
     const [isMember, setIsMember] = useState<boolean>(false);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     useEffect(() => {
         if (organizationId && auth.isAuthenticated) {
             getMyOrganizations().then((organizations) => {
-                let found = false;
-                organizations.forEach((org: any) => {
-                    if(org.id === organizationId) {
-                        setIsMember(true)
-                        found = true;
-                    }
-                });
-                if(!found) {
-                    setIsMember(false);
+                const org = organizations.find((o) => o.id === organizationId);
+                if (org) {
+                    setIsMember(true);
+                    setIsAdmin(org.membership.role === 'admin');
                 }
             });
         }
@@ -170,7 +166,7 @@ export const FpfOverview = () => {
                             }}
                         >
                             {(fpf.GrowingCycles ?? []).length > 0 ? (
-                                <GrowingCycleList fpfId={fpf.id} />
+                                <GrowingCycleList fpfId={fpf.id} isAdmin={isAdmin} />
                             ) : (
                                 <Box style={{ display: 'flex', justifyContent: 'center' }}>
                                     <Button
@@ -258,7 +254,7 @@ export const FpfOverview = () => {
                                 }}
                             >
                                 {(fpf.GrowingCycles ?? []).length > 0 ? (
-                                    <GrowingCycleList fpfId={fpf.id} />
+                                    <GrowingCycleList fpfId={fpf.id} isAdmin={isAdmin} />
                                 ) : (
                                     <Box style={{ display: 'flex', justifyContent: 'center' }}>
                                         <Button

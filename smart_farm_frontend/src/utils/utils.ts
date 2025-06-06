@@ -1,6 +1,20 @@
 import {BACKEND_URL} from "../env-config";
 import i18n from "i18next";
 
+export const moveArrayItem = (inputArray: any[], sourceIdx:number, destIdx:number): any[] => {
+    let array = structuredClone(inputArray);
+    if (sourceIdx === destIdx) return array;
+
+    const temp = array[sourceIdx];
+
+    // remove moved item from its original position
+    array.splice(sourceIdx, 1);
+
+    // place item in new position
+    array.splice(destIdx, 0, temp);
+
+    return array;
+}
 
 export const formatFloatValue = (value: number | undefined | null): string => {
     if (value === undefined || value === null)
