@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Table, Text, Title} from "@mantine/core";
+import {Group, Table, Text, Title} from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import {useAuth} from "react-oidc-context";
 import {fetchActionQueue} from "../useCase/fetchActionQueue";
@@ -21,7 +21,9 @@ export const ActionQueueList: React.FC<{ fpfId: string}> = ({ fpfId }) => {
 
     return (
         <>
-            <Title>{t('controllableActionList.queue.title')}</Title>
+            <Group mb="md">
+                <Title order={2}>{t('controllableActionList.queue.title')}</Title>
+            </Group>
             {queue && queue.length > 0 ? (
                 <Table striped highlightOnHover withColumnBorders>
                         <Table.Thead>
@@ -49,7 +51,7 @@ export const ActionQueueList: React.FC<{ fpfId: string}> = ({ fpfId }) => {
                         </Table.Tbody>
                     </Table>
             ) : (
-                <Text>{t("sensor.noSensorsFound")}</Text>
+                <Text>{t("controllableActionList.queue.noEntriesFound")}</Text>
             )}
         </>
     );

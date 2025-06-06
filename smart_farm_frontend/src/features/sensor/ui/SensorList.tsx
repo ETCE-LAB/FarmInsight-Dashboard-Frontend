@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
-import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Button, Card} from "@mantine/core";
+import {Badge, Box, Group, Modal, Table, Text, Title, HoverCard, Flex, Button, Card} from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
 import {IconChevronDown, IconChevronLeft, IconCirclePlus, IconEdit, IconGripVertical } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
@@ -136,7 +136,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
 
             {/* Header with Add Button */}
             <Group mb="md" justify="space-between">
-                <h2>{t('sensor.title')}</h2>
+                <Title order={2}>{t('sensor.title')}</Title>
                 {isAdmin &&
                 <IconCirclePlus
                     size={25}

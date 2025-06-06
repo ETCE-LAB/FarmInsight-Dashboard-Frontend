@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Badge, Box, Flex, Group, Modal, Table, Text} from "@mantine/core";
+import {Badge, Box, Flex, Group, Modal, Table, Text, Title} from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
 import {IconCirclePlus, IconEdit, IconGripVertical, IconVideo, IconVideoOff} from "@tabler/icons-react";
 import { Camera, EditCamera } from "../models/camera";
@@ -55,7 +55,7 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], fpfId: string, 
 
             {/* Header with Add Button */}
             <Group mb="md" justify="space-between">
-                <h2>{t('camera.cameras')}</h2>
+                <Title order={2}>{t('camera.cameras')}</Title>
                 {isAdmin &&
                 <IconCirclePlus
                     size={25}

@@ -167,7 +167,7 @@ i18n
                         aggregate: 'Display summed values?',
                     },
                     controllableActionList: {
-                        noAction: 'No Action found',
+                        noActionFound: 'No Action found',
                         auto: 'Auto',
                         title: 'Controllable Actions',
                         name: 'Action name',
@@ -220,6 +220,7 @@ i18n
                             }
                         },
                         queue: {
+                            noEntriesFound: 'No Entry found',
                             title: 'Action queue',
                             createdAt: 'Queued at',
                             startedAt: 'Started at',
@@ -588,7 +589,7 @@ i18n
                         aggregate: 'Zusammenaddierter Werte ausgeben?'
                     },
                     controllableActionList: {
-                        noAction:'Keine Aktion gefunden',
+                        noActionFound: 'Keine Aktionen gefunden',
                         auto: "Auto",
                         title: "Steuerbare Aktionen",
                         name: "Aktionsname",
@@ -641,6 +642,7 @@ i18n
                             }
                         },
                         queue: {
+                            noEntriesFound: 'Kein Warteschlangeneintrag gefunden',
                             title: 'Aktionswarteschlange',
                             createdAt: 'Eingestellt am',
                             startedAt: 'Begonnen am',
