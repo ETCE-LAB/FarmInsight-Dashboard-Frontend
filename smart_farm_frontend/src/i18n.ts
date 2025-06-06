@@ -164,7 +164,7 @@ i18n
                         intervalSeconds: 'Interval in Seconds',
                         isActive: 'Is Active?',
                         actions: 'Actions',
-                        aggregate: 'Display summed values?',
+                        aggregate: 'Display Σ values?',
                     },
                     controllableActionList: {
                         noAction: 'No Action found',
@@ -586,7 +586,7 @@ i18n
                         intervalSeconds: 'Intervall in Sekunden',
                         isActive: 'Ist aktiv?',
                         actions: 'Aktionen',
-                        aggregate: 'Zusammenaddierter Werte ausgeben?'
+                        aggregate: 'Σ Werte ausgeben?'
                     },
                     controllableActionList: {
                         noAction:'Keine Aktion gefunden',
