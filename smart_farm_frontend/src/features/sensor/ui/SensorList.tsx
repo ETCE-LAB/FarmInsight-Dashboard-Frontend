@@ -121,14 +121,6 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
         )
     }
 
-    const sensorItems = sensors?.map((sensor, index) => (
-        <Draggable key={sensor.id} index={index} draggableId={sensor.id}>
-            {(provided: DraggableProvided) => (
-                <SensorRow sensor={sensor} provided={provided}></SensorRow>
-            )}
-        </Draggable>
-        ))
-
     return (
         <Box>
             {/* Add Sensor Modal */}
@@ -184,7 +176,13 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                         <Droppable droppableId="sensors" direction="vertical">
                             {(provided) => (
                                 <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
-                                    {sensorItems}
+                                    {sensors?.map((sensor, index) => (
+                                        <Draggable key={sensor.id} index={index} draggableId={sensor.id}>
+                                            {(provided: DraggableProvided) => (
+                                                <SensorRow sensor={sensor} provided={provided}></SensorRow>
+                                            )}
+                                        </Draggable>
+                                    ))}
                                     {provided.placeholder}
                                 </Table.Tbody>
                             )}

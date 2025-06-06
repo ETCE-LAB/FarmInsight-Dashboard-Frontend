@@ -145,7 +145,7 @@ export const EditFPF: React.FC = () => {
             </Card>
 
             <Card padding="lg" radius="md">
-                <CameraList camerasToDisplay={cameras} isAdmin={isAdmin} />
+                <CameraList camerasToDisplay={cameras} fpfId={fpf.id} isAdmin={isAdmin} />
             </Card>
 
             <Card padding="lg" radius="md">
