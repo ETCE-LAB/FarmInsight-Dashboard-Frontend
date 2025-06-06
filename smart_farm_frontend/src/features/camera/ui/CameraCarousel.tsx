@@ -37,6 +37,8 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
     const auth = useAuth();
     const { t } = useTranslation();
 
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
     type DisplayObj = { url: string; title: string; isLiveStream: boolean };
 
     useEffect(() => {
@@ -123,7 +125,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                     </>
                 )}
                 {auth.isAuthenticated && objectToDisplay.isLiveStream && (
-                    <Livestream src={objectToDisplay} />
+                    <Livestream src={objectToDisplay} showing={currentSlideIndex === index}/>
                 )}
                 {/* Fullscreen icon overlay */}
                 <ActionIcon
@@ -186,6 +188,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                                         transition: "opacity 0.3s ease",
                                     },
                                 }}
+                                onSlideChange={setCurrentSlideIndex}
                             >
                                 {slides}
                             </Carousel>
@@ -221,7 +224,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                     />
                 )}
                 {selectedObject && selectedObject.isLiveStream && (
-                    <Livestream src={selectedObject} />
+                    <Livestream src={selectedObject} showing={true}/>
                 )}
             </Modal>
         </>
