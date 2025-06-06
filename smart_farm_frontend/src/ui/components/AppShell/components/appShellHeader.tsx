@@ -26,10 +26,6 @@ export const AppShellHeader: React.FC = () => {
     const languageOptions = [
         { code: 'en', label: 'English', flag: 'us' },
         { code: 'de', label: 'German', flag: 'de' },
-        { code: 'fr', label: 'French', flag: 'fr' },
-        { code: 'it', label: 'Italian', flag: 'it' },
-        { code: 'zh', label: 'Chinese', flag: 'cn' },
-        { code: 'ru', label: 'Russian', flag: 'ru' },
     ];
 
     // Set default language based on the browser's language
