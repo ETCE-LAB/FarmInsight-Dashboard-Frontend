@@ -10,3 +10,12 @@ export interface Organization{
     memberships:Membership[]
     locations: Location[]
 }
+
+export interface OrganizationMembership {
+    id: string,
+    name: string
+    membership: {
+        id: string
+        role: string
+    }
+}

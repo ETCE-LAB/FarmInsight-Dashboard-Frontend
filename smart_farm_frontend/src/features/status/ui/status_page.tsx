@@ -2,7 +2,7 @@ import {ResourceType} from "../../logMessages/models/LogMessage";
 import React, {useEffect, useState} from "react";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {useAuth} from "react-oidc-context";
-import {Organization} from "../../organization/models/Organization";
+import {Organization, OrganizationMembership} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
 import {Button, Card, Container, Flex, Grid, Table, Title} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
@@ -24,7 +24,7 @@ import {useInterval} from "@mantine/hooks";
 
 export const StatusPage = () => {
     const auth = useAuth();
-    const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [organizations, setOrganizations] = useState<OrganizationMembership[]>([]);
     const { t } = useTranslation();
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
@@ -36,8 +36,7 @@ export const StatusPage = () => {
             });
 
             getMyOrganizations().then(orgs => {
-                if (orgs !== undefined)
-                    setOrganizations(orgs)
+                if (orgs) setOrganizations(orgs)
             })
         }
     },[auth.isAuthenticated]);

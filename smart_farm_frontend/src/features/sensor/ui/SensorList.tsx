@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
 import { EditSensor, Sensor } from "../models/Sensor";
-import {Badge, Box, Group, Modal, Table, Text, HoverCard, Flex, Button, Card} from "@mantine/core";
+import {Badge, Box, Group, Modal, Table, Text, Title, HoverCard, Flex, Button, Card} from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
 import {IconChevronDown, IconChevronLeft, IconCirclePlus, IconEdit, IconGripVertical } from "@tabler/icons-react";
 import { SensorForm } from "./SensorForm";
 import { useTranslation } from "react-i18next";
-import {getBackendTranslation, getSensorStateColor} from "../../../utils/utils";
+import {getBackendTranslation, getSensorStateColor, moveArrayItem} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
@@ -121,14 +121,6 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
         )
     }
 
-    const sensorItems = sensors?.map((sensor, index) => (
-        <Draggable key={sensor.id} index={index} draggableId={sensor.id}>
-            {(provided: DraggableProvided) => (
-                <SensorRow sensor={sensor} provided={provided}></SensorRow>
-            )}
-        </Draggable>
-        ))
-
     return (
         <Box>
             {/* Add Sensor Modal */}
@@ -144,7 +136,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
 
             {/* Header with Add Button */}
             <Group mb="md" justify="space-between">
-                <h2>{t('sensor.title')}</h2>
+                <Title order={2}>{t('sensor.title')}</Title>
                 {isAdmin &&
                 <IconCirclePlus
                     size={25}
@@ -159,18 +151,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                 <Table highlightOnHover withColumnBorders>
                     <DragDropContext
                         onDragEnd={({ destination, source }) => {
-                            let sensors_ = structuredClone(sensors);
-                            const temp = sensors_[source.index];
-
-                            // remove moved item from its original position
-                            sensors_.splice(source.index, 1);
-
-                            let dest_idx = destination?.index || 0;
-
-                            if (source.index === dest_idx) return;
-
-                            // place item in new position
-                            sensors_.splice(dest_idx, 0, temp);
+                            const sensors_: Sensor[] = moveArrayItem(sensors, source.index, destination?.index || 0);
                             setSensors(sensors_);
                             postSensorOrder(fpfId, sensors_.map((x: Sensor) => x.id)).then(() => {
                                 // don't need to get list again since we keep the order locally
@@ -195,7 +176,13 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                         <Droppable droppableId="sensors" direction="vertical">
                             {(provided) => (
                                 <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
-                                    {sensorItems}
+                                    {sensors?.map((sensor, index) => (
+                                        <Draggable key={sensor.id} index={index} draggableId={sensor.id}>
+                                            {(provided: DraggableProvided) => (
+                                                <SensorRow sensor={sensor} provided={provided}></SensorRow>
+                                            )}
+                                        </Draggable>
+                                    ))}
                                     {provided.placeholder}
                                 </Table.Tbody>
                             )}
