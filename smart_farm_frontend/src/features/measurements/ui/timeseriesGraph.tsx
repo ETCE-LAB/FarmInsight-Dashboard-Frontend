@@ -252,6 +252,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                         series={[{ name: "value", color: theme.colors.blue[6], label: sensor.unit }]}
                                         curveType="monotone"
                                         style={{ borderRadius: '5px', padding: '10px', width: "100%"  }}
+                                        //yAxisLabel={sensor.unit}
                                         xAxisProps={{
                                             tickFormatter: (dateString: string) => {
                                                 const date = new Date(dateString);
@@ -260,6 +261,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                         }}
                                         // Hier die neue domain-Logik:
                                         yAxisProps={{
+                                            width:90,
                                             domain: [
                                                 (dataMin: number) => {
                                                     const lowerBounds = sensor.thresholds
