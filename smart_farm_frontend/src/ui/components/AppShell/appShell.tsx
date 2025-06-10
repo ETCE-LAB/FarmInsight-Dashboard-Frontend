@@ -1,9 +1,9 @@
 import { AppShell, Burger, Flex } from '@mantine/core';
 import { useLocation, useNavigate } from 'react-router-dom';
 import React, { PropsWithChildren, useEffect, useState } from "react";
-import { AppShellHeader } from "./components/appShellHeader"; // Import the header component
+import { AppShellHeader } from "./components/appShellHeader";
 import { AppShellNavbar } from "./components/appShellNavbar";
-import { AppRoutes } from "../../../utils/appRoutes"; // Import the navbar component
+import { AppRoutes } from "../../../utils/appRoutes";
 import { useMediaQuery } from "@mantine/hooks";
 import { useAuth } from "react-oidc-context";
 
@@ -39,7 +39,7 @@ export const BasicAppShell: React.FC<PropsWithChildren<{}>> = ({ children }) => 
             <AppShell.Header>
                 <Flex style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '60px' }}>
                     {isMobile && showNavbar && (
-                        <Burger opened={opened} onClick={() => setOpened((o) => !o)} />
+                        <Burger opened={opened} onClick={() => setOpened((o) => !o)} pl="0.8em" />
                     )}
                     <AppShellHeader />
                 </Flex>
@@ -48,7 +48,7 @@ export const BasicAppShell: React.FC<PropsWithChildren<{}>> = ({ children }) => 
 
             {showNavbar && (
                 <AppShell.Navbar>
-                    <AppShellNavbar />
+                    <AppShellNavbar onNavbarShouldClose={() => setOpened(false)} />
                 </AppShell.Navbar>
             )}
 

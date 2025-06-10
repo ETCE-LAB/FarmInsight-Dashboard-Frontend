@@ -4,7 +4,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useAuth} from "react-oidc-context";
 import {Organization, OrganizationMembership} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
-import {Button, Card, Container, Flex, Grid, Table, Title} from "@mantine/core";
+import {Button, Card, Container, Flex, Grid, Table, Title, HoverCard, Text} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
 import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
@@ -21,7 +21,6 @@ import {showNotification} from "@mantine/notifications";
 import {AppRoutes} from "../../../utils/appRoutes";
 import {useNavigate} from "react-router-dom";
 import {useInterval} from "@mantine/hooks";
-import {HoverCard, Text} from "@mantine/core/lib";
 
 export const StatusPage = () => {
     const auth = useAuth();
