@@ -37,13 +37,12 @@ export const BasicAppShell: React.FC<PropsWithChildren<{}>> = ({ children }) => 
             padding="md"
         >
             <AppShell.Header>
-                <Flex style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', height: '60px' }}>
+                <Flex align="center" h="60px" p="0 1em" gap="1em">
                     {isMobile && showNavbar && (
-                        <Burger opened={opened} onClick={() => setOpened((o) => !o)} pl="0.8em" />
+                        <Burger opened={opened} onClick={() => setOpened((o) => !o)} />
                     )}
                     <AppShellHeader />
                 </Flex>
-
             </AppShell.Header>
 
             {showNavbar && (
