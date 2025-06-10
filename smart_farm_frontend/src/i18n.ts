@@ -154,6 +154,7 @@ i18n
                         editSuccessMessage: 'Growing cycle updated successfully!',
                         createSuccessMessage: 'Growing cycle created successfully!',
                         errorTitle: 'Failed to save the growing cycle',
+                        confirmDeletion: 'Are you sure you want to delete this growing cycle?',
                     },
                     sensorList: {
                         name: 'Name',
@@ -578,6 +579,7 @@ i18n
                         editSuccessMessage: 'Wachstumszyklus erfolgreich aktualisiert!',
                         createSuccessMessage: 'Wachstumszyklus erfolgreich erstellt!',
                         errorTitle: 'Speichern des Wachstumszyklus fehlgeschlagen',
+                        confirmDeletion: 'Wollen Sie den Wachstumszyklus wirklich löschen?',
                     },
                     sensorList: {
                         name: 'Name',

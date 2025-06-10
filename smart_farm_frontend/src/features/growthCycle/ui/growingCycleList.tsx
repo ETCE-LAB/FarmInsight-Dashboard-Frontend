@@ -1,24 +1,8 @@
 import React, { useState } from "react";
-import {
-    Card,
-    Modal,
-    Table,
-    Group,
-    Button,
-    Text,
-    Flex,
-    Paper,
-    Grid,
-} from "@mantine/core";
+import { Card, Modal, Table, Group, Button, Text, Flex, Paper, Grid } from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
 import { useTranslation } from "react-i18next";
-import {
-    IconCirclePlus,
-    IconEdit,
-    IconSeeding,
-    IconInfoSquareRounded,
-    IconSquareRoundedMinus,
-} from "@tabler/icons-react";
+import { IconCirclePlus, IconEdit, IconSeeding, IconInfoSquareRounded, IconSquareRoundedMinus } from "@tabler/icons-react";
 import { GrowingCycleForm } from "./growingCycleForm";
 import { GrowingCycle } from "../models/growingCycle";
 import { removeGrowingCycle } from "../useCase/removeGrowingCycle";
@@ -31,8 +15,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../utils/store";
 import { useAuth } from "react-oidc-context";
 import { useMediaQuery } from "@mantine/hooks";
-import {moveArrayItem} from "../../../utils/utils";
-import {postGrowingCycleOrder} from "../useCase/postGrowingCycleOrder";
+import { moveArrayItem } from "../../../utils/utils";
+import { postGrowingCycleOrder } from "../useCase/postGrowingCycleOrder";
 
 const truncateText = (text: string, limit: number): string =>
     text.length > limit ? `${text.slice(0, limit)}...` : text;
@@ -182,7 +166,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
             <Modal
                 opened={activeModal === "deleteConfirmation"}
                 onClose={closeAllModals}
-                title="Are you sure you want to delete this growing cycle?"
+                title={t("growingCycleForm.confirmDeletion")}
                 centered
             >
                 <Text style={{ fontSize: "14px", textAlign: "center", marginBottom: "1rem" }}>
