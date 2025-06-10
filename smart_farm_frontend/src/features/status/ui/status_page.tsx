@@ -21,6 +21,7 @@ import {showNotification} from "@mantine/notifications";
 import {AppRoutes} from "../../../utils/appRoutes";
 import {useNavigate} from "react-router-dom";
 import {useInterval} from "@mantine/hooks";
+import {HoverCard, Text} from "@mantine/core/lib";
 
 export const StatusPage = () => {
     const auth = useAuth();
@@ -85,7 +86,14 @@ export const StatusPage = () => {
                 <Table.Td>{sensor.name}</Table.Td>
                 <Table.Td>
                     <Flex align="center" gap="xs">
-                        <IconCircleFilled size={20} color={statusColor} />
+                        <HoverCard>
+                            <HoverCard.Target>
+                                <IconCircleFilled size={20} color={statusColor} />
+                            </HoverCard.Target>
+                            <HoverCard.Dropdown>
+                                <Text size="sm">{t('sensorList.intervalSeconds')}: {sensor.intervalSeconds}</Text>
+                            </HoverCard.Dropdown>
+                        </HoverCard>
                     </Flex>
                 </Table.Td>
                 <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>
