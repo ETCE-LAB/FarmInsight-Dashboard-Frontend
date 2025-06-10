@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button, Title} from "@mantine/core";
+import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button, Title, Switch} from "@mantine/core";
 import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import {useSelector} from "react-redux";
@@ -182,6 +182,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
             </Group>
             {/* Conditional Rendering of Table */}
             {controllableAction && controllableAction.length > 0 ? (
+                <>
                 <Table striped highlightOnHover withColumnBorders>
                   <Table.Thead>
                     <Table.Tr>
@@ -204,6 +205,8 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                             (t) => t.type === "manual" && t.isActive && t.id === a.status && !a.isAutomated
                           )
                         );
+                        const hasAutoInGroup = actions.some((a) => a.trigger.some((t) => t.type !== "manual"));
+
                         return (
                         <React.Fragment key={action.id}>
                             {/* Main Row */}
@@ -263,10 +266,41 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                 )}
                                             </Group>
 
+                                            {hasAutoInGroup && hasActiveManualInGroup && (
+                                                <Group justify="flex-start" mt="5px">
+                                                    <Button
+                                                        size="compact-xs"
+
+
+                                                        onClick={() => {
+                                                            const activeManual = actions.find((a) =>
+                                                                a.trigger.some(
+                                                                    (t) =>
+                                                                        t.type === "manual" &&
+                                                                        t.isActive &&
+                                                                        t.id === a.status &&
+                                                                        !a.isAutomated
+                                                                )
+                                                            );
+
+                                                            if (activeManual) {
+                                                                setConfirmModal({
+                                                                    open: true,
+                                                                    actionId: activeManual.id,
+                                                                    triggerId: "auto",
+                                                                    value: "",
+                                                                    isActive: true
+                                                                });
+                                                            }
+                                                        }}
+                                                    >{t("controllableActionList.enableAutoMode")}</Button>
+                                                </Group>
+                                            )}
+
                                             <Table striped highlightOnHover withColumnBorders>
                                                 <Table.Thead>
                                                     <Table.Tr>
-                                                        <Table.Th>{t("controllableActionList.trigger.active")}</Table.Th>
+                                                        <Table.Th>{t("controllableActionList.trigger.status")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.type")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.valueType")}</Table.Th>
                                                         <Table.Th>{t("controllableActionList.trigger.value")}</Table.Th>
@@ -310,8 +344,8 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                 <Table.Td>{trigger.triggerLogic}</Table.Td>
                                                                 <Table.Td>
                                                                     <Flex justify="space-between" align="center">
-                                                                        <Badge color={trigger.isActive ? "green" : "gray"}>
-                                                                            {trigger.isActive ? "Active" : "Inactive"}
+                                                                        <Badge color={isActive ? "blue" : trigger.isActive ? "green" : "gray"}>
+                                                                            {isActive ? t("controllableActionList.trigger.running") :trigger.isActive ? t("controllableActionList.trigger.active") : t("controllableActionList.trigger.inactive")}
                                                                         </Badge>
                                                                     </Flex>
                                                                 </Table.Td>
@@ -343,6 +377,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                     })))}
                   </Table.Tbody>
                 </Table>
+                </>
             ) : (
                 <Text>{t("controllableActionList.noActionFound")}</Text>
             )}
