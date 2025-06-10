@@ -4,7 +4,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useAuth} from "react-oidc-context";
 import {Organization, OrganizationMembership} from "../../organization/models/Organization";
 import {getOrganization} from "../../organization/useCase/getOrganization";
-import {Button, Card, Container, Flex, Grid, Table, Title} from "@mantine/core";
+import {Button, Card, Container, Flex, Grid, Table, Title, HoverCard, Text} from "@mantine/core";
 import {Fpf} from "../../fpf/models/Fpf";
 import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
@@ -85,7 +85,14 @@ export const StatusPage = () => {
                 <Table.Td>{sensor.name}</Table.Td>
                 <Table.Td>
                     <Flex align="center" gap="xs">
-                        <IconCircleFilled size={20} color={statusColor} />
+                        <HoverCard>
+                            <HoverCard.Target>
+                                <IconCircleFilled size={20} color={statusColor} />
+                            </HoverCard.Target>
+                            <HoverCard.Dropdown>
+                                <Text size="sm">{t('sensorList.intervalSeconds')}: {sensor.intervalSeconds}</Text>
+                            </HoverCard.Dropdown>
+                        </HoverCard>
                     </Flex>
                 </Table.Td>
                 <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>

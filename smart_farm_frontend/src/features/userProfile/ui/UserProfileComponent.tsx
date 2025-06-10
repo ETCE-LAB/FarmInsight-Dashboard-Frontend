@@ -6,11 +6,10 @@ import {useAppSelector} from "../../../utils/Hooks";
 import {changedUserProfileEvent, receivedUserProfileEvent} from "../state/UserProfileSlice";
 import {useAuth} from "react-oidc-context";
 import {receiveUserProfile} from "../useCase/receiveUserProfile";
-// @ts-ignore
 import {IconUserCog} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
 
-const UserProfileComponent = () => {
+const UserProfileComponent: React.FC<{onNavigate?: () => void}> = ({onNavigate}) => {
     const auth = useAuth();
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
@@ -36,6 +35,7 @@ const UserProfileComponent = () => {
 
     const editProfile = () => {
         navigate(AppRoutes.editUserProfile);
+        if (onNavigate) onNavigate();
     };
 
     return (

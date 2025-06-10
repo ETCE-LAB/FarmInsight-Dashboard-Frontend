@@ -53,14 +53,13 @@ export const FpfOverview = () => {
                 }
             });
         }
-    }, [organizationId]);
+    }, [organizationId, auth.isAuthenticated]);
 
     useEffect(() => {
         if (params?.fpfId) {
             getFpf(params.fpfId).then(resp => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
-                dispatch(setControllableAction(resp.ControllableAction));
                 dispatch(setControllableAction(resp.ControllableAction));
             });
         }
