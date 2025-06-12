@@ -1,9 +1,27 @@
 import React, {useEffect, useState} from "react";
 import {Grid, NumberInput, Select} from "@mantine/core";
 
-export const IntervalTriggerForm:React.FC<{setTriggerLogic:React.Dispatch<React.SetStateAction<string>>, actionValue:string }> = ({setTriggerLogic, actionValue}) => {
+type IntervalTriggerLogic = {
+  delayInSeconds: number;
+};
 
-    const [delay, setDelay] = useState<number>(1);
+interface Props {
+  triggerLogic:  string | undefined;
+  setTriggerLogic: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export const IntervalTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLogic }) => {
+    const parsedLogic: Partial<IntervalTriggerLogic> = (() => {
+    try {
+        if (triggerLogic)
+      return JSON.parse(triggerLogic);
+        return {}
+    } catch {
+      return {};
+    }
+  })();
+
+    const [delay, setDelay] = useState<number>(parsedLogic.delayInSeconds ?? 1);
     const [delayUnit, setDelayUnit] = useState<string>('seconds');
 
     const timeUnits = [
@@ -17,9 +35,13 @@ export const IntervalTriggerForm:React.FC<{setTriggerLogic:React.Dispatch<React.
 
         if( delayUnit === "minutes") { delayInSeconds *= 60}
         if( delayUnit === "hours") { delayInSeconds *= 60 * 60}
-        let jsonString = "{\"delayInSeconds\": "+ delayInSeconds +"}"
-        setTriggerLogic(jsonString)
-    }, [delay, delayUnit]);
+
+        const newLogic: IntervalTriggerLogic = {
+          delayInSeconds : delayInSeconds
+        };
+
+        setTriggerLogic(JSON.stringify(newLogic));
+    }, [delay, delayUnit, setTriggerLogic]);
 
     return (
 

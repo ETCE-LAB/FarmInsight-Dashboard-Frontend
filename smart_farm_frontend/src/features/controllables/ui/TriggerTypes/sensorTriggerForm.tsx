@@ -3,23 +3,52 @@ import {useParams} from "react-router-dom";
 import {getFpf} from "../../../fpf/useCase/getFpf";
 import {Grid, NumberInput, Select, Text} from "@mantine/core";
 
+type SensorTriggerLogic = {
+  sensorId : string,
+  comparison :string,
+  value : number
+};
 
-export const SensorTriggerForm: React.FC<{setTriggerLogic:React.Dispatch<React.SetStateAction<string>> }> = ({setTriggerLogic} ) => {
+interface Props {
+  triggerLogic:  string | undefined;
+  setTriggerLogic: React.Dispatch<React.SetStateAction<string>>;
+}
+
+
+export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLogic }) => {
+  const parsedLogic: Partial<SensorTriggerLogic> = (() => {
+    try {
+        if (triggerLogic)
+      return JSON.parse(triggerLogic);
+        return {}
+    } catch {
+      return {};
+    }
+  })();
+
+    console.log(parsedLogic)
+
     const [sensorsToDisplay, setSensorsToDisplay] = useState<{ value: string, label: string }[]>([])
     const {organizationId, fpfId} = useParams();
 
-    const [sensorId, setSensorId] = useState<string | null>(null)
-    const [operator, setOperator] = useState<string | null>(null)
-    const [value, setValue] = useState<string | number>("null")
+    const [sensorId, setSensorId] = useState<string | null>(parsedLogic.sensorId ?? null);
+    const [operator, setOperator] = useState<string | null>(parsedLogic.comparison ?? null);
+    const [value, setValue] = useState<number | string | undefined>(parsedLogic.value ?? "");
 
-    useEffect(() => {
 
-        if(sensorId !== "" && operator !== "" && value !== ""){
-            //{comparison: "between", from: 6:00, to:18:00}
-            let jsonString = "{\"sensorId\":\""+ sensorId + "\", \"comparison\":\""+ operator +"\", \"value\":"+ value + "}"
-            setTriggerLogic(jsonString)
-        }
-    }, [sensorId, operator, value]);
+
+useEffect(() => {
+  if (sensorId && operator && value !== undefined && value !== "") {
+    const logic: SensorTriggerLogic = {
+      sensorId,
+      comparison: operator,
+      value: typeof value === "string" ? parseFloat(value) : value,
+    };
+    setTriggerLogic(JSON.stringify(logic));
+  }
+}, [sensorId, operator, value]);
+
+
 
     useEffect(() => {
         if (!fpfId) return;               // nothing to do

@@ -77,6 +77,8 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
     }, [actionId, fpfId]);
 
+    console.log(toEditTrigger)
+
     const handleEdit = () => {
         if (toEditTrigger && fpfId) {
             setClosed(false);
@@ -254,19 +256,19 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                         {/* ...For Sensor */}
                         {type.toLowerCase() === triggerTypes.sensorvalue.toLowerCase() && (
                         <Grid.Col span={12}>
-                            <SensorTriggerForm setTriggerLogic={setTriggerLogic}/>
+                            <SensorTriggerForm setTriggerLogic={setTriggerLogic} triggerLogic={toEditTrigger?.triggerLogic}/>
                         </Grid.Col>
                         )}
                         {/* ...For Time */}
                         {type.toLowerCase() === triggerTypes.timeofday.toLowerCase() && (
                             <Grid.Col span={12}>
-                                <TimeTriggerForm setTriggerLogic={setTriggerLogic}/>
+                                <TimeTriggerForm setTriggerLogic={setTriggerLogic} triggerLogic={toEditTrigger?.triggerLogic}/>
                             </Grid.Col>
                         )}
                         {/* ...For Interval */}
                         {type.toLowerCase() === triggerTypes.interval.toLowerCase() && (
                             <Grid.Col span={12}>
-                                <IntervalTriggerForm setTriggerLogic={setTriggerLogic} actionValue={actionValue}/>
+                                <IntervalTriggerForm setTriggerLogic={setTriggerLogic} triggerLogic={toEditTrigger?.triggerLogic}/>
                             </Grid.Col>
                         )}
 
@@ -274,7 +276,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                         <Grid.Col span={12}>
                             <TextInput
                                 label={t("controllableActionList.trigger.triggerLogic")}
-                                value={triggerLogic}
+                                value={toEditTrigger?.triggerLogic}
                                 readOnly
                                 disabled
                                 description={t("controllableActionList.trigger.hint.triggerLogicHint")}
