@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Badge, Box, Flex, Group, Modal, Table, Text, Title} from "@mantine/core";
+import {Badge, Box, Flex, Group, Modal, Table, Text, Title, HoverCard} from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
-import {IconCirclePlus, IconEdit, IconGripVertical, IconVideo, IconVideoOff} from "@tabler/icons-react";
+import {IconCirclePlus, IconEdit, IconGripVertical} from "@tabler/icons-react";
 import { Camera, EditCamera } from "../models/camera";
 import { CameraForm } from "./CameraForm";
 import { useTranslation } from "react-i18next";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
-import {moveArrayItem} from "../../../utils/utils";
+import {getSensorStateColor, moveArrayItem} from "../../../utils/utils";
 import {postCameraOrder} from "../useCase/postCameraOrder";
 
 
@@ -125,13 +125,18 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], fpfId: string, 
 
                                                     <Table.Td>
                                                         <Flex justify='space-between' align='center'>
-                                                            <Badge
-                                                                color={camera.isActive ? "green.9" : "red.9"}
-                                                                variant="light"
-                                                                leftSection={camera.isActive ? <IconVideo size={16} /> : <IconVideoOff size={16} />}
-                                                            >
-                                                                {camera.isActive ? t("camera.active") : t("camera.inactive")}
-                                                            </Badge>
+                                                            <HoverCard>
+                                                                <HoverCard.Target>
+                                                                    <Badge color={getSensorStateColor(new Date(camera.lastImageAt), camera.isActive, camera.intervalSeconds)}>
+                                                                        {!camera.isActive && (<>{t("camera.inactive")}</>)}
+                                                                    </Badge>
+                                                                </HoverCard.Target>
+                                                                <HoverCard.Dropdown>
+                                                                    <Text size="sm">
+                                                                        {`last image: ${new Date(camera.lastImageAt).toLocaleString(navigator.language)}`}
+                                                                    </Text>
+                                                                </HoverCard.Dropdown>
+                                                            </HoverCard>
 
                                                             <LogMessageModalButton resourceType={ResourceType.CAMERA} resourceId={camera.id}></LogMessageModalButton>
                                                         </Flex>
