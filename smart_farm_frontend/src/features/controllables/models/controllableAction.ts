@@ -1,4 +1,4 @@
-import {Hardware} from "./hardware";
+import {Hardware} from "../../hardware/models/hardware";
 import {ActionTrigger} from "./actionTrigger";
 
 

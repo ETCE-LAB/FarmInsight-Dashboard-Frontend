@@ -9,7 +9,7 @@ interface FpfSlice {
     fpf: Fpf;
 }
 
-//At beginning, the suer is not logged in
+//At beginning, the user is not logged in
 const initialState: FpfSlice = {
     createdFpfEvent: 0,
     fpf: {
@@ -21,7 +21,8 @@ const initialState: FpfSlice = {
         sensorServiceIp: "",
         Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false},
         GrowingCycles: [],
-        ControllableAction: []
+        ControllableAction: [],
+        Hardware: []
     }
 }
 

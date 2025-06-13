@@ -3,7 +3,7 @@ import {Camera} from "../../camera/models/camera";
 import {GrowingCycle} from "../../growthCycle/models/growingCycle";
 import {Location} from "../../location/models/location";
 import {ControllableAction} from "../../controllables/models/controllableAction";
-
+import {Hardware} from "../../hardware/models/hardware";
 
 export interface Fpf {
     id:string,
@@ -15,4 +15,5 @@ export interface Fpf {
     GrowingCycles: GrowingCycle[]
     ControllableAction: ControllableAction[]
     Location: Location
+    Hardware: Hardware[]
 }

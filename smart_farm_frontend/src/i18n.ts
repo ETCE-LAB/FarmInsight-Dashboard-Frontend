@@ -229,6 +229,10 @@ i18n
                             endedAt: 'Finished at',
                         }
                     },
+                    hardware: {
+                        title: 'Hardware',
+                        notFound: 'No Hardware found',
+                    },
                     button: {
                         loginToManage: 'Login to manage organization',
                         create: 'Create',
@@ -653,6 +657,10 @@ i18n
                             startedAt: 'Begonnen am',
                             endedAt: 'Beendet am',
                         }
+                    },
+                    hardware: {
+                        title: 'Hardware',
+                        notFound: 'Keine Hardware gefunden',
                     },
                     button: {
                         loginToManage: 'Anmelden, um Organisation zu verwalten',
