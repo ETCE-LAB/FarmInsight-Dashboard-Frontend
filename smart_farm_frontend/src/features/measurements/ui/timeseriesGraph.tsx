@@ -127,9 +127,6 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         return `${day}.${month}`;
     };
 
-    //FUnction for X Axis Props -> Return True if between first and last measurements lies more than 24 hours
-
-
     const { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, {
         shouldReconnect: () => true,
     });
@@ -153,6 +150,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
 
     //Apply Moving Average Algorithmus to thin out the graph and make it more readable
     useEffect(() => {
+        console.log(calculateMovingAverage && Math.floor(measurements.length/300) > 2)
         if(calculateMovingAverage && Math.floor(measurements.length/300) > 2)
         {
             const averagedMeasurements = applyMovingAverage(measurements, Math.floor(measurements.length / 50))
@@ -166,13 +164,15 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
 
     //Logic whether the Switch to apply MovingAverage 0ALgorithem is displayed or not
     useEffect(() => {
-        if(measurements.length < 500 && calculateMovingAverage){
+        if(measurements.length < 500 && !calculateMovingAverage){
             setAllowMovingAverage(false)
         }
-        if(measurements.length > 500 && !calculateMovingAverage)
+        if(measurements.length >= 500)
             {setAllowMovingAverage(true)}
 
     }, [measurements]);
+
+    useEffect(() => {setAllowMovingAverage(false)},[dates])
 
     useEffect(() => {
         if (lastMessage) {
