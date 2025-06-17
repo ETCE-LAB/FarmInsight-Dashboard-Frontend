@@ -128,6 +128,7 @@ i18n
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
                         aggregatedValues: 'Aggregated values',
+                        movingAverage:'Smooth values',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -166,7 +167,7 @@ i18n
                         isActive: 'Is Active?',
                         actions: 'Actions',
                         aggregate: 'Display Σ values?',
-                    },
+                                            },
                     controllableActionList: {
                         noActionFound: 'No Action found',
                         auto: 'Auto',
@@ -557,6 +558,7 @@ i18n
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
                         aggregatedValues: 'Zusammengefasste Werte',
+                        movingAverage:'Mittelwert glätten',
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',

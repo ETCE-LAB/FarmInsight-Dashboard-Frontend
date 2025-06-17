@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LineChart } from '@mantine/charts';
 import '@mantine/dates/styles.css';
 import { requestMeasuremnt } from "../useCase/requestMeasurements";
-import { receivedMeasurementEvent } from "../state/measurementSlice";
+import {receivedMeasurement, receivedMeasurementEvent} from "../state/measurementSlice";
 import { useAppSelector } from "../../../utils/Hooks";
 import { Measurement } from "../models/measurement";
 import {
@@ -15,7 +15,7 @@ import {
     Text,
     Box,
     useMantineTheme,
-    HoverCard,
+    HoverCard, Switch,
 } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
@@ -25,7 +25,58 @@ import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
 import {t} from "i18next";
+import {useDispatch} from "react-redux";
 
+
+/**
+ * Berechnet den gleitenden Durchschnitt über eine Liste von Messwerten.
+ * @param measurements - Liste der Messwerte
+ * @param windowSize - Anzahl der Messwerte pro Durchschnittsfenster
+ * @returns Neue Liste mit geglätteten Werten
+ */
+export function applyMovingAverage(
+    measurements: Measurement[],
+    windowSize: number
+): Measurement[] {
+    if (windowSize <= 0) {
+        return [];
+    }
+
+    const result: Measurement[] = [];
+
+    for (let i = 0; i < measurements.length; i++) {
+        const start = Math.max(0, i - windowSize + 1);
+        const window = measurements.slice(start, i + 1);
+        const average = window.reduce((sum, m) => sum + m.value, 0) / window.length;
+
+        result.push({
+            measuredAt: measurements[i].measuredAt,
+            value: average,
+        });
+    }
+
+    return result;
+}
+
+/**
+ * Reduziert die Anzahl der Messwerte durch Downsampling.
+ * @param measurements - Originale Liste der Messwerte
+ * @param step - Nur jeder n-te Wert wird beibehalten
+ * @returns Reduzierte Liste der Messwerte
+ */
+export function downsampleMeasurements(
+    measurements: Measurement[],
+    step: number
+): Measurement[] {
+    if (step <= 0) {
+        throw new Error("Step must be greater than zero.");
+    }
+
+    return measurements.filter((_, index) => index % step === 0);
+}
+
+/* Method to calculate Watt to WH
+* */
 export function computeHourlyConsumption(measurements: Measurement[]) {
     if (measurements.length < 2) {
         return 0;
@@ -56,6 +107,7 @@ export function computeHourlyConsumption(measurements: Measurement[]) {
 const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: string } | null }> = ({ sensor, dates }) => {
     const theme = useMantineTheme();
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
+    const dispatch = useDispatch();
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -64,6 +116,9 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     const [statusColor, setStatusColor] = useState(getSensorStateColor(sensorStatus.measuredAt, sensorStatus.isActive, sensor.intervalSeconds));
     const [aggregatedValues, setAggregatedValues] = useState<number>(0);
     const [aggregatedUnit, setAggregatedUnit] = useState<string>(sensor.unit);
+    const [allowMovingAverage, setAllowMovingAverage] = useState<boolean>(false)
+    const [calculateMovingAverage, setCalculateMovingAverage] = useState<boolean>(false)
+    const [displayMoreThanOneDay, setDisplayMoreThanOneDay] = useState<boolean>(false)
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -71,6 +126,9 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         return `${day}.${month}`;
     };
+
+    //FUnction for X Axis Props -> Return True if between first and last measurements lies more than 24 hours
+
 
     const { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor.id}`, {
         shouldReconnect: () => true,
@@ -89,10 +147,32 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
             else {
                 sum = measurements.reduce((acc, cur) => acc + cur.value, 0);
             }
-
             setAggregatedValues(+sum.toFixed(2))
         }
     }, [measurements, sensor.aggregate, sensor.unit]);
+
+    //Apply Moving Average Algorithmus to thin out the graph and make it more readable
+    useEffect(() => {
+        if(calculateMovingAverage && Math.floor(measurements.length/300) > 2)
+        {
+            const averagedMeasurements = applyMovingAverage(measurements, Math.floor(measurements.length / 50))
+            setMeasurements(averagedMeasurements)
+        }
+        else
+        {
+            dispatch(receivedMeasurement())
+        }
+    }, [calculateMovingAverage]);
+
+    //Logic whether the Switch to apply MovingAverage 0ALgorithem is displayed or not
+    useEffect(() => {
+        if(measurements.length < 500 && calculateMovingAverage){
+            setAllowMovingAverage(false)
+        }
+        if(measurements.length > 500 && !calculateMovingAverage)
+            {setAllowMovingAverage(true)}
+
+    }, [measurements]);
 
     useEffect(() => {
         if (lastMessage) {
@@ -123,7 +203,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         requestMeasuremnt(sensor.id, dates?.from, dates?.to)
             .then((resp) => {
                 if (!resp) throw new Error("Failed to fetch measurements.");
-                const roundedMeasurements = resp.map(m => ({
+                let roundedMeasurements = resp.map(m => ({
                     ...m,
                     value: parseFloat(m.value.toFixed(1)),
                 }));
@@ -134,6 +214,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 setError("Failed to fetch initial measurements.");
             })
             .finally(() => setLoading(false));
+
     }, [measurementReceivedEventListener, dates, sensor.id]);
 
     useEffect(() => {
@@ -142,6 +223,16 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
             return () => clearTimeout(timer);
         }
     }, [error]);
+
+    //Display Dates on X-Axis if the ranged between first and least measurements is bigger than 1 Day
+    useEffect(() => {
+        if(measurements &&  measurements.length > 2){
+            const first = new Date(measurements[0].measuredAt).getTime()
+            const last = new Date(measurements[measurements.length - 1].measuredAt).getTime()
+            setDisplayMoreThanOneDay(last - first > 24 * 60 * 60 * 1000)
+
+        }
+    }, [measurements]);
 
     const currentMeasurement = measurements.length > 0 ? measurements[measurements.length - 1] : null;
     const previousMeasurements = measurements.length > 1
@@ -174,6 +265,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         return lines;
     };
 
+
     useInterval(() => setStatusColor(getSensorStateColor(sensorStatus.measuredAt, sensorStatus.isActive, sensor.intervalSeconds)), Math.min((sensor.intervalSeconds / 2) * 1000, 10 * 1000), { autoInvoke: true });
 
     return (
@@ -189,8 +281,13 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                             <Text size="sm">{getSensorStateColorHint((statusColor))}</Text>
                         </HoverCard.Dropdown>
                     </HoverCard>
-
                     <Title order={4} c={theme.colors.blue[6]}>{sensor.name}</Title>
+                    {allowMovingAverage && (
+                        <Switch
+                            label={t("sensor.movingAverage")}
+                            onChange={e => setCalculateMovingAverage(e.currentTarget.checked)}
+                        />
+                    )}
                 </Flex>
 
                 {error ? (
@@ -256,7 +353,12 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                         xAxisProps={{
                                             tickFormatter: (dateString: string) => {
                                                 const date = new Date(dateString);
-                                                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                                //If we display more than one day than display dates instead of Time
+                                                return displayMoreThanOneDay
+                                                    ? date.toLocaleDateString('de-DE')
+                                                    : date.toLocaleTimeString('de-DE', {hour:'2-digit', minute: '2-digit'
+                                                    })
+                                                 //return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                                             },
                                         }}
                                         // Hier die neue domain-Logik:
