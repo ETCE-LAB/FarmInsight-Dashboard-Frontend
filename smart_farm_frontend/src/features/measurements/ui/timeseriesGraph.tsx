@@ -29,10 +29,10 @@ import {useDispatch} from "react-redux";
 
 
 /**
- * Berechnet den gleitenden Durchschnitt über eine Liste von Messwerten.
- * @param measurements - Liste der Messwerte
- * @param windowSize - Anzahl der Messwerte pro Durchschnittsfenster
- * @returns Neue Liste mit geglätteten Werten
+ * Calculates "moving Average" for a specific range of values
+ * @param measurements List with Measurements
+ * @param windowSize - Number of measurements to summarize into one "averaged" value
+ * @returns New measurements List with less values
  */
 export function applyMovingAverage(
     measurements: Measurement[],
@@ -150,10 +150,10 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
 
     //Apply Moving Average Algorithmus to thin out the graph and make it more readable
     useEffect(() => {
-        console.log(calculateMovingAverage && Math.floor(measurements.length/300) > 2)
         if(calculateMovingAverage && Math.floor(measurements.length/300) > 2)
         {
-            const averagedMeasurements = applyMovingAverage(measurements, Math.floor(measurements.length / 50))
+            console.log(Math.floor(measurements.length / 50))
+            const averagedMeasurements = applyMovingAverage(measurements, Math.floor(measurements.length / 20))
             setMeasurements(averagedMeasurements)
         }
         else
