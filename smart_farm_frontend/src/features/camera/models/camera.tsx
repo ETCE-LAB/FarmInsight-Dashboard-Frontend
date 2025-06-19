@@ -11,6 +11,7 @@ export interface Camera{
     intervalSeconds:number,
     snapshotUrl:string,
     livestreamUrl:string,
+    lastImageAt: string,
     images: [
         measuredAt: Date,
         url:string

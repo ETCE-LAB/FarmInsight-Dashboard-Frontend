@@ -128,6 +128,7 @@ i18n
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
                         aggregatedValues: 'Aggregated values',
+                        movingAverage:'Smooth values',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -154,6 +155,7 @@ i18n
                         editSuccessMessage: 'Growing cycle updated successfully!',
                         createSuccessMessage: 'Growing cycle created successfully!',
                         errorTitle: 'Failed to save the growing cycle',
+                        confirmDeletion: 'Are you sure you want to delete this growing cycle?',
                     },
                     sensorList: {
                         name: 'Name',
@@ -165,7 +167,7 @@ i18n
                         isActive: 'Is Active?',
                         actions: 'Actions',
                         aggregate: 'Display Σ values?',
-                    },
+                                            },
                     controllableActionList: {
                         noActionFound: 'No Action found',
                         auto: 'Auto',
@@ -227,6 +229,10 @@ i18n
                             startedAt: 'Started at',
                             endedAt: 'Finished at',
                         }
+                    },
+                    hardware: {
+                        title: 'Hardware',
+                        notFound: 'No Hardware found',
                     },
                     button: {
                         loginToManage: 'Login to manage organization',
@@ -552,6 +558,7 @@ i18n
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
                         aggregatedValues: 'Zusammengefasste Werte',
+                        movingAverage:'Mittelwert glätten',
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
@@ -578,6 +585,7 @@ i18n
                         editSuccessMessage: 'Wachstumszyklus erfolgreich aktualisiert!',
                         createSuccessMessage: 'Wachstumszyklus erfolgreich erstellt!',
                         errorTitle: 'Speichern des Wachstumszyklus fehlgeschlagen',
+                        confirmDeletion: 'Wollen Sie den Wachstumszyklus wirklich löschen?',
                     },
                     sensorList: {
                         name: 'Name',
@@ -651,6 +659,10 @@ i18n
                             startedAt: 'Begonnen am',
                             endedAt: 'Beendet am',
                         }
+                    },
+                    hardware: {
+                        title: 'Hardware',
+                        notFound: 'Keine Hardware gefunden',
                     },
                     button: {
                         loginToManage: 'Anmelden, um Organisation zu verwalten',

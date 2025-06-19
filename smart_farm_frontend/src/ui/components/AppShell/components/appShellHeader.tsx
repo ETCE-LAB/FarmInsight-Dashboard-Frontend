@@ -51,6 +51,8 @@ export const AppShellHeader: React.FC = () => {
             receiveUserProfile().then((user) => {
                 setIsAdmin(user.systemRole === SystemRole.ADMIN);
             });
+        } else {
+            setIsAdmin(false);
         }
     }, [auth.isAuthenticated]);
 
