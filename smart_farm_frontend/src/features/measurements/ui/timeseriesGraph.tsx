@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LineChart } from '@mantine/charts';
 import '@mantine/dates/styles.css';
 import { requestMeasuremnt } from "../useCase/requestMeasurements";
-import {receivedMeasurement, receivedMeasurementEvent} from "../state/measurementSlice";
+import {receivedMeasurementEvent} from "../state/measurementSlice";
 import { useAppSelector } from "../../../utils/Hooks";
 import { Measurement } from "../models/measurement";
 import {
@@ -109,6 +109,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
     const dispatch = useDispatch();
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
+    const [averagedMeasurements, setAveragedMeasurements] = useState<Measurement[]>([])
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -119,6 +120,9 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     const [allowMovingAverage, setAllowMovingAverage] = useState<boolean>(false)
     const [calculateMovingAverage, setCalculateMovingAverage] = useState<boolean>(false)
     const [displayMoreThanOneDay, setDisplayMoreThanOneDay] = useState<boolean>(false)
+
+    //The number of measurements averaged into one
+    const movingAverageWindow  = measurements.length > 200 ? measurements.length * 0.01: 5
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -138,36 +142,35 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
             // Watt in Wh umrechnen
             if(sensor.unit === 'W')
             {
-                sum = computeHourlyConsumption(measurements);
+                sum = calculateMovingAverage ? computeHourlyConsumption(averagedMeasurements):  computeHourlyConsumption(measurements);
                 setAggregatedUnit('Wh');
             }
             else {
                 sum = measurements.reduce((acc, cur) => acc + cur.value, 0);
             }
-            setAggregatedValues(+sum.toFixed(2))
+                setAggregatedValues(+sum.toFixed(2))
+
         }
-    }, [measurements, sensor.aggregate, sensor.unit]);
+    }, [measurements, sensor.aggregate, sensor.unit, calculateMovingAverage]);
+
 
     //Apply Moving Average Algorithmus to thin out the graph and make it more readable
     useEffect(() => {
         if(calculateMovingAverage && Math.floor(measurements.length/300) > 2)
         {
-            console.log(Math.floor(measurements.length / 50))
-            const averagedMeasurements = applyMovingAverage(measurements, Math.floor(measurements.length / 20))
-            setMeasurements(averagedMeasurements)
+            const averagedMeasurements = applyMovingAverage(measurements,movingAverageWindow)
+
+            setAveragedMeasurements(averagedMeasurements)
         }
-        else
-        {
-            dispatch(receivedMeasurement())
-        }
+
     }, [calculateMovingAverage]);
 
-    //Logic whether the Switch to apply MovingAverage 0ALgorithem is displayed or not
+    //Logic whether the Switch to apply MovingAverage Algorithem is displayed or not
     useEffect(() => {
-        if(measurements.length < 500 && !calculateMovingAverage){
+        if(!calculateMovingAverage){
             setAllowMovingAverage(false)
         }
-        if(measurements.length >= 500)
+        if(measurements.length >= 10)
             {setAllowMovingAverage(true)}
 
     }, [measurements]);
@@ -184,6 +187,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                     measuredAt: m.measuredAt,
                 }));
                 setMeasurements((prev) => [...prev, ...newMeasurements]);
+                setAveragedMeasurements((prev) => [...prev, ...newMeasurements])
 
                 setSensorStatus({
                     measuredAt: new Date(newMeasurements.at(-1).measuredAt),
@@ -208,6 +212,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                     value: parseFloat(m.value.toFixed(1)),
                 }));
                 setMeasurements(roundedMeasurements);
+                setAveragedMeasurements(applyMovingAverage(roundedMeasurements, movingAverageWindow))
             })
             .catch(err => {
                 console.error("Error fetching measurements:", err);
@@ -284,8 +289,9 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                     <Title order={4} c={theme.colors.blue[6]}>{sensor.name}</Title>
                     {allowMovingAverage && (
                         <Switch
+                            style={{float: "right" } }
                             label={t("sensor.movingAverage")}
-                            onChange={e => setCalculateMovingAverage(e.currentTarget.checked)}
+                            onChange={e => {console.log(e.currentTarget.checked);setCalculateMovingAverage(e.currentTarget.checked)}}
                         />
                     )}
                 </Flex>
@@ -344,7 +350,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                         key={measurements.length}
                                         unit={sensor.unit}
                                         activeDotProps={{ r: 6, strokeWidth: 1 }}
-                                        data={measurements}
+                                        data={calculateMovingAverage ?  averagedMeasurements: measurements}
                                         dataKey="measuredAt"
                                         series={[{ name: "value", color: theme.colors.blue[6], label: sensor.unit }]}
                                         curveType="monotone"
