@@ -68,7 +68,6 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, setClosed: React.
                 if (camera) {
                     setClosed(false)
                     dispatch(createdCamera())
-                    console.dir(camera);
                     notifications.update({
                         id,
                         title: 'Success',

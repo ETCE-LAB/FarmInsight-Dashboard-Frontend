@@ -51,7 +51,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
     const [additionalInformation, setAdditionalInformation] = useState<string>("");
-    const [hardware, setHardware] = useState<Hardware>({id: "", name: ""});
+    const [hardware, setHardware] = useState<Hardware>({id: "", FPF: "", name: ""});
     const [availableHardware, setAvailableHardware] = useState<{ value:string, label:string }[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
@@ -65,13 +65,14 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             if (toEditAction && toEditAction.hardware) {
                 const initial: Hardware = {
                     id: toEditAction.hardware.id,
+                    FPF: fpfId || "",
                     name: toEditAction.hardware.name
                 };
                 setHardware(initial);
                 setHardwareInput(initial.name);
             } else {
                 // Reset states when no hardware is present
-                setHardware({id: "", name: ""});
+                setHardware({id: "", FPF: "", name: ""});
                 setHardwareInput("");
             }
         }
@@ -272,19 +273,20 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                               description={t("controllableActionList.hint.hardware")}
                               onChange={(val) => {
                                 setHardwareInput(val);
-                                setHardware({ id: "", name: val })
+                                setHardware({ id: "", FPF: fpfId, name: val })
                                   if (availableHardware && val) {
                                       const foundItem = availableHardware.find(h => h.label === val);
                                       if (foundItem) {
                                           const hardware: Hardware = {
                                               id: foundItem.value,
+                                              FPF: fpfId,
                                               name: foundItem.label
                                           };
                                           setHardware(hardware);
                                       }
                                   }
                                   else{
-                                      setHardware({ id: "", name: hardwareInput })
+                                      setHardware({ id: "", FPF: fpfId, name: hardwareInput })
                                   }
                               }}
                             />

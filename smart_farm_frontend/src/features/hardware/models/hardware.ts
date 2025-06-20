@@ -1,5 +1,7 @@
 
-export interface Hardware{
+export interface Hardware {
     id:string;
-    name: string
+    FPF:string;
+    name: string;
+    canBeDeleted?: boolean;
 }
