@@ -107,6 +107,28 @@ The dashboard provides:
 After starting the frontend, you can either create or log in with a user account in order
 to create your own organizations and FPFs or manage existing ones.
 
+### Sensors
+
+To add a sensor, you need to fill in the required information in the form.
+The additional information is different depending on the sensor you want to add.
+For example: A HTTP sensor requires a http endpoint of the sensor, so the FPF can reach it on the given endpoint.
+The same goes for MQTT sensors. They require the name of the topic they publish the messages to. 
+It is important to choose unique topic names per FPF and broker to distinguish between the sensors.
+
+
+### Handle the Controllable Actions
+With controllable actions you can control hardware via an action script which is running on the Dashboard-Backend.
+This action script is a custom script which communicates an action to the hardware (e.g. via HTTP). 
+The hardware must be reachable via HTTP in order for it to work.
+You can define and configure your controllable action as an admin of the FPF in the Edit-FPF-Page.
+
+If you have hardware which can executes multiple actions but only one at a time. (e.g. a robot arm), specify a Hardware for the controllable action. (with the same name)
+This way no two actions will be executed at the same time and the hardware is protected against any form of overloading.
+
+Your action needs Trigger to be called. You have a variety of trigger types to choose from.
+With the manual trigger you can execute an action with a click of a button in the frontend.
+This can only be done by admins of the FPF.
+Please note that the manual trigger will block the auto-trigger as long as they are active. You need to disable the manual trigger manually again, if you want to resume automatic control.
 
 ## 🎨 Architecture
 
