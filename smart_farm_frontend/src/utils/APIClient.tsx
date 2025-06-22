@@ -1,11 +1,11 @@
 class APIClient {
-    async get(URL: string, header: { Authorization: string }) {
+    async get(URL: string, header: { Authorization: string }, ignoreError: boolean = false) {
         try {
             const response = await fetch(URL, {
                 headers: header,
             });
 
-            if (!response.ok) {
+            if (!ignoreError && !response.ok) {
                 throw new Error(`Network response not ok. Status: ${response.status}`);
             }
             return await response.json();

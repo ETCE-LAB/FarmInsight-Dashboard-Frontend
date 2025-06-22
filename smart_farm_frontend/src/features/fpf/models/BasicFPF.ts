@@ -1,5 +1,4 @@
 import {Sensor} from "../../sensor/models/Sensor";
-import {Camera} from "../../camera/models/camera";
 
 interface BasicOrganization{
     id:string,

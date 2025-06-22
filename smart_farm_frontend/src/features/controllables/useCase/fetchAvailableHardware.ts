@@ -1,7 +1,7 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
-import {Hardware} from "../models/hardware";
+import {Hardware} from "../../hardware/models/hardware";
 
 
 export const fetchAvailableHardware = (fpfId:string) => {

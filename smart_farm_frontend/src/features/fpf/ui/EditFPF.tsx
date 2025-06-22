@@ -21,6 +21,8 @@ import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ControllableActionList} from "../../controllables/ui/controllableActionList";
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 import {ActionQueueList} from "../../controllables/ui/actionQueueList";
+import {HardwareList} from "../../hardware/ui/hardwareList";
+import {Hardware} from "../../hardware/models/hardware";
 
 
 export const EditFPF: React.FC = () => {
@@ -30,6 +32,7 @@ export const EditFPF: React.FC = () => {
 
     const [sensors, setSensors] = useState<Sensor[]>();
     const [cameras, setCameras] = useState<Camera[]>();
+    const [hardware, setHardware] = useState<Hardware[]>();
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
 
@@ -55,6 +58,12 @@ export const EditFPF: React.FC = () => {
     useEffect(() => {
         if (fpf?.Sensors && fpf.Sensors.length >= 1) {
             setSensors(fpf.Sensors);
+        }
+    }, [fpf]);
+
+    useEffect(() => {
+        if (fpf?.Hardware && fpf.Hardware.length >= 1) {
+            setHardware(fpf.Hardware);
         }
     }, [fpf]);
 
@@ -149,11 +158,13 @@ export const EditFPF: React.FC = () => {
                 <ControllableActionList isAdmin={isAdmin} />
             </Card>
 
-            {fpfId &&
-                <Card padding="lg" radius="md">
-                    <ActionQueueList fpfId={fpfId} />
-                </Card>
-            }
+            <Card padding="lg" radius="md">
+                <HardwareList hardwareToDisplay={hardware} fpfId={fpf.id} isAdmin={isAdmin} />
+            </Card>
+
+            <Card padding="lg" radius="md">
+                <ActionQueueList fpfId={fpf.id} />
+            </Card>
 
             {/* Edit FPF Modal */}
             <Modal

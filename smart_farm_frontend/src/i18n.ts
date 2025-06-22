@@ -12,6 +12,11 @@ i18n
                         confirm: 'Confirm',
                         activated: 'Active',
                         inactive: 'Inactive',
+                        saveButton: 'Save',
+                        saveError: 'Failed to save',
+                        saveSuccess: 'Saved successfully',
+                        deleteSuccess: 'Deleted successfully',
+                        deleteError: 'Failed to delete',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -128,6 +133,7 @@ i18n
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
                         aggregatedValues: 'Aggregated values',
+                        movingAverage:'Smooth values',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -166,7 +172,7 @@ i18n
                         isActive: 'Is Active?',
                         actions: 'Actions',
                         aggregate: 'Display Σ values?',
-                    },
+                                            },
                     controllableActionList: {
                         noActionFound: 'No Action found',
                         auto: 'Auto',
@@ -228,6 +234,15 @@ i18n
                             startedAt: 'Started at',
                             endedAt: 'Finished at',
                         }
+                    },
+                    hardware: {
+                        title: 'Hardware',
+                        notFound: 'No Hardware found',
+                        name: 'Name',
+                        add: 'Add Hardware',
+                        edit: 'Edit Hardware',
+                        canNotDeleteHint: 'Hardware can not be deleted because it is still used by a Controllable Action',
+                        confirmDeletion: 'Are you sure you want to delete this hardware?',
                     },
                     button: {
                         loginToManage: 'Login to manage organization',
@@ -438,6 +453,11 @@ i18n
                         confirm: 'Bestätigen',
                         activated: 'Aktiviert',
                         inactive: 'Inaktiv',
+                        saveButton: 'Speichern',
+                        saveError: 'Fehler beim Speichern',
+                        saveSuccess: 'Erfolgreich gespeichert',
+                        deleteSuccess: 'Deleted successfully',
+                        deleteError: 'Failed to delete',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -553,6 +573,7 @@ i18n
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
                         aggregatedValues: 'Zusammengefasste Werte',
+                        movingAverage:'Mittelwert glätten',
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
@@ -653,6 +674,15 @@ i18n
                             startedAt: 'Begonnen am',
                             endedAt: 'Beendet am',
                         }
+                    },
+                    hardware: {
+                        title: 'Hardware',
+                        notFound: 'Keine Hardware gefunden',
+                        name: 'Name',
+                        add: 'Hardware hinzufügen',
+                        edit: 'Hardware bearbeiten',
+                        canNotDeleteHint: 'Hardware kann nicht gelöscht werden da sie von einer Steuerbaren Aktion verwendet wird',
+                        confirmDeletion: 'Wollen Sie die Hardware wirklich löschen?',
                     },
                     button: {
                         loginToManage: 'Anmelden, um Organisation zu verwalten',

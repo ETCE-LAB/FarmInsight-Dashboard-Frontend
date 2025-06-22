@@ -20,7 +20,7 @@ import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconInfoCircle, IconMobiledata, IconMobiledataOff} from "@tabler/icons-react";
 import {ControllableAction} from "../models/controllableAction";
-import {Hardware} from "../models/hardware";
+import {Hardware} from "../../hardware/models/hardware";
 import {fetchAvailableHardware} from "../useCase/fetchAvailableHardware";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 import {createControllableAction} from "../useCase/createControllableAction";
@@ -47,11 +47,9 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [name, setName] = useState<string>("");
     const [availableActionScripts, setAvailableActionScripts] = useState<{ value:string, label:string, description:string, action_values:[], fields:ActionScriptField[] }[]>();
     const [selectedActionClass, setSelectedActionClass] = useState<{value: string, label: string, description:string, action_values:[], fields:ActionScriptField[]}>(); // ??
-    const [actionClassId, setActionCLassId] = useState<string>(""); // ??
     const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
-    const [additionalInformation, setAdditionalInformation] = useState<string>("");
-    const [hardware, setHardware] = useState<Hardware>({id: "", name: ""});
+    const [hardware, setHardware] = useState<Hardware>({id: "", FPF: "", name: ""});
     const [availableHardware, setAvailableHardware] = useState<{ value:string, label:string }[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
@@ -65,13 +63,14 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             if (toEditAction && toEditAction.hardware) {
                 const initial: Hardware = {
                     id: toEditAction.hardware.id,
+                    FPF: fpfId || "",
                     name: toEditAction.hardware.name
                 };
                 setHardware(initial);
                 setHardwareInput(initial.name);
             } else {
                 // Reset states when no hardware is present
-                setHardware({id: "", name: ""});
+                setHardware({id: "", FPF: "", name: ""});
                 setHardwareInput("");
             }
         }
@@ -90,7 +89,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             });
 
             const additionalInfo = JSON.parse(toEditAction.additionalInformation || "{}");
-            setAdditionalInformation(toEditAction.additionalInformation || "");
 
 
             match?.fields.forEach(field => {
@@ -272,19 +270,20 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                               description={t("controllableActionList.hint.hardware")}
                               onChange={(val) => {
                                 setHardwareInput(val);
-                                setHardware({ id: "", name: val })
+                                setHardware({ id: "", FPF: fpfId, name: val })
                                   if (availableHardware && val) {
                                       const foundItem = availableHardware.find(h => h.label === val);
                                       if (foundItem) {
                                           const hardware: Hardware = {
                                               id: foundItem.value,
+                                              FPF: fpfId,
                                               name: foundItem.label
                                           };
                                           setHardware(hardware);
                                       }
                                   }
                                   else{
-                                      setHardware({ id: "", name: hardwareInput })
+                                      setHardware({ id: "", FPF: fpfId, name: hardwareInput })
                                   }
                               }}
                             />
@@ -303,7 +302,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                   description={t("controllableActionList.hint.actionClass")}
                                   value={selectedActionClass?.label}
                                   onChange={(val) => {
-                                    setActionCLassId(val);
                                     const match = availableActionScripts?.find(h => h.label === val);
                                     setSelectedActionClass({value: match?.value || "", label:match?.label || "", description:match?.description || "", action_values:match?.action_values || [], fields: match?.fields || []}); // update selected script only if it matches
                                   }}

@@ -72,6 +72,7 @@ export const StatusPage = () => {
             setCurrentlyPinging(true);
             pingSensor(sensor.id).then((result) => {
                 setCurrentlyPinging(false);
+                console.dir(result);
                 showNotification({
                     title: t('overview.pingResult'),
                     message: `${JSON.stringify(result)}`,

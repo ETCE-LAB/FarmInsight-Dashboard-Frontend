@@ -13,7 +13,7 @@ const pingResource = (resourceType: string, resourceId: string) => {
         {'Authorization': `Bearer ${token}`}
 
     const url = `${BACKEND_URL}/api/util/direct-ping/${resourceType}/${resourceId}`;
-    return apiClient.get(url, headers);
+    return apiClient.get(url, headers, true);
 }
 
 export const pingSensor = (sensorId: string) => {
