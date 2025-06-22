@@ -128,7 +128,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
     };
 
     const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
-        const key = action.hardware?.id ?? "unassigned";
+        const key = action.hardware?.id ?? action.id;
         if (!acc[key]) acc[key] = [];
         acc[key].push(action);
         return acc;

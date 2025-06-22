@@ -47,10 +47,8 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [name, setName] = useState<string>("");
     const [availableActionScripts, setAvailableActionScripts] = useState<{ value:string, label:string, description:string, action_values:[], fields:ActionScriptField[] }[]>();
     const [selectedActionClass, setSelectedActionClass] = useState<{value: string, label: string, description:string, action_values:[], fields:ActionScriptField[]}>(); // ??
-    const [actionClassId, setActionCLassId] = useState<string>(""); // ??
     const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
-    const [additionalInformation, setAdditionalInformation] = useState<string>("");
     const [hardware, setHardware] = useState<Hardware>({id: "", FPF: "", name: ""});
     const [availableHardware, setAvailableHardware] = useState<{ value:string, label:string }[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
@@ -91,7 +89,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             });
 
             const additionalInfo = JSON.parse(toEditAction.additionalInformation || "{}");
-            setAdditionalInformation(toEditAction.additionalInformation || "");
 
 
             match?.fields.forEach(field => {
@@ -305,7 +302,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                   description={t("controllableActionList.hint.actionClass")}
                                   value={selectedActionClass?.label}
                                   onChange={(val) => {
-                                    setActionCLassId(val);
                                     const match = availableActionScripts?.find(h => h.label === val);
                                     setSelectedActionClass({value: match?.value || "", label:match?.label || "", description:match?.description || "", action_values:match?.action_values || [], fields: match?.fields || []}); // update selected script only if it matches
                                   }}
