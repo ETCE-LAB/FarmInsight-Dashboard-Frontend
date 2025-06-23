@@ -40,6 +40,8 @@ Key features include:
 accessible through the web application.
 * Harvest Documentation: Log and track harvests for each plant directly from the frontend interface.
 * Data Visualization: Visualize sensor data with intuitive graphs and charts.
+* Controllable Action: To control the FPF you can add controllable actions which can perform actions on hardware which is reachable via network.
+* Weather forecast: You can configure a location for your FPF for which a weather forecast will be gathered. 
 * Media Display: View and manage captured images and livestreams for real-time monitoring.
 
 ## 🔎 Overview
