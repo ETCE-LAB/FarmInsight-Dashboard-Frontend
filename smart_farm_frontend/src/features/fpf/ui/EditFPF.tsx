@@ -135,11 +135,9 @@ export const EditFPF: React.FC = () => {
 
                     <Grid.Col span={12}>
                         <Flex justify="space-between">
-                            {fpf.Location && (
-                                <Text size="lg" fw="bold" c="dimmed">
-                                    {t('fpf.address')}: {fpf.Location.name || t('fpf.noAddress')}
-                                </Text>
-                            )}
+                            <Text size="lg" fw="bold" c="dimmed">
+                                {t('fpf.address')}: {fpf.Location?.name || t('fpf.noAddress')}
+                            </Text>
                             <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpfId}></LogMessageModalButton>
                         </Flex>
                     </Grid.Col>

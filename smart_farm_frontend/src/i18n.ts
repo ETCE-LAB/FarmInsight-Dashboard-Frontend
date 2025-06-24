@@ -17,6 +17,8 @@ i18n
                         saveSuccess: 'Saved successfully',
                         deleteSuccess: 'Deleted successfully',
                         deleteError: 'Failed to delete',
+                        confirmTitle: 'Confirm',
+                        confirmMessage: 'Are you sure you want to do this?',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -443,6 +445,9 @@ i18n
                     },
                     admin: {
                         resetPassword: 'Reset Password',
+                        copyPasswordHint: 'Copy the new password and send it to the user',
+                        copy: 'Copy',
+                        copied: 'Copied',
                     }
                 },
             },
@@ -458,6 +463,8 @@ i18n
                         saveSuccess: 'Erfolgreich gespeichert',
                         deleteSuccess: 'Deleted successfully',
                         deleteError: 'Failed to delete',
+                        confirmTitle: 'Bestätige Ausführung',
+                        confirmMessage: 'Sind Sie sicher, dass Sie das tun wollen?',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -883,6 +890,9 @@ i18n
                     },
                     admin: {
                         resetPassword: 'Passwort zurücksetzten',
+                        copyPasswordHint: 'Kopieren Sie das neue Passwort uns übersenden Sie es dem Nutzer',
+                        copy: 'Kopieren',
+                        copied: 'Kopiert',
                     }
                 },
             },
