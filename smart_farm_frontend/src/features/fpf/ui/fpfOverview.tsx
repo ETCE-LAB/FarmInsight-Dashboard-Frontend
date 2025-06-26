@@ -27,6 +27,7 @@ import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDi
 import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
+import {showNotification} from "@mantine/notifications";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -46,10 +47,12 @@ export const FpfOverview = () => {
     useEffect(() => {
         if (organizationId && auth.isAuthenticated) {
             getMyOrganizations().then((organizations) => {
-                const org = organizations.find((o) => o.id === organizationId);
-                if (org) {
-                    setIsMember(true);
-                    setIsAdmin(org.membership.role === 'admin');
+                if (organizations) {
+                    const org = organizations.find((o) => o.id === organizationId);
+                    if (org) {
+                        setIsMember(true);
+                        setIsAdmin(org.membership.role === 'admin');
+                    }
                 }
             });
         }
@@ -58,9 +61,17 @@ export const FpfOverview = () => {
     useEffect(() => {
         if (params?.fpfId) {
             getFpf(params.fpfId).then(resp => {
-                setFpf(resp);
-                dispatch(setGrowingCycles(resp.GrowingCycles));
-                dispatch(setControllableAction(resp.ControllableAction));
+                if (resp) {
+                    setFpf(resp);
+                    dispatch(setGrowingCycles(resp.GrowingCycles));
+                    dispatch(setControllableAction(resp.ControllableAction));
+                } else {
+                    showNotification({
+                        title: t('common.loadingError'),
+                        message: ``,
+                        color: "red",
+                    });
+                }
             });
         }
     }, [params, dispatch]);

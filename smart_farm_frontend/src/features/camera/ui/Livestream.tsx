@@ -17,13 +17,10 @@ export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = (
 
         const fetchStream = async () => {
             try {
-                const token = getUser()?.access_token;
-                if (!token) {
-                    throw new Error("No access token available");
-                }
-
-                const authenticatedUrl = `${src.url}?token=${encodeURIComponent(token)}`;
-                const response = await fetch(authenticatedUrl, {
+                const response = await fetch(src.url, {
+                    headers: {
+                        ...{'Authorization': `Bearer ${getUser()?.access_token}`},
+                    },
                     signal: abortControllerRef.current?.signal,
                 });
 
