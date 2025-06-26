@@ -77,6 +77,7 @@ The dashboard provides:
 - Adding and editing of sensors and cameras.
 - Displaying and graphically analyzing sensor data in an intuitive UI.
 - Adding, editing, deleting Growing Cycles.
+- Adding, editing, deleting Controllable Actions and Trigger.
 
 ## 🔧 Installation
 ### System Requirements
@@ -124,13 +125,17 @@ This action script is a custom script which communicates an action to the hardwa
 The hardware must be reachable via HTTP in order for it to work.
 You can define and configure your controllable action as an admin of the FPF in the Edit-FPF-Page.
 
-If you have hardware which can executes multiple actions but only one at a time. (e.g. a robot arm), specify a Hardware for the controllable action. (with the same name)
-This way no two actions will be executed at the same time and the hardware is protected against any form of overloading.
-
+#### Trigger
 Your action needs Trigger to be called. You have a variety of trigger types to choose from.
 With the manual trigger you can execute an action with a click of a button in the frontend.
 This can only be done by admins of the FPF.
 Please note that the manual trigger will block the auto-trigger as long as they are active. You need to disable the manual trigger manually again, if you want to resume automatic control.
+
+#### Hardware
+If you have hardware which can executes multiple actions but only one at a time. (e.g. a robot arm), specify a Hardware for the controllable action. (with the same name)
+This way no two actions will be executed at the same time and the hardware is protected against any form of overloading.
+
+An action can block the hardware for a specified amount of time. When the action is executed all other actions for the same hardware which are being queued up will wait until its finished.
 
 ## 🎨 Architecture
 
