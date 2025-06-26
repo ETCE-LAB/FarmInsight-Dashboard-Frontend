@@ -71,7 +71,7 @@ const ControllableActionSlice = createSlice({
             const { actionId, trigger } = action.payload;
             const actionIndex = state.controllableAction.findIndex(ca => ca.id === actionId);
             if (actionIndex !== -1) {
-                const triggerIndex = state.controllableAction[actionIndex].trigger.findIndex(t => t.id = trigger.id)
+                const triggerIndex = state.controllableAction[actionIndex].trigger.findIndex(t => t.id === trigger.id)
                 state.controllableAction[actionIndex].trigger[triggerIndex] = trigger
             }
         },

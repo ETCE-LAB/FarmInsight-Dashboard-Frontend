@@ -77,8 +77,6 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
     }, [actionId, fpfId]);
 
-    console.log(toEditTrigger)
-
     const handleEdit = () => {
         if (toEditTrigger && fpfId) {
             setClosed(false);

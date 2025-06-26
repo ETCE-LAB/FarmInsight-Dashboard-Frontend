@@ -12,6 +12,13 @@ i18n
                         confirm: 'Confirm',
                         activated: 'Active',
                         inactive: 'Inactive',
+                        saveButton: 'Save',
+                        saveError: 'Failed to save',
+                        saveSuccess: 'Saved successfully',
+                        deleteSuccess: 'Deleted successfully',
+                        deleteError: 'Failed to delete',
+                        confirmTitle: 'Confirm',
+                        confirmMessage: 'Are you sure you want to do this?',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -233,6 +240,11 @@ i18n
                     hardware: {
                         title: 'Hardware',
                         notFound: 'No Hardware found',
+                        name: 'Name',
+                        add: 'Add Hardware',
+                        edit: 'Edit Hardware',
+                        canNotDeleteHint: 'Hardware can not be deleted because it is still used by a Controllable Action',
+                        confirmDeletion: 'Are you sure you want to delete this hardware?',
                     },
                     button: {
                         loginToManage: 'Login to manage organization',
@@ -433,6 +445,9 @@ i18n
                     },
                     admin: {
                         resetPassword: 'Reset Password',
+                        copyPasswordHint: 'Copy the new password and send it to the user',
+                        copy: 'Copy',
+                        copied: 'Copied',
                     }
                 },
             },
@@ -443,6 +458,13 @@ i18n
                         confirm: 'Bestätigen',
                         activated: 'Aktiviert',
                         inactive: 'Inaktiv',
+                        saveButton: 'Speichern',
+                        saveError: 'Fehler beim Speichern',
+                        saveSuccess: 'Erfolgreich gespeichert',
+                        deleteSuccess: 'Deleted successfully',
+                        deleteError: 'Failed to delete',
+                        confirmTitle: 'Bestätige Ausführung',
+                        confirmMessage: 'Sind Sie sicher, dass Sie das tun wollen?',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -663,6 +685,11 @@ i18n
                     hardware: {
                         title: 'Hardware',
                         notFound: 'Keine Hardware gefunden',
+                        name: 'Name',
+                        add: 'Hardware hinzufügen',
+                        edit: 'Hardware bearbeiten',
+                        canNotDeleteHint: 'Hardware kann nicht gelöscht werden da sie von einer Steuerbaren Aktion verwendet wird',
+                        confirmDeletion: 'Wollen Sie die Hardware wirklich löschen?',
                     },
                     button: {
                         loginToManage: 'Anmelden, um Organisation zu verwalten',
@@ -863,6 +890,9 @@ i18n
                     },
                     admin: {
                         resetPassword: 'Passwort zurücksetzten',
+                        copyPasswordHint: 'Kopieren Sie das neue Passwort uns übersenden Sie es dem Nutzer',
+                        copy: 'Kopieren',
+                        copied: 'Kopiert',
                     }
                 },
             },

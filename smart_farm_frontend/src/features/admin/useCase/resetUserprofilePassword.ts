@@ -3,7 +3,7 @@ import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
 
 
-export const restUserProfilePasswords = (userprofileId: string) => {
+export const restUserprofilePassword = (userprofileId: string) => {
     const apiClient = new APIClient()
 
     const user = getUser();
