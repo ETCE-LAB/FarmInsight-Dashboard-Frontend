@@ -130,7 +130,7 @@ It is important to choose unique topic names per FPF and broker to distinguish b
 
 
 ### Handle the Controllable Actions
-With controllable actions you can control hardware via an action script which is running on the Dashboard-Backend.
+With controllable actions you can control hardware via an action script which is running on the [Backend](https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend/blob/dev/README.md#controllable-actions).
 This action script is a custom script which communicates an action to the hardware (e.g. via HTTP). 
 The hardware must be reachable via HTTP in order for it to work.
 You can define and configure your controllable action as an admin of the FPF in the Edit-FPF-Page.
