@@ -93,7 +93,17 @@ The dashboard provides:
    ```bash
    npm install
    ```
+3. **Set up .env-Config:**
+   Setup .env files at:
+    * smart_farm_frontend/src/env-config.ts
+    
 
+   Example of .env file:
+   ```bash
+   export const BACKEND_URL = "http://127.0.0.1:8000";
+  ```
+   
+   
 3. **Start the development server:**
    ```bash
    npm start
