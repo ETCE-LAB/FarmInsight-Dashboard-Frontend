@@ -26,6 +26,8 @@ All FarmInsight Repositories:
 * <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend">Dashboard-Backend</a>
 * <a href="https://github.com/ETCE-LAB/FarmInsight-FPF-Backend">FPF-Backend</a>
 
+Link to our productive System:<a href="https://farminsight.etce.isse.tu-clausthal.de"> FarmInsight.etce.isse.tu-clausthal.de</a>
+
 ### Core vision
 
 <img src="/.documentation/FarmInsightOverview.jpg">
