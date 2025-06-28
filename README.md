@@ -119,23 +119,48 @@ The same goes for MQTT sensors. They require the name of the topic they publish 
 It is important to choose unique topic names per FPF and broker to distinguish between the sensors.
 
 
-### Handle the Controllable Actions
+### Controllable Actions
 With controllable actions you can control hardware via an action script which is running on the Dashboard-Backend.
 This action script is a custom script which communicates an action to the hardware (e.g. via HTTP). 
 The hardware must be reachable via HTTP in order for it to work.
 You can define and configure your controllable action as an admin of the FPF in the Edit-FPF-Page.
 
+See more details about controllable actions in the <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend">Dashboard-Backend</a> Readme.
+
 #### Trigger
-Your action needs Trigger to be called. You have a variety of trigger types to choose from.
+Your action needs Trigger to be called. You have a variety of trigger types to choose from like:
+* Interval (provide an interval in which the action will be called)
+* Time (will trigger the action within a timeframe)
+* Sensor measurement (Triggers the action by a set threshold for a sensor measurement)
+* Manual
+
 With the manual trigger you can execute an action with a click of a button in the frontend.
 This can only be done by admins of the FPF.
 Please note that the manual trigger will block the auto-trigger as long as they are active. You need to disable the manual trigger manually again, if you want to resume automatic control.
+
+Create for one action as much trigger as you want. 
+In most cases it is sufficient to have 1-2 automatic trigger and 2 manual trigger (simple ON/OFF).
+It is recommended to create manual trigger in the case of manual intervention during live production.
+
+Example:
+In this example there are two hardware items ("Shelly Plug Aero System 2 Licht" and "Shelly Plug Aero System 2 Water").
+Each one has one Controllable Action. In this overview, all auto-trigger are combined into the button "Auto". Everything left of "Auto" are manual buttons.
+You can switch between the logic for "Licht" (manual on, manual off, auto).
+If you want to stop the logic you can always disable the trigger or the whole controllable action.
+
+<img src="/.documentation/ControllableActionExample.jpg">
+
+In the following example, we have 2 manual trigger and 2 auto-time-trigger to control a light (on/off).
+The user has always the option it overwrite the auto-logic and execute the manual trigger which will have indefinite priority until the user turns them off by activating the "Auto" control again.
+
+<img src="/.documentation/TriggerExample.gif">
 
 #### Hardware
 If you have hardware which can executes multiple actions but only one at a time. (e.g. a robot arm), specify a Hardware for the controllable action. (with the same name)
 This way no two actions will be executed at the same time and the hardware is protected against any form of overloading.
 
 An action can block the hardware for a specified amount of time. When the action is executed all other actions for the same hardware which are being queued up will wait until its finished.
+
 
 ## 🎨 Architecture
 
