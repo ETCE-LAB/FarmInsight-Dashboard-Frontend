@@ -26,6 +26,8 @@ All FarmInsight Repositories:
 * <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend">Dashboard-Backend</a>
 * <a href="https://github.com/ETCE-LAB/FarmInsight-FPF-Backend">FPF-Backend</a>
 
+Link to our productive System:<a href="https://farminsight.etce.isse.tu-clausthal.de"> FarmInsight.etce.isse.tu-clausthal.de</a>
+
 ### Core vision
 
 <img src="/.documentation/FarmInsightOverview.jpg">
@@ -93,7 +95,17 @@ The dashboard provides:
    ```bash
    npm install
    ```
+3. **Set up .env-Config:**
+   Setup .env files at:
+    * smart_farm_frontend/src/env-config.ts
+    
 
+   Example of .env file:
+   ```bash
+   export const BACKEND_URL = "http://127.0.0.1:8000";
+  ```
+   
+   
 3. **Start the development server:**
    ```bash
    npm start
@@ -119,8 +131,8 @@ The same goes for MQTT sensors. They require the name of the topic they publish 
 It is important to choose unique topic names per FPF and broker to distinguish between the sensors.
 
 
-### Controllable Actions
-With controllable actions you can control hardware via an action script which is running on the Dashboard-Backend.
+### Handle the Controllable Actions
+With controllable actions you can control hardware via an action script which is running on the [Backend](https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend/blob/dev/README.md#controllable-actions).
 This action script is a custom script which communicates an action to the hardware (e.g. via HTTP). 
 The hardware must be reachable via HTTP in order for it to work.
 You can define and configure your controllable action as an admin of the FPF in the Edit-FPF-Page.
@@ -160,7 +172,6 @@ If you have hardware which can executes multiple actions but only one at a time.
 This way no two actions will be executed at the same time and the hardware is protected against any form of overloading.
 
 An action can block the hardware for a specified amount of time. When the action is executed all other actions for the same hardware which are being queued up will wait until its finished.
-
 
 ## 🎨 Architecture
 
