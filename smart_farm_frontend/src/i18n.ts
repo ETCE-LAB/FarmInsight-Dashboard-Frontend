@@ -10,6 +10,7 @@ i18n
                     common: {
                         cancel: 'Cancel',
                         confirm: 'Confirm',
+                        success: 'Success',
                         activated: 'Active',
                         inactive: 'Inactive',
                         saveButton: 'Save',
@@ -65,8 +66,6 @@ i18n
                         login: 'Login',
                         logout: 'Logout',
                         search: 'Search FPFs...',
-                        kick: 'Remove',
-                        promote: 'Promote',
                         email: 'Email',
                         name: 'Name',
                         enterName: 'Enter Name',
@@ -141,6 +140,10 @@ i18n
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
                         userPromoted: 'User was promoted.',
+                        userDemoted: 'User was demoted.',
+                        kick: 'Remove',
+                        promote: 'Promote',
+                        demote: 'Demote',
                     },
                     growingCycleForm: {
                         addCycle: 'Add Growing Cycle',
@@ -462,6 +465,7 @@ i18n
                     common: {
                         cancel: 'Abbrechen',
                         confirm: 'Bestätigen',
+                        success: 'Erfolg',
                         activated: 'Aktiviert',
                         inactive: 'Inaktiv',
                         saveButton: 'Speichern',
@@ -516,8 +520,6 @@ i18n
                         login: 'Einloggen',
                         logout: 'Abmelden',
                         search: 'FPFs durchsuchen...',
-                        kick: 'Entfernen',
-                        promote: 'Befördern',
                         email: 'E-Mail-Adresse',
                         name: 'Name',
                         enterName: 'Name eingeben',
@@ -591,7 +593,11 @@ i18n
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
-                        userPromoted: 'Benutzer wurde befördert.'
+                        userPromoted: 'Benutzer wurde befördert.',
+                        userDemoted: 'Benutzer wurde zurückgestuft.',
+                        kick: 'Entfernen',
+                        promote: 'Befördern',
+                        demote: 'Zurückstufen',
                     },
                     growingCycleForm: {
                         addCycle: 'Wachstumszyklus hinzufügen',

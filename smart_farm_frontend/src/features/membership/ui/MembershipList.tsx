@@ -1,37 +1,42 @@
 import {Table} from "@mantine/core";
 import React, {useEffect, useState} from "react";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
-import {Membership} from "../models/membership";
+import {Membership, MembershipRole} from "../models/membership";
 import {PromoteMembershipButton} from "./PromoteMembershipButton";
 import {KickMemberButton} from "./KickMemberButton";
 import { useTranslation } from 'react-i18next';
+import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
+import {DemoteMembershipButton} from "./DemoteMembershipButton";
 
 
 export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) => {
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isSysAdmin, setIsSysAdmin] = useState<boolean>(false);
+    const [user, setUser] = useState<UserProfile | null>(null);
     const { t } = useTranslation();
 
     useEffect(() => {
         receiveUserProfile().then( (user) => {
+            setUser(user);
             const userIsAdmin = members.some(
-                (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
+                (member) => member.userprofile.id === user.id && member.membershipRole === MembershipRole.ADMIN
             );
             setIsAdmin(userIsAdmin);
-            }
-        )
+            setIsSysAdmin(user.systemRole === SystemRole.ADMIN);
+        })
     }, [members]);
 
     return (
         <Table striped highlightOnHover withColumnBorders>
             <Table.Thead>
                 <Table.Tr>
-                    <th style={{ textAlign: "left"}}>{t("header.name")}</th>
-                    <th style={{ textAlign: "left"}}>{t("header.email")}</th>
-                    <th style={{ textAlign: "left"}}>{t("header.role")}</th>
-                    {isAdmin &&
+                    <Table.Th style={{ textAlign: "left"}}>{t("header.name")}</Table.Th>
+                    <Table.Th style={{ textAlign: "left"}}>{t("header.email")}</Table.Th>
+                    <Table.Th style={{ textAlign: "left"}}>{t("header.role")}</Table.Th>
+                    {user && isAdmin &&
                         <>
-                            <th style={{ textAlign: "center"}}></th>
-                            <th style={{ textAlign: "center"}}></th>
+                            <Table.Th style={{ textAlign: "center"}}></Table.Th>
+                            <Table.Th style={{ textAlign: "center"}}></Table.Th>
                         </>
                     }
                 </Table.Tr>
@@ -44,15 +49,18 @@ export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) =
                         <Table.Td style={{ textAlign: "left" }}>
                             {member.membershipRole.charAt(0).toUpperCase() + member.membershipRole.slice(1)}
                         </Table.Td>
-                        {isAdmin &&
+                        {user && isAdmin &&
                             <>
                                 <Table.Td style={{ textAlign: "center"}}>
-                                    { member.membershipRole !== "admin" && (
+                                    { member.membershipRole !== MembershipRole.ADMIN ? (
                                         <PromoteMembershipButton member={member}/>
+                                    ) : (isSysAdmin && member.userprofile.id !== user.id) && (
+                                        <DemoteMembershipButton member={member}/>
                                     )}
+
                                 </Table.Td>
                                 <Table.Td style={{ textAlign: "center"}}>
-                                    { member.membershipRole !== "admin" && (
+                                    { member.membershipRole !== MembershipRole.ADMIN && (
                                         <KickMemberButton id={member.id}/>
                                     )}
                                 </Table.Td>

@@ -8,26 +8,24 @@ import { useTranslation } from 'react-i18next';
 import {showNotification} from "@mantine/notifications";
 
 
-export const PromoteMembershipButton:React.FC<{member:Membership}> = ({member}) => {
+export const DemoteMembershipButton:React.FC<{member:Membership}> = ({member}) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
     function handlePromote() {
-        if (member) {
-            updateMembershipRole({id: member.id, membershipRole: MembershipRole.ADMIN}).then(r => {
-                showNotification({
-                    title: t('common.success'),
-                    message: t('userManagement.userPromoted'),
-                    color: 'green',
-                });
-                dispatch(changedMembership())
-            })
-        }
+        updateMembershipRole({id: member.id, membershipRole: MembershipRole.MEMBER}).then(r =>{
+            showNotification({
+                title: t('common.success'),
+                message: t('userManagement.userDemoted'),
+                color: 'green',
+            });
+            dispatch(changedMembership())
+        })
     }
-
     return (
+
         <Button onClick={handlePromote} variant="outline" size="xs" color="blue">
-            {t("userManagement.promote")}
+            {t("userManagement.demote")}
         </Button>
     )
 
