@@ -450,6 +450,10 @@ i18n
                         copyPasswordHint: 'Copy the new password and send it to the user',
                         copy: 'Copy',
                         copied: 'Copied',
+                        activeUsers: 'Active Users',
+                        inactiveUsers: 'Inactive Users',
+                        deactivate: 'Deactivate',
+                        reactivate: 'Reactivate',
                     }
                 },
             },
@@ -897,6 +901,10 @@ i18n
                         copyPasswordHint: 'Kopieren Sie das neue Passwort uns übersenden Sie es dem Nutzer',
                         copy: 'Kopieren',
                         copied: 'Kopiert',
+                        activeUsers: 'Aktive Nutzer',
+                        inactiveUsers: 'Inaktive Nutzer',
+                        deactivate: 'Deaktivieren',
+                        reactivate: 'Reaktivieren',
                     }
                 },
             },

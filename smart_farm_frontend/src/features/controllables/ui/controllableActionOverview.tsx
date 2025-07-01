@@ -143,7 +143,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
             >
                 <>
 
-                {confirmModal.triggerId == "auto" && (() => {
+                {confirmModal.triggerId === "auto" && (() => {
                     return (
                         <Text>{t("controllableActionList.confirmAutoMessage")}</Text>
                     );

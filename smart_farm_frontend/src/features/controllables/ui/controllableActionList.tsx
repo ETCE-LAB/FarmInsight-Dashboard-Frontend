@@ -153,7 +153,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
             >
                 <>
 
-                {confirmModal.triggerId == "auto" && (() => {
+                {confirmModal.triggerId === "auto" && (() => {
                     return (
                         <Text>{t("controllableActionList.confirmAutoMessage")}</Text>
                     );
