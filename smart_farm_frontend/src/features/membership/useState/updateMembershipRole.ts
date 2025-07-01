@@ -3,7 +3,7 @@ import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
 
 
-export const promoteMember = async (data: { id:string, membershipRole:string }) => {
+export const updateMembershipRole = async (data: { id:string, membershipRole:string }) => {
     try {
         const apiClient = new APIClient()
 

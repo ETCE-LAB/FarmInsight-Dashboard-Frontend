@@ -148,18 +148,66 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
 
             <Modal
                 opened={confirmModal.open}
-                onClose={() => setConfirmModal({open: false})}
+                onClose={() => setConfirmModal({ open: false })}
                 title={t("controllableActionList.confirmTitle")}
             >
-                <Text>{t("controllableActionList.confirmMessage")}</Text>
+                <>
+
+                {confirmModal.triggerId === "auto" && (() => {
+                    return (
+                        <Text>{t("controllableActionList.confirmAutoMessage")}</Text>
+                    );
+                })()}
+
+
+                {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
+                    console.log(confirmModal.triggerId)
+                    const currentAction = controllableAction.find(a => a.id === confirmModal.actionId);
+                  const currentGroup = currentAction?.hardware?.id
+                    ? groupedActions[currentAction.hardware.id]
+                    : [];
+
+                  const autoTriggersInGroup = currentGroup?.some(action =>
+                    action.trigger.some(t => t.type !== "manual" && t.isActive)
+                  );
+
+                    if (autoTriggersInGroup) {
+                        return (
+                            <>
+
+                            <Text>{t("controllableActionList.confirmMessage")}</Text>
+                            <Text color="red" size="sm">
+                                ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
+                            </Text>
+                            </>
+                        );
+                    }
+                    else {
+                        return(
+                             <Text>{t("controllableActionList.confirmMessage")}</Text>
+                            )
+                    }
+
+                })()}
+                </>
                 <Flex justify="flex-end" gap="md" mt="md">
-                    <Button variant="light" onClick={() => setConfirmModal({open: false})}>
+                    <Button variant="light" onClick={() => setConfirmModal({ open: false })}>
                         {t("common.cancel")}
                     </Button>
                     <Button onClick={() => {
-                        console.log(confirmModal.actionId , confirmModal.triggerId , confirmModal.value , confirmModal.isActive)
-                        if (confirmModal.actionId && confirmModal.triggerId && confirmModal.value !== undefined && confirmModal.isActive !== undefined) {
-                            handleTriggerChange(confirmModal.actionId, confirmModal.triggerId, confirmModal.value, confirmModal.isActive);
+                        console.log(confirmModal)
+                        if (
+                            confirmModal.actionId &&
+                            confirmModal.triggerId &&
+                            confirmModal.value !== undefined &&
+                            confirmModal.isActive !== undefined
+                        ) {
+                            handleTriggerChange(
+                                confirmModal.actionId,
+                                confirmModal.triggerId,
+                                confirmModal.value,
+                                confirmModal.isActive
+                            );
                         }
                     }}>
                         {t("common.confirm")}

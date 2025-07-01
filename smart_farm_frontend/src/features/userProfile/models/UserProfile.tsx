@@ -3,8 +3,9 @@
 export interface UserProfile{
     id:string,
     name:string,
-    email:string
-    systemRole:string
+    email:string,
+    systemRole:string,
+    isActive:boolean,
 }
 
 export enum SystemRole {

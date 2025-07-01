@@ -25,7 +25,7 @@ import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
 import {t} from "i18next";
-import {useDispatch} from "react-redux";
+import {useAuth} from "react-oidc-context";
 
 
 /**
@@ -105,9 +105,9 @@ export function computeHourlyConsumption(measurements: Measurement[]) {
 }
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: string } | null }> = ({ sensor, dates }) => {
+    const auth = useAuth();
     const theme = useMantineTheme();
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
-    const dispatch = useDispatch();
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
     const [averagedMeasurements, setAveragedMeasurements] = useState<Measurement[]>([])
     const [error, setError] = useState<string | null>(null);
@@ -278,14 +278,16 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
             <LoadingOverlay visible={loading} overlayProps={{ radius: "sm", blur: 2 }} />
             <Card p="md" radius="md" style={{ marginBottom: '20px', width: "100%", boxSizing: 'border-box' }}>
                 <Flex gap="md" align="center" mb="md" direction={{ base: "column", sm: "row" }}>
-                    <HoverCard>
-                        <HoverCard.Target>
-                            <IconCircleFilled size={20} color={statusColor} />
-                        </HoverCard.Target>
-                        <HoverCard.Dropdown>
-                            <Text size="sm">{getSensorStateColorHint((statusColor))}</Text>
-                        </HoverCard.Dropdown>
-                    </HoverCard>
+                    {auth.isAuthenticated &&
+                        <HoverCard>
+                            <HoverCard.Target>
+                                <IconCircleFilled size={20} color={statusColor} />
+                            </HoverCard.Target>
+                            <HoverCard.Dropdown>
+                                <Text size="sm">{getSensorStateColorHint((statusColor))}</Text>
+                            </HoverCard.Dropdown>
+                        </HoverCard>
+                    }
                     <Title order={4} c={theme.colors.blue[6]}>{sensor.name}</Title>
                     {allowMovingAverage && (
                         <Switch

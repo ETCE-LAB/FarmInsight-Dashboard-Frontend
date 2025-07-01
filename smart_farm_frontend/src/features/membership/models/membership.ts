@@ -5,3 +5,8 @@ export interface Membership{
     membershipRole:string
     userprofile:UserProfile
 }
+
+export const enum MembershipRole {
+    ADMIN = 'admin',
+    MEMBER = 'member'
+}

@@ -141,9 +141,17 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                 onClose={() => setConfirmModal({ open: false })}
                 title={t("controllableActionList.confirmTitle")}
             >
-                <Text>{t("controllableActionList.confirmMessage")}</Text>
+                <>
+
+                {confirmModal.triggerId === "auto" && (() => {
+                    return (
+                        <Text>{t("controllableActionList.confirmAutoMessage")}</Text>
+                    );
+                })()}
+
 
                 {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
+                    console.log(confirmModal.triggerId)
                     const currentAction = controllableAction.find(a => a.id === confirmModal.actionId);
                   const currentGroup = currentAction?.hardware?.id
                     ? groupedActions[currentAction.hardware.id]
@@ -155,15 +163,23 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
 
                     if (autoTriggersInGroup) {
                         return (
+                            <>
+
+                            <Text>{t("controllableActionList.confirmMessage")}</Text>
                             <Text color="red" size="sm">
                                 ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
                             </Text>
+                            </>
                         );
                     }
+                    else {
+                        return(
+                             <Text>{t("controllableActionList.confirmMessage")}</Text>
+                            )
+                    }
 
-                    return null;
                 })()}
-
+                </>
                 <Flex justify="flex-end" gap="md" mt="md">
                     <Button variant="light" onClick={() => setConfirmModal({ open: false })}>
                         {t("common.cancel")}

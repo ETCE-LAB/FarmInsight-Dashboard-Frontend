@@ -5,10 +5,11 @@ import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
 import {useNavigate} from "react-router-dom";
 import {AppRoutes} from "../../../utils/appRoutes";
-import {Button, Container, Flex, Modal, Table, Text, CopyButton} from "@mantine/core";
+import {Button, Container, Flex, Modal, Table, Text, CopyButton, Title} from "@mantine/core";
 import {getAllUserprofiles} from "../useCase/getAllUserprofiles";
 import {restUserprofilePassword} from "../useCase/resetUserprofilePassword";
 import {showNotification} from "@mantine/notifications";
+import {setUserprofileActiveState} from "../useCase/setUserprofileActiveState";
 
 
 export const AdminPage = () => {
@@ -17,7 +18,8 @@ export const AdminPage = () => {
     const { t } = useTranslation();
 
     const [isAdmin, setIsAdmin] = useState(false);
-    const [users, setUsers] = useState<UserProfile[] | undefined>(undefined);
+    const [activeUsers, setActiveUsers] = useState<UserProfile[] | undefined>(undefined);
+    const [inactiveUsers, setInactiveUsers] = useState<UserProfile[] | undefined>(undefined);
 
     useEffect(() => {
         if (auth.isAuthenticated) {
@@ -25,7 +27,8 @@ export const AdminPage = () => {
                 if (user.systemRole === SystemRole.ADMIN) {
                     setIsAdmin(true);
                     getAllUserprofiles().then((users) => {
-                        setUsers(users);
+                        setActiveUsers(users.filter(v => v.isActive));
+                        setInactiveUsers(users.filter(v => !v.isActive));
                     })
                 } else {
                     navigate(AppRoutes.base);
@@ -36,11 +39,11 @@ export const AdminPage = () => {
         }
     }, [auth.isAuthenticated, navigate]);
 
-    const [confirmModal, setConfirmModal] = useState<{open: boolean, userId?: string}>({open: false});
+    const [confirmPasswordModal, setConfirmPasswordModal] = useState<{open: boolean, userId?: string}>({open: false});
 
     const resetPassword = (userId: string) => {
         restUserprofilePassword(userId).then((newPassword) => {
-            setConfirmModal({open: false});
+            setConfirmPasswordModal({open: false});
             showNotification({
                 title: '',
                 message: '',
@@ -52,23 +55,53 @@ export const AdminPage = () => {
 
     const [passwordModal, setPasswordModal] = useState<{open: boolean, password?: string}>({open: false});
 
+    const [confirmActiveChangeModal, setConfirmActiveChangeModal] = useState<{open: boolean, userId?: string, active?: boolean}>({open: false});
+
     return (
         <Container>
-            {isAdmin && users &&
+            {isAdmin &&
                 <>
                     <Modal
-                      opened={confirmModal.open}
-                      onClose={() => setConfirmModal({open: false})}
+                        opened={confirmActiveChangeModal.open}
+                        onClose={() => setConfirmActiveChangeModal({open: false})}
+                        title={t("common.confirmTitle")}
+                    >
+                        <Text>{t("controllableActionList.confirmMessage")}</Text>
+                        <Flex justify="flex-end" gap="md" mt="md">
+                            <Button variant="light" onClick={() => setConfirmActiveChangeModal({open: false})}>
+                                {t("common.cancel")}
+                            </Button>
+                            <Button onClick={() => {
+                                if (confirmActiveChangeModal.userId && (confirmActiveChangeModal.active !== undefined)) {
+                                    setUserprofileActiveState(confirmActiveChangeModal.userId, confirmActiveChangeModal.active).then(() => {
+                                        setConfirmActiveChangeModal({open: false});
+                                        getAllUserprofiles().then((users) => {
+                                            if (users) {
+                                                setActiveUsers(users.filter(v => v.isActive));
+                                                setInactiveUsers(users.filter(v => !v.isActive));
+                                            }
+                                        })
+                                    });
+                                }
+                            }}>
+                                {t("common.confirm")}
+                            </Button>
+                        </Flex>
+                    </Modal>
+
+                    <Modal
+                      opened={confirmPasswordModal.open}
+                      onClose={() => setConfirmPasswordModal({open: false})}
                       title={t("common.confirmTitle")}
                     >
                         <Text>{t("controllableActionList.confirmMessage")}</Text>
                         <Flex justify="flex-end" gap="md" mt="md">
-                            <Button variant="light" onClick={() => setConfirmModal({open: false})}>
+                            <Button variant="light" onClick={() => setConfirmPasswordModal({open: false})}>
                                 {t("common.cancel")}
                             </Button>
                             <Button onClick={() => {
-                                if (confirmModal.userId) {
-                                    resetPassword(confirmModal.userId);
+                                if (confirmPasswordModal.userId) {
+                                    resetPassword(confirmPasswordModal.userId);
                                 }
                             }}>
                                 {t("common.confirm")}
@@ -95,29 +128,72 @@ export const AdminPage = () => {
                         </Flex>
                     </Modal>
 
-                    <Table striped highlightOnHover withColumnBorders>
-                        <Table.Thead>
-                            <Table.Tr>
-                                <Table.Th>{t("header.name")}</Table.Th>
-                                <Table.Th>{t("header.email")}</Table.Th>
-                                <Table.Th></Table.Th>
-                            </Table.Tr>
-                        </Table.Thead>
-                        <Table.Tbody>
-                            {users.map((user : UserProfile ) => (
-                                <Table.Tr key={user.id}>
-                                <Table.Td>{user.name}</Table.Td>
-                                <Table.Td>{user.email}</Table.Td>
-                                <Table.Td align='right'>
-                                <Button onClick={() => setConfirmModal({
-                                    open: true,
-                                    userId: user.id,
-                                })}>{t('admin.resetPassword')}</Button>
-                                </Table.Td>
-                                </Table.Tr>
-                            ))}
-                        </Table.Tbody>
-                    </Table>
+                    {activeUsers &&
+                        <>
+                            <Title order={2}>{t('admin.activeUsers')}</Title>
+                            <Table striped highlightOnHover withColumnBorders mb='xl'>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>{t("header.name")}</Table.Th>
+                                        <Table.Th>{t("header.email")}</Table.Th>
+                                        <Table.Th />
+                                        <Table.Th />
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {activeUsers.map((user : UserProfile ) => (
+                                        <Table.Tr key={user.id}>
+                                            <Table.Td>{user.name}</Table.Td>
+                                            <Table.Td>{user.email}</Table.Td>
+                                            <Table.Td align='right'>
+                                                <Button onClick={() => setConfirmPasswordModal({
+                                                    open: true,
+                                                    userId: user.id,
+                                                })}>{t('admin.resetPassword')}</Button>
+                                            </Table.Td>
+                                            <Table.Td align='right'>
+                                                <Button onClick={() => setConfirmActiveChangeModal({
+                                                    open: true,
+                                                    userId: user.id,
+                                                    active: false,
+                                                })}>{t('admin.deactivate')}</Button>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </>
+                    }
+
+                    {inactiveUsers &&
+                        <>
+                            <Title order={2}>{t('admin.inactiveUsers')}</Title>
+                            <Table striped highlightOnHover withColumnBorders>
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        <Table.Th>{t("header.name")}</Table.Th>
+                                        <Table.Th>{t("header.email")}</Table.Th>
+                                        <Table.Th></Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Table.Tbody>
+                                    {inactiveUsers.map((user : UserProfile ) => (
+                                        <Table.Tr key={user.id}>
+                                            <Table.Td>{user.name}</Table.Td>
+                                            <Table.Td>{user.email}</Table.Td>
+                                            <Table.Td align='right'>
+                                                <Button onClick={() => setConfirmActiveChangeModal({
+                                                    open: true,
+                                                    userId: user.id,
+                                                    active: true,
+                                                })}>{t('admin.reactivate')}</Button>
+                                            </Table.Td>
+                                        </Table.Tr>
+                                    ))}
+                                </Table.Tbody>
+                            </Table>
+                        </>
+                    }
                 </>
             }
         </Container>
