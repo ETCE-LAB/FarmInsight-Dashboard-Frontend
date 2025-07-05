@@ -3,20 +3,16 @@ import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
 
 
-export const updateMembershipRole = async (data: { id:string, membershipRole:string }) => {
-    try {
-        const apiClient = new APIClient()
+export const updateMembershipRole = (data: { id:string, membershipRole:string }) => {
+    const apiClient = new APIClient()
 
-        const user = getUser();
-        const token = user?.access_token;
+    const user = getUser();
+    const token = user?.access_token;
 
-        const headers =
-            {'Authorization': `Bearer ${token}`}
-        const url = `${BACKEND_URL}/api/memberships/${data.id}`;
+    const headers =
+        {'Authorization': `Bearer ${token}`}
 
-        await apiClient.put(url, data, headers)
-    }
-    catch (error) {
-        console.error("Error: " + error);
-    }
-};
+    const url = `${BACKEND_URL}/api/memberships/${data.id}`;
+
+    return apiClient.put(url, data, headers)
+}

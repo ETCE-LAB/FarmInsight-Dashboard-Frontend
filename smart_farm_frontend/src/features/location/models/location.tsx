@@ -1,6 +1,4 @@
-
-
-export interface Location{
+export interface Location {
     id:string,
     name:string,
     latitude:number,

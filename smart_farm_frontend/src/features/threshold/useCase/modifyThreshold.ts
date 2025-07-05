@@ -3,6 +3,7 @@ import {getUser} from "../../../utils/getUser";
 import {Threshold} from "../models/threshold";
 import {BACKEND_URL} from "../../../env-config";
 
+
 export const modifyThreshold = (HarvestEntityID:string, data:Threshold) => {
     const apiClient = new APIClient()
 
@@ -11,11 +12,10 @@ export const modifyThreshold = (HarvestEntityID:string, data:Threshold) => {
 
     const headers = {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json', // Ensure proper content type for JSON payload
     };
 
     const url = `${BACKEND_URL}/api/thresholds/${HarvestEntityID}`;
-    const result:  Promise<Threshold> = apiClient.put(url, data, headers)
 
+    const result:  Promise<Threshold> = apiClient.put(url, data, headers)
     return result
 }

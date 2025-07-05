@@ -1,7 +1,7 @@
 
 
 
-export interface Camera{
+export interface Camera {
     id:string,
     name:string,
     location:string,

@@ -20,7 +20,6 @@ export const getUserProfilesBySearchString = (searchString: string, orgaId: stri
 
     const url = `${BACKEND_URL}/api/userprofiles/${searchString}${exclude}`;
 
-    const result:  Promise<UserProfile[]> = apiClient.get(url, headers)
-
+    const result: Promise<UserProfile[]> = apiClient.get(url, headers)
     return result
 }

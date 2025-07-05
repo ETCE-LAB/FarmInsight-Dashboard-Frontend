@@ -1,19 +1,18 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
-import {EditSensor} from "../models/Sensor";
 import {BACKEND_URL} from "../../../env-config";
+import {Location} from "../models/location";
 
 
-export const updateSensor = (data: EditSensor) => {
+export const createLocation = (data: Location) => {
     const apiClient = new APIClient()
-
     const user = getUser();
     const token = user?.access_token;
 
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    const url = `${BACKEND_URL}/api/sensors/${data.id}`;
+    const url = `${BACKEND_URL}/api/locations`;
 
-    return apiClient.put(url, data, headers);
+    return apiClient.post(url, data, headers);
 }

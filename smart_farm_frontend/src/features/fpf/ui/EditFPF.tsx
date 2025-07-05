@@ -171,7 +171,9 @@ export const EditFPF: React.FC = () => {
                 title={t('fpf.editFpF')}
                 centered
             >
-                <FpfForm toEditFpf={fpf} close={setEditModalOpen} />
+                {organization && fpf &&
+                    <FpfForm organizationId={organization.id} toEditFpf={fpf} close={setEditModalOpen} />
+                }
             </Modal>
         </Stack>
     );

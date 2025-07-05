@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Card, Flex, Group, Text, Menu, Button, Image, Drawer, Center, Box} from '@mantine/core';
+import {Card, Flex, Group, Text, Menu, Button, Image, Drawer} from '@mantine/core';
 import { IconDotsVertical } from "@tabler/icons-react";
 import { useTranslation } from 'react-i18next';
 import { AppRoutes } from '../../../../utils/appRoutes';
@@ -38,7 +38,7 @@ export const AppShellHeader: React.FC = () => {
         setSelectedLanguage(matchedLanguage.label);
         setCurrentFlag(matchedLanguage.flag);
         i18n.changeLanguage(matchedLanguage.code);
-    }, [i18n, languageOptions]);
+    }, [i18n]);
 
     const handleLanguageChange = (lang: { code: string; label: string; flag: string }) => {
         setSelectedLanguage(lang.label);

@@ -14,7 +14,7 @@ import {IconEye, IconEyeOff} from "@tabler/icons-react";
 import {SelectFPFLocation} from "../../location/ui/SelectFPFLocation";
 import { Location } from "../../location/models/location";
 
-export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close: React.Dispatch<React.SetStateAction<boolean>>; }> = ({ organizationId, toEditFpf , close}) => {
+export const FpfForm: React.FC<{ organizationId: string, toEditFpf?: Fpf, close: React.Dispatch<React.SetStateAction<boolean>>; }> = ({ organizationId, toEditFpf , close}) => {
     const auth = useAuth();
     const { t } = useTranslation();
     const [name, setName] = useState("");
@@ -194,7 +194,7 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
 
                             {/* Address Input */}
                             <Grid.Col span={12}>
-                                <SelectFPFLocation setLocation={setLocation} organizationIdParam={organizationId} preSelectedLocation={location}/>
+                                <SelectFPFLocation setLocation={setLocation} organizationId={organizationId} preSelectedLocation={location}/>
                             </Grid.Col>
 
                             {/* Save Button */}

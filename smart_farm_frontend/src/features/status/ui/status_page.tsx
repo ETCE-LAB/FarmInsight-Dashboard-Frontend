@@ -68,16 +68,22 @@ export const StatusPage = () => {
 
         const getSensorPing = () => {
             if (currentlyPinging) return;
-
             setCurrentlyPinging(true);
+
             pingSensor(sensor.id).then((result) => {
-                setCurrentlyPinging(false);
-                console.dir(result);
                 showNotification({
                     title: t('overview.pingResult'),
                     message: `${JSON.stringify(result)}`,
-                    color: 'blue',
+                    color: 'green',
                 });
+            }).catch((err) => {
+                showNotification({
+                    title: t('overview.pingResult'),
+                    message: `${err}`,
+                    color: 'red',
+                });
+            }).finally(()=> {
+                setCurrentlyPinging(false);
             });
         }
 
@@ -147,7 +153,7 @@ export const StatusPage = () => {
                             </Table.Thead>
                             <Table.Tbody>
                                 {fpf.Sensors.map(sensor =>
-                                    <SensorOverview sensor={sensor} />
+                                    <SensorOverview sensor={sensor} key={sensor.id} />
                                 )}
                             </Table.Tbody>
                         </Table>
@@ -194,14 +200,15 @@ export const StatusPage = () => {
                                 <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organization.id} />
                             </Flex>
                         </Flex>
-                            {show &&
+                        {show &&
                             <Flex gap="lg" mt="lg" flex={1} wrap='wrap' w='100%'>
                                 {organization.FPFs.map(fpf =>
-                                    <FpfOverview orgId={organization.id} id={fpf.id} />
+                                    <FpfOverview orgId={organization.id} id={fpf.id} key={fpf.id} />
                                 )}
                             </Flex>
                         }
-                    </Card>}
+                    </Card>
+                }
             </>
         )
     }
@@ -257,13 +264,11 @@ export const StatusPage = () => {
                     }
                 </Flex>
                 {showOverview &&
-                    <>
-                        <Grid grow gutter='lg' mt='lg'>
-                            {organizations && (organizations.map(org =>
-                                <OrgOverview id={org.id} />
-                            ))}
-                        </Grid>
-                    </>
+                    <Grid grow gutter='lg' mt='lg'>
+                        {organizations && (organizations.map(org =>
+                            <OrgOverview id={org.id} key={org.id} />
+                        ))}
+                    </Grid>
                 }
             </Card>
             <SystemMessageView />

@@ -6,7 +6,7 @@ import { Button, Card, Modal, TextInput, Switch, Flex, Title, Text, Box, Badge, 
 import { IconEdit, IconUserPlus, IconSquareRoundedMinus, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { MembershipList } from "../../membership/ui/MembershipList";
 import { SearchUserProfile } from "../../userProfile/ui/searchUserProfile";
-import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
+import { UserProfile } from "../../userProfile/models/UserProfile";
 import { addUserToOrganization } from "../useCase/addUserToOrganization";
 import { showNotification } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
@@ -203,7 +203,9 @@ export const EditOrganization = () => {
                         title={t("header.addFpf")}
                         centered
                     >
-                        <FpfForm organizationId={organizationId} close={setFpFModalOpen}/>
+                        {organizationId &&
+                            <FpfForm organizationId={organizationId} close={setFpFModalOpen}/>
+                        }
                     </Modal>
 
                     <Modal

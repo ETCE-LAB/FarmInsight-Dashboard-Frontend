@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {getLocationByOrganization} from "../useCase/getLocationByOrganization";
 import {Box, Button, Collapse, Loader, ScrollArea, Table, Text} from "@mantine/core";
@@ -8,11 +7,11 @@ import {LocationForm} from "./LocationForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 
-export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>, preSelectedLocation?: Location}> = ({ setLocation, organizationIdParam, preSelectedLocation }) => {
+
+export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>, preSelectedLocation?: Location}> = ({ setLocation, organizationId, preSelectedLocation }) => {
     const locationEvent = useSelector((state: RootState) => state.location.receivedLocationEvent);
     const [locations, setLocations] = useState<Location[]>([]);
     const [isFormVisible, setIsFormVisible] = useState(false);
-    const { organizationId } = useParams<{ organizationId?: string }>();
     const [selectedLocation, setSelectedLocation] = useState<Location>(
         {
             id: "",
@@ -31,23 +30,17 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
 
     useEffect(() => {
         setIsLoading(true);
-        if (organizationId || organizationIdParam) {
-            getLocationByOrganization(organizationId ? organizationId : organizationIdParam).then((locations) => {
-                setLocations(locations);
-                setIsLoading(false);
-            });
-        }
-    }, [organizationId,organizationIdParam, locationEvent]);
+        getLocationByOrganization(organizationId).then((locations) => {
+            setLocations(locations);
+            setIsLoading(false);
+        });
+    }, [organizationId, locationEvent]);
 
     useEffect(() => {
         if (preSelectedLocation && preSelectedLocation.id) {
             setSelectedLocation(preSelectedLocation);
         }
     }, [preSelectedLocation]);
-
-    // 1. Zeile 3B3B3B
-    // 2. Zeile 242424
-    //Selected: 595959
 
     return (
         <>
@@ -62,7 +55,7 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                 </Button>
             </Box>
             <Collapse in={isFormVisible}>
-                  <LocationForm setClosed={setIsFormVisible} organizationIdParam={organizationIdParam} />
+                  <LocationForm setClosed={setIsFormVisible} organizationIdParam={organizationId} />
             </Collapse>
             <ScrollArea>
                 {isLoading ? (

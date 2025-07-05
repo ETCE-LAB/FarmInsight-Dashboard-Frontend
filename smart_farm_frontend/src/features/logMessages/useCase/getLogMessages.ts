@@ -28,8 +28,8 @@ export const getLogMessages = (type:string, id?: string, amount?: number, from?:
     }
 
     const url = `${BACKEND_URL}/api/log_messages/${type}/${id}?${query}`;
-    const result: Promise<LogMessage[]> = apiClient.get(url, headers);
 
+    const result: Promise<LogMessage[]> = apiClient.get(url, headers);
     return result;
 }
 

@@ -88,7 +88,9 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
                 onClose={() => setFpfModalOpen(false)}
                 title={t("header.addFpf")}
             >
-                <FpfForm organizationId={organizationId} close={setFpfModalOpen} />
+                {organizationId &&
+                    <FpfForm organizationId={organizationId} close={setFpfModalOpen} />
+                }
             </Modal>
 
             {/* Header */}

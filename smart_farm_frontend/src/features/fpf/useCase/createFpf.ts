@@ -1,31 +1,26 @@
 import  APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
-
 import {Fpf} from "../models/Fpf";
 import {BACKEND_URL} from "../../../env-config";
 
-export const createFpf = async (data: {
+
+export const createFpf = (data: {
     organizationId: string;
     name: string;
     isPublic: boolean;
     sensorServiceIp: string;
     locationId: string
 }) => {
-    try {
-        //const response = await fetch(`${BACKEND_URL}/api/organizations`, {
-        const apiClient = new APIClient()
+    const apiClient = new APIClient()
 
-        const user = getUser();
-        const token = user?.access_token;
+    const user = getUser();
+    const token = user?.access_token;
 
-        const headers =
-            {'Authorization': `Bearer ${token}`}
-        const url = `${BACKEND_URL}/api/fpfs`;
-        const response:Fpf = await apiClient.post(url, data, headers);
+    const headers =
+        {'Authorization': `Bearer ${token}`}
 
-        return response
-    }
-    catch (error) {
-        console.error("Error: " + error);
-    }
-};
+    const url = `${BACKEND_URL}/api/fpfs`;
+
+    const response: Promise<Fpf> = apiClient.post(url, data, headers);
+    return response;
+}

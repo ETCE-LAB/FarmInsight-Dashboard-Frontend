@@ -3,9 +3,7 @@ import {getUser} from "../../../utils/getUser";
 import {GrowingCycle} from "../models/growingCycle";
 import {BACKEND_URL} from "../../../env-config";
 
-//8250f7569a3047ea8decf4cc101003da
-//"2017-07-21T17:32:28Z
-////"2017-07-21
+
 export const createGrowingCycle = (data:GrowingCycle) => {
     const apiClient = new APIClient()
 
@@ -16,7 +14,7 @@ export const createGrowingCycle = (data:GrowingCycle) => {
         {'Authorization': `Bearer ${token}`}
 
     const url = `${BACKEND_URL}/api/growing-cycles`;
-    const result:  Promise<GrowingCycle> = apiClient.post(url, data, headers)
 
+    const result:  Promise<GrowingCycle> = apiClient.post(url, data, headers)
     return result
 }
