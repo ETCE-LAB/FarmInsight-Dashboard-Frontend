@@ -8,23 +8,11 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 
 
-export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>, preSelectedLocation?: Location}> = ({ setLocation, organizationId, preSelectedLocation }) => {
+export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: React.Dispatch<React.SetStateAction<Location | undefined>>, preSelectedLocation?: Location}> = ({ setLocation, organizationId, preSelectedLocation }) => {
     const locationEvent = useSelector((state: RootState) => state.location.receivedLocationEvent);
     const [locations, setLocations] = useState<Location[]>([]);
     const [isFormVisible, setIsFormVisible] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState<Location>(
-        {
-            id: "",
-            name: "",
-            latitude: 0,
-            longitude: 0,
-            city: "",
-            street: "",
-            houseNumber: "",
-            organizationId: organizationId || "",
-            gatherForecasts: false,
-        }
-    );
+    const [selectedLocation, setSelectedLocation] = useState<Location | undefined>(undefined);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const { t } = useTranslation();
 
@@ -37,7 +25,7 @@ export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: 
     }, [organizationId, locationEvent]);
 
     useEffect(() => {
-        if (preSelectedLocation && preSelectedLocation.id) {
+        if (preSelectedLocation) {
             setSelectedLocation(preSelectedLocation);
         }
     }, [preSelectedLocation]);
@@ -87,7 +75,7 @@ export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: 
                                         }}
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.backgroundColor =
-                                                selectedLocation.id === location.id
+                                                selectedLocation && selectedLocation.id === location.id
                                                     ? "#595959"
                                                     : index % 2 === 0
                                                         ? "#242424"
@@ -96,11 +84,11 @@ export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: 
                                         style={{
                                             cursor: "pointer",
                                                 backgroundColor:
-                                            selectedLocation.id === location.id
-                                                ? "#595959"
-                                                : index % 2 === 0
-                                                    ? "#242424"
-                                                    : "#3B3B3B",
+                                                    selectedLocation && selectedLocation.id === location.id
+                                                    ? "#595959"
+                                                    : index % 2 === 0
+                                                        ? "#242424"
+                                                        : "#3B3B3B",
                                         }}
                                     >
                                         <Table.Td>{location.name}</Table.Td>

@@ -47,29 +47,35 @@ export const GrowingCycleForm: React.FC<{
             return;
         }
 
-        try {
-            if (toEditGrowingCycle) {
-                const updatedCycle = await modifyGrowingCycle(growingCycle.id, growingCycle);
+        if (toEditGrowingCycle) {
+            modifyGrowingCycle(growingCycle.id, growingCycle).then((updatedCycle) => {
                 dispatch(updateGrowingCycle(updatedCycle));
                 showNotification({
-                    title: t("growingCycleForm.successTitle"),
+                    title: t("common.updateSuccess"),
                     message: t("growingCycleForm.editSuccessMessage"),
                     color: "green",
                 });
-            } else {
-                const newCycle = await createGrowingCycle(growingCycle);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.updateError'),
+                    message: `${error}`,
+                    color: "red",
+                });
+            });
+        } else {
+            createGrowingCycle(growingCycle).then((newCycle) => {
                 dispatch(addGrowingCycle(newCycle));
                 showNotification({
-                    title: 'Success',
-                    message: 'Growing cycle saved successfully!',
+                    title: t('common.saveSuccess'),
+                    message: t('growingCycleForm.createSuccessMessage'),
                     color: 'green',
                 });
-            }
-        } catch (error) {
-            showNotification({
-                title: t("growingCycleForm.errorTitle"),
-                message: `${error}`,
-                color: "red",
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.saveError'),
+                    message: `${error}`,
+                    color: "red",
+                });
             });
         }
         closeForm();

@@ -21,6 +21,14 @@ i18n
                         confirmTitle: 'Confirm',
                         confirmMessage: 'Are you sure you want to do this?',
                         loadingError: 'Failed to load',
+                        updateSuccess: 'Updated successfully',
+                        updateError: 'Failed to update',
+                        loadErrorGeneric: 'Error loading data',
+                        loadError: 'Error loading ',
+                        loading: 'Loading...',
+                        executeSuccess: 'Executed successfully',
+                        executeError: 'Failed to execute',
+                        networkError: 'Network response not ok. Status:',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -161,6 +169,7 @@ i18n
                         endDatePlaceholder: 'Select End Date',
                         notesLabel: 'Notes',
                         notesPlaceholder: 'Enter Notes',
+                        noNotes: 'No notes available',
                         saveButton: 'Save',
                         successTitle: 'Success',
                         editSuccessMessage: 'Growing cycle updated successfully!',
@@ -178,7 +187,7 @@ i18n
                         isActive: 'Is Active?',
                         actions: 'Actions',
                         aggregate: 'Display Σ values?',
-                                            },
+                    },
                     controllableActionList: {
                         noActionFound: 'No Action found',
                         auto: 'Auto',
@@ -199,6 +208,8 @@ i18n
                         autoDisabledNote: 'An active manual trigger is blocking other auto actions',
                         manualDisablesAutoWarning: 'Warning: Activating a manual trigger will disable auto triggers for this group. You must deactivate the manual trigger manually to re-enable the automated trigger.',
                         enableAutoMode: 'Activate Auto Trigger',
+                        updating: 'Updating Controllable Action',
+                        creating: 'Creating Controllable action..',
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -314,6 +325,7 @@ i18n
                         addCamera: 'Add Camera',
                         editCamera: 'Edit Camera',
                         createCamera: 'Create Camera',
+                        updating: 'Updating camera',
                     },
                     harvestEntityForm: {
                         hint: {
@@ -476,6 +488,14 @@ i18n
                         confirmTitle: 'Bestätige Ausführung',
                         confirmMessage: 'Sind Sie sicher, dass Sie das tun wollen?',
                         loadingError: 'Fehler beim Laden',
+                        updateSuccess: 'Erfolgreich geändert',
+                        updateError: 'Fehler beim ändern',
+                        loadErrorGeneric: 'Fehler beim laden der Daten',
+                        loadError: 'Fehler beim laden von ',
+                        loading: 'Laden...',
+                        executeSuccess: 'Erfolgreich ausgeführt',
+                        executeError: 'Fehler beim Ausführen',
+                        networkError: 'Netzwerk Antwort fehlerhaft. Status:',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -615,6 +635,7 @@ i18n
                         endDatePlaceholder: 'Enddatum auswählen',
                         notesLabel: 'Notizen',
                         notesPlaceholder: 'Notizen eingeben',
+                        noNotes: 'Keine Notizen vorhanden',
                         saveButton: 'Speichern',
                         successTitle: 'Erfolg',
                         editSuccessMessage: 'Wachstumszyklus erfolgreich aktualisiert!',
@@ -653,6 +674,8 @@ i18n
                         autoDisabledNote: 'Ein aktiver manueller Trigger blockiert andere Auto-Aktionen',
                         manualDisablesAutoWarning: 'Warnung: Das Aktivieren eines manuellen Triggers deaktiviert die automatischen Trigger für diese Gruppe. Du musst den manuellen Trigger manuell deaktivieren, um den automatischen Trigger wieder zu aktivieren.',
                         enableAutoMode: 'Aktiviere Auto Trigger',
+                        updating: 'Steuerbare Aktion wird geändert',
+                        creating: 'Steuerbare Aktion wird erstellt',
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",
@@ -768,6 +791,7 @@ i18n
                         addCamera: 'Kamera hinzufügen',
                         editCamera: 'Kamera bearbeiten',
                         createCamera: 'Kamera erstellen',
+                        updating: 'Kamera wird geändert',
                     },
                     harvestEntityForm: {
                         hint: {

@@ -10,12 +10,15 @@ import {
     Card,
     Flex,
     Text,
-    Modal, Switch, Loader
+    Modal,
+    Loader
 } from "@mantine/core";
 import {executeTrigger} from "../useCase/executeTrigger";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {useParams} from "react-router-dom";
+import {showNotification} from "@mantine/notifications";
+import {ControllableAction} from "../models/controllableAction";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -34,20 +37,20 @@ const truncateText = (text: string, limit: number): string =>
 
 const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
     const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const controllableAction = useSelector(
-    (state: RootState) => state.controllableAction.controllableAction
-  );
-  const { organizationId } = useParams<{ organizationId: string }>();
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [groupLoading, setGroupLoading] = useState<Record<string, boolean>>({});
-  const [confirmModal, setConfirmModal] = useState<{
-    open: boolean;
-    actionId?: string;
-    triggerId?: string;
-    value?: string;
-    isActive?: boolean;
-  }>({ open: false });
+    const dispatch = useAppDispatch();
+    const controllableAction = useSelector(
+        (state: RootState) => state.controllableAction.controllableAction
+    );
+    const { organizationId } = useParams<{ organizationId: string }>();
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [groupLoading, setGroupLoading] = useState<Record<string, boolean>>({});
+    const [confirmModal, setConfirmModal] = useState<{
+        open: boolean;
+        action?: ControllableAction;
+        triggerId?: string;
+        value?: string;
+        isActive?: boolean;
+    }>({ open: false });
 
     useEffect(() => {
         if (organizationId) {
@@ -64,30 +67,29 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                 if (!found) {
                     setIsAdmin(false);
                 }
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadingError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [organizationId]);
+    }, [organizationId, t]);
 
+        const handleTriggerChange = async (action: ControllableAction, triggerId: string, value: string, isActive: boolean) => {
+        const hardwareId = action?.hardware?.id
 
-    const handleTriggerChange = async (
-        actionId: string,
-        triggerId: string,
-        value: string,
-        isActive: boolean
-    ) => {
-        const clickedAction = controllableAction.find((a) => a.id === actionId);
-        const hardwareId = clickedAction?.hardware?.id;
-
-        if (clickedAction && hardwareId) {
+        if (action && hardwareId) {
             setGroupLoading((prev) => ({ ...prev, [hardwareId]: true }));
         }
 
         try {
             if (triggerId === "auto") {
                 setConfirmModal({ open: false });
-                await executeTrigger(actionId, triggerId, "");
-                dispatch(updateIsAutomated({ actionId, isAutomated: true }));
-                dispatch(updateControllableActionStatus({ actionId, triggerId: "" }));
+                await executeTrigger(action.id, triggerId, "");
+                dispatch(updateIsAutomated({ actionId: action.id, isAutomated: true }));
+                dispatch(updateControllableActionStatus({ actionId: action.id, triggerId: "" }));
             } else {
                 if (!isActive) {
                     setConfirmModal({ open: false });
@@ -107,24 +109,32 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                             )
                     );
 
-                    if (activeManualAction && activeManualAction.id !== actionId) {
+                    if (activeManualAction && activeManualAction.id !== action.id) {
                         await executeTrigger(activeManualAction.id, "", "");
                         dispatch(updateIsAutomated({ actionId: activeManualAction.id, isAutomated: true }));
                         dispatch(updateControllableActionStatus({ actionId: activeManualAction.id, triggerId: "" }));
                     }
 
-                    await executeTrigger(actionId, triggerId, value);
-                    dispatch(updateIsAutomated({ actionId, isAutomated: false }));
-                    dispatch(updateControllableActionStatus({ actionId, triggerId }));
+                    await executeTrigger(action.id, triggerId, value);
+                    dispatch(updateIsAutomated({ actionId: action.id, isAutomated: false }));
+                    dispatch(updateControllableActionStatus({ actionId: action.id, triggerId }));
                 }
             }
+            showNotification({
+                title: t('common.executeSuccess'),
+                message: '',
+                color: 'green',
+            });
         } catch (error) {
-            console.error("Failed to execute trigger", error);
+            showNotification({
+                title: t('common.executeError'),
+                message: `${error}`,
+                color: 'red',
+            });
         }
-        if (clickedAction && hardwareId) {
+        if (action && hardwareId) {
              setGroupLoading((prev) => ({ ...prev, [hardwareId]: false }));
         }
-
     };
 
     const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
@@ -142,58 +152,45 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                 title={t("controllableActionList.confirmTitle")}
             >
                 <>
-
-                {confirmModal.triggerId === "auto" && (() => {
-                    return (
+                    {confirmModal.triggerId === "auto" &&
                         <Text>{t("controllableActionList.confirmAutoMessage")}</Text>
-                    );
-                })()}
+                    }
 
-
-                {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
-                    console.log(confirmModal.triggerId)
-                    const currentAction = controllableAction.find(a => a.id === confirmModal.actionId);
-                  const currentGroup = currentAction?.hardware?.id
-                    ? groupedActions[currentAction.hardware.id]
-                    : [];
-
-                  const autoTriggersInGroup = currentGroup?.some(action =>
-                    action.trigger.some(t => t.type !== "manual" && t.isActive)
-                  );
-
-                    if (autoTriggersInGroup) {
-                        return (
-                            <>
-
-                            <Text>{t("controllableActionList.confirmMessage")}</Text>
-                            <Text color="red" size="sm">
-                                ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
-                            </Text>
-                            </>
+                    {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
+                        const currentGroup = confirmModal.action?.hardware?.id ? groupedActions[confirmModal.action.hardware.id] : [];
+                        const autoTriggersInGroup = currentGroup?.some(action =>
+                            action.trigger.some(t => t.type !== "manual" && t.isActive)
                         );
-                    }
-                    else {
-                        return(
-                             <Text>{t("controllableActionList.confirmMessage")}</Text>
-                            )
-                    }
 
-                })()}
+                        if (autoTriggersInGroup) {
+                            return (
+                                <>
+                                    <Text>{t("controllableActionList.confirmMessage")}</Text>
+                                    <Text color="red" size="sm">
+                                        ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
+                                    </Text>
+                                </>
+                            );
+                        } else {
+                            return(
+                                <Text>{t("controllableActionList.confirmMessage")}</Text>
+                            )
+                        }
+                    })}
                 </>
                 <Flex justify="flex-end" gap="md" mt="md">
                     <Button variant="light" onClick={() => setConfirmModal({ open: false })}>
                         {t("common.cancel")}
                     </Button>
                     <Button onClick={() => {
-                        console.log(confirmModal)
                         if (
-                            confirmModal.actionId &&
+                            confirmModal.action &&
                             confirmModal.triggerId &&
                             confirmModal.value !== undefined &&
                             confirmModal.isActive !== undefined
                         ) {
                             handleTriggerChange(
-                                confirmModal.actionId,
+                                confirmModal.action,
                                 confirmModal.triggerId,
                                 confirmModal.value,
                                 confirmModal.isActive
@@ -267,7 +264,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                             if (activeManual) {
                                                 setConfirmModal({
                                                     open: true,
-                                                    actionId: activeManual.id,
+                                                    action: activeManual,
                                                     triggerId: "auto",
                                                     value: "",
                                                     isActive: true
@@ -325,7 +322,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                                                     if (!isActiveThisTrigger) {
                                                                         setConfirmModal({
                                                                             open: true,
-                                                                            actionId: action.id,
+                                                                            action: action,
                                                                             triggerId: trigger.id,
                                                                             value: trigger.actionValue,
                                                                             isActive: isActiveThisTrigger
@@ -348,7 +345,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                                             disabled={hasActiveManualInGroup}
                                                             onClick={() => setConfirmModal({
                                                                 open: true,
-                                                                actionId: action.id,
+                                                                action: action,
                                                                 triggerId: "auto",
                                                                 value: "",
                                                                 isActive: true

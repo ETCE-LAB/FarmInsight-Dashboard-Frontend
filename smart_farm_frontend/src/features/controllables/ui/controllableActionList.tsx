@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button, Title, Switch} from "@mantine/core";
+import {Badge, Box, Group, Modal, Table, Text, Flex, Card, Button, Title} from "@mantine/core";
 import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import {useSelector} from "react-redux";
@@ -12,6 +12,8 @@ import {updateControllableActionStatus, updateIsAutomated} from "../state/Contro
 import {executeTrigger} from "../useCase/executeTrigger";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
+import {showNotification} from "@mantine/notifications";
+
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
     const { t } = useTranslation();
@@ -86,33 +88,24 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         setActionTriggerModalOpen(true)
     }
 
-    const handleTriggerChange = async (actionId: string, triggerId: string, value: string, isActive:boolean) => {
-        try {
-            if( triggerId==="auto")
-            {
-                setConfirmModal({open: false});
-                dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
-                dispatch(updateControllableActionStatus({actionId, triggerId: ""}));
-                await executeTrigger(actionId, triggerId, "");
-            }
-            else{
-                if(!isActive){
-                    setConfirmModal({open: false});
-                    dispatch(updateIsAutomated({ actionId: actionId, isAutomated: false }));
-                    dispatch(updateControllableActionStatus({ actionId, triggerId }));
-                    await executeTrigger(actionId, triggerId, value);
-                }
-                else{
-                    setConfirmModal({open: false});
-                    dispatch(updateIsAutomated({actionId: actionId, isAutomated: true}));
-                    dispatch(updateControllableActionStatus({ actionId: actionId, triggerId: "" }));
-                    await executeTrigger(actionId, triggerId, value);
-                }
-            }
+    const handleTriggerChange = (actionId: string, triggerId: string, value: string, isActive: boolean) => {
+        setConfirmModal({open: false});
+        dispatch(updateIsAutomated({actionId: actionId, isAutomated: isActive || triggerId === "auto"}));
+        dispatch(updateControllableActionStatus({actionId, triggerId: triggerId !== "auto" && !isActive ? triggerId : ""}));
 
-        } catch (error) {
-            console.error("Failed to execute trigger", error);
-        }
+        executeTrigger(actionId, triggerId, value).then((v) => {
+            showNotification({
+                title: t('common.executeSuccess'),
+                message: '',
+                color: 'green',
+            });
+        }).catch((error) => {
+            showNotification({
+                title: t('common.executeError'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
     };
 
     const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
@@ -152,50 +145,42 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                 title={t("controllableActionList.confirmTitle")}
             >
                 <>
-
-                {confirmModal.triggerId === "auto" && (() => {
-                    return (
-                        <Text>{t("controllableActionList.confirmAutoMessage")}</Text>
-                    );
-                })()}
-
-
-                {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
-                    console.log(confirmModal.triggerId)
-                    const currentAction = controllableAction.find(a => a.id === confirmModal.actionId);
-                  const currentGroup = currentAction?.hardware?.id
-                    ? groupedActions[currentAction.hardware.id]
-                    : [];
-
-                  const autoTriggersInGroup = currentGroup?.some(action =>
-                    action.trigger.some(t => t.type !== "manual" && t.isActive)
-                  );
-
-                    if (autoTriggersInGroup) {
+                    {confirmModal.triggerId === "auto" && (() => {
                         return (
-                            <>
-
-                            <Text>{t("controllableActionList.confirmMessage")}</Text>
-                            <Text color="red" size="sm">
-                                ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
-                            </Text>
-                            </>
+                            <Text>{t("controllableActionList.confirmAutoMessage")}</Text>
                         );
-                    }
-                    else {
-                        return(
-                             <Text>{t("controllableActionList.confirmMessage")}</Text>
-                            )
-                    }
+                    })}
 
-                })()}
+                    {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
+                        const currentAction = controllableAction.find(a => a.id === confirmModal.actionId);
+                        const currentGroup = currentAction?.hardware?.id ? groupedActions[currentAction.hardware.id] : [];
+
+                        const autoTriggersInGroup = currentGroup?.some(action =>
+                            action.trigger.some(t => t.type !== "manual" && t.isActive)
+                        );
+
+                        if (autoTriggersInGroup) {
+                            return (
+                                <>
+                                    <Text>{t("controllableActionList.confirmMessage")}</Text>
+                                    <Text color="red" size="sm">
+                                        ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
+                                    </Text>
+                                </>
+                            );
+                        } else {
+                            return (
+                                <Text>{t("controllableActionList.confirmMessage")}</Text>
+                            )
+                        }
+
+                    })}
                 </>
                 <Flex justify="flex-end" gap="md" mt="md">
                     <Button variant="light" onClick={() => setConfirmModal({ open: false })}>
                         {t("common.cancel")}
                     </Button>
                     <Button onClick={() => {
-                        console.log(confirmModal)
                         if (
                             confirmModal.actionId &&
                             confirmModal.triggerId &&
@@ -318,8 +303,6 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                 <Group justify="flex-start" mt="5px">
                                                     <Button
                                                         size="compact-xs"
-
-
                                                         onClick={() => {
                                                             const activeManual = actions.find((a) =>
                                                                 a.trigger.some(
@@ -330,7 +313,6 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                         !a.isAutomated
                                                                 )
                                                             );
-
                                                             if (activeManual) {
                                                                 setConfirmModal({
                                                                     open: true,

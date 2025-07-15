@@ -23,6 +23,7 @@ import {setControllableAction} from "../../controllables/state/ControllableActio
 import {ActionQueueList} from "../../controllables/ui/actionQueueList";
 import {HardwareList} from "../../hardware/ui/hardwareList";
 import {Hardware} from "../../hardware/models/hardware";
+import {showNotification} from "@mantine/notifications";
 
 
 export const EditFPF: React.FC = () => {
@@ -51,9 +52,15 @@ export const EditFPF: React.FC = () => {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
                 dispatch(setControllableAction(resp.ControllableAction));
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [fpfId, fpfCreatedEventListener]);
+    }, [fpfId, fpfCreatedEventListener, dispatch, t]);
 
     useEffect(() => {
         if (fpf?.Sensors && fpf.Sensors.length >= 1) {
@@ -71,14 +78,26 @@ export const EditFPF: React.FC = () => {
         if (organizationId) {
             getOrganization(organizationId).then(resp => {
                 setOrganization(resp);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [organizationId]);
+    }, [organizationId, t]);
 
     useEffect(() => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
                 setSensors(resp.Sensors);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
     }, [SensorEventListener]);
@@ -87,6 +106,12 @@ export const EditFPF: React.FC = () => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
                 setCameras(resp.Cameras);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
     }, [CameraEventListener]);
@@ -98,9 +123,15 @@ export const EditFPF: React.FC = () => {
                     (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
                 );
                 setIsAdmin(userIsAdmin);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [fpf, organization]);
+    }, [fpf, organization, t]);
 
     return (
         <Stack gap={"md"}>

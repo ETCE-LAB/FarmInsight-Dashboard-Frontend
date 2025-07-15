@@ -3,7 +3,7 @@ import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
 import {ActionTrigger} from "../models/actionTrigger";
 
-export const executeTrigger = (controllableActionId:string, actionTriggerId:string, actionValue:string) => {
+export const executeTrigger = (controllableActionId: string, actionTriggerId: string, actionValue: string) => {
     const apiClient = new APIClient()
 
     const user = getUser();
@@ -13,7 +13,7 @@ export const executeTrigger = (controllableActionId:string, actionTriggerId:stri
         {'Authorization': `Bearer ${token}`}
 
     const url = `${BACKEND_URL}/api/execute-actions/${controllableActionId}/${actionTriggerId}`;
-    const result:  Promise<ActionTrigger> = apiClient.post(url, {actionValue:actionValue}, headers)
+    const result: Promise<ActionTrigger> = apiClient.post(url, {actionValue:actionValue}, headers)
 
     return result
 }

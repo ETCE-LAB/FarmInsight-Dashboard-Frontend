@@ -50,7 +50,7 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], fpfId: string, 
                 title={selectedCamera ? t("camera.editCamera") : t("camera.addCamera")}
                 centered
             >
-                <CameraForm toEditCamera={selectedCamera} setClosed={setCameraModalOpen} />
+                <CameraForm toEditCamera={selectedCamera} close={() => setCameraModalOpen(false)} fpfId={fpfId} />
             </Modal>
 
             {/* Header with Add Button */}

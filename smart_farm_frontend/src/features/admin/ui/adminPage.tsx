@@ -33,24 +33,38 @@ export const AdminPage = () => {
                 } else {
                     navigate(AppRoutes.base);
                 }
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadErrorGeneric'),
+                    message: `${error}`,
+                    color: 'red',
+                });
+                navigate(AppRoutes.base);
             });
         } else {
             navigate(AppRoutes.base);
         }
-    }, [auth.isAuthenticated, navigate]);
+    }, [auth.isAuthenticated, navigate, t]);
 
     const [confirmPasswordModal, setConfirmPasswordModal] = useState<{open: boolean, userId?: string}>({open: false});
 
     const resetPassword = (userId: string) => {
         restUserprofilePassword(userId).then((newPassword) => {
-            setConfirmPasswordModal({open: false});
             showNotification({
-                title: '',
+                title: t('common.updateSuccess'),
                 message: '',
                 color: 'green',
             });
             setPasswordModal({open: true, password: newPassword});
-        })
+        }).catch((error) => {
+           showNotification({
+               title: t('common.updateError'),
+               message: `${error}`,
+               color: 'red',
+           });
+        }).finally(() => {
+            setConfirmPasswordModal({open: false});
+        });
     }
 
     const [passwordModal, setPasswordModal] = useState<{open: boolean, password?: string}>({open: false});

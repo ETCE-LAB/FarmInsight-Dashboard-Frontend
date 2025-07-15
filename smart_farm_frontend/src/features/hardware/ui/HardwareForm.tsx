@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {useAuth} from "react-oidc-context";
-import {useAppDispatch} from "../../../utils/Hooks";
 import {Hardware} from "../models/hardware";
 import {Box, Button, Flex, TextInput} from "@mantine/core";
 import {showNotification} from "@mantine/notifications";
@@ -10,8 +8,6 @@ import {createHardware} from "../useCase/createHardware";
 
 
 export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string, close: () => void }> = ({ toEditHardware, fpfId, close }) => {
-    const auth = useAuth();
-    const dispatch = useAppDispatch();
     const {t} = useTranslation();
 
     const [hardware, setHardware] = useState<Hardware>({FPF: fpfId} as Hardware);

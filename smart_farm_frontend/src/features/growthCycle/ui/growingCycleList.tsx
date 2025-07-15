@@ -57,32 +57,22 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
 
     const confirmDelete = () => {
         if (cycleToDelete) {
-            removeGrowingCycle(cycleToDelete.id)
-                .then((result) => {
-                    if (result) {
-                        dispatch(deleteGrowingCycle(cycleToDelete.id));
-                        dispatch(changedGrowingCycle());
-                        showNotification({
-                            title: "Success",
-                            message: `Growing cycle for ${cycleToDelete.plants} has been deleted successfully.`,
-                            color: "green",
-                        });
-                    } else {
-                        showNotification({
-                            title: "Error",
-                            message: "Failed to delete the growing cycle",
-                            color: "red",
-                        });
-                    }
-                })
-                .catch(() => {
-                    showNotification({
-                        title: "Error",
-                        message: "Failed to delete the growing cycle",
-                        color: "red",
-                    });
-                })
-                .finally(() => closeAllModals());
+            removeGrowingCycle(cycleToDelete.id).then((result) => {
+                dispatch(deleteGrowingCycle(cycleToDelete.id));
+                dispatch(changedGrowingCycle());
+                showNotification({
+                    title: t('common.deleteSuccess'),
+                    message: '',
+                    color: "green",
+                });
+                closeAllModals();
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.deleteError'),
+                    message: `${error}`,
+                    color: "red",
+                });
+            });
         }
     };
 
@@ -153,7 +143,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                     <Text size="sm">
                                         <strong>{t("header.table.notes")}</strong>
                                     </Text>
-                                    <Text size="sm">{selectedCycle.note || "No notes available."}</Text>
+                                    <Text size="sm">{selectedCycle.note || t('growingCycleForm.noNotes')}</Text>
                                 </Grid.Col>
                             </Grid>
                         </Paper>
