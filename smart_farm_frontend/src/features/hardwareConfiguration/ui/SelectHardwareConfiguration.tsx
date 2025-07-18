@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Table, ScrollArea, TextInput, Text, HoverCard, Loader, Box } from "@mantine/core";
 import { HardwareConfiguration } from "../models/HardwareConfiguration";
 import { getAvailableHardwareConfiguration } from "../useCase/getAvailableHardwareConfiguration";
-import { getSensor } from "../../sensor/useCase/getSensor";
 import {useTranslation} from "react-i18next";
 import {EditSensor} from "../../sensor/models/Sensor";
 import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
+import {showNotification} from "@mantine/notifications";
 
 interface SelectHardwareConfigurationProps {
     fpfId: string;
@@ -25,36 +25,35 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
 
     useEffect(() => {
         setIsLoading(true); // Set loading state before fetching
-        getAvailableHardwareConfiguration(fpfId)
-            .then((resp) => {
-                setHardwareConfiguration(resp);
-                setIsLoading(false); // Set loading state to false after fetching
+        getAvailableHardwareConfiguration(fpfId).then((resp) => {
+            setHardwareConfiguration(resp);
+            setIsLoading(false); // Set loading state to false after fetching
+        }).catch((error) => {
+            showNotification({
+                title: t('common.loadingError'),
+                message: '',
+                color: 'red',
             });
-    }, [fpfId]);
+        });
+    }, [fpfId, t]);
 
     useEffect(() => {
         if (sensor && hardwareConfiguration?.length > 0) {
-            getSensor(sensor.id).then((sensor) => {
-                if (sensor) {
-                    const matchingConfig = hardwareConfiguration.find(
-                        (config) => config.sensorClassId === sensor.hardwareConfiguration.sensorClassId
-                    );
+            const matchingConfig = hardwareConfiguration.find(
+                (config) => config.sensorClassId === sensor.hardwareConfiguration.sensorClassId
+            );
 
-                    if (matchingConfig) {
-                        postHardwareConfiguration({
-                            sensorClassId: sensor.hardwareConfiguration.sensorClassId,
-                            additionalInformation: sensor.hardwareConfiguration.additionalInformation,
-                        });
+            if (matchingConfig) {
+                postHardwareConfiguration({
+                    sensorClassId: sensor.hardwareConfiguration.sensorClassId,
+                    additionalInformation: sensor.hardwareConfiguration.additionalInformation,
+                });
 
-                        setSelectedSensorClassId(sensor.hardwareConfiguration.sensorClassId);
-                        setAdditionalInformation(sensor.hardwareConfiguration.additionalInformation);
-                    } else {
-                        console.warn(`No matching hardware configuration found for sensorClassId: ${sensor.hardwareConfiguration.sensorClassId}`);
-                    }
-                }
-            });
+                setSelectedSensorClassId(sensor.hardwareConfiguration.sensorClassId);
+                setAdditionalInformation(sensor.hardwareConfiguration.additionalInformation);
+            }
         }
-    }, [sensor, hardwareConfiguration, postHardwareConfiguration]);
+    }, [sensor, hardwareConfiguration, postHardwareConfiguration, t]);
 
     const handleSensorClassSelected = (sensorClassId: string) => {
         const config = hardwareConfiguration.find((x) => x.sensorClassId === sensorClassId);

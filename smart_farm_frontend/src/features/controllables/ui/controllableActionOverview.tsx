@@ -19,6 +19,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useParams} from "react-router-dom";
 import {showNotification} from "@mantine/notifications";
 import {ControllableAction} from "../models/controllableAction";
+import {truncateText} from "../../../utils/utils";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -32,8 +33,6 @@ const getColor = (value: string) => {
     }
 };
 
-const truncateText = (text: string, limit: number): string =>
-    text.length > limit ? `${text.slice(0, limit)}...` : text;
 
 const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
     const { t } = useTranslation();

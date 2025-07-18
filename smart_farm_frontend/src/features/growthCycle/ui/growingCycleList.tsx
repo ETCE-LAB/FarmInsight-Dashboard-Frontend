@@ -15,11 +15,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../utils/store";
 import { useAuth } from "react-oidc-context";
 import { useMediaQuery } from "@mantine/hooks";
-import { moveArrayItem } from "../../../utils/utils";
+import { moveArrayItem, truncateText } from "../../../utils/utils";
 import { postGrowingCycleOrder } from "../useCase/postGrowingCycleOrder";
 
-const truncateText = (text: string, limit: number): string =>
-    text.length > limit ? `${text.slice(0, limit)}...` : text;
 
 const formatTotalHarvest = (cycle: GrowingCycle): string => {
     const totalHarvest =
@@ -103,11 +101,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                     <HarvestEntityForm
                         growingCycleId={selectedCycle.id}
                         toEditHarvestEntity={null}
-                        onSuccess={() => {
-                            setActiveModal(null);
-                            setActiveModal("details");
-                            dispatch(changedGrowingCycle());
-                        }}
+                        onSuccess={() => { setActiveModal("details"); }}
                     />
                 )}
             </Modal>
@@ -229,7 +223,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                     {cycle.startDate ? new Date(cycle.startDate).toLocaleDateString() : ""}
                                 </Text>
                                 <Text size="xs" c="dimmed">
-                                    {t("header.totalHarvestAmount")}: {formatTotalHarvest(cycle)}
+                                    {t("growingCycleForm.totalHarvestAmount")}: {formatTotalHarvest(cycle)}
                                 </Text>
                                 <Text size="xs" c="dimmed">
                                     {t("header.table.notes")}: {cycle.note ? truncateText(cycle.note, 20) : ""}
@@ -255,7 +249,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                         <Table.Th style={{ width: "5%" }} />
                                         <Table.Th style={{ width: "25%" }}>{t("header.table.name")}</Table.Th>
                                         <Table.Th style={{ width: "20%" }}>{t("header.table.planted")}</Table.Th>
-                                        <Table.Th style={{ width: "20%" }}>{t("header.totalHarvestAmount")}</Table.Th>
+                                        <Table.Th style={{ width: "20%" }}>{t("growingCycleForm.totalHarvestAmount")}</Table.Th>
                                         <Table.Th style={{ width: "20%" }}>{t("header.table.notes")}</Table.Th>
                                         {auth.user && <Table.Th style={{ width: "10%" }} />}
                                         {auth.user && <Table.Th style={{ width: "10%" }} />}

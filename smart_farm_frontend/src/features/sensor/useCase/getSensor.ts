@@ -4,7 +4,7 @@ import {EditSensor} from "../models/Sensor";
 import {BACKEND_URL} from "../../../env-config";
 
 
-export const getSensor = (sensorId: string): Promise<EditSensor|undefined> => {
+export const getSensor = (sensorId: string): Promise<EditSensor> => {
     const apiClient = new APIClient()
 
     const user = getUser();

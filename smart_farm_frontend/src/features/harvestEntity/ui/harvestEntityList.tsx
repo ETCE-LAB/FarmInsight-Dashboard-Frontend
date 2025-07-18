@@ -25,13 +25,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../utils/store";
 import { changedGrowingCycle, removeHarvestEntity } from "../../growthCycle/state/GrowingCycleSlice";
 import { useAuth } from "react-oidc-context";
+import { truncateText } from "../../../utils/utils";
 
-const truncateText = (text: string, limit: number): string => {
-    if (text.length > limit) {
-        return `${text.slice(0, limit)}...`;
-    }
-    return text;
-};
 
 const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleID }) => {
     const theme = useMantineTheme();
@@ -59,31 +54,24 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
 
     const confirmDelete = () => {
         if (entityToDelete) {
-            deleteHarvestEntity(entityToDelete.id)
-                .then((result) => {
-                    if (result) {
-                        dispatch(removeHarvestEntity({ cycleId: growingCycleID, harvestId: entityToDelete.id }));
-                        dispatch(changedGrowingCycle());
-                        showNotification({
-                            title: "Success",
-                            message: `Harvest entry for ${
-                                entityToDelete.date ? new Date(entityToDelete.date).toLocaleDateString() : "unknown date"
-                            } has been deleted successfully.`,
-                            color: "green",
-                        });
-                    }
-                })
-                .catch(() => {
-                    showNotification({
-                        title: "Error",
-                        message: "Failed to delete the harvest entry.",
-                        color: "red",
-                    });
-                })
-                .finally(() => {
-                    setShowDeleteConfirmation(false);
-                    setEntityToDelete(null);
+            deleteHarvestEntity(entityToDelete.id).then((result) => {
+                dispatch(removeHarvestEntity({ cycleId: growingCycleID, harvestId: entityToDelete.id }));
+                dispatch(changedGrowingCycle());
+                showNotification({
+                    title: t('common.deleteSuccess'),
+                    message: ``,
+                    color: "green",
                 });
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.deleteError'),
+                    message: `${error}`,
+                    color: "red",
+                });
+            }).finally(() => {
+                setShowDeleteConfirmation(false);
+                setEntityToDelete(null);
+            });
         }
     };
 
@@ -93,23 +81,13 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
             <Modal
                 opened={showHarvestEntityForm}
                 onClose={closeModal}
-                title={toEditHarvestEntity ? "Edit Harvest Entry" : "Add Harvest Entry"}
+                title={toEditHarvestEntity ? t('harvestEntityForm.editHarvest') : t('harvestEntityForm.addHarvest')}
                 centered
             >
                 <HarvestEntityForm
                     growingCycleId={growingCycleID}
                     toEditHarvestEntity={toEditHarvestEntity}
-                    onSuccess={() => {
-                        closeModal();
-                        dispatch(changedGrowingCycle());
-                        showNotification({
-                            title: "Success",
-                            message: toEditHarvestEntity
-                                ? "Harvest entity updated successfully!"
-                                : "Harvest entity added successfully!",
-                            color: "green",
-                        });
-                    }}
+                    onSuccess={closeModal}
                 />
             </Modal>
 
@@ -117,7 +95,7 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
             <Modal
                 opened={!!selectedEntity}
                 onClose={() => setSelectedEntity(null)}
-                title={`Harvest Entry Details`}
+                title={t('harvestEntityForm.details')}
                 centered
             >
                 {selectedEntity && (
@@ -150,7 +128,7 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
             <Modal
                 opened={showDeleteConfirmation}
                 onClose={() => setShowDeleteConfirmation(false)}
-                title="Are you sure you want to delete this harvest entry?"
+                title={t('harvestEntityForm.deleteTitle')}
                 centered
             >
                 <Text style={{ fontSize: "14px", textAlign: "center", marginBottom: "1rem" }}>
@@ -248,7 +226,7 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
                                     variant='light'
                                     color={theme.colors.blue[6]}
                                 >
-                                    {t("Add Harvest")}
+                                    {t("harvestEntityForm.addHarvest")}
                                 </Button>
                             </Flex>
                         )

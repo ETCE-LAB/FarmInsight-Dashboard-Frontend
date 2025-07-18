@@ -22,39 +22,37 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
         setHardware((prev) => ({ ...prev, [field]: value }));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (toEditHardware) {
-            try {
-                const updatedEntity = await updateHardware(hardware);
+            updateHardware(hardware).then((result) => {
                 showNotification({
-                    title: t('common.saveSuccess'),
+                    title: t('common.updateSuccess'),
                     message: '',
                     color: "green",
                 });
                 close();
-            } catch (error) {
+            }).catch ((error)=> {
                 showNotification({
-                    title: t('common.saveError'),
+                    title: t('common.updateError'),
                     message: `${error}`,
                     color: "red",
                 });
-            }
+            });
         } else {
-            try {
-                const newEntity = await createHardware(hardware);
+            createHardware(hardware).then((result) => {
                 showNotification({
                     title: t('common.saveSuccess'),
                     message: '',
                     color: "green",
                 });
                 close();
-            } catch (error) {
+            }).catch ((error)=> {
                 showNotification({
                     title: t('common.saveError'),
                     message: `${error}`,
                     color: "red",
                 });
-            }
+            });
         }
     };
 

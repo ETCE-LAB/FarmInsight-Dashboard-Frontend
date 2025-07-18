@@ -14,56 +14,57 @@ import {
     updateHarvestEntity
 } from "../../growthCycle/state/GrowingCycleSlice";
 
-export const HarvestEntityForm: React.FC<{
-    growingCycleId: string;
-    toEditHarvestEntity: HarvestEntity | null;
-    onSuccess: () => void;
-}> = ({ growingCycleId, toEditHarvestEntity, onSuccess }) => {
+export const HarvestEntityForm: React.FC<{ growingCycleId: string; toEditHarvestEntity: HarvestEntity | null; onSuccess: () => void; }> = ({ growingCycleId, toEditHarvestEntity, onSuccess }) => {
     const { t } = useTranslation();
     const [harvestEntity, setHarvestEntity] = useState<HarvestEntity>({ growingCycleId: growingCycleId } as HarvestEntity);
     const dispatch = useAppDispatch();
 
-    // Handle changes in input fields
     const handleInputChange = (field: string, value: any) => {
         setHarvestEntity((prev) => ({ ...prev, [field]: value }));
     };
 
-    // Handle form submission, either creating or updating a harvest entity
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (toEditHarvestEntity) {
-            try {
-                const updatedEntity = await modifyHarvestEntity(harvestEntity.id, harvestEntity);
+            modifyHarvestEntity(harvestEntity.id, harvestEntity).then((updatedEntity) => {
+                showNotification({
+                    title: t('common.updateSuccess'),
+                    message: "",
+                    color: "green",
+                });
                 dispatch(updateHarvestEntity(updatedEntity));
+                dispatch(changedGrowingCycle());
                 onSuccess();
-            } catch (error) {
+            }).catch((error) => {
                 showNotification({
-                    title: "Failed to save the harvest entity",
+                    title: t('common.updateError'),
                     message: `${error}`,
                     color: "red",
                 });
-            }
+            });
         } else {
-            try {
-                const newEntity = await createHarvestEntity(harvestEntity);
-                dispatch(addHarvestEntity({ cycleId: growingCycleId, harvestEntity: newEntity }));
-                onSuccess();
-            } catch (error) {
+            createHarvestEntity(harvestEntity).then((newEntity) => {
                 showNotification({
-                    title: "Failed to save the harvest entity",
+                    title: t('common.saveSuccess'),
+                    message: "",
+                    color: "green",
+                });
+                dispatch(addHarvestEntity({cycleId: growingCycleId, harvestEntity: newEntity}));
+                dispatch(changedGrowingCycle());
+                onSuccess();
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.saveError'),
                     message: `${error}`,
                     color: "red",
                 });
-            }
+            });
         }
-        dispatch(changedGrowingCycle());
     };
 
-    // Form validation to ensure required fields are filled
     const isFormValid = useMemo(() => {
         return harvestEntity.date && harvestEntity.amountInKg > 0;
     }, [harvestEntity]);
 
-    // Populate form with data when editing an existing entity
     useEffect(() => {
         if (toEditHarvestEntity) {
             setHarvestEntity(toEditHarvestEntity);
