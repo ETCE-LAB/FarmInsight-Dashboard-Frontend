@@ -38,18 +38,19 @@ export const EditOrganization = () => {
 
     useEffect(() => {
         if (organizationId)
-            getOrganization(organizationId)
-                .then((org) => {
-                    setOrganization(org);
-                    setNewOrganizationName(org.name);
-                    setIsPublic(org.isPublic);
-                    setIsModified(false);
-                })
-                .catch((error) => {
-                    console.error("Failed to fetch organization:", error);
+            getOrganization(organizationId).then((org) => {
+                setOrganization(org);
+                setNewOrganizationName(org.name);
+                setIsPublic(org.isPublic);
+                setIsModified(false);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
                 });
-    }, [organizationId, membershipEventListener]);
-
+            });
+    }, [organizationId, membershipEventListener, t]);
 
     useEffect(() => {
         if (organization) {
@@ -58,9 +59,15 @@ export const EditOrganization = () => {
                     (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
                 );
                 setIsAdmin(userIsAdmin);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [organization]);
+    }, [organization, t]);
 
     const handleRemoveUser = (user: UserProfile) => {
         setUsersToAdd((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
@@ -81,25 +88,22 @@ export const EditOrganization = () => {
                     membershipRole: "member",
                 })
             )
-        )
-            .then(() => {
-                showNotification({
-                    title: t('growingCycleForm.successTitle'),
-                    message: `${usersToAdd.length} ${t("header.userAdded")}`,
-                    color: 'green',
-                });
-                setUsersToAdd([]);
-                dispatch(changedMembership());
-                setUserModalOpen(false);
-            })
-            .catch((error) => {
-                showNotification({
-                    title: 'There was an error adding the users.',
-                    message: `${error}`,
-                    color: 'red',
-                });
-                console.error("Error adding users:", error);
+        ).then(() => {
+            showNotification({
+                title: t('common.success'),
+                message: `${usersToAdd.length} ${t("header.userAdded")}`,
+                color: 'green',
             });
+            setUsersToAdd([]);
+            dispatch(changedMembership());
+            setUserModalOpen(false);
+        }).catch((error) => {
+            showNotification({
+                title: t('common.error'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
     };
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,11 +117,7 @@ export const EditOrganization = () => {
     };
 
     const handleUpdateOrganization = () => {
-        if (!organizationId) return;
-
-        if (!organization?.id) {
-            throw new Error("Organization ID is undefined");
-        }
+        if (!organization) return;
 
         const updatedOrganization = {
             ...organization,
@@ -125,25 +125,22 @@ export const EditOrganization = () => {
             isPublic: isPublic,
         };
 
-        editOrganization(updatedOrganization)
-            .then(() => {
-                showNotification({
-                    title: t('growingCycleForm.successTitle'),
-                    message: `${t("header.organizationUpdated")}`,
-                    color: 'green',
-                });
-                setOrganization(updatedOrganization);
-                setIsModified(false);
-                setEditModalOpen(false);
-            })
-            .catch((error) => {
-                showNotification({
-                    title: 'Error updating organization',
-                    message: `${error}`,
-                    color: 'red',
-                });
-                console.error("Error updating organization:", error);
+        editOrganization(updatedOrganization).then(() => {
+            showNotification({
+                title: t('growingCycleForm.successTitle'),
+                message: `${t("header.organizationUpdated")}`,
+                color: 'green',
             });
+            setOrganization(updatedOrganization);
+            setIsModified(false);
+            setEditModalOpen(false);
+        }).catch((error) => {
+            showNotification({
+                title: t('common.updateError'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
     };
 
     return (

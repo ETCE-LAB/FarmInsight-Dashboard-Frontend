@@ -10,6 +10,7 @@ import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton"
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
 import {postSensorOrder} from "../useCase/postSensorOrder";
+import {showNotification} from "@mantine/notifications";
 
 export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, isAdmin:Boolean }> = ({ sensorsToDisplay, fpfId, isAdmin }) => {
     const [sensors, setSensors] = useState<Sensor[] | undefined>(undefined);
@@ -155,6 +156,12 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             setSensors(sensors_);
                             postSensorOrder(fpfId, sensors_.map((x: Sensor) => x.id)).then(() => {
                                 // don't need to get list again since we keep the order locally
+                            }).catch((error) => {
+                               showNotification({
+                                   title: t('common.saveError'),
+                                   message: `${error}`,
+                                   color: 'red',
+                               })
                             });
                         }}
                     >

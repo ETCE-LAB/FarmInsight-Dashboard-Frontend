@@ -51,14 +51,14 @@ export const TimeRangeSelector = ({ onDateChange, defaultSelected }: TimeRangeSe
         } else {
             setShowCalendar(true);
         }
-    }, [selectedRange]);
+    }, [onDateChange, selectedRange]);
 
     useEffect(() => {
         if (applyCustomDate) {
             onDateChange(customDate);
             setApplyCustomDate(false);
         }
-    }, [applyCustomDate]);
+    }, [applyCustomDate, customDate, onDateChange]);
 
     return (
         <Flex style={{ position: 'relative', width: '100%', justifyContent:'left' }}>

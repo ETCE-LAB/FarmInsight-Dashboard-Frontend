@@ -6,6 +6,7 @@ import {Location} from "../models/location";
 import {LocationForm} from "./LocationForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
+import {showNotification} from "@mantine/notifications";
 
 
 export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: React.Dispatch<React.SetStateAction<Location | undefined>>, preSelectedLocation?: Location}> = ({ setLocation, organizationId, preSelectedLocation }) => {
@@ -21,8 +22,14 @@ export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: 
         getLocationByOrganization(organizationId).then((locations) => {
             setLocations(locations);
             setIsLoading(false);
+        }).catch((error) => {
+            showNotification({
+                title: t('common.loadError'),
+                message: `${error}`,
+                color: "red",
+            });
         });
-    }, [organizationId, locationEvent]);
+    }, [organizationId, locationEvent, t]);
 
     useEffect(() => {
         if (preSelectedLocation) {

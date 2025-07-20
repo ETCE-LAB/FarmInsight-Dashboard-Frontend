@@ -5,6 +5,7 @@ import {Flex, Table, Text} from "@mantine/core";
 import {useTranslation} from "react-i18next";
 import {getColorFromLogLevel} from "../../../utils/utils";
 import TimeRangeSelector from "../../../utils/TimeRangeSelector";
+import {showNotification} from "@mantine/notifications";
 
 
 export const LogMessageList: React.FC<{ resourceType: string, resourceId?: string }> = ({ resourceType, resourceId }) => {
@@ -17,7 +18,13 @@ export const LogMessageList: React.FC<{ resourceType: string, resourceId?: strin
         if (resourceId || (resourceType === ResourceType.ADMIN))
             getLogMessages(resourceType, resourceId, 10, dateRange?.from, dateRange?.to).then(resp => {
                 setLogMessages(resp);
-            });
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: "red",
+                });
+            });;
     }, [resourceType, resourceId, dateRange]);
 
     return (

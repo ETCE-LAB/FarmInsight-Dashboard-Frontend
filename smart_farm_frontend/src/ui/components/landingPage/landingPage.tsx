@@ -29,6 +29,7 @@ import { BasicFPF } from '../../../features/fpf/models/BasicFPF';
 import { useTranslation } from 'react-i18next';
 import Footer from '../footer/footer';
 import { useMediaQuery } from '@mantine/hooks';
+import {showNotification} from "@mantine/notifications";
 
 const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     const auth = useAuth();
@@ -71,18 +72,32 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     useEffect(() => {
         setLoading(true);
-        receiveVisibleFpfs()
-            .then((r) => setFpfs(r))
-            .finally(() => setLoading(false));
-    }, []);
+        receiveVisibleFpfs().then((r) =>
+            setFpfs(r)
+        ).catch((error) => {
+            showNotification({
+                title: t('common.loadError'),
+                message: `${error}`,
+                color: 'red',
+            })
+        }).finally(() =>
+            setLoading(false)
+        );
+    }, [t]);
 
     useEffect(() => {
         if (auth.isAuthenticated) {
             getMyOrganizations().then((resp) => {
-                if (resp) setOrganizations(resp);
+                setOrganizations(resp);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
             });
         }
-    }, [auth.user, organizationEventListener]);
+    }, [auth.isAuthenticated, organizationEventListener, t]);
 
     const handleFpfSelect = (organizationId: string, fpfId: string) => {
         navigate(

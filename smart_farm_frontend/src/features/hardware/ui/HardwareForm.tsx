@@ -5,10 +5,13 @@ import {Box, Button, Flex, TextInput} from "@mantine/core";
 import {showNotification} from "@mantine/notifications";
 import {updateHardware} from "../useCase/updateHardware";
 import {createHardware} from "../useCase/createHardware";
+import {createdFpf} from "../../fpf/state/FpfSlice";
+import {useAppDispatch} from "../../../utils/Hooks";
 
 
 export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string, close: () => void }> = ({ toEditHardware, fpfId, close }) => {
     const {t} = useTranslation();
+    const dispatch = useAppDispatch();
 
     const [hardware, setHardware] = useState<Hardware>({FPF: fpfId} as Hardware);
 
@@ -30,6 +33,7 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
                     message: '',
                     color: "green",
                 });
+                dispatch(createdFpf());
                 close();
             }).catch ((error)=> {
                 showNotification({
@@ -45,6 +49,7 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
                     message: '',
                     color: "green",
                 });
+                dispatch(createdFpf());
                 close();
             }).catch ((error)=> {
                 showNotification({

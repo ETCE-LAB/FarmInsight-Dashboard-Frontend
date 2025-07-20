@@ -11,6 +11,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import {useAuth} from "react-oidc-context";
 import {receiveUserProfile} from "../../../../features/userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../../../features/userProfile/models/UserProfile";
+import {showNotification} from "@mantine/notifications";
 
 const languageOptions = [
     { code: 'en', label: 'English', flag: 'us' },
@@ -52,11 +53,17 @@ export const AppShellHeader: React.FC = () => {
                 if (user) {
                     setIsAdmin(user.systemRole === SystemRole.ADMIN);
                 }
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
             });
         } else {
             setIsAdmin(false);
         }
-    }, [auth.isAuthenticated]);
+    }, [auth.isAuthenticated, t]);
 
     const renderFlagImage = (flag: string, alt: string) => (
         <Image

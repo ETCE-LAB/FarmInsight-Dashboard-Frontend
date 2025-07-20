@@ -33,13 +33,25 @@ export const StatusPage = () => {
         if (auth.isAuthenticated) {
             receiveUserProfile().then((user) => {
                 setIsAdmin(user.systemRole === SystemRole.ADMIN);
+            }).catch((error) => {
+               showNotification({
+                   title: t('common.loadError'),
+                   message: `${error}`,
+                   color: 'red',
+               })
             });
 
             getMyOrganizations().then(orgs => {
                 if (orgs) setOrganizations(orgs)
-            })
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
+            });
         }
-    },[auth.isAuthenticated]);
+    }, [auth.isAuthenticated, t]);
 
     const SensorOverview: React.FC<{sensor: Sensor}> = ({sensor})=> {
         let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
@@ -64,7 +76,7 @@ export const StatusPage = () => {
             } catch (err) {
                 console.error("Error processing WebSocket message:", err);
             }
-        }, [lastMessage]);
+        }, [lastMessage, sensor.intervalSeconds]);
 
         const getSensorPing = () => {
             if (currentlyPinging) return;
@@ -115,7 +127,13 @@ export const StatusPage = () => {
         useEffect(() => {
             getFpf(id).then(f => {
                 setFpf(f);
-            })
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
+            });
         }, [id]);
 
         return (
@@ -168,7 +186,13 @@ export const StatusPage = () => {
         useEffect(() => {
             getOrganization(id).then(org => {
                 setOrganization(org);
-            })
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
+            });
         }, [id]);
 
         const [show, setShow] = useState(true);

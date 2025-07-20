@@ -8,6 +8,7 @@ import {useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 import {getOrganization} from "../../organization/useCase/getOrganization";
+import {showNotification} from "@mantine/notifications";
 
 
 export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:boolean}> = ({ locationsToDisplay , isAdmin }) => {
@@ -21,19 +22,22 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
     useEffect(() => {
         if (organizationId) {
             getOrganization(organizationId).then((orga) => {
-                if (orga !== undefined) {
-                    setLocations(orga.locations);
-                }
+                setLocations(orga.locations);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: "red",
+                });
             });
         }
-    }, [locationEventListener, organizationId]);
+    }, [locationEventListener, organizationId, t]);
 
     useEffect(() => {
         if (locationsToDisplay && locationsToDisplay.length > 0) {
             setLocations(locationsToDisplay);
         }
     }, [locationsToDisplay]);
-
 
     const onClickEdit = (location: Location) => {
         const editLocation: Location = {

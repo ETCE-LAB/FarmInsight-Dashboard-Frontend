@@ -9,6 +9,7 @@ import {AppRoutes} from "../../../utils/appRoutes";
 import {Organization} from "../models/Organization";
 import { useTranslation } from 'react-i18next';
 import {IconEye, IconEyeOff} from "@tabler/icons-react";
+import {showNotification} from "@mantine/notifications";
 
 export const OrganizationForm: React.FC = () => {
     const auth = useAuth();
@@ -22,14 +23,21 @@ export const OrganizationForm: React.FC = () => {
 
     const handleSave = () => {
         createOrganization({ name, isPublic }).then((org: Organization) => {
-            if (org) {
-                dispatch(createdOrganization());
-                triggerCreateOrgaError(false)
-                navigate(AppRoutes.organization.replace(":organizationId", org.id));
-            }
-            else{
-                triggerCreateOrgaError(true)
-            }
+            showNotification({
+                title: t('common.saveSuccess'),
+                message: ``,
+                color: 'green',
+            });
+
+            dispatch(createdOrganization());
+            navigate(AppRoutes.organization.replace(":organizationId", org.id));
+        }).catch((error) => {
+            showNotification({
+                title: t('common.saveError'),
+                message: `${error}`,
+                color: 'red',
+            });
+            triggerCreateOrgaError(true);
         });
     };
 

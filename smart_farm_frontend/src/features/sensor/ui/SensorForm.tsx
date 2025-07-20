@@ -49,8 +49,8 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
             setClosed(false);
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Updating Sensor on your FPF',
+                title: t('common.loading'),
+                message: t('sensor.updatingSensor'),
                 autoClose: false,
                 withCloseButton: false,
             });
@@ -67,26 +67,24 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 aggregate,
                 hardwareConfiguration,
             }).then((sensor) => {
-                if (sensor) {
-                    dispatch(receivedSensor());
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `Sensor updated successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error updating the sensor.',
-                        message: `${sensor}`,
-                        color: 'red',
-                        loading: false,
-                        autoClose: 10000,
-                    });
-                }
+                notifications.update({
+                    id,
+                    title: t('common.updateSuccess'),
+                    message: ``,
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
+                dispatch(receivedSensor());
+            }).catch((error) => {
+                notifications.update({
+                    id,
+                    title: t('common.updateError'),
+                    message: `${error}`,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 10000,
+                });
             });
         }
     };
@@ -97,36 +95,34 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
             const interval = +intervalSeconds;
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Saving Sensor on your FPF',
+                title: t('common.loading'),
+                message: t('sensor.creatingSensor'),
                 autoClose: false,
                 withCloseButton: false,
             });
             createSensor({
                 id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, aggregate ,hardwareConfiguration,
             }).then((response) => {
-                if (response) {
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `Sensor saved successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error saving the sensor.',
-                        message: `${response}`,
-                        color: 'red',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                }
+                notifications.update({
+                    id,
+                    title: t('common.saveSuccess'),
+                    message: ``,
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
                 dispatch(receivedSensor());
 
                 navigate(AppRoutes.editFpf.replace(":organizationId", organizationId).replace(":fpfId", fpfId));
+            }).catch((error) => {
+                notifications.update({
+                    id,
+                    title: t('common.saveError'),
+                    message: `${error}`,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 2000,
+                });
             });
         }
     };

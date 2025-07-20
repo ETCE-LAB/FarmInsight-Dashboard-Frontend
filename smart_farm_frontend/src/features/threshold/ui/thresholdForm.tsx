@@ -19,26 +19,38 @@ export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Thresho
         }
     }, [toEditThreshold]);
 
-    // Handle form submission, either creating or updating a harvest entity
-    const handleSubmit = async () => {
-        try {
-            if (toEditThreshold) {
-                await modifyThreshold(toEditThreshold.id, threshold);
-            } else {
-                await createThreshold(threshold);
-            }
-            showNotification({
-                title: t('threshold.successSave'),
-                message: ``,
-                color: "green",
+    const handleSubmit = () => {
+        if (toEditThreshold) {
+            modifyThreshold(toEditThreshold.id, threshold).then((v) => {
+                showNotification({
+                    title: t('common.updateSuccess'),
+                    message: ``,
+                    color: "green",
+                });
+                dispatch(receivedSensor());
+                onSuccess();
+            }).catch((error) => {
+                showNotification({
+                    title: t('threshold.failedToSave'),
+                    message: `${error}`,
+                    color: "red",
+                });
             });
-            dispatch(receivedSensor());
-            onSuccess();
-        } catch (error) {
-            showNotification({
-                title: t('threshold.failedToSave'),
-                message: `${error}`,
-                color: "red",
+        } else {
+            createThreshold(threshold).then((v) => {
+                showNotification({
+                    title: t('common.saveSuccess'),
+                    message: ``,
+                    color: "green",
+                });
+                dispatch(receivedSensor());
+                onSuccess();
+            }).catch((error) => {
+                showNotification({
+                    title: t('threshold.failedToSave'),
+                    message: `${error}`,
+                    color: "red",
+                });
             });
         }
     };

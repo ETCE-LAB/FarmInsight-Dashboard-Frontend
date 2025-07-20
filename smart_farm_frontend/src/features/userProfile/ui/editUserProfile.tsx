@@ -25,43 +25,40 @@ export const EditUserProfile = () => {
     };
 
     const handleSave = async () => {
-        try {
-            await modifyUserProfile({
-                name: editableProfile.name,
-            });
-            dispatch(changedUserProfile());
+        modifyUserProfile({
+            name: editableProfile.name,
+        }).then((result) => {
             showNotification({
                 title: t("userprofile.notifications.success.title"),
                 message: t("userprofile.notifications.success.message"),
                 color: 'green',
             });
-        } catch (error) {
+            dispatch(changedUserProfile());
+        }).catch((error) => {
             showNotification({
                 title: t("userprofile.notifications.error.title"),
                 message: `${error}`,
                 color: 'red',
             });
-        }
+        });
     };
 
     useEffect(() => {
         if (auth.user) {
-            receiveUserProfile()
-                .then((resp) => {
-                    if (resp) {
-                        setEditableProfile({
-                            email: resp.email || '',
-                            name: resp.name || '',
-                        });
-                    } else {
-                        console.warn('No user profile data received');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user profile:', error);
+            receiveUserProfile().then((resp) => {
+                setEditableProfile({
+                    email: resp.email || '',
+                    name: resp.name || '',
                 });
+            }).catch((error) => {
+                showNotification({
+                    title: t("common.loadError"),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
         }
-    }, [auth.user, userProfileReceivedEventListener]);
+    }, [auth.user, userProfileReceivedEventListener, t]);
 
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder>
