@@ -15,7 +15,7 @@ export const EditUserProfile = () => {
         email: '',
         name: ''
     });
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const auth = useAuth();
     const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
     const dispatch = useAppDispatch();
@@ -84,7 +84,7 @@ export const EditUserProfile = () => {
                 <Group mt="md">
                     <Button
                         component="a"
-                        href={`${BACKEND_URL}/api/change-password`}
+                        href={`${BACKEND_URL}/api/change-password?lc=${i18n.language}`}
                         target="_blank"
                         variant="light"
                         leftSection={<IconLockCog/>}
