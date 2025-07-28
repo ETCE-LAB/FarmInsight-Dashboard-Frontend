@@ -21,6 +21,7 @@ import {showNotification} from "@mantine/notifications";
 import {AppRoutes} from "../../../utils/appRoutes";
 import {useNavigate} from "react-router-dom";
 import {useInterval} from "@mantine/hooks";
+import {AuthRoutes} from "../../../utils/Router";
 
 export const StatusPage = () => {
     const auth = useAuth();
@@ -50,8 +51,10 @@ export const StatusPage = () => {
                     color: 'red',
                 })
             });
+        } else {
+            navigate(AuthRoutes.signin);
         }
-    }, [auth.isAuthenticated, t]);
+    }, [auth.isAuthenticated, t, navigate]);
 
     const SensorOverview: React.FC<{sensor: Sensor}> = ({sensor})=> {
         let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);

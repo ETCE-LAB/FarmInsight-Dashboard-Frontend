@@ -10,6 +10,7 @@ import {getAllUserprofiles} from "../useCase/getAllUserprofiles";
 import {restUserprofilePassword} from "../useCase/resetUserprofilePassword";
 import {showNotification} from "@mantine/notifications";
 import {setUserprofileActiveState} from "../useCase/setUserprofileActiveState";
+import {AuthRoutes} from "../../../utils/Router";
 
 
 export const AdminPage = () => {
@@ -42,7 +43,7 @@ export const AdminPage = () => {
                 navigate(AppRoutes.base);
             });
         } else {
-            navigate(AppRoutes.base);
+            navigate(AuthRoutes.signin);
         }
     }, [auth.isAuthenticated, navigate, t]);
 

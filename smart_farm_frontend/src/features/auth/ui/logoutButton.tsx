@@ -12,7 +12,7 @@ export const LogoutButton = () => {
         <>
         {
             auth.isAuthenticated &&
-            (<Button onClick={() => { void auth.removeUser(); window.location.href = `${BACKEND_URL}/api/logout?lc=${i18n.language}` }} variant="filled" color="red">{t('header.logout')}</Button>)
+            (<Button onClick={() => { window.location.href = `${BACKEND_URL}/api/logout?lc=${i18n.language}`; void auth.removeUser();  }} variant="filled" color="red">{t('header.logout')}</Button>)
         }
         </>
     )

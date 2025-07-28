@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import { getOrganization } from "../useCase/getOrganization";
 import { Organization } from "../models/Organization";
 import { Button, Card, Modal, TextInput, Switch, Flex, Title, Text, Box, Badge, } from "@mantine/core";
@@ -20,10 +20,17 @@ import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {LocationList} from "../../location/ui/LocationList";
+import {useAuth} from "react-oidc-context";
+import {AuthRoutes} from "../../../utils/Router";
 
 export const EditOrganization = () => {
-    const { organizationId } = useParams();
     const { t } = useTranslation();
+    const auth = useAuth();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const { organizationId } = useParams();
+
     const [organization, setOrganization] = useState<Organization | null>(null);
     const [usersToAdd, setUsersToAdd] = useState<UserProfile[]>([]);
     const [userModalOpen, setUserModalOpen] = useState(false);
@@ -34,10 +41,9 @@ export const EditOrganization = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const membershipEventListener = useSelector((state: RootState) => state.membership.changeMembershipEvent);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (organizationId)
+        if (auth.isAuthenticated && organizationId) {
             getOrganization(organizationId).then((org) => {
                 setOrganization(org);
                 setNewOrganizationName(org.name);
@@ -50,7 +56,10 @@ export const EditOrganization = () => {
                     color: 'red',
                 });
             });
-    }, [organizationId, membershipEventListener, t]);
+        } else {
+            navigate(AuthRoutes.signin);
+        }
+    }, [auth.isAuthenticated, navigate, organizationId, membershipEventListener, t]);
 
     useEffect(() => {
         if (organization) {

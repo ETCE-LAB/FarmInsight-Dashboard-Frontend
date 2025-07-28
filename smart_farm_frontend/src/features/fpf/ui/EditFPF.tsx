@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
@@ -24,13 +24,17 @@ import {ActionQueueList} from "../../controllables/ui/actionQueueList";
 import {HardwareList} from "../../hardware/ui/hardwareList";
 import {Hardware} from "../../hardware/models/hardware";
 import {showNotification} from "@mantine/notifications";
+import {useAuth} from "react-oidc-context";
+import {AuthRoutes} from "../../../utils/Router";
 
 
 export const EditFPF: React.FC = () => {
+    const auth = useAuth();
+    const navigate = useNavigate();
     const { organizationId, fpfId } = useParams();
     const { t } = useTranslation();
-    const [organization, setOrganization] = useState<Organization>();
 
+    const [organization, setOrganization] = useState<Organization>();
     const [sensors, setSensors] = useState<Sensor[]>();
     const [cameras, setCameras] = useState<Camera[]>();
     const [hardware, setHardware] = useState<Hardware[]>();
@@ -48,7 +52,28 @@ export const EditFPF: React.FC = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (fpfId) {
+        if (auth.isAuthenticated) {
+            if (fpf && organization) {
+                receiveUserProfile().then((user) => {
+                    const userIsAdmin = organization.memberships.some(
+                        (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
+                    );
+                    setIsAdmin(userIsAdmin);
+                }).catch((error) => {
+                    showNotification({
+                        title: t('common.loadError'),
+                        message: `${error}`,
+                        color: 'red',
+                    });
+                });
+            }
+        } else {
+            navigate(AuthRoutes.signin);
+        }
+    }, [auth.isAuthenticated, fpf, navigate, organization, t]);
+    
+    useEffect(() => {
+        if (auth.isAuthenticated && fpfId) {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
                 dispatch(setControllableAction(resp.ControllableAction));
@@ -60,7 +85,7 @@ export const EditFPF: React.FC = () => {
                 });
             });
         }
-    }, [fpfId, fpfCreatedEventListener, dispatch, t]);
+    }, [auth.isAuthenticated, fpfId, fpfCreatedEventListener, dispatch, t]);
 
     useEffect(() => {
         if (fpf?.Sensors && fpf.Sensors.length >= 1) {
@@ -75,7 +100,7 @@ export const EditFPF: React.FC = () => {
     }, [fpf]);
 
     useEffect(() => {
-        if (organizationId) {
+        if (auth.isAuthenticated && organizationId) {
             getOrganization(organizationId).then(resp => {
                 setOrganization(resp);
             }).catch((error) => {
@@ -86,7 +111,7 @@ export const EditFPF: React.FC = () => {
                 });
             });
         }
-    }, [organizationId, t]);
+    }, [auth.isAuthenticated, organizationId, t]);
 
     useEffect(() => {
         if (fpfId) {
@@ -115,23 +140,6 @@ export const EditFPF: React.FC = () => {
             });
         }
     }, [CameraEventListener]);
-
-    useEffect(() => {
-        if (fpf && organization) {
-            receiveUserProfile().then((user) => {
-                const userIsAdmin = organization.memberships.some(
-                    (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
-                );
-                setIsAdmin(userIsAdmin);
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadError'),
-                    message: `${error}`,
-                    color: 'red',
-                });
-            });
-        }
-    }, [fpf, organization, t]);
 
     return (
         <Stack gap={"md"}>
