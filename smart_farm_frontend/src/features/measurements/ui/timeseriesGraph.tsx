@@ -20,7 +20,13 @@ import {
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import {useInterval, useMediaQuery} from '@mantine/hooks';
-import {formatFloatValue, getSensorStateColor, getSensorStateColorHint, getWsUrl} from "../../../utils/utils";
+import {
+    formatFloatValue,
+    getBackendTranslation,
+    getSensorStateColor,
+    getSensorStateColorHint,
+    getWsUrl
+} from "../../../utils/utils";
 import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
@@ -105,7 +111,7 @@ export function computeHourlyConsumption(measurements: Measurement[]) {
 }
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: string } | null }> = ({ sensor, dates }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const auth = useAuth();
     const theme = useMantineTheme();
 
@@ -278,12 +284,12 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                             </HoverCard.Dropdown>
                         </HoverCard>
                     }
-                    <Title order={4} c={theme.colors.blue[6]}>{sensor.name}</Title>
+                    <Title order={4} c={theme.colors.blue[6]}>{getBackendTranslation(sensor.name, i18n.language)}</Title>
                     {allowMovingAverage && (
                         <Switch
                             style={{float: "right" } }
                             label={t("sensor.movingAverage")}
-                            onChange={e => {console.log(e.currentTarget.checked);setCalculateMovingAverage(e.currentTarget.checked)}}
+                            onChange={e => {setCalculateMovingAverage(e.currentTarget.checked)}}
                         />
                     )}
                 </Flex>

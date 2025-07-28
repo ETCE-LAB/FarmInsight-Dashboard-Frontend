@@ -21,6 +21,7 @@ import { Livestream } from "./Livestream";
 import { IconCamera, IconVideo, IconVideoOff, IconMaximize } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { BACKEND_URL } from "../../../env-config";
+import {getBackendTranslation} from "../../../utils/utils";
 
 export interface displayObject {
     url: string;
@@ -35,7 +36,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
     const [fullscreenView, setFullscreenView] = useState<boolean>(false);
     const [selectedObject, setSelectedObject] = useState<displayObject | null>(null);
     const auth = useAuth();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
@@ -58,7 +59,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                     if (showLivestream) {
                         items.push({
                             url: `${BACKEND_URL}/api/cameras/${camera.id}/livestream`,
-                            title: `${camera.name} LiveStream`,
+                            title: `${getBackendTranslation(camera.name, i18n.language)} LiveStream`,
                             isLiveStream: true,
                         });
                     } else {
@@ -67,7 +68,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                         if (image) {
                             items.push({
                                 url: image.url,
-                                title: camera.name,
+                                title: getBackendTranslation(camera.name, i18n.language),
                                 isLiveStream: false,
                             });
                         }

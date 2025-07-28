@@ -49,7 +49,7 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
                 withCloseButton: false,
             });
             updateCamera({
-                fpfId, id: "", name, location, modelNr, resolution, isActive, intervalSeconds, snapshotUrl, livestreamUrl
+                fpfId, id: toEditCamera.id, name, location, modelNr, resolution, isActive, intervalSeconds, snapshotUrl, livestreamUrl
             }).then((camera) => {
                 close();
                 dispatch(createdCamera())
@@ -62,12 +62,11 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
                     autoClose: 2000,
                 });
             }).catch((error) => {
-                console.dir(error);
                 notifications.update({
                     id,
                     title: t('common.updateError'),
                     message: `${error}`,
-                    color: 'green',
+                    color: 'red',
                     loading: false,
                     autoClose: 2000,
                 });

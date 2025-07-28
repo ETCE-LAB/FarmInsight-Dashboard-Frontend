@@ -19,7 +19,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {useParams} from "react-router-dom";
 import {showNotification} from "@mantine/notifications";
 import {ControllableAction} from "../models/controllableAction";
-import {truncateText} from "../../../utils/utils";
+import {getBackendTranslation, truncateText} from "../../../utils/utils";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -33,9 +33,8 @@ const getColor = (value: string) => {
     }
 };
 
-
 const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const controllableAction = useSelector(
         (state: RootState) => state.controllableAction.controllableAction
@@ -76,7 +75,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
         }
     }, [organizationId, t]);
 
-        const handleTriggerChange = async (action: ControllableAction, triggerId: string, value: string, isActive: boolean) => {
+    const handleTriggerChange = async (action: ControllableAction, triggerId: string, value: string, isActive: boolean) => {
         const hardwareId = action?.hardware?.id
 
         if (action && hardwareId) {
@@ -244,7 +243,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                             )}
 
                             <Flex justify="space-between" align="center" mb="sm" style={{ overflowX: "auto", marginTop: 5 }}>
-                                <Text fw={700} size="lg">{actions[0].hardware?.name}</Text>
+                                <Text fw={700} size="lg">{getBackendTranslation(actions[0].hardware?.name, i18n.language)}</Text>
                                 {hasAutoInGroup && hasActiveManualInGroup && (
                                     <Button
                                         size="compact-xs"
@@ -301,7 +300,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                         }>
                                             <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
                                                 <Text fw={600} tt="capitalize" style={{ whiteSpace: "nowrap", minWidth: 150 }}>
-                                                    {truncateText(action.name, 30)}
+                                                    {truncateText(getBackendTranslation(action.name, i18n.language), 30)}
                                                 </Text>
 
                                                 <Flex direction="row" gap="xs" align="center" wrap="wrap">

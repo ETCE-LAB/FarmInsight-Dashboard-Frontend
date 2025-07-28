@@ -62,7 +62,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                             </div>
                         </Table.Td>
                     }
-                    <Table.Td>{sensor.name}</Table.Td>
+                    <Table.Td>{getBackendTranslation(sensor.name, i18n.language)}</Table.Td>
                     <Table.Td>{sensor.location}</Table.Td>
                     <Table.Td>{sensor.modelNr}</Table.Td>
                     <Table.Td>{getBackendTranslation(sensor.parameter, i18n.language)}</Table.Td>

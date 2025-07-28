@@ -10,7 +10,7 @@ import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
 import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 import {useTranslation} from "react-i18next";
-import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/utils";
+import {formatFloatValue, getBackendTranslation, getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import useWebSocket from "react-use-websocket";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
@@ -26,7 +26,7 @@ import {AuthRoutes} from "../../../utils/Router";
 export const StatusPage = () => {
     const auth = useAuth();
     const [organizations, setOrganizations] = useState<OrganizationMembership[]>([]);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
@@ -104,7 +104,7 @@ export const StatusPage = () => {
 
         return (
             <Table.Tr>
-                <Table.Td>{sensor.name}</Table.Td>
+                <Table.Td>{getBackendTranslation(sensor.name, i18n.language)}</Table.Td>
                 <Table.Td>
                     <Flex align="center" gap="xs">
                         <HoverCard>
