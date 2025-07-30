@@ -9,6 +9,7 @@ import { createdCamera } from "../state/CameraSlice";
 import { useTranslation } from "react-i18next";
 import {notifications} from "@mantine/notifications";
 import { IconVideo, IconVideoOff } from "@tabler/icons-react";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 
 export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void, fpfId: string }> = ({ toEditCamera, close, fpfId }) => {
@@ -123,12 +124,12 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
                     <Grid gutter="md">
                         {/* Name */}
                         <Grid.Col span={6}>
-                            <TextInput
+                            <MultiLanguageInput
                                 label={t("header.name")}
                                 placeholder={t("header.enterName")}
-                                required
+                                required={true}
                                 value={name}
-                                onChange={(e) => setName(e.currentTarget.value)}
+                                onChange={(value) => setName(value)}
                                 description={t("camera.hint.nameHint")} // Add hint for the name field
                             />
                         </Grid.Col>

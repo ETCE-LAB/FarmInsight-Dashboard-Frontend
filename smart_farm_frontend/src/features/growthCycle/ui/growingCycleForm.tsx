@@ -8,6 +8,7 @@ import { modifyGrowingCycle } from "../useCase/modifyGrowingCycle";
 import { useAppDispatch } from "../../../utils/Hooks";
 import { addGrowingCycle, updateGrowingCycle } from "../state/GrowingCycleSlice";
 import { showNotification } from "@mantine/notifications";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 export const GrowingCycleForm: React.FC<{
     fpfId: string;
@@ -93,13 +94,12 @@ export const GrowingCycleForm: React.FC<{
 
     return (
         <>
-            <TextInput
+            <MultiLanguageInput
                 label={t("growingCycleForm.plantTypeLabel")}
                 placeholder={t("growingCycleForm.plantTypePlaceholder")}
-                required
+                required={true}
                 value={growingCycle.plants || ""}
-                onChange={(e) => handleInputChange("plants", e.currentTarget.value)}
-                style={{ width: "100%" }}
+                onChange={(value) => handleInputChange("plants", value)}
                 description={t("growingCycleForm.hint.plantTypeHint")}
             />
             <Flex gap="50px" style={{ marginTop: "15px" }}>

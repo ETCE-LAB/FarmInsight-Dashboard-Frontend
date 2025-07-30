@@ -7,6 +7,7 @@ import {updateHardware} from "../useCase/updateHardware";
 import {createHardware} from "../useCase/createHardware";
 import {createdFpf} from "../../fpf/state/FpfSlice";
 import {useAppDispatch} from "../../../utils/Hooks";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 
 export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string, close: () => void }> = ({ toEditHardware, fpfId, close }) => {
@@ -63,16 +64,12 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
 
     return (
         <Box>
-            <TextInput
+            <MultiLanguageInput
                 label={t("hardware.name")}
                 placeholder={t("hardware.name")}
-                required
-                type="string"
+                required={true}
                 value={hardware.name}
-                onChange={(e) => {
-                    handleInputChange("name", e.currentTarget.value);
-                }}
-                style={{ width: "100%", marginBottom: "15px" }}
+                onChange={(value) => handleInputChange("name", value)}
             />
             <Flex justify="flex-end">
                 <Button

@@ -28,11 +28,12 @@ import {updateControllableAction} from "../useCase/updateControllableAction";
 import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
 import i18n from "i18next";
 import {ActionScript} from "../models/actionScript";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 
 export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditAction, setClosed }) => {
     const auth = useAuth();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch();
 
@@ -56,10 +57,10 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 const initial: Hardware = {
                     id: toEditAction.hardware.id,
                     FPF: fpfId || "",
-                    name: toEditAction.hardware.name
+                    name: toEditAction.hardware.name,
                 };
                 setHardware(initial);
-                setHardwareInput(initial.name);
+                setHardwareInput(getBackendTranslation(initial.name, i18n.language));
             } else {
                 // Reset states when no hardware is present
                 setHardware({id: "", FPF: "", name: ""});
@@ -88,7 +89,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             fetchAvailableHardware(fpfId).then(hardwareList => {
                 setAvailableHardware(hardwareList)
             }).catch((error) => {
-                console.dir(error);
                 showNotification({
                     title: t('common.loadError') + t('hardware.title'),
                     message: `${error}`,
@@ -99,7 +99,6 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
             fetchAvailableActionScripts().then(scripts => {
                 setAvailableActionScripts(scripts);
             }).catch((error) => {
-                console.dir(error);
                 showNotification({
                     title: t('common.loadErrorGeneric'),
                     message: `${error}`,
@@ -227,12 +226,12 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                     <Grid gutter="md">
                         {/* Name */}
                         <Grid.Col span={12}>
-                            <TextInput
+                            <MultiLanguageInput
                                 label={t("header.name")}
                                 placeholder={t("header.enterName")}
-                                required
+                                required={true}
                                 value={name}
-                                onChange={(e) => setName(e.currentTarget.value)}
+                                onChange={(value) => setName(value)}
                                 description={t("controllableActionList.hint.nameHint")}
                             />
                         </Grid.Col>
@@ -243,7 +242,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                 <Autocomplete
                                     label="Hardware"
                                     placeholder="Search hardware"
-                                    data={availableHardware?.map((v) => ({value: v.id, label: v.name}))}
+                                    data={availableHardware?.map((v) => ({value: v.id, label: getBackendTranslation(v.name, i18n.language)}))}
                                     value={hardwareInput}
                                     description={t("controllableActionList.hint.hardware")}
                                     onChange={(val) => {

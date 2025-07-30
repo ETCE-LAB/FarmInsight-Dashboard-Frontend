@@ -13,6 +13,7 @@ import { updateSensor } from "../useCase/updateSensor";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconMobiledata, IconMobiledataOff, IconSum, IconSumOff} from "@tabler/icons-react";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditSensor, setClosed }) => {
     const auth = useAuth();
@@ -141,12 +142,12 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                     <Grid gutter="md">
                         {/* Name */}
                         <Grid.Col span={6}>
-                            <TextInput
+                            <MultiLanguageInput
                                 label={t("header.name")}
                                 placeholder={t("header.enterName")}
-                                required
+                                required={true}
                                 value={name}
-                                onChange={(e) => setName(e.currentTarget.value)}
+                                onChange={(value) => {console.log(value);setName(value);}}
                                 description={t("sensor.hint.nameHint")}
                             />
                         </Grid.Col>

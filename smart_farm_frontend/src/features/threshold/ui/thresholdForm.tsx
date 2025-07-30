@@ -7,6 +7,7 @@ import {Threshold} from "../models/threshold";
 import {modifyThreshold} from "../useCase/modifyThreshold";
 import {createThreshold} from "../useCase/createThreshold";
 import {receivedSensor} from "../../sensor/state/SensorSlice";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Threshold | null; onSuccess: () => void;}> = ({ sensorId, toEditThreshold, onSuccess }) => {
     const { t } = useTranslation();
@@ -89,11 +90,10 @@ export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Thresho
                 style={{ width: "100%", marginBottom: "15px" }}
                 description={t('threshold.colorHint')}
             />
-            <TextInput
+            <MultiLanguageInput
                 label={t("threshold.description")}
                 value={threshold.description}
-                onChange={(v) => handleInputChange("description", v.currentTarget.value)}
-                style={{ width: "100%", marginBottom: "15px" }}
+                onChange={(value) => handleInputChange("description", value)}
             />
             <Flex justify="flex-end">
                 <Button

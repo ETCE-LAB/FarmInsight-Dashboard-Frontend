@@ -13,10 +13,11 @@ import {executeTrigger} from "../useCase/executeTrigger";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {showNotification} from "@mantine/notifications";
+import {getBackendTranslation} from "../../../utils/utils";
 
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const controllableAction = useSelector((state: RootState) => state.controllableAction.controllableAction);
 
     const dispatch = useAppDispatch();
@@ -254,7 +255,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                             <IconChevronRight size={16}/>}
                                     </Button>
                                 </Table.Td>
-                                <Table.Td>{action.name}</Table.Td>
+                                <Table.Td>{getBackendTranslation(action.name, i18n.language)}</Table.Td>
                                 <Table.Td>
                                     <Flex justify="center" align="center">
                                         <Badge color={action.isActive ? "green" : "gray"}>
@@ -262,9 +263,9 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                         </Badge>
                                     </Flex>
                                 </Table.Td>
-                                <Table.Td>{action.actionScriptName}</Table.Td>
+                                <Table.Td>{getBackendTranslation(action.actionScriptName, i18n.language)}</Table.Td>
                                 <Table.Td>{action.maximumDurationSeconds}</Table.Td>
-                                <Table.Td>{action.hardware?.name}</Table.Td>
+                                <Table.Td>{getBackendTranslation(action.hardware?.name, i18n.language)}</Table.Td>
                                 <Table.Td><LogMessageModalButton resourceType='action' resourceId={action.id} /></Table.Td>
                                 {isAdmin && (
                                     <Table.Td>
@@ -370,7 +371,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                 <Table.Td>{trigger.type}</Table.Td>
                                                                 <Table.Td>{trigger.actionValueType}</Table.Td>
                                                                 <Table.Td>{trigger.actionValue}</Table.Td>
-                                                                <Table.Td>{trigger.description}</Table.Td>
+                                                                <Table.Td>{getBackendTranslation(trigger.description, i18n.language)}</Table.Td>
                                                                 <Table.Td>{trigger.triggerLogic}</Table.Td>
                                                                 <Table.Td>
                                                                     <Flex justify="space-between" align="center">

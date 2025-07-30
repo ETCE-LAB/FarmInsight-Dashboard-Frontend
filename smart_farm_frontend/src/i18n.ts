@@ -30,6 +30,8 @@ i18n
                         executeSuccess: 'Executed successfully',
                         executeError: 'Failed to execute',
                         networkError: 'Network response not ok. Status:',
+                        inEnglish: 'in english',
+                        inGerman: 'in german (optional)',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -247,7 +249,7 @@ i18n
                                 actionValueTypeHint: 'Set the correct type of the action value. For example the value "On" is string.',
                                 actionValueHint: 'Check on your desired action script for allowed values.',
                                 triggerLogicHint: 'Advanced trigger logic for the trigger in JSON format.',
-                                descriptionHint: 'Describe the trigger in more detail.',
+                                descriptionHint: 'Describe the trigger in more detail',
                             }
                         },
                         queue: {
@@ -505,6 +507,8 @@ i18n
                         executeSuccess: 'Erfolgreich ausgeführt',
                         executeError: 'Fehler beim Ausführen',
                         networkError: 'Netzwerk Antwort fehlerhaft. Status:',
+                        inEnglish: 'auf Englisch',
+                        inGerman: 'auf Deutsch (optional)',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -515,7 +519,7 @@ i18n
                         failedToSave: 'Fehler beim Speichern des Grenzwertes',
                         addTitle: 'Grenzwert hinzufügen',
                         editTitle: 'Grenzwert bearbeiten',
-                        colorHint: 'Name (rot, blau, ...) oder Hexcode: (#FFFFFF, ...) ',
+                        colorHint: 'Name (rot, blau, ...) oder Hexcode: (#FFFFFF, ...)',
                     },
                     log: {
                         logListTitle: 'Protokoll Nachrichten',
@@ -719,7 +723,7 @@ i18n
                                 actionValueTypeHint: 'Lege den richtigen Typ des Aktionswerts fest. Zum Beispiel ist der Wert "On" ein String.',
                                 actionValueHint: 'Prüfe in deinem gewünschten Aktions-Skript, welche Werte zulässig sind.',
                                 triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
-                                descriptionHint: 'Beschreibe den Auslöser näher.'
+                                descriptionHint: 'Beschreibe den Auslöser näher'
                             }
                         },
                         queue: {
