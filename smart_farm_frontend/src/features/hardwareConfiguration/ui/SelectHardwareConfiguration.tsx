@@ -29,6 +29,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
             setHardwareConfiguration(resp);
             setIsLoading(false); // Set loading state to false after fetching
         }).catch((error) => {
+            setIsLoading(false);
             showNotification({
                 title: t('common.loadingError'),
                 message: '',
@@ -83,7 +84,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
     };
 
     return (
-        <ScrollArea>
+        <ScrollArea h="30vh">
             {isLoading ? (
                 <Box style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "30px" }}>
                     <Loader size="lg" />
@@ -91,7 +92,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
             ) : hardwareConfiguration?.length > 0 ? (
                 <Box>
                     <Table striped highlightOnHover withColumnBorders>
-                        <Table.Thead>
+                        <Table.Thead style={{ position: 'sticky', backgroundColor: "var(--mantine-color-body)" }}>
                             <Table.Tr>
                                 <Table.Th>{t("sensor.connectionType")}</Table.Th>
                                 <Table.Th>{t("sensor.model")}</Table.Th>
@@ -100,7 +101,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                                 <Table.Th>{t("sensor.tags")}</Table.Th>
                             </Table.Tr>
                         </Table.Thead>
-                        <Table.Tbody>
+                        <Table.Tbody >
                             {hardwareConfiguration.map((configuration) => (
                                 <React.Fragment key={configuration.sensorClassId}>
                                     <Table.Tr
