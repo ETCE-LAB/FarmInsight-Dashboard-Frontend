@@ -10,7 +10,7 @@ import {
     Autocomplete,
     Flex,
     Tooltip,
-    Group
+    Group, Select
 } from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { useParams } from "react-router-dom";
@@ -26,7 +26,6 @@ import {createControllableAction} from "../useCase/createControllableAction";
 import {addControllableAction, updateControllableActionSlice} from "../state/ControllableActionSlice";
 import {updateControllableAction} from "../useCase/updateControllableAction";
 import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
-import i18n from "i18next";
 import {ActionScript} from "../models/actionScript";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
@@ -67,10 +66,10 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 setHardwareInput("");
             }
         }
-    }, [fpfId, toEditAction]);
+    }, [fpfId, i18n, toEditAction]);
 
     useEffect(() => {
-        if(availableActionScripts && toEditAction){
+        if (availableActionScripts && toEditAction) {
             const match = availableActionScripts.find(h => h.action_script_class_id === toEditAction.actionClassId);
             setSelectedActionScript(match);
 
@@ -265,13 +264,13 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                         {/* ActionClass */}
                         <Grid.Col span={12}>
                             {fpfId && (
-                                <Autocomplete
-                                    label="Action Script"
-                                    placeholder="Search action scripts"
+                                <Select
+                                    label={t('controllableActionList.actionScript')}
+                                    placeholder={t('controllableActionList.actionScriptPlaceholder')}
                                     data={availableActionScripts?.map((v) => ({value: v.action_script_class_id, label: v.name}))}
                                     required
                                     description={t("controllableActionList.hint.actionClass")}
-                                    value={selectedActionScript?.name}
+                                    value={selectedActionScript?.action_script_class_id}
                                     onChange={(val) => {
                                         const match = availableActionScripts?.find(h => h.action_script_class_id === val);
                                         if (match) setSelectedActionScript(match);

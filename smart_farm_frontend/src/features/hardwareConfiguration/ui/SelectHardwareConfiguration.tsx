@@ -84,7 +84,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
     };
 
     return (
-        <ScrollArea h="30vh">
+        <ScrollArea h="35vh">
             {isLoading ? (
                 <Box style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "30px" }}>
                     <Loader size="lg" />
