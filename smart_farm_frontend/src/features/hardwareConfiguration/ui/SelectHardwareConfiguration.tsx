@@ -6,6 +6,8 @@ import {useTranslation} from "react-i18next";
 import {EditSensor} from "../../sensor/models/Sensor";
 import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
 import {showNotification} from "@mantine/notifications";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
+import {getSensor} from "../../sensor/useCase/getSensor";
 
 interface SelectHardwareConfigurationProps {
     fpfId: string;
@@ -24,37 +26,41 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
     const { t, i18n } = useTranslation();
 
     useEffect(() => {
-        setIsLoading(true); // Set loading state before fetching
-        getAvailableHardwareConfiguration(fpfId).then((resp) => {
-            setHardwareConfiguration(resp);
-            setIsLoading(false); // Set loading state to false after fetching
-        }).catch((error) => {
-            setIsLoading(false);
-            showNotification({
-                title: t('common.loadingError'),
-                message: '',
-                color: 'red',
-            });
-        });
-    }, [fpfId, t]);
+        if (isLoading) {
+            getAvailableHardwareConfiguration(fpfId).then((resp) => {
+                setHardwareConfiguration(resp);
 
-    useEffect(() => {
-        if (sensor && hardwareConfiguration?.length > 0) {
-            const matchingConfig = hardwareConfiguration.find(
-                (config) => config.sensorClassId === sensor.hardwareConfiguration.sensorClassId
-            );
+                if (sensor && resp.length > 0) {
+                    return getSensor(sensor.id)
+                }
+                return null
+            }).then((detail) => {
+                if (detail) {
+                    const matchingConfig = hardwareConfiguration.find(
+                        (config) => config.sensorClassId === detail.hardwareConfiguration.sensorClassId
+                    );
 
-            if (matchingConfig) {
-                postHardwareConfiguration({
-                    sensorClassId: sensor.hardwareConfiguration.sensorClassId,
-                    additionalInformation: sensor.hardwareConfiguration.additionalInformation,
+                    if (matchingConfig) {
+                        postHardwareConfiguration({
+                            sensorClassId: detail.hardwareConfiguration.sensorClassId,
+                            additionalInformation: detail.hardwareConfiguration.additionalInformation,
+                        });
+
+                        setSelectedSensorClassId(detail.hardwareConfiguration.sensorClassId);
+                        setAdditionalInformation(detail.hardwareConfiguration.additionalInformation);
+                    }
+                }
+                setIsLoading(false); // Set loading state to false after fetching
+            }).catch((error) => {
+                setIsLoading(false);
+                showNotification({
+                    title: t('common.loadingError'),
+                    message: '',
+                    color: 'red',
                 });
-
-                setSelectedSensorClassId(sensor.hardwareConfiguration.sensorClassId);
-                setAdditionalInformation(sensor.hardwareConfiguration.additionalInformation);
-            }
+            });
         }
-    }, [sensor, hardwareConfiguration, postHardwareConfiguration, t]);
+    }, [fpfId, hardwareConfiguration, isLoading, postHardwareConfiguration, sensor, t]);
 
     const handleSensorClassSelected = (sensorClassId: string) => {
         const config = hardwareConfiguration.find((x) => x.sensorClassId === sensorClassId);
@@ -133,7 +139,6 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                                                             type="text"
                                                             value={sensor?.modelNr}
                                                             onChange={(e) => setModel(e.target.value)}
-                                                            style={{ flex: 0.5 }}
                                                         />
                                                     </Table.Td>
                                                 </Table.Tr>
@@ -142,12 +147,10 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                                                 <Table.Tr>
                                                     <Table.Td colSpan={1} />
                                                     <Table.Td colSpan={4}>
-                                                        <TextInput
+                                                        <MultiLanguageInput
                                                             label={`${t("sensor.parameter")} (${t("sensor.parameter_hint")})`}
-                                                            type="text"
-                                                            value={sensor?.parameter}
-                                                            onChange={(e) => setParameter(e.target.value)}
-                                                            style={{ flex: 0.5 }}
+                                                            value={sensor?.parameter || ""}
+                                                            onChange={(value) => setParameter(value)}
                                                         />
                                                     </Table.Td>
                                                 </Table.Tr>
@@ -161,32 +164,28 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                                                             type="text"
                                                             value={sensor?.unit}
                                                             onChange={(e) => setUnit(e.target.value)}
-                                                            style={{ flex: 0.5 }}
                                                         />
                                                     </Table.Td>
                                                 </Table.Tr>
                                             )}
+                                            {configuration.fields.map((field) => (
                                             <Table.Tr>
                                                 <Table.Td colSpan={1} />
                                                 <Table.Td colSpan={4}>
-                                                    <Box style={{ display: "flex", gap: "16px" }}>
-                                                        {configuration.fields.map((field) => (
-                                                            <TextInput
-                                                                required
-                                                                placeholder={capitalizeFirstLetter(field.name)}
-                                                                key={field.name}
-                                                                label={`${capitalizeFirstLetter(field.name)}`}
-                                                                type={field.type}
-                                                                value={additionalInformation[field.name]}
-                                                                onChange={(e) =>
-                                                                    handleFieldInputChanged(field.name, e.target.value)
-                                                                }
-                                                                style={{ width: "100%" }}
-                                                            />
-                                                        ))}
-                                                    </Box>
+                                                    <TextInput
+                                                        required
+                                                        placeholder={capitalizeFirstLetter(field.name)}
+                                                        key={field.name}
+                                                        label={`${capitalizeFirstLetter(field.name)}`}
+                                                        type={field.type}
+                                                        value={additionalInformation[field.name]}
+                                                        onChange={(e) =>
+                                                            handleFieldInputChanged(field.name, e.target.value)
+                                                        }
+                                                    />
                                                 </Table.Td>
                                             </Table.Tr>
+                                            ))}
                                         </>
                                     )}
                                 </React.Fragment>

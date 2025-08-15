@@ -132,7 +132,7 @@ i18n
                         model: 'Model',
                         connectionType: 'Connection Type',
                         parameter: 'Parameter',
-                        parameter_hint: 'Please enter english and german, eg: humidity;feuchtigkeit',
+                        parameter_hint: 'Please enter english and german',
                         unit: 'Unit',
                         tags: 'Notes',
                         hint: {
@@ -608,7 +608,7 @@ i18n
                         model: 'Modell',
                         connectionType: 'Verbindungstyp',
                         parameter: 'Kennwert',
-                        parameter_hint: 'Bitte in Englisch und Deutsch eingeben, zB: humidity;feuchtigkeit',
+                        parameter_hint: 'Bitte in Englisch und Deutsch eingeben',
                         unit: 'Einheit',
                         tags: 'Notizen',
                         hint: {
