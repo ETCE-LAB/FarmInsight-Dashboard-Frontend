@@ -22,8 +22,11 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
     const [hardwareConfiguration, setHardwareConfiguration] = useState<HardwareConfiguration[]>([]);
     const [selectedSensorClassId, setSelectedSensorClassId] = useState<string | undefined>(undefined);
     const [additionalInformation, setAdditionalInformation] = useState<Record<string, any>>({});
-    const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
+    const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state#
     const { t, i18n } = useTranslation();
+    const [originalId, setOriginalId] = useState<string>("");
+    const [originalInfo, setOriginalInfo] = useState<Record<string, any>>({});
+    const [manualInput, setManualInput] = useState<boolean>(false);
 
     useEffect(() => {
         if (isLoading) {
@@ -41,6 +44,8 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                     );
 
                     if (matchingConfig) {
+                        setOriginalInfo(detail.hardwareConfiguration.additionalInformation);
+                        setOriginalId(detail.hardwareConfiguration.sensorClassId);
                         postHardwareConfiguration({
                             sensorClassId: detail.hardwareConfiguration.sensorClassId,
                             additionalInformation: detail.hardwareConfiguration.additionalInformation,
@@ -63,22 +68,29 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
     }, [fpfId, hardwareConfiguration, isLoading, postHardwareConfiguration, sensor, t]);
 
     const handleSensorClassSelected = (sensorClassId: string) => {
-        const config = hardwareConfiguration.find((x) => x.sensorClassId === sensorClassId);
-        if (config) {
-            let info: Record<string, any> = {};
-            for (const field of config.fields) {
-                info[field.name] = undefined;
-            }
-            setAdditionalInformation(info);
-            if (config.unit      !== '') setUnit(config.unit);
-            if (config.parameter !== '') setParameter(config.parameter);
-            if (config.model     !== '') setModel(config.model);
-            postHardwareConfiguration({ sensorClassId: sensorClassId, additionalInformation: info });
+        if (sensorClassId === originalId && !manualInput) {
+            postHardwareConfiguration({sensorClassId: sensorClassId, additionalInformation: originalInfo});
+            setAdditionalInformation(originalInfo);
             setSelectedSensorClassId(sensorClassId);
+        } else {
+            const config = hardwareConfiguration.find((x) => x.sensorClassId === sensorClassId);
+            if (config) {
+                let info: Record<string, any> = {};
+                for (const field of config.fields) {
+                    info[field.name] = undefined;
+                }
+                setAdditionalInformation(info);
+                if (config.unit !== '') setUnit(config.unit);
+                if (config.parameter !== '') setParameter(config.parameter);
+                if (config.model !== '') setModel(config.model);
+                postHardwareConfiguration({sensorClassId: sensorClassId, additionalInformation: info});
+                setSelectedSensorClassId(sensorClassId);
+            }
         }
     };
 
     const handleFieldInputChanged = (name: string, value: string) => {
+        setManualInput(true);
         if (selectedSensorClassId) {
             const updatedInfo = { ...additionalInformation, [name]: value };
             setAdditionalInformation(updatedInfo);
