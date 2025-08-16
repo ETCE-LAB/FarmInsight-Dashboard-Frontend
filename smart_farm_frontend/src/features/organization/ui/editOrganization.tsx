@@ -2,8 +2,27 @@ import React, { useEffect, useState } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import { getOrganization } from "../useCase/getOrganization";
 import { Organization } from "../models/Organization";
-import { Button, Card, Modal, TextInput, Switch, Flex, Title, Text, Box, Badge, } from "@mantine/core";
-import { IconEdit, IconUserPlus, IconSquareRoundedMinus, IconEye, IconEyeOff } from "@tabler/icons-react";
+import {
+    Button,
+    Card,
+    Modal,
+    TextInput,
+    Switch,
+    Flex,
+    Title,
+    Text,
+    Box,
+    Badge,
+    Table,
+} from "@mantine/core";
+import {
+    IconEdit,
+    IconUserPlus,
+    IconSquareRoundedMinus,
+    IconEye,
+    IconEyeOff,
+    IconGripVertical
+} from "@tabler/icons-react";
 import { MembershipList } from "../../membership/ui/MembershipList";
 import { SearchUserProfile } from "../../userProfile/ui/searchUserProfile";
 import { UserProfile } from "../../userProfile/models/UserProfile";
@@ -22,6 +41,11 @@ import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton"
 import {LocationList} from "../../location/ui/LocationList";
 import {useAuth} from "react-oidc-context";
 import {AuthRoutes} from "../../../utils/Router";
+import {DragDropContext, Draggable, DraggableProvided, Droppable} from "@hello-pangea/dnd";
+import {moveArrayItem} from "../../../utils/utils";
+import {Fpf} from "../../fpf/models/Fpf";
+import {postFpfOrder} from "../../fpf/useCase/postFpfOrder";
+import {createdFpf} from "../../fpf/state/FpfSlice";
 
 export const EditOrganization = () => {
     const { t } = useTranslation();
@@ -41,11 +65,13 @@ export const EditOrganization = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const membershipEventListener = useSelector((state: RootState) => state.membership.changeMembershipEvent);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [fpfs, setFpfs] = useState<Fpf[]>([]);
 
     useEffect(() => {
         if (auth.isAuthenticated && organizationId) {
             getOrganization(organizationId).then((org) => {
                 setOrganization(org);
+                setFpfs(org.FPFs);
                 setNewOrganizationName(org.name);
                 setIsPublic(org.isPublic);
                 setIsModified(false);
@@ -183,26 +209,81 @@ export const EditOrganization = () => {
                     </Card>
 
                     <Card padding="lg" radius="md" mt="lg">
-                        <Box mt="xl">
-                            <Flex justify="space-between" align="center" mb="lg">
-                                <Text size="xl" fw="bold">
-                                    {t("header.members")}
-                                </Text>
-                                {isAdmin && (
-                                    <IconUserPlus
-                                        size={30}
-                                        onClick={() => setUserModalOpen(true)}
-                                        style={{ cursor: "pointer", color: "#199ff4" }}
-                                    />
-                                )}
-                            </Flex>
-                            <MembershipList members={organization.memberships} />
-                        </Box>
+                        <Flex justify="space-between" align="center" mb="lg">
+                            <Text size="xl" fw="bold">
+                                {t("header.members")}
+                            </Text>
+                            {isAdmin && (
+                                <IconUserPlus
+                                    size={30}
+                                    onClick={() => setUserModalOpen(true)}
+                                    style={{ cursor: "pointer", color: "#199ff4" }}
+                                />
+                            )}
+                        </Flex>
+                        <MembershipList members={organization.memberships} />
                     </Card>
+
                     <Card padding={"lg"} radius={"md"} mt="lg">
                         <LocationList locationsToDisplay={organization.locations} isAdmin={isAdmin}/>
                     </Card>
+                    {isAdmin &&
+                        <Card padding="lg" radius="md" mt="lg">
+                        <Flex justify="space-between" align="center" mb="lg">
+                            <Text size="xl" fw="bold">
+                                {t("header.fpfs")}
+                            </Text>
+                        </Flex>
+                        <Table highlightOnHover withColumnBorders style={{ minWidth: "100%" }}>
+                            <DragDropContext
+                                onDragEnd={({ destination, source }) => {
+                                    const reordered: Fpf[] = moveArrayItem(fpfs, source.index, destination?.index || 0);
+                                    setFpfs(reordered);
+                                    postFpfOrder(organization.id, reordered.map((x: Fpf) => x.id)).then(() => {
+                                        // don't need to get list again since we keep the order locally
+                                    }).catch((error) => {
+                                        showNotification({
+                                            title: t('common.updateError'),
+                                            message: `${error}`,
+                                            color: 'red',
+                                        })
+                                    });
+                                }}
+                            >
+                                <Table.Thead>
+                                    <Table.Tr>
+                                        {isAdmin && <Table.Th />}
+                                        <Table.Th>{t("header.name")}</Table.Th>
+                                    </Table.Tr>
+                                </Table.Thead>
+                                <Droppable droppableId="sensors" direction="vertical">
+                                    {(provided) => (
+                                        <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
+                                            {fpfs.map((fpf, index) => (
+                                                <Draggable key={fpf.id} index={index} draggableId={fpf.id}>
+                                                    {(provided: DraggableProvided) => (
+                                                        <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
+                                                            {isAdmin &&
+                                                                <Table.Td>
+                                                                    <div {...provided.dragHandleProps}>
+                                                                        <IconGripVertical size={18} stroke={1.5} />
+                                                                    </div>
+                                                                </Table.Td>
+                                                            }
+                                                            <Table.Td>{fpf.name}</Table.Td>
+                                                        </Table.Tr>
+                                                    )}
+                                                </Draggable>
 
+                                            ))}
+                                            {provided.placeholder}
+                                        </Table.Tbody>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+                        </Table>
+                    </Card>
+                    }
                     <Modal
                         opened={fpfModalOpen}
                         onClose={() => setFpFModalOpen(false)}

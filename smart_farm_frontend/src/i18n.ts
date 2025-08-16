@@ -124,6 +124,7 @@ i18n
                         statusOverview: 'Status overview',
                         adminPage: 'Admin',
                         ping: 'Ping',
+                        fpfs: 'FPFs',
                     },
                     sensor: {
                         addSensor: 'Add Sensor',
@@ -600,6 +601,7 @@ i18n
                         statusOverview: 'Status Übersicht',
                         adminPage: 'Admin',
                         ping: 'Ping',
+                        fpfs: 'FPFs',
                     },
                     sensor: {
                         addSensor: 'Sensor hinzufügen',
