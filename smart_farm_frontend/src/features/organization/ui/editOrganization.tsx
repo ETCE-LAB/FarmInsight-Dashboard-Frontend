@@ -227,63 +227,65 @@ export const EditOrganization = () => {
                     <Card padding={"lg"} radius={"md"} mt="lg">
                         <LocationList locationsToDisplay={organization.locations} isAdmin={isAdmin}/>
                     </Card>
+
                     {isAdmin &&
                         <Card padding="lg" radius="md" mt="lg">
-                        <Flex justify="space-between" align="center" mb="lg">
-                            <Text size="xl" fw="bold">
-                                {t("header.fpfs")}
-                            </Text>
-                        </Flex>
-                        <Table highlightOnHover withColumnBorders style={{ minWidth: "100%" }}>
-                            <DragDropContext
-                                onDragEnd={({ destination, source }) => {
-                                    const reordered: Fpf[] = moveArrayItem(fpfs, source.index, destination?.index || 0);
-                                    setFpfs(reordered);
-                                    postFpfOrder(organization.id, reordered.map((x: Fpf) => x.id)).then(() => {
-                                        // don't need to get list again since we keep the order locally
-                                    }).catch((error) => {
-                                        showNotification({
-                                            title: t('common.updateError'),
-                                            message: `${error}`,
-                                            color: 'red',
-                                        })
-                                    });
-                                }}
-                            >
-                                <Table.Thead>
-                                    <Table.Tr>
-                                        {isAdmin && <Table.Th />}
-                                        <Table.Th>{t("header.name")}</Table.Th>
-                                    </Table.Tr>
-                                </Table.Thead>
-                                <Droppable droppableId="sensors" direction="vertical">
-                                    {(provided) => (
-                                        <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
-                                            {fpfs.map((fpf, index) => (
-                                                <Draggable key={fpf.id} index={index} draggableId={fpf.id}>
-                                                    {(provided: DraggableProvided) => (
-                                                        <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
-                                                            {isAdmin &&
-                                                                <Table.Td>
-                                                                    <div {...provided.dragHandleProps}>
-                                                                        <IconGripVertical size={18} stroke={1.5} />
-                                                                    </div>
-                                                                </Table.Td>
-                                                            }
-                                                            <Table.Td>{fpf.name}</Table.Td>
-                                                        </Table.Tr>
-                                                    )}
-                                                </Draggable>
+                            <Flex justify="space-between" align="center" mb="lg">
+                                <Text size="xl" fw="bold">
+                                    {t("header.fpfs")}
+                                </Text>
+                            </Flex>
+                            <Table highlightOnHover withColumnBorders style={{ minWidth: "100%" }}>
+                                <DragDropContext
+                                    onDragEnd={({ destination, source }) => {
+                                        const reordered: Fpf[] = moveArrayItem(fpfs, source.index, destination?.index || 0);
+                                        setFpfs(reordered);
+                                        postFpfOrder(organization.id, reordered.map((x: Fpf) => x.id)).then(() => {
+                                            // don't need to get list again since we keep the order locally
+                                        }).catch((error) => {
+                                            showNotification({
+                                                title: t('common.updateError'),
+                                                message: `${error}`,
+                                                color: 'red',
+                                            })
+                                        });
+                                    }}
+                                >
+                                    <Table.Thead>
+                                        <Table.Tr>
+                                            {isAdmin && <Table.Th />}
+                                            <Table.Th>{t("header.name")}</Table.Th>
+                                        </Table.Tr>
+                                    </Table.Thead>
+                                    <Droppable droppableId="sensors" direction="vertical">
+                                        {(provided) => (
+                                            <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
+                                                {fpfs.map((fpf, index) => (
+                                                    <Draggable key={fpf.id} index={index} draggableId={fpf.id}>
+                                                        {(provided: DraggableProvided) => (
+                                                            <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
+                                                                {isAdmin &&
+                                                                    <Table.Td>
+                                                                        <div {...provided.dragHandleProps}>
+                                                                            <IconGripVertical size={18} stroke={1.5} />
+                                                                        </div>
+                                                                    </Table.Td>
+                                                                }
+                                                                <Table.Td>{fpf.name}</Table.Td>
+                                                            </Table.Tr>
+                                                        )}
+                                                    </Draggable>
 
-                                            ))}
-                                            {provided.placeholder}
-                                        </Table.Tbody>
-                                    )}
-                                </Droppable>
-                            </DragDropContext>
-                        </Table>
-                    </Card>
+                                                ))}
+                                                {provided.placeholder}
+                                            </Table.Tbody>
+                                        )}
+                                    </Droppable>
+                                </DragDropContext>
+                            </Table>
+                        </Card>
                     }
+
                     <Modal
                         opened={fpfModalOpen}
                         onClose={() => setFpFModalOpen(false)}

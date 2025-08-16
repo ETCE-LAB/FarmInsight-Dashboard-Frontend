@@ -5,12 +5,19 @@ import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
 import {useNavigate} from "react-router-dom";
 import {AppRoutes} from "../../../utils/appRoutes";
-import {Button, Container, Flex, Modal, Table, Text, CopyButton, Title} from "@mantine/core";
+import {Button, Container, Flex, Modal, Table, Text, CopyButton, Title, Card} from "@mantine/core";
 import {getAllUserprofiles} from "../useCase/getAllUserprofiles";
 import {restUserprofilePassword} from "../useCase/resetUserprofilePassword";
 import {showNotification} from "@mantine/notifications";
 import {setUserprofileActiveState} from "../useCase/setUserprofileActiveState";
 import {AuthRoutes} from "../../../utils/Router";
+import {Organization} from "../../organization/models/Organization";
+import {getAllOrganizations} from "../../organization/useCase/getAllOrganizations";
+import {DragDropContext, Draggable, DraggableProvided, Droppable} from "@hello-pangea/dnd";
+import {Fpf} from "../../fpf/models/Fpf";
+import {moveArrayItem} from "../../../utils/utils";
+import {IconGripVertical} from "@tabler/icons-react";
+import {postOrganizationOrder} from "../../organization/useCase/postOrganizationOrder";
 
 
 export const AdminPage = () => {
@@ -21,6 +28,7 @@ export const AdminPage = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [activeUsers, setActiveUsers] = useState<UserProfile[] | undefined>(undefined);
     const [inactiveUsers, setInactiveUsers] = useState<UserProfile[] | undefined>(undefined);
+    const [orgs, setOrgs] = useState<Organization[]>([]);
 
     useEffect(() => {
         if (auth.isAuthenticated) {
@@ -30,6 +38,9 @@ export const AdminPage = () => {
                     getAllUserprofiles().then((users) => {
                         setActiveUsers(users.filter(v => v.isActive));
                         setInactiveUsers(users.filter(v => !v.isActive));
+                    });
+                    getAllOrganizations().then((organizations) => {
+                        setOrgs(organizations);
                     })
                 } else {
                     navigate(AppRoutes.base);
@@ -183,7 +194,7 @@ export const AdminPage = () => {
                     {inactiveUsers &&
                         <>
                             <Title order={2}>{t('admin.inactiveUsers')}</Title>
-                            <Table striped highlightOnHover withColumnBorders>
+                            <Table striped highlightOnHover withColumnBorders mb='xl'>
                                 <Table.Thead>
                                     <Table.Tr>
                                         <Table.Th>{t("header.name")}</Table.Th>
@@ -209,6 +220,56 @@ export const AdminPage = () => {
                             </Table>
                         </>
                     }
+
+                    <Title order={2}>{t("header.organizations")}</Title>
+                    <Table highlightOnHover withColumnBorders style={{ minWidth: "100%" }}>
+                        <DragDropContext
+                            onDragEnd={({ destination, source }) => {
+                                const reordered: Organization[] = moveArrayItem(orgs, source.index, destination?.index || 0);
+                                setOrgs(reordered);
+                                postOrganizationOrder(reordered.map((x: Organization) => x.id)).then(() => {
+                                    // don't need to get list again since we keep the order locally
+                                }).catch((error) => {
+                                    showNotification({
+                                        title: t('common.updateError'),
+                                        message: `${error}`,
+                                        color: 'red',
+                                    })
+                                });
+                            }}
+                        >
+                            <Table.Thead>
+                                <Table.Tr>
+                                    {isAdmin && <Table.Th />}
+                                    <Table.Th>{t("header.name")}</Table.Th>
+                                </Table.Tr>
+                            </Table.Thead>
+                            <Droppable droppableId="sensors" direction="vertical">
+                                {(provided) => (
+                                    <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
+                                        {orgs.map((org, index) => (
+                                            <Draggable key={org.id} index={index} draggableId={org.id}>
+                                                {(provided: DraggableProvided) => (
+                                                    <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
+                                                        {isAdmin &&
+                                                            <Table.Td>
+                                                                <div {...provided.dragHandleProps}>
+                                                                    <IconGripVertical size={18} stroke={1.5} />
+                                                                </div>
+                                                            </Table.Td>
+                                                        }
+                                                        <Table.Td>{org.name}</Table.Td>
+                                                    </Table.Tr>
+                                                )}
+                                            </Draggable>
+
+                                        ))}
+                                        {provided.placeholder}
+                                    </Table.Tbody>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
+                    </Table>
                 </>
             }
         </Container>
