@@ -53,6 +53,11 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
 
                         setSelectedSensorClassId(detail.hardwareConfiguration.sensorClassId);
                         setAdditionalInformation(detail.hardwareConfiguration.additionalInformation);
+
+                        let conf = hardwareConfiguration;
+                        conf.splice(conf.indexOf(matchingConfig), 1);
+                        conf.unshift(matchingConfig);
+                        setHardwareConfiguration(conf);
                     }
                 }
                 setIsLoading(false); // Set loading state to false after fetching
