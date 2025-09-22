@@ -55,7 +55,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
     useEffect(() => {
         if (actionId && fpfId) {
-            fetchAvailableActionScripts().then(scripts => {
+            fetchAvailableActionScripts(fpfId).then(scripts => {
                 const actionScripts = scripts?.map(s => ({
                   value: s.action_script_class_id,
                   label: s.name,

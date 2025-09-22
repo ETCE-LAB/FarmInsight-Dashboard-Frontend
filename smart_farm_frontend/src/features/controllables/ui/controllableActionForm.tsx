@@ -95,7 +95,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 });
             });
 
-            fetchAvailableActionScripts().then(scripts => {
+            fetchAvailableActionScripts(fpfId).then(scripts => {
                 setAvailableActionScripts(scripts);
             }).catch((error) => {
                 showNotification({

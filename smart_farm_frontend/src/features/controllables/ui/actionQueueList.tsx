@@ -18,7 +18,6 @@ export const ActionQueueList: React.FC<{ fpfId: string}> = ({ fpfId }) => {
             fetchActionQueue(fpfId).then((result) => {
                 setQueue(result);
             }).catch((error) => {
-                console.dir(error);
                 showNotification({
                     title: t('common.loadError') + t('controllableActionList.queue.title'),
                     message: `${error}`,
