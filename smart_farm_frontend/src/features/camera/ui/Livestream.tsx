@@ -1,11 +1,15 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {getUser} from "../../../utils/getUser";
 import {Badge, rem} from "@mantine/core";
 import {displayObject} from "./CameraCarousel";
+import {useTranslation} from "react-i18next";
 
-export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = ({src, showing}) => {
+export const Livestream: React.FC<{ src: displayObject, showing: boolean }> = ({src, showing}) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
+
+    const [isLoading, setIsLoading] = useState(true);
+    const {t} = useTranslation();
 
     useEffect(() => {
         if (!showing) return;
@@ -14,6 +18,8 @@ export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = (
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext("2d");
         abortControllerRef.current = new AbortController();
+
+        setIsLoading(true);
 
         const fetchStream = async () => {
             try {
@@ -31,7 +37,7 @@ export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = (
 
                 // Read incoming stream data
                 while (isMounted) {
-                    const { value, done } = await reader.read();
+                    const {value, done} = await reader.read();
                     if (done) break;
 
                     // Append new data to the buffer
@@ -58,13 +64,15 @@ export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = (
                         imageBuffer = imageBuffer.slice(end); // Remove processed frame from buffer
 
                         // Render the frame
-                        const blob = new Blob([frameData], { type: "image/jpeg" });
+                        const blob = new Blob([frameData], {type: "image/jpeg"});
                         const img = new Image();
                         img.src = URL.createObjectURL(blob);
                         img.onload = () => {
                             ctx?.clearRect(0, 0, canvas?.width || 0, canvas?.height || 0);
                             ctx?.drawImage(img, 0, 0, canvas?.width || 0, canvas?.height || 0);
                             URL.revokeObjectURL(img.src);
+
+                            if (isMounted) setIsLoading(false);
                         };
                     }
                 }
@@ -81,6 +89,8 @@ export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = (
 
         return () => {
             isMounted = false;
+            setIsLoading(true);
+
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
             }
@@ -93,8 +103,28 @@ export const Livestream: React.FC<{ src : displayObject, showing: boolean }> = (
                 ref={canvasRef}
                 width={640}
                 height={360}
-                style={{ height: "100%", width: "100%"}}
+                style={{height: "100%", width: "100%"}}
             ></canvas>
+
+            {/* Show loading state */}
+            {isLoading && (
+                <div
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(0,0,0,1)",
+                        fontWeight: 600,
+                        pointerEvents: "none",
+                        textAlign: "center",
+                    }}
+                >
+                    {t("common.loading")}
+                </div>
+            )}
+
             <Badge
                 color="dark"
                 variant="filled"
