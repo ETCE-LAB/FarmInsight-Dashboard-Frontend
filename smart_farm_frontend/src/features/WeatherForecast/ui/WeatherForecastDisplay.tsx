@@ -9,6 +9,10 @@ import {FaBolt, FaCloud, FaCloudRain, FaSmog, FaSnowflake, FaSun} from "react-ic
 import {IconArrowsDiagonalMinimize2, IconSunFilled, IconWind} from "@tabler/icons-react";
 import {useMediaQuery} from "@mantine/hooks";
 import {showNotification} from "@mantine/notifications";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../utils/store";
+import {useAppDispatch} from "../../../utils/Hooks";
+import {registerWeatherForecasts} from "../state/WeatherForecastSlice";
 
 
 export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ location }) => {
@@ -16,11 +20,25 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
     const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
     const [isDetailedView, setIsDetailedView] = useState<number>(-1);
     const isMobile = useMediaQuery('(max-width: 768px)');
+    const dispatch = useAppDispatch();
 
+    const weatherForecastSelector = useSelector((state: RootState) => state.weatherForecast.WeatherForecasts);
+
+    // Fetch weather forecasts when the location changes
     useEffect(() => {
         if (location) {
+            // Check if forecasts for this location are already in the Redux store
+            if (weatherForecastSelector.length > 0) {
+                const forecast = weatherForecastSelector.find(obj => obj[location.id]);
+                if (forecast) {
+                    setWeatherForecasts(forecast[location.id].slice().reverse());
+                    return;
+                }
+            }
+            console.log("Fetching new weather forecast data...");
             getWeatherForecast(location.id).then(resp => {
                 setWeatherForecasts(resp.reverse());
+                dispatch(registerWeatherForecasts({[location.id]: resp.reverse()}));
             }).catch((error) => {
                 showNotification({
                     title: t("common.loadError"),
