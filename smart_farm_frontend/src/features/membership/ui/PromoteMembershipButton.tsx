@@ -21,7 +21,13 @@ export const PromoteMembershipButton:React.FC<{member:Membership}> = ({member}) 
                     color: 'green',
                 });
                 dispatch(changedMembership())
-            })
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.error'),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
         }
     }
 

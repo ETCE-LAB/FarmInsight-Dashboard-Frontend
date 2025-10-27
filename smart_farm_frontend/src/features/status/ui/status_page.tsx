@@ -10,7 +10,7 @@ import {getFpf} from "../../fpf/useCase/getFpf";
 import {Sensor} from "../../sensor/models/Sensor";
 import {LogMessageList} from "../../logMessages/ui/LogMessageList";
 import {useTranslation} from "react-i18next";
-import {formatFloatValue, getSensorStateColor, getWsUrl} from "../../../utils/utils";
+import {formatFloatValue, getBackendTranslation, getSensorStateColor, getWsUrl} from "../../../utils/utils";
 import useWebSocket from "react-use-websocket";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
@@ -21,11 +21,12 @@ import {showNotification} from "@mantine/notifications";
 import {AppRoutes} from "../../../utils/appRoutes";
 import {useNavigate} from "react-router-dom";
 import {useInterval} from "@mantine/hooks";
+import {AuthRoutes} from "../../../utils/Router";
 
 export const StatusPage = () => {
     const auth = useAuth();
     const [organizations, setOrganizations] = useState<OrganizationMembership[]>([]);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
 
@@ -33,13 +34,27 @@ export const StatusPage = () => {
         if (auth.isAuthenticated) {
             receiveUserProfile().then((user) => {
                 setIsAdmin(user.systemRole === SystemRole.ADMIN);
+            }).catch((error) => {
+               showNotification({
+                   title: t('common.loadError'),
+                   message: `${error}`,
+                   color: 'red',
+               })
             });
 
             getMyOrganizations().then(orgs => {
                 if (orgs) setOrganizations(orgs)
-            })
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
+            });
+        } else {
+            navigate(AuthRoutes.signin);
         }
-    },[auth.isAuthenticated]);
+    }, [auth.isAuthenticated, t, navigate]);
 
     const SensorOverview: React.FC<{sensor: Sensor}> = ({sensor})=> {
         let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
@@ -64,26 +79,32 @@ export const StatusPage = () => {
             } catch (err) {
                 console.error("Error processing WebSocket message:", err);
             }
-        }, [lastMessage]);
+        }, [lastMessage, sensor.intervalSeconds]);
 
         const getSensorPing = () => {
             if (currentlyPinging) return;
-
             setCurrentlyPinging(true);
+
             pingSensor(sensor.id).then((result) => {
-                setCurrentlyPinging(false);
-                console.dir(result);
                 showNotification({
                     title: t('overview.pingResult'),
                     message: `${JSON.stringify(result)}`,
-                    color: 'blue',
+                    color: 'green',
                 });
+            }).catch((err) => {
+                showNotification({
+                    title: t('overview.pingResult'),
+                    message: `${err}`,
+                    color: 'red',
+                });
+            }).finally(()=> {
+                setCurrentlyPinging(false);
             });
         }
 
         return (
             <Table.Tr>
-                <Table.Td>{sensor.name}</Table.Td>
+                <Table.Td>{getBackendTranslation(sensor.name, i18n.language)}</Table.Td>
                 <Table.Td>
                     <Flex align="center" gap="xs">
                         <HoverCard>
@@ -109,7 +130,13 @@ export const StatusPage = () => {
         useEffect(() => {
             getFpf(id).then(f => {
                 setFpf(f);
-            })
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
+            });
         }, [id]);
 
         return (
@@ -147,7 +174,7 @@ export const StatusPage = () => {
                             </Table.Thead>
                             <Table.Tbody>
                                 {fpf.Sensors.map(sensor =>
-                                    <SensorOverview sensor={sensor} />
+                                    <SensorOverview sensor={sensor} key={sensor.id} />
                                 )}
                             </Table.Tbody>
                         </Table>
@@ -162,7 +189,13 @@ export const StatusPage = () => {
         useEffect(() => {
             getOrganization(id).then(org => {
                 setOrganization(org);
-            })
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
+            });
         }, [id]);
 
         const [show, setShow] = useState(true);
@@ -194,14 +227,15 @@ export const StatusPage = () => {
                                 <LogMessageModalButton resourceType={ResourceType.ORGANIZATION} resourceId={organization.id} />
                             </Flex>
                         </Flex>
-                            {show &&
+                        {show &&
                             <Flex gap="lg" mt="lg" flex={1} wrap='wrap' w='100%'>
                                 {organization.FPFs.map(fpf =>
-                                    <FpfOverview orgId={organization.id} id={fpf.id} />
+                                    <FpfOverview orgId={organization.id} id={fpf.id} key={fpf.id} />
                                 )}
                             </Flex>
                         }
-                    </Card>}
+                    </Card>
+                }
             </>
         )
     }
@@ -257,13 +291,11 @@ export const StatusPage = () => {
                     }
                 </Flex>
                 {showOverview &&
-                    <>
-                        <Grid grow gutter='lg' mt='lg'>
-                            {organizations && (organizations.map(org =>
-                                <OrgOverview id={org.id} />
-                            ))}
-                        </Grid>
-                    </>
+                    <Grid grow gutter='lg' mt='lg'>
+                        {organizations && (organizations.map(org =>
+                            <OrgOverview id={org.id} key={org.id} />
+                        ))}
+                    </Grid>
                 }
             </Card>
             <SystemMessageView />

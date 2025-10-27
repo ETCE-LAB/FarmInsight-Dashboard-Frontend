@@ -14,12 +14,18 @@ export const KickMemberButton:React.FC<{id:string}> = ({id}) => {
     function handleKick(id: string) {
         kickMember({id}).then(r =>{
             showNotification({
-                    title: t('growingCycleForm.successTitle'),
+                    title: t('common.success'),
                     message: t('userManagement.userKicked'),
                     color: 'green',
                 });
             dispatch(changedMembership());
-        })
+        }).catch((error) => {
+            showNotification({
+                title: t('common.error'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
     }
 
     return (

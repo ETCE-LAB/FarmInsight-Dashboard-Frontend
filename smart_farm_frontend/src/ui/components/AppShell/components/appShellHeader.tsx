@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {Card, Flex, Group, Text, Menu, Button, Image, Drawer, Center, Box} from '@mantine/core';
+import {Card, Flex, Group, Text, Menu, Button, Image, Drawer} from '@mantine/core';
 import { IconDotsVertical } from "@tabler/icons-react";
 import { useTranslation } from 'react-i18next';
 import { AppRoutes } from '../../../../utils/appRoutes';
@@ -11,6 +11,8 @@ import { useMediaQuery } from '@mantine/hooks';
 import {useAuth} from "react-oidc-context";
 import {receiveUserProfile} from "../../../../features/userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../../../features/userProfile/models/UserProfile";
+import {showNotification} from "@mantine/notifications";
+import {getMyOrganizations} from "../../../../features/organization/useCase/getMyOrganizations";
 
 const languageOptions = [
     { code: 'en', label: 'English', flag: 'us' },
@@ -25,6 +27,7 @@ export const AppShellHeader: React.FC = () => {
     const [drawerOpened, setDrawerOpened] = useState(false); // State to manage Drawer visibility
     const auth = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
+    const [hasOrgs, setHasOrgs] = useState(false);
 
     // Detect mobile devices (viewport widths 768px or less)
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -38,7 +41,7 @@ export const AppShellHeader: React.FC = () => {
         setSelectedLanguage(matchedLanguage.label);
         setCurrentFlag(matchedLanguage.flag);
         i18n.changeLanguage(matchedLanguage.code);
-    }, [i18n, languageOptions]);
+    }, [i18n]);
 
     const handleLanguageChange = (lang: { code: string; label: string; flag: string }) => {
         setSelectedLanguage(lang.label);
@@ -52,11 +55,26 @@ export const AppShellHeader: React.FC = () => {
                 if (user) {
                     setIsAdmin(user.systemRole === SystemRole.ADMIN);
                 }
+                getMyOrganizations().then((orgs) => {
+                    setHasOrgs(orgs.length > 0);
+                }).catch((error) => {
+                    showNotification({
+                        title: t('common.loadError'),
+                        message: `${error}`,
+                        color: 'red',
+                    })
+                });
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
             });
         } else {
             setIsAdmin(false);
         }
-    }, [auth.isAuthenticated]);
+    }, [auth.isAuthenticated, t]);
 
     const renderFlagImage = (flag: string, alt: string) => (
         <Image
@@ -144,7 +162,7 @@ export const AppShellHeader: React.FC = () => {
                     >
                         <Flex direction="column" gap="md">
                             <LanguageSelector />
-                            {auth.isAuthenticated && <Button onClick={() => navigateAndCloseDrawer(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
+                            {auth.isAuthenticated && hasOrgs && <Button onClick={() => navigateAndCloseDrawer(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
                             {isAdmin && <Button onClick={() => navigateAndCloseDrawer(AppRoutes.adminPage)}>{t('header.adminPage')}</Button>}
                             <UserProfileComponent onNavigate={() => setDrawerOpened(false)} />
                             <LoginButton />
@@ -159,7 +177,7 @@ export const AppShellHeader: React.FC = () => {
                         <LanguageSelector />
                     </Group>
                     <Group gap='md'>
-                        {auth.isAuthenticated && <Button onClick={() => navigate(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
+                        {auth.isAuthenticated && hasOrgs && <Button onClick={() => navigate(AppRoutes.statusOverview)}>{t('header.statusOverview')}</Button>}
                         {isAdmin && <Button onClick={() => navigate(AppRoutes.adminPage)}>{t('header.adminPage')}</Button>}
                         <UserProfileComponent />
                         <LoginButton />

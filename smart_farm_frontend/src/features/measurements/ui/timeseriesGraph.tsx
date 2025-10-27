@@ -20,12 +20,18 @@ import {
 import { Sensor } from "../../sensor/models/Sensor";
 import useWebSocket from "react-use-websocket";
 import {useInterval, useMediaQuery} from '@mantine/hooks';
-import {formatFloatValue, getSensorStateColor, getSensorStateColorHint, getWsUrl} from "../../../utils/utils";
+import {
+    formatFloatValue,
+    getBackendTranslation,
+    getSensorStateColor,
+    getSensorStateColorHint,
+    getWsUrl
+} from "../../../utils/utils";
 import { Threshold } from "../../threshold/models/threshold";
 import { LabelPosition } from "recharts/types/component/Label";
 import { IconCircleFilled } from "@tabler/icons-react";
-import {t} from "i18next";
 import {useAuth} from "react-oidc-context";
+import {useTranslation} from "react-i18next";
 
 
 /**
@@ -105,8 +111,10 @@ export function computeHourlyConsumption(measurements: Measurement[]) {
 }
 
 const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: string } | null }> = ({ sensor, dates }) => {
+    const { t, i18n } = useTranslation();
     const auth = useAuth();
     const theme = useMantineTheme();
+
     const measurementReceivedEventListener = useAppSelector(receivedMeasurementEvent);
     const [measurements, setMeasurements] = useState<Measurement[]>([]);
     const [averagedMeasurements, setAveragedMeasurements] = useState<Measurement[]>([])
@@ -137,45 +145,38 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
 
     // Aggregate Function and hardcoded Units
     useEffect(() => {
-        if(sensor.aggregate && measurements.length > 0){
+        if (sensor.aggregate && measurements.length > 0) {
             let sum = 0;
-            // Watt in Wh umrechnen
-            if(sensor.unit === 'W')
-            {
+            if(sensor.unit === 'W') {
                 sum = calculateMovingAverage ? computeHourlyConsumption(averagedMeasurements):  computeHourlyConsumption(measurements);
                 setAggregatedUnit('Wh');
-            }
-            else {
+            } else {
                 sum = measurements.reduce((acc, cur) => acc + cur.value, 0);
             }
-                setAggregatedValues(+sum.toFixed(2))
-
+            setAggregatedValues(+sum.toFixed(2));
         }
-    }, [measurements, sensor.aggregate, sensor.unit, calculateMovingAverage]);
-
+    }, [measurements, sensor.aggregate, sensor.unit, calculateMovingAverage, averagedMeasurements]);
 
     //Apply Moving Average Algorithmus to thin out the graph and make it more readable
     useEffect(() => {
-        if(calculateMovingAverage && Math.floor(measurements.length/300) > 2)
-        {
+        if (calculateMovingAverage && Math.floor(measurements.length/300) > 2) {
             const averagedMeasurements = applyMovingAverage(measurements,movingAverageWindow)
-
             setAveragedMeasurements(averagedMeasurements)
         }
 
-    }, [calculateMovingAverage]);
+    }, [calculateMovingAverage, measurements, movingAverageWindow]);
 
     //Logic whether the Switch to apply MovingAverage Algorithem is displayed or not
     useEffect(() => {
-        if(!calculateMovingAverage){
+        if (!calculateMovingAverage) {
             setAllowMovingAverage(false)
         }
-        if(measurements.length >= 10)
-            {setAllowMovingAverage(true)}
+        if (measurements.length >= 10) {
+            setAllowMovingAverage(true)
+        }
+    }, [calculateMovingAverage, measurements]);
 
-    }, [measurements]);
-
-    useEffect(() => {setAllowMovingAverage(false)},[dates])
+    useEffect(() => { setAllowMovingAverage(false) },[dates])
 
     useEffect(() => {
         if (lastMessage) {
@@ -197,30 +198,25 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 setStatusColor(getSensorStateColor(new Date(newMeasurements.at(-1).measuredAt), true, sensor.intervalSeconds));
             } catch (err) {
                 console.error("Error processing WebSocket message:", err);
-                setError("Failed to process incoming data.");
+                setError(t('sensor.measurementsProcessError'));
             }
         }
-    }, [lastMessage, sensor.intervalSeconds]);
+    }, [lastMessage, sensor.intervalSeconds, t]);
 
     useEffect(() => {
         setLoading(true);
-        requestMeasuremnt(sensor.id, dates?.from, dates?.to)
-            .then((resp) => {
-                if (!resp) throw new Error("Failed to fetch measurements.");
-                let roundedMeasurements = resp.map(m => ({
-                    ...m,
-                    value: parseFloat(m.value.toFixed(1)),
-                }));
-                setMeasurements(roundedMeasurements);
-                setAveragedMeasurements(applyMovingAverage(roundedMeasurements, movingAverageWindow))
-            })
-            .catch(err => {
-                console.error("Error fetching measurements:", err);
-                setError("Failed to fetch initial measurements.");
-            })
-            .finally(() => setLoading(false));
-
-    }, [measurementReceivedEventListener, dates, sensor.id]);
+        requestMeasuremnt(sensor.id, dates?.from, dates?.to).then((resp) => {
+            let roundedMeasurements = resp.map(m => ({
+                ...m,
+                value: parseFloat(m.value.toFixed(1)),
+            }));
+            setMeasurements(roundedMeasurements);
+            setAveragedMeasurements(applyMovingAverage(roundedMeasurements, movingAverageWindow));
+        }).catch(err => {
+            console.error("Error fetching measurements:", err);
+            setError(t('sensor.measurementsLoadError'));
+        }).finally(() => setLoading(false));
+    }, [measurementReceivedEventListener, dates, sensor.id, movingAverageWindow, t]);
 
     useEffect(() => {
         if (error) {
@@ -288,12 +284,12 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                             </HoverCard.Dropdown>
                         </HoverCard>
                     }
-                    <Title order={4} c={theme.colors.blue[6]}>{sensor.name}</Title>
+                    <Title order={4} c={theme.colors.blue[6]}>{getBackendTranslation(sensor.name, i18n.language)}</Title>
                     {allowMovingAverage && (
                         <Switch
                             style={{float: "right" } }
                             label={t("sensor.movingAverage")}
-                            onChange={e => {console.log(e.currentTarget.checked);setCalculateMovingAverage(e.currentTarget.checked)}}
+                            onChange={e => {setCalculateMovingAverage(e.currentTarget.checked)}}
                         />
                     )}
                 </Flex>

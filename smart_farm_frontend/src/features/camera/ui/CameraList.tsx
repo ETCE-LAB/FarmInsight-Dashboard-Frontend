@@ -7,7 +7,7 @@ import { CameraForm } from "./CameraForm";
 import { useTranslation } from "react-i18next";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
-import {getSensorStateColor, moveArrayItem} from "../../../utils/utils";
+import {getBackendTranslation, getSensorStateColor, moveArrayItem} from "../../../utils/utils";
 import {postCameraOrder} from "../useCase/postCameraOrder";
 
 
@@ -15,7 +15,7 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], fpfId: string, 
     const [cameras, setCameras] = useState<Camera[] | undefined>(undefined);
     const [CameraModalOpen, setCameraModalOpen] = useState(false);
     const [selectedCamera, setSelectedCamera] = useState<EditCamera | undefined>(undefined);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         setCameras(camerasToDisplay);
@@ -50,7 +50,7 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], fpfId: string, 
                 title={selectedCamera ? t("camera.editCamera") : t("camera.addCamera")}
                 centered
             >
-                <CameraForm toEditCamera={selectedCamera} setClosed={setCameraModalOpen} />
+                <CameraForm toEditCamera={selectedCamera} close={() => setCameraModalOpen(false)} fpfId={fpfId} />
             </Modal>
 
             {/* Header with Add Button */}
@@ -107,7 +107,7 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], fpfId: string, 
                                                             </div>
                                                         </Table.Td>
                                                     }
-                                                    <Table.Td>{camera.name}</Table.Td>
+                                                    <Table.Td>{getBackendTranslation(camera.name, i18n.language)}</Table.Td>
                                                     <Table.Td>{camera.location}</Table.Td>
                                                     <Table.Td>{camera.resolution}</Table.Td>
                                                     <Table.Td>{camera.modelNr}</Table.Td>
@@ -157,7 +157,6 @@ export const CameraList: React.FC<{ camerasToDisplay?: Camera[], fpfId: string, 
                                                 </Table.Tr>
                                             )}
                                         </Draggable>
-
                                     ))}
                                     {provided.placeholder}
                                 </Table.Tbody>

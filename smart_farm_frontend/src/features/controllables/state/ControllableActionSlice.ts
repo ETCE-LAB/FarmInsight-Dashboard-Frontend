@@ -50,9 +50,9 @@ const ControllableActionSlice = createSlice({
             const index = state.controllableAction.findIndex(c => c.id === actionId);
             if (index !== -1) {
                 state.controllableAction[index].isAutomated = isAutomated;
-            if (isAutomated) {
-                state.controllableAction[index].status = ""; // clear manual trigger
-            }
+                if (isAutomated) {
+                    state.controllableAction[index].status = ""; // clear manual trigger
+                }
             }
         },
 

@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
 import {useTranslation} from "react-i18next";
 import {getLocationByOrganization} from "../useCase/getLocationByOrganization";
 import {Box, Button, Collapse, Loader, ScrollArea, Table, Text} from "@mantine/core";
@@ -7,47 +6,36 @@ import {Location} from "../models/location";
 import {LocationForm} from "./LocationForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
+import {showNotification} from "@mantine/notifications";
 
-export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLocation: React.Dispatch<React.SetStateAction<Location>>, preSelectedLocation?: Location}> = ({ setLocation, organizationIdParam, preSelectedLocation }) => {
+
+export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: React.Dispatch<React.SetStateAction<Location | undefined>>, preSelectedLocation?: Location}> = ({ setLocation, organizationId, preSelectedLocation }) => {
     const locationEvent = useSelector((state: RootState) => state.location.receivedLocationEvent);
     const [locations, setLocations] = useState<Location[]>([]);
     const [isFormVisible, setIsFormVisible] = useState(false);
-    const { organizationId } = useParams<{ organizationId?: string }>();
-    const [selectedLocation, setSelectedLocation] = useState<Location>(
-        {
-            id: "",
-            name: "",
-            latitude: 0,
-            longitude: 0,
-            city: "",
-            street: "",
-            houseNumber: "",
-            organizationId: organizationId || "",
-            gatherForecasts: false,
-        }
-    );
+    const [selectedLocation, setSelectedLocation] = useState<Location | undefined>(undefined);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const { t } = useTranslation();
 
     useEffect(() => {
         setIsLoading(true);
-        if (organizationId || organizationIdParam) {
-            getLocationByOrganization(organizationId ? organizationId : organizationIdParam).then((locations) => {
-                setLocations(locations);
-                setIsLoading(false);
+        getLocationByOrganization(organizationId).then((locations) => {
+            setLocations(locations);
+            setIsLoading(false);
+        }).catch((error) => {
+            showNotification({
+                title: t('common.loadError'),
+                message: `${error}`,
+                color: "red",
             });
-        }
-    }, [organizationId,organizationIdParam, locationEvent]);
+        });
+    }, [organizationId, locationEvent, t]);
 
     useEffect(() => {
-        if (preSelectedLocation && preSelectedLocation.id) {
+        if (preSelectedLocation) {
             setSelectedLocation(preSelectedLocation);
         }
     }, [preSelectedLocation]);
-
-    // 1. Zeile 3B3B3B
-    // 2. Zeile 242424
-    //Selected: 595959
 
     return (
         <>
@@ -62,7 +50,7 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                 </Button>
             </Box>
             <Collapse in={isFormVisible}>
-                  <LocationForm setClosed={setIsFormVisible} organizationIdParam={organizationIdParam} />
+                  <LocationForm setClosed={setIsFormVisible} organizationIdParam={organizationId} />
             </Collapse>
             <ScrollArea>
                 {isLoading ? (
@@ -94,7 +82,7 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                                         }}
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.backgroundColor =
-                                                selectedLocation.id === location.id
+                                                selectedLocation && selectedLocation.id === location.id
                                                     ? "#595959"
                                                     : index % 2 === 0
                                                         ? "#242424"
@@ -103,11 +91,11 @@ export const SelectFPFLocation: React.FC<{organizationIdParam?: string,  setLoca
                                         style={{
                                             cursor: "pointer",
                                                 backgroundColor:
-                                            selectedLocation.id === location.id
-                                                ? "#595959"
-                                                : index % 2 === 0
-                                                    ? "#242424"
-                                                    : "#3B3B3B",
+                                                    selectedLocation && selectedLocation.id === location.id
+                                                    ? "#595959"
+                                                    : index % 2 === 0
+                                                        ? "#242424"
+                                                        : "#3B3B3B",
                                         }}
                                     >
                                         <Table.Td>{location.name}</Table.Td>

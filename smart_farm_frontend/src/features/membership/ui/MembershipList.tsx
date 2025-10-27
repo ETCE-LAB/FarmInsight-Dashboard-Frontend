@@ -7,6 +7,7 @@ import {KickMemberButton} from "./KickMemberButton";
 import { useTranslation } from 'react-i18next';
 import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
 import {DemoteMembershipButton} from "./DemoteMembershipButton";
+import {showNotification} from "@mantine/notifications";
 
 
 export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) => {
@@ -16,15 +17,21 @@ export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) =
     const { t } = useTranslation();
 
     useEffect(() => {
-        receiveUserProfile().then( (user) => {
+        receiveUserProfile().then((user) => {
             setUser(user);
             const userIsAdmin = members.some(
                 (member) => member.userprofile.id === user.id && member.membershipRole === MembershipRole.ADMIN
             );
             setIsAdmin(userIsAdmin);
             setIsSysAdmin(user.systemRole === SystemRole.ADMIN);
-        })
-    }, [members]);
+        }).catch((error) => {
+            showNotification({
+                title: t('common.error'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
+    }, [members, t]);
 
     return (
         <Table striped highlightOnHover withColumnBorders>

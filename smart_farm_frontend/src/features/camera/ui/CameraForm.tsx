@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
-import { useNavigate, useParams } from "react-router-dom";
-import { AppRoutes } from "../../../utils/appRoutes";
 import {Box, Button, Grid, NumberInput, Switch, Text, TextInput} from "@mantine/core";
 import { useAppDispatch } from "../../../utils/Hooks";
 import { EditCamera } from "../models/camera";
@@ -9,12 +7,13 @@ import { createCamera } from "../useCase/createCamera";
 import { updateCamera } from "../useCase/updateCamera";
 import { createdCamera } from "../state/CameraSlice";
 import { useTranslation } from "react-i18next";
-import { notifications } from "@mantine/notifications";
+import {notifications} from "@mantine/notifications";
 import { IconVideo, IconVideoOff } from "@tabler/icons-react";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
-export const CameraForm: React.FC<{ toEditCamera?: EditCamera, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditCamera, setClosed }) => {
+
+export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void, fpfId: string }> = ({ toEditCamera, close, fpfId }) => {
     const auth = useAuth();
-    const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch()
 
     const [name, setName] = useState<string>("")
@@ -26,8 +25,6 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, setClosed: React.
     const [snapshotUrl, setSnapshotUrl] = useState<string>("")
     const [livestreamUrl, setLivestreamUrl] = useState<string>("")
     const { t } = useTranslation();
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (toEditCamera) {
@@ -44,88 +41,73 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, setClosed: React.
     }, [toEditCamera]);
 
     const handleEdit = () => {
-        if (toEditCamera && fpfId) {
+        if (toEditCamera) {
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Updating Camera on your FPF',
+                title: t('common.loading'),
+                message: t('camera.updating'),
                 autoClose: false,
                 withCloseButton: false,
             });
-
             updateCamera({
-                fpfId,
-                id: toEditCamera.id,
-                name,
-                location,
-                modelNr,
-                resolution,
-                intervalSeconds,
-                snapshotUrl,
-                livestreamUrl,
-                isActive,
+                fpfId, id: toEditCamera.id, name, location, modelNr, resolution, isActive, intervalSeconds, snapshotUrl, livestreamUrl
             }).then((camera) => {
-                if (camera) {
-                    setClosed(false)
-                    dispatch(createdCamera())
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `Camera updated successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error updating the camera.',
-                        message: `${camera}`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                }
+                close();
+                dispatch(createdCamera())
+                notifications.update({
+                    id,
+                    title: t('common.updateSuccess'),
+                    message: '',
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
+            }).catch((error) => {
+                notifications.update({
+                    id,
+                    title: t('common.updateError'),
+                    message: `${error}`,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 2000,
+                });
             });
         }
     };
 
     const handleSave = () => {
-        if (fpfId && organizationId) {
-            const id = notifications.show({
-                loading: true,
-                title: 'Loading',
-                message: 'Saving Sensor on your FPF',
-                autoClose: false,
-                withCloseButton: false,
+        const id = notifications.show({
+            loading: true,
+            title: t('common.loading'),
+            message: t('camera.createCamera'),
+            autoClose: false,
+            withCloseButton: false,
+        });
+        createCamera({
+            fpfId, id: "", name, location, modelNr, resolution, isActive, intervalSeconds, livestreamUrl, snapshotUrl
+        }).then((camera) => {
+            if (camera) {
+                dispatch(createdCamera());
+                close();
+                notifications.update({
+                    id,
+                    title: t('common.success'),
+                    message: t('common.saveSuccess'),
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
+            }
+        }).catch((error) => {
+            notifications.update({
+                id,
+                title: t('common.saveError'),
+                message: `${error}`,
+                color: 'red',
+                loading: false,
+                autoClose: 2000,
             });
-            createCamera({
-                fpfId, id: "", name, location, modelNr, resolution, isActive, intervalSeconds, livestreamUrl, snapshotUrl
-            }).then((camera) => {
-                if (camera) {
-                    dispatch(createdCamera())
-                    setClosed(false)
-                    navigate(AppRoutes.editFpf.replace(":organizationId", organizationId).replace(":fpfId", fpfId));
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `Camera saved successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error saving the camera.',
-                        message: `${camera}`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                }
-            })
-        }
+        });
     }
 
     return (
@@ -142,12 +124,12 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, setClosed: React.
                     <Grid gutter="md">
                         {/* Name */}
                         <Grid.Col span={6}>
-                            <TextInput
+                            <MultiLanguageInput
                                 label={t("header.name")}
                                 placeholder={t("header.enterName")}
-                                required
+                                required={true}
                                 value={name}
-                                onChange={(e) => setName(e.currentTarget.value)}
+                                onChange={(value) => setName(value)}
                                 description={t("camera.hint.nameHint")} // Add hint for the name field
                             />
                         </Grid.Col>

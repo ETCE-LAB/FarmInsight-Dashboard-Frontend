@@ -11,6 +11,7 @@ import {IconCloud, IconCloudOff} from "@tabler/icons-react";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {receivedLocation} from "../state/LocationSlice";
 
+
 export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: React.Dispatch<React.SetStateAction<boolean>>, organizationIdParam?:string }> = ({ toEditLocation, setClosed, organizationIdParam }) => {
     const auth = useAuth();
     const dispatch = useAppDispatch();
@@ -28,7 +29,6 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
     useEffect(() => {
         if (toEditLocation) {
             setName(toEditLocation.name);
-
             setLatitude(toEditLocation.latitude);
             setLongitude(toEditLocation.longitude);
             setCity(toEditLocation.city);
@@ -118,6 +118,7 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                     withCloseButton: true,
                 });
                 dispatch(receivedLocation());
+                setClosed(false);
             }).catch((error) => {
                 notifications.update({
                     id,
@@ -127,10 +128,7 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                     autoClose: 2000,
                     withCloseButton: true,
                 });
-            }).finally(() => {
-                setClosed(false);
-            })
-
+            });
     }
 
     return (

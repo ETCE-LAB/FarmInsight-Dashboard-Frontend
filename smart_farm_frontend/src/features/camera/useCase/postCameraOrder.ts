@@ -2,7 +2,8 @@ import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
 
-export const postCameraOrder = async (fpfId: string, data: string[]) => {
+
+export const postCameraOrder = (fpfId: string, data: string[]) => {
     const apiClient = new APIClient()
 
     const headers =
@@ -10,5 +11,5 @@ export const postCameraOrder = async (fpfId: string, data: string[]) => {
 
     const url = `${BACKEND_URL}/api/cameras/sort-order/${fpfId}`;
 
-    return await apiClient.post(url, data, headers);
-};
+    return apiClient.post(url, data, headers);
+}

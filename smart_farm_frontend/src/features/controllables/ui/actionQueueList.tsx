@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next";
 import {useAuth} from "react-oidc-context";
 import {fetchActionQueue} from "../useCase/fetchActionQueue";
 import {ActionQueue} from "../models/actionQueue";
+import {showNotification} from "@mantine/notifications";
+import {getBackendTranslation} from "../../../utils/utils";
 
 
 export const ActionQueueList: React.FC<{ fpfId: string}> = ({ fpfId }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const auth = useAuth();
     const [queue, setQueue] = useState<ActionQueue[] | null>(null);
 
@@ -15,9 +17,16 @@ export const ActionQueueList: React.FC<{ fpfId: string}> = ({ fpfId }) => {
         if (fpfId && auth.isAuthenticated) {
             fetchActionQueue(fpfId).then((result) => {
                 setQueue(result);
+            }).catch((error) => {
+                console.dir(error);
+                showNotification({
+                    title: t('common.loadError') + t('controllableActionList.queue.title'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [fpfId]);
+    }, [fpfId, auth.isAuthenticated, t]);
 
     return (
         <>
@@ -40,9 +49,9 @@ export const ActionQueueList: React.FC<{ fpfId: string}> = ({ fpfId }) => {
                         <Table.Tbody>
                             {queue.map((entry) => (
                                 <Table.Tr>
-                                    <Table.Td>{entry.controllableAction.name}</Table.Td>
-                                    <Table.Td>{entry.actionTrigger.description}</Table.Td>
-                                    <Table.Td>{entry.controllableAction.hardware?.name}</Table.Td>
+                                    <Table.Td>{getBackendTranslation(entry.controllableAction.name, i18n.language)}</Table.Td>
+                                    <Table.Td>{getBackendTranslation(entry.actionTrigger.description, i18n.language)}</Table.Td>
+                                    <Table.Td>{getBackendTranslation(entry.controllableAction.hardware?.name, i18n.language)}</Table.Td>
                                     <Table.Td>{new Date(entry.createdAt).toLocaleString(navigator.language)}</Table.Td>
                                     <Table.Td>{entry.startedAt && new Date(entry.startedAt).toLocaleString(navigator.language)}</Table.Td>
                                     <Table.Td>{entry.endedAt && new Date(entry.endedAt).toLocaleString(navigator.language)}</Table.Td>

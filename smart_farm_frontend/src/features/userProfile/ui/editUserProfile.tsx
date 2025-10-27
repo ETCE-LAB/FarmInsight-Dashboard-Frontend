@@ -9,59 +9,59 @@ import { showNotification } from "@mantine/notifications";
 import { useTranslation } from 'react-i18next';
 import {IconLockCog} from "@tabler/icons-react";
 import {BACKEND_URL} from "../../../env-config";
+import {AuthRoutes} from "../../../utils/Router";
+import {useNavigate} from "react-router-dom";
 
 export const EditUserProfile = () => {
-    const [editableProfile, setEditableProfile] = useState({
-        email: '',
-        name: ''
-    });
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const auth = useAuth();
-    const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    
+    const [editableProfile, setEditableProfile] = useState({ email: '', name: '' });    
+    const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
 
     const handleInputChange = (field: keyof typeof editableProfile, value: string) => {
         setEditableProfile((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleSave = async () => {
-        try {
-            await modifyUserProfile({
-                name: editableProfile.name,
-            });
-            dispatch(changedUserProfile());
+        modifyUserProfile({
+            name: editableProfile.name,
+        }).then((result) => {
             showNotification({
                 title: t("userprofile.notifications.success.title"),
                 message: t("userprofile.notifications.success.message"),
                 color: 'green',
             });
-        } catch (error) {
+            dispatch(changedUserProfile());
+        }).catch((error) => {
             showNotification({
                 title: t("userprofile.notifications.error.title"),
                 message: `${error}`,
                 color: 'red',
             });
-        }
+        });
     };
 
     useEffect(() => {
-        if (auth.user) {
-            receiveUserProfile()
-                .then((resp) => {
-                    if (resp) {
-                        setEditableProfile({
-                            email: resp.email || '',
-                            name: resp.name || '',
-                        });
-                    } else {
-                        console.warn('No user profile data received');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user profile:', error);
+        if (auth.isAuthenticated) {
+            receiveUserProfile().then((resp) => {
+                setEditableProfile({
+                    email: resp.email || '',
+                    name: resp.name || '',
                 });
+            }).catch((error) => {
+                showNotification({
+                    title: t("common.loadError"),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
+        } else {
+            navigate(AuthRoutes.signin);
         }
-    }, [auth.user, userProfileReceivedEventListener]);
+    }, [auth.isAuthenticated, userProfileReceivedEventListener, t, navigate]);
 
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -87,7 +87,7 @@ export const EditUserProfile = () => {
                 <Group mt="md">
                     <Button
                         component="a"
-                        href={`${BACKEND_URL}/api/change-password`}
+                        href={`${BACKEND_URL}/api/change-password?lc=${i18n.language}`}
                         target="_blank"
                         variant="light"
                         leftSection={<IconLockCog/>}

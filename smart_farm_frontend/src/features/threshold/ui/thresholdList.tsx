@@ -16,17 +16,16 @@ export const ThresholdList: React.FC<{ sensorId: string, thresholds: Threshold[]
     const [editThresholdModalOpen, setEditThresholdModalOpen] = useState(false);
     const [toEditThreshold, setToEditThreshold] = useState<Threshold | null>(null);
 
-    const handleDelete = async (threshold: Threshold)=> {
-        try {
-            await deleteThreshold(threshold.id);
+    const handleDelete = (threshold: Threshold)=> {
+        deleteThreshold(threshold.id).then((v) => {
             dispatch(receivedSensor());
-        } catch (error) {
+        }).catch((error) => {
             showNotification({
-                title: t('threshold.failedToSave'),
+                title: t('common.deleteError'),
                 message: `${error}`,
                 color: "red",
             });
-        }
+        });
     }
 
     return (

@@ -15,11 +15,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../utils/store";
 import { useAuth } from "react-oidc-context";
 import { useMediaQuery } from "@mantine/hooks";
-import { moveArrayItem } from "../../../utils/utils";
+import {getBackendTranslation, moveArrayItem, truncateText} from "../../../utils/utils";
 import { postGrowingCycleOrder } from "../useCase/postGrowingCycleOrder";
 
-const truncateText = (text: string, limit: number): string =>
-    text.length > limit ? `${text.slice(0, limit)}...` : text;
 
 const formatTotalHarvest = (cycle: GrowingCycle): string => {
     const totalHarvest =
@@ -37,7 +35,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
     const [toEditGrowingCycle, setToEditGrowingCycle] = useState<GrowingCycle | null>(null);
     const [cycleToDelete, setCycleToDelete] = useState<GrowingCycle | null>(null);
     const [selectedCycle, setSelectedCycle] = useState<GrowingCycle | null>(null);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const dispatch = useAppDispatch();
     const growingCycles = useSelector((state: RootState) => state.growingCycle.growingCycles);
     const auth = useAuth();
@@ -57,32 +55,22 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
 
     const confirmDelete = () => {
         if (cycleToDelete) {
-            removeGrowingCycle(cycleToDelete.id)
-                .then((result) => {
-                    if (result) {
-                        dispatch(deleteGrowingCycle(cycleToDelete.id));
-                        dispatch(changedGrowingCycle());
-                        showNotification({
-                            title: "Success",
-                            message: `Growing cycle for ${cycleToDelete.plants} has been deleted successfully.`,
-                            color: "green",
-                        });
-                    } else {
-                        showNotification({
-                            title: "Error",
-                            message: "Failed to delete the growing cycle",
-                            color: "red",
-                        });
-                    }
-                })
-                .catch(() => {
-                    showNotification({
-                        title: "Error",
-                        message: "Failed to delete the growing cycle",
-                        color: "red",
-                    });
-                })
-                .finally(() => closeAllModals());
+            removeGrowingCycle(cycleToDelete.id).then((result) => {
+                dispatch(deleteGrowingCycle(cycleToDelete.id));
+                dispatch(changedGrowingCycle());
+                showNotification({
+                    title: t('common.deleteSuccess'),
+                    message: '',
+                    color: "green",
+                });
+                closeAllModals();
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.deleteError'),
+                    message: `${error}`,
+                    color: "red",
+                });
+            });
         }
     };
 
@@ -113,11 +101,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                     <HarvestEntityForm
                         growingCycleId={selectedCycle.id}
                         toEditHarvestEntity={null}
-                        onSuccess={() => {
-                            setActiveModal(null);
-                            setActiveModal("details");
-                            dispatch(changedGrowingCycle());
-                        }}
+                        onSuccess={() => { setActiveModal("details"); }}
                     />
                 )}
             </Modal>
@@ -126,7 +110,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
             <Modal
                 opened={activeModal === "details"}
                 onClose={closeAllModals}
-                title={`${t("header.table.details")} ${selectedCycle?.plants}`}
+                title={`${t("header.table.details")} ${getBackendTranslation(selectedCycle?.plants, i18n.language)}`}
                 centered
             >
                 {selectedCycle && (
@@ -137,7 +121,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                     <Text size="sm">
                                         <strong>{t("header.table.name")}</strong>
                                     </Text>
-                                    <Text size="sm">{selectedCycle.plants}</Text>
+                                    <Text size="sm">{getBackendTranslation(selectedCycle.plants, i18n.language)}</Text>
                                 </Grid.Col>
                                 <Grid.Col span={6}>
                                     <Text size="sm">
@@ -153,7 +137,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                     <Text size="sm">
                                         <strong>{t("header.table.notes")}</strong>
                                     </Text>
-                                    <Text size="sm">{selectedCycle.note || "No notes available."}</Text>
+                                    <Text size="sm">{selectedCycle.note || t('growingCycleForm.noNotes')}</Text>
                                 </Grid.Col>
                             </Grid>
                         </Paper>
@@ -205,7 +189,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                         {growingCycles.map((cycle) => (
                             <Card key={cycle.id} p="sm" withBorder>
                                 <Text fw={600} ta="center" mb="xs" tt="capitalize">
-                                    {truncateText(cycle.plants, 20)}
+                                    {truncateText(getBackendTranslation(cycle.plants, i18n.language), 20)}
                                 </Text>
                                 <Flex justify="space-around" align="center" mb="xs">
                                     {auth.user && (
@@ -239,7 +223,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                     {cycle.startDate ? new Date(cycle.startDate).toLocaleDateString() : ""}
                                 </Text>
                                 <Text size="xs" c="dimmed">
-                                    {t("header.totalHarvestAmount")}: {formatTotalHarvest(cycle)}
+                                    {t("growingCycleForm.totalHarvestAmount")}: {formatTotalHarvest(cycle)}
                                 </Text>
                                 <Text size="xs" c="dimmed">
                                     {t("header.table.notes")}: {cycle.note ? truncateText(cycle.note, 20) : ""}
@@ -265,7 +249,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                         <Table.Th style={{ width: "5%" }} />
                                         <Table.Th style={{ width: "25%" }}>{t("header.table.name")}</Table.Th>
                                         <Table.Th style={{ width: "20%" }}>{t("header.table.planted")}</Table.Th>
-                                        <Table.Th style={{ width: "20%" }}>{t("header.totalHarvestAmount")}</Table.Th>
+                                        <Table.Th style={{ width: "20%" }}>{t("growingCycleForm.totalHarvestAmount")}</Table.Th>
                                         <Table.Th style={{ width: "20%" }}>{t("header.table.notes")}</Table.Th>
                                         {auth.user && <Table.Th style={{ width: "10%" }} />}
                                         {auth.user && <Table.Th style={{ width: "10%" }} />}
@@ -290,7 +274,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
                                                                     <IconSeeding style={{ marginRight: "0.5rem", color: "green" }} />
                                                                 }
                                                             </Table.Td>
-                                                            <Table.Td>{truncateText(cycle.plants, 12)}</Table.Td>
+                                                            <Table.Td>{truncateText(getBackendTranslation(cycle.plants, i18n.language), 12)}</Table.Td>
                                                             <Table.Td>
                                                                 {cycle.startDate ? new Date(cycle.startDate).toLocaleDateString() : ""}
                                                             </Table.Td>

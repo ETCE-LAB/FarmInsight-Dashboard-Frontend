@@ -14,7 +14,7 @@ export const createThreshold = (data:Threshold) => {
         {'Authorization': `Bearer ${token}`}
 
     const url = `${BACKEND_URL}/api/thresholds`;
-    const result:  Promise<Threshold> = apiClient.post(url, data, headers)
 
+    const result:  Promise<Threshold> = apiClient.post(url, data, headers)
     return result
 }

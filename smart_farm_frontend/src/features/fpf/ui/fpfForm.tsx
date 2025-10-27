@@ -3,9 +3,7 @@ import { Button, TextInput, Box, Switch, Grid, Title } from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { createFpf } from "../useCase/createFpf";
 import { useDispatch } from "react-redux";
-import { AppRoutes } from "../../../utils/appRoutes";
 import {createdFpf, updatedFpf} from "../state/FpfSlice";
-import {useNavigate} from "react-router-dom";
 import { Fpf } from "../models/Fpf";
 import { useTranslation } from 'react-i18next';
 import { updateFpf } from "../useCase/updateFpf";
@@ -14,31 +12,16 @@ import {IconEye, IconEyeOff} from "@tabler/icons-react";
 import {SelectFPFLocation} from "../../location/ui/SelectFPFLocation";
 import { Location } from "../../location/models/location";
 
-export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close: React.Dispatch<React.SetStateAction<boolean>>; }> = ({ organizationId, toEditFpf , close}) => {
+
+export const FpfForm: React.FC<{ organizationId: string, toEditFpf?: Fpf, close: React.Dispatch<React.SetStateAction<boolean>>; }> = ({ organizationId, toEditFpf , close}) => {
     const auth = useAuth();
     const { t } = useTranslation();
     const [name, setName] = useState("");
     const [isPublic, setIsPublic] = useState(false);
     const [sensorServiceIp, setSensorServiceIp] = useState("");
-    const [location, setLocation] = useState<Location>({
-        id: "",
-        name: "",
-        latitude: 0,
-        longitude: 0,
-        city: "",
-        street: "",
-        houseNumber: "",
-        organizationId: organizationId || "",
-        gatherForecasts: false,
-    });
-    const [errors, setErrors] = useState<{ sensorServiceIp?: string; cameraServiceIp?: string }>({});
+    const [location, setLocation] = useState<Location | undefined>(undefined);
+    const [errors, setErrors] = useState<{ name?: string; sensorServiceIp?: string; }>({});
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        console.log(location);
-    }, [location]);
-
 
     useEffect(() => {
         if (toEditFpf) {
@@ -49,44 +32,72 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
         }
     }, [toEditFpf]);
 
+
+    const getErrorsFromResponse = (error: string) =>  {
+        let msg = '';
+        try {
+            const errorObj = JSON.parse(error);
+            if ('details' in errorObj) {
+                if (typeof errorObj['details'] === 'string') {
+                    msg = `${errorObj['details']}`
+                } else {
+                    let ipError = undefined;
+                    if ('sensorServiceIp' in errorObj['details']) {
+                        ipError = errorObj['details']['sensorServiceIp'];
+                    }
+
+                    let nameError = undefined;
+                    if ('non_field_errors' in errorObj['details'] && 'name' in errorObj['details']['non_field_errors']) {
+                        nameError = errorObj['details']['non_field_errors']['name'];
+                    }
+                    setErrors({name: nameError, sensorServiceIp: ipError});
+                }
+            } else {
+                msg = `${error}`
+            }
+        } catch (e) {
+            msg = `${error}`
+        }
+
+        return msg;
+    }
+
     const handleSave = () => {
-        if (organizationId && location.id && name) {
+        if (organizationId && name) {
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Updating FPF Settings',
+                title: t('common.loading'),
+                message: '',
                 autoClose: false,
                 withCloseButton: false,
             });
 
-            const locationId = location.id
+            const locationId = location?.id || '';
+            createFpf({ organizationId, name, isPublic, sensorServiceIp, locationId }).then(fpf => {
+                dispatch(createdFpf());
+                dispatch(updatedFpf(fpf));
 
-            createFpf({ name, isPublic, sensorServiceIp, locationId , organizationId }).then(fpf => {
-                if (fpf) {
-                    dispatch(createdFpf());
+                notifications.update({
+                    id,
+                    title: t('common.success'),
+                    message: t(`common.saveSuccess`),
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
 
-                    dispatch(updatedFpf(fpf));
-                    navigate(AppRoutes.editFpf.replace(":organizationId", organizationId).replace(":fpfId", fpf.id));
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `FPF updated successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error updating the FPF.',
-                        message: `${fpf}`,
-                        color: 'red',
-                        loading: false,
-                        autoClose: 10000,
-                    });
-                }
+                close(false);
+            }).catch((error) => {
+                const msg = getErrorsFromResponse(error);
+                notifications.update({
+                    id,
+                    title: t('common.saveError'),
+                    message: msg,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 10000,
+                });
             });
-            close(false);
         }
     };
 
@@ -94,35 +105,34 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
         if (toEditFpf) {
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Updating FPF',
+                title: t('common.loading'),
+                message: '',
                 autoClose: false,
                 withCloseButton: false,
             });
-            const locationId= location.id;
-            console.log(locationId);
+
+            const locationId= location?.id || '';
             updateFpf(toEditFpf.id, { name, isPublic, sensorServiceIp, locationId }).then(fpf => {
-                if (fpf) {
-                    dispatch(updatedFpf(fpf));
-                    dispatch(createdFpf());
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `FPF updated successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error updating the FPF.',
-                        message: `${fpf}`,
-                        color: 'red',
-                        loading: false,
-                        autoClose: 10000,
-                    });
-                }
+                dispatch(updatedFpf(fpf));
+                dispatch(createdFpf());
+                notifications.update({
+                    id,
+                    title: t('common.updateSuccess'),
+                    message: '',
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
+            }).catch((error) => {
+                const msg = getErrorsFromResponse(error);
+                notifications.update({
+                    id,
+                    title: t('common.updateError'),
+                    message: `${msg}`,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 10000,
+                });
             });
         }
         close(false);
@@ -151,6 +161,7 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                                     required
                                     value={name}
                                     onChange={(e) => setName(e.currentTarget.value)}
+                                    error={errors.name}
                                 />
                             </Grid.Col>
 
@@ -190,11 +201,9 @@ export const FpfForm: React.FC<{ organizationId?: string, toEditFpf?: Fpf, close
                                 />
                             </Grid.Col>
 
-
-
                             {/* Address Input */}
                             <Grid.Col span={12}>
-                                <SelectFPFLocation setLocation={setLocation} organizationIdParam={organizationId} preSelectedLocation={location}/>
+                                <SelectFPFLocation setLocation={setLocation} organizationId={organizationId} preSelectedLocation={location}/>
                             </Grid.Col>
 
                             {/* Save Button */}

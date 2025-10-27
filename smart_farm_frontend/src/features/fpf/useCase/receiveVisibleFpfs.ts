@@ -3,25 +3,20 @@ import APIClient from "../../../utils/APIClient";
 import {BasicFPF} from "../models/BasicFPF";
 import {BACKEND_URL} from "../../../env-config";
 
-//hier wird der API Client aufgerufen
-//anstatt useAuth, getUser verwenden und den token auslesen
-// Hier die gesammte URL zusammenbauen (aus env ziehen)
 
 export const receiveVisibleFpfs = () => {
-    const apiClient = new APIClient()
+    const apiClient = new APIClient();
 
     const user = getUser();
     const token = user?.access_token;
 
     const headers =
-        {
-            'Authorization': `Bearer ${token}`
-        }
+        {'Authorization': `Bearer ${token}`};
 
     const url = `${BACKEND_URL}/api/fpfs/visible`;
-    const result:  Promise<BasicFPF[]> = apiClient.get(url, headers)
 
-    return result
+    const result: Promise<BasicFPF[]> = apiClient.get(url, headers);
+    return result;
 }
 
 

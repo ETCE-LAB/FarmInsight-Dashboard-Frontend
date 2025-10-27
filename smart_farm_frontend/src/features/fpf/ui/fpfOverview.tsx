@@ -47,34 +47,37 @@ export const FpfOverview = () => {
     useEffect(() => {
         if (organizationId && auth.isAuthenticated) {
             getMyOrganizations().then((organizations) => {
-                if (organizations) {
-                    const org = organizations.find((o) => o.id === organizationId);
-                    if (org) {
-                        setIsMember(true);
-                        setIsAdmin(org.membership.role === 'admin');
-                    }
+                const org = organizations.find((o) => o.id === organizationId);
+                if (org) {
+                    setIsMember(true);
+                    setIsAdmin(org.membership.role === 'admin');
                 }
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadingError'),
+                    message: `${error}`,
+                    color: "red",
+                });
             });
         }
-    }, [organizationId, auth.isAuthenticated]);
+    }, [organizationId, auth.isAuthenticated, t]);
 
     useEffect(() => {
         if (params?.fpfId) {
             getFpf(params.fpfId).then(resp => {
-                if (resp) {
-                    setFpf(resp);
-                    dispatch(setGrowingCycles(resp.GrowingCycles));
-                    dispatch(setControllableAction(resp.ControllableAction));
-                } else {
-                    showNotification({
-                        title: t('common.loadingError'),
-                        message: ``,
-                        color: "red",
-                    });
-                }
+                setFpf(resp);
+                dispatch(setGrowingCycles(resp.GrowingCycles));
+                dispatch(setControllableAction(resp.ControllableAction));
+                
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadingError'),
+                    message: `${error}`,
+                    color: "red",
+                });
             });
         }
-    }, [params, dispatch]);
+    }, [params, dispatch, t]);
 
     useEffect(() => {
         if (fpf?.Cameras?.some(camera => camera.isActive)) {

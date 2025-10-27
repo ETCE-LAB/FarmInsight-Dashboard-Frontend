@@ -1,12 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import { getOrganization } from "../useCase/getOrganization";
 import { Organization } from "../models/Organization";
-import { Button, Card, Modal, TextInput, Switch, Flex, Title, Text, Box, Badge, } from "@mantine/core";
-import { IconEdit, IconUserPlus, IconSquareRoundedMinus, IconEye, IconEyeOff } from "@tabler/icons-react";
+import {
+    Button,
+    Card,
+    Modal,
+    TextInput,
+    Switch,
+    Flex,
+    Title,
+    Text,
+    Box,
+    Badge,
+    Table,
+} from "@mantine/core";
+import {
+    IconEdit,
+    IconUserPlus,
+    IconSquareRoundedMinus,
+    IconEye,
+    IconEyeOff,
+    IconGripVertical
+} from "@tabler/icons-react";
 import { MembershipList } from "../../membership/ui/MembershipList";
 import { SearchUserProfile } from "../../userProfile/ui/searchUserProfile";
-import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
+import { UserProfile } from "../../userProfile/models/UserProfile";
 import { addUserToOrganization } from "../useCase/addUserToOrganization";
 import { showNotification } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
@@ -20,10 +39,22 @@ import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {LocationList} from "../../location/ui/LocationList";
+import {useAuth} from "react-oidc-context";
+import {AuthRoutes} from "../../../utils/Router";
+import {DragDropContext, Draggable, DraggableProvided, Droppable} from "@hello-pangea/dnd";
+import {moveArrayItem} from "../../../utils/utils";
+import {Fpf} from "../../fpf/models/Fpf";
+import {postFpfOrder} from "../../fpf/useCase/postFpfOrder";
+import {createdFpf} from "../../fpf/state/FpfSlice";
 
 export const EditOrganization = () => {
-    const { organizationId } = useParams();
     const { t } = useTranslation();
+    const auth = useAuth();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const { organizationId } = useParams();
+
     const [organization, setOrganization] = useState<Organization | null>(null);
     const [usersToAdd, setUsersToAdd] = useState<UserProfile[]>([]);
     const [userModalOpen, setUserModalOpen] = useState(false);
@@ -34,22 +65,27 @@ export const EditOrganization = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const membershipEventListener = useSelector((state: RootState) => state.membership.changeMembershipEvent);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const dispatch = useAppDispatch();
+    const [fpfs, setFpfs] = useState<Fpf[]>([]);
 
     useEffect(() => {
-        if (organizationId)
-            getOrganization(organizationId)
-                .then((org) => {
-                    setOrganization(org);
-                    setNewOrganizationName(org.name);
-                    setIsPublic(org.isPublic);
-                    setIsModified(false);
-                })
-                .catch((error) => {
-                    console.error("Failed to fetch organization:", error);
+        if (auth.isAuthenticated && organizationId) {
+            getOrganization(organizationId).then((org) => {
+                setOrganization(org);
+                setFpfs(org.FPFs);
+                setNewOrganizationName(org.name);
+                setIsPublic(org.isPublic);
+                setIsModified(false);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
                 });
-    }, [organizationId, membershipEventListener]);
-
+            });
+        } else {
+            navigate(AuthRoutes.signin);
+        }
+    }, [auth.isAuthenticated, navigate, organizationId, membershipEventListener, t]);
 
     useEffect(() => {
         if (organization) {
@@ -58,9 +94,15 @@ export const EditOrganization = () => {
                     (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
                 );
                 setIsAdmin(userIsAdmin);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [organization]);
+    }, [organization, t]);
 
     const handleRemoveUser = (user: UserProfile) => {
         setUsersToAdd((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
@@ -81,25 +123,22 @@ export const EditOrganization = () => {
                     membershipRole: "member",
                 })
             )
-        )
-            .then(() => {
-                showNotification({
-                    title: t('growingCycleForm.successTitle'),
-                    message: `${usersToAdd.length} ${t("header.userAdded")}`,
-                    color: 'green',
-                });
-                setUsersToAdd([]);
-                dispatch(changedMembership());
-                setUserModalOpen(false);
-            })
-            .catch((error) => {
-                showNotification({
-                    title: 'There was an error adding the users.',
-                    message: `${error}`,
-                    color: 'red',
-                });
-                console.error("Error adding users:", error);
+        ).then(() => {
+            showNotification({
+                title: t('common.success'),
+                message: `${usersToAdd.length} ${t("header.userAdded")}`,
+                color: 'green',
             });
+            setUsersToAdd([]);
+            dispatch(changedMembership());
+            setUserModalOpen(false);
+        }).catch((error) => {
+            showNotification({
+                title: t('common.error'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
     };
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,11 +152,7 @@ export const EditOrganization = () => {
     };
 
     const handleUpdateOrganization = () => {
-        if (!organizationId) return;
-
-        if (!organization?.id) {
-            throw new Error("Organization ID is undefined");
-        }
+        if (!organization) return;
 
         const updatedOrganization = {
             ...organization,
@@ -125,25 +160,22 @@ export const EditOrganization = () => {
             isPublic: isPublic,
         };
 
-        editOrganization(updatedOrganization)
-            .then(() => {
-                showNotification({
-                    title: t('growingCycleForm.successTitle'),
-                    message: `${t("header.organizationUpdated")}`,
-                    color: 'green',
-                });
-                setOrganization(updatedOrganization);
-                setIsModified(false);
-                setEditModalOpen(false);
-            })
-            .catch((error) => {
-                showNotification({
-                    title: 'Error updating organization',
-                    message: `${error}`,
-                    color: 'red',
-                });
-                console.error("Error updating organization:", error);
+        editOrganization(updatedOrganization).then(() => {
+            showNotification({
+                title: t('growingCycleForm.successTitle'),
+                message: `${t("header.organizationUpdated")}`,
+                color: 'green',
             });
+            setOrganization(updatedOrganization);
+            setIsModified(false);
+            setEditModalOpen(false);
+        }).catch((error) => {
+            showNotification({
+                title: t('common.updateError'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
     };
 
     return (
@@ -177,25 +209,82 @@ export const EditOrganization = () => {
                     </Card>
 
                     <Card padding="lg" radius="md" mt="lg">
-                        <Box mt="xl">
-                            <Flex justify="space-between" align="center" mb="lg">
-                                <Text size="xl" fw="bold">
-                                    {t("header.members")}
-                                </Text>
-                                {isAdmin && (
-                                    <IconUserPlus
-                                        size={30}
-                                        onClick={() => setUserModalOpen(true)}
-                                        style={{ cursor: "pointer", color: "#199ff4" }}
-                                    />
-                                )}
-                            </Flex>
-                            <MembershipList members={organization.memberships} />
-                        </Box>
+                        <Flex justify="space-between" align="center" mb="lg">
+                            <Text size="xl" fw="bold">
+                                {t("header.members")}
+                            </Text>
+                            {isAdmin && (
+                                <IconUserPlus
+                                    size={30}
+                                    onClick={() => setUserModalOpen(true)}
+                                    style={{ cursor: "pointer", color: "#199ff4" }}
+                                />
+                            )}
+                        </Flex>
+                        <MembershipList members={organization.memberships} />
                     </Card>
+
                     <Card padding={"lg"} radius={"md"} mt="lg">
                         <LocationList locationsToDisplay={organization.locations} isAdmin={isAdmin}/>
                     </Card>
+
+                    {isAdmin &&
+                        <Card padding="lg" radius="md" mt="lg">
+                            <Flex justify="space-between" align="center" mb="lg">
+                                <Text size="xl" fw="bold">
+                                    {t("header.fpfs")}
+                                </Text>
+                            </Flex>
+                            <Table highlightOnHover withColumnBorders style={{ minWidth: "100%" }}>
+                                <DragDropContext
+                                    onDragEnd={({ destination, source }) => {
+                                        const reordered: Fpf[] = moveArrayItem(fpfs, source.index, destination?.index || 0);
+                                        setFpfs(reordered);
+                                        postFpfOrder(organization.id, reordered.map((x: Fpf) => x.id)).then(() => {
+                                            // don't need to get list again since we keep the order locally
+                                        }).catch((error) => {
+                                            showNotification({
+                                                title: t('common.updateError'),
+                                                message: `${error}`,
+                                                color: 'red',
+                                            })
+                                        });
+                                    }}
+                                >
+                                    <Table.Thead>
+                                        <Table.Tr>
+                                            {isAdmin && <Table.Th />}
+                                            <Table.Th>{t("header.name")}</Table.Th>
+                                        </Table.Tr>
+                                    </Table.Thead>
+                                    <Droppable droppableId="sensors" direction="vertical">
+                                        {(provided) => (
+                                            <Table.Tbody {...provided.droppableProps} ref={provided.innerRef}>
+                                                {fpfs.map((fpf, index) => (
+                                                    <Draggable key={fpf.id} index={index} draggableId={fpf.id}>
+                                                        {(provided: DraggableProvided) => (
+                                                            <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
+                                                                {isAdmin &&
+                                                                    <Table.Td>
+                                                                        <div {...provided.dragHandleProps}>
+                                                                            <IconGripVertical size={18} stroke={1.5} />
+                                                                        </div>
+                                                                    </Table.Td>
+                                                                }
+                                                                <Table.Td>{fpf.name}</Table.Td>
+                                                            </Table.Tr>
+                                                        )}
+                                                    </Draggable>
+
+                                                ))}
+                                                {provided.placeholder}
+                                            </Table.Tbody>
+                                        )}
+                                    </Droppable>
+                                </DragDropContext>
+                            </Table>
+                        </Card>
+                    }
 
                     <Modal
                         opened={fpfModalOpen}
@@ -203,7 +292,9 @@ export const EditOrganization = () => {
                         title={t("header.addFpf")}
                         centered
                     >
-                        <FpfForm organizationId={organizationId} close={setFpFModalOpen}/>
+                        {organizationId &&
+                            <FpfForm organizationId={organizationId} close={setFpFModalOpen}/>
+                        }
                     </Modal>
 
                     <Modal

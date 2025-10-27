@@ -11,6 +11,7 @@ import { getOrganization } from "../../../../features/organization/useCase/getOr
 import DynamicFontText from "../../../../utils/DynamicFontText";
 import { useTranslation } from "react-i18next";
 import { FpfForm } from "../../../../features/fpf/ui/fpfForm";
+import {showNotification} from "@mantine/notifications";
 
 export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onNavbarShouldClose}) => {
     const theme = useMantineTheme();
@@ -31,10 +32,16 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
     useEffect(() => {
         if (auth.isAuthenticated) {
             getMyOrganizations().then((resp) => {
-                if (resp) setMyOrganizations(resp);
+                setMyOrganizations(resp);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                })
             });
         }
-    }, [auth.isAuthenticated]);
+    }, [auth.isAuthenticated, t]);
 
     useEffect(() => {
         if (auth.isAuthenticated) {
@@ -44,22 +51,32 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
                 const orgId = path[organizationPathIndex + 1];
                 setOrganizationId(orgId);
                 getOrganization(orgId).then((resp) => {
-                    if (resp) {
-                        setFpfList(resp.FPFs);
-                        setSelectedOrganization({ name: resp.name, id: resp.id });
-                        const fpfPathIndex = path.indexOf("fpf");
-                        if (fpfPathIndex !== -1 && path.length > fpfPathIndex + 1) {
-                            const fpfId = path[fpfPathIndex + 1];
-                            setSelectedFPFId(fpfId);
-                        }
+                    setFpfList(resp.FPFs);
+                    setSelectedOrganization({ name: resp.name, id: resp.id });
+                    const fpfPathIndex = path.indexOf("fpf");
+                    if (fpfPathIndex !== -1 && path.length > fpfPathIndex + 1) {
+                        const fpfId = path[fpfPathIndex + 1];
+                        setSelectedFPFId(fpfId);
                     }
+                }).catch((error) => {
+                    showNotification({
+                        title: t('common.loadError'),
+                        message: `${error}`,
+                        color: 'red',
+                    })
                 });
             } else {
                 setSelectedFPFId(null);
                 setFpfList([]);
                 setSelectedOrganization({ name: t("header.myOrganizations"), id: "" });
                 getMyOrganizations().then((resp) => {
-                    if (resp) setMyOrganizations(resp);
+                    setMyOrganizations(resp);
+                }).catch((error) => {
+                    showNotification({
+                        title: t('common.loadError'),
+                        message: `${error}`,
+                        color: 'red',
+                    })
                 });
             }
         }
@@ -88,7 +105,9 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
                 onClose={() => setFpfModalOpen(false)}
                 title={t("header.addFpf")}
             >
-                <FpfForm organizationId={organizationId} close={setFpfModalOpen} />
+                {organizationId &&
+                    <FpfForm organizationId={organizationId} close={setFpfModalOpen} />
+                }
             </Modal>
 
             {/* Header */}

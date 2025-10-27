@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
@@ -23,13 +23,18 @@ import {setControllableAction} from "../../controllables/state/ControllableActio
 import {ActionQueueList} from "../../controllables/ui/actionQueueList";
 import {HardwareList} from "../../hardware/ui/hardwareList";
 import {Hardware} from "../../hardware/models/hardware";
+import {showNotification} from "@mantine/notifications";
+import {useAuth} from "react-oidc-context";
+import {AuthRoutes} from "../../../utils/Router";
 
 
 export const EditFPF: React.FC = () => {
+    const auth = useAuth();
+    const navigate = useNavigate();
     const { organizationId, fpfId } = useParams();
     const { t } = useTranslation();
-    const [organization, setOrganization] = useState<Organization>();
 
+    const [organization, setOrganization] = useState<Organization>();
     const [sensors, setSensors] = useState<Sensor[]>();
     const [cameras, setCameras] = useState<Camera[]>();
     const [hardware, setHardware] = useState<Hardware[]>();
@@ -47,13 +52,40 @@ export const EditFPF: React.FC = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (fpfId) {
+        if (auth.isAuthenticated) {
+            if (fpf && organization) {
+                receiveUserProfile().then((user) => {
+                    const userIsAdmin = organization.memberships.some(
+                        (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
+                    );
+                    setIsAdmin(userIsAdmin);
+                }).catch((error) => {
+                    showNotification({
+                        title: t('common.loadError'),
+                        message: `${error}`,
+                        color: 'red',
+                    });
+                });
+            }
+        } else {
+            navigate(AuthRoutes.signin);
+        }
+    }, [auth.isAuthenticated, fpf, navigate, organization, t]);
+    
+    useEffect(() => {
+        if (auth.isAuthenticated && fpfId) {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
                 dispatch(setControllableAction(resp.ControllableAction));
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [fpfId, fpfCreatedEventListener]);
+    }, [auth.isAuthenticated, fpfId, fpfCreatedEventListener, dispatch, t]);
 
     useEffect(() => {
         if (fpf?.Sensors && fpf.Sensors.length >= 1) {
@@ -68,17 +100,29 @@ export const EditFPF: React.FC = () => {
     }, [fpf]);
 
     useEffect(() => {
-        if (organizationId) {
+        if (auth.isAuthenticated && organizationId) {
             getOrganization(organizationId).then(resp => {
                 setOrganization(resp);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
-    }, [organizationId]);
+    }, [auth.isAuthenticated, organizationId, t]);
 
     useEffect(() => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
                 setSensors(resp.Sensors);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
     }, [SensorEventListener]);
@@ -87,20 +131,15 @@ export const EditFPF: React.FC = () => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
                 setCameras(resp.Cameras);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             });
         }
     }, [CameraEventListener]);
-
-    useEffect(() => {
-        if (fpf && organization) {
-            receiveUserProfile().then((user) => {
-                const userIsAdmin = organization.memberships.some(
-                    (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
-                );
-                setIsAdmin(userIsAdmin);
-            });
-        }
-    }, [fpf, organization]);
 
     return (
         <Stack gap={"md"}>
@@ -171,7 +210,9 @@ export const EditFPF: React.FC = () => {
                 title={t('fpf.editFpF')}
                 centered
             >
-                <FpfForm toEditFpf={fpf} close={setEditModalOpen} />
+                {organization && fpf &&
+                    <FpfForm organizationId={organization.id} toEditFpf={fpf} close={setEditModalOpen} />
+                }
             </Modal>
         </Stack>
     );

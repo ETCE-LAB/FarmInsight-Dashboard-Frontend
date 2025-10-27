@@ -16,7 +16,7 @@ import {AdminPage} from "../features/admin/ui/adminPage";
 export class AuthRoutes {
     static callback = "auth/callback";
     static signout_callback = "auth/signout-callback"
-    static signin = "auth/signin"
+    static signin = "/auth/signin"
 }
 
 

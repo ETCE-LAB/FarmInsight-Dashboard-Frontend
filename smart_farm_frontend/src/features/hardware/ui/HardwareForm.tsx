@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {useAuth} from "react-oidc-context";
-import {useAppDispatch} from "../../../utils/Hooks";
 import {Hardware} from "../models/hardware";
 import {Box, Button, Flex, TextInput} from "@mantine/core";
 import {showNotification} from "@mantine/notifications";
 import {updateHardware} from "../useCase/updateHardware";
 import {createHardware} from "../useCase/createHardware";
+import {createdFpf} from "../../fpf/state/FpfSlice";
+import {useAppDispatch} from "../../../utils/Hooks";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 
 export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string, close: () => void }> = ({ toEditHardware, fpfId, close }) => {
-    const auth = useAuth();
-    const dispatch = useAppDispatch();
     const {t} = useTranslation();
+    const dispatch = useAppDispatch();
 
     const [hardware, setHardware] = useState<Hardware>({FPF: fpfId} as Hardware);
 
@@ -26,54 +26,50 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
         setHardware((prev) => ({ ...prev, [field]: value }));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = () => {
         if (toEditHardware) {
-            try {
-                const updatedEntity = await updateHardware(hardware);
+            updateHardware(hardware).then((result) => {
                 showNotification({
-                    title: t('common.saveSuccess'),
+                    title: t('common.updateSuccess'),
                     message: '',
                     color: "green",
                 });
+                dispatch(createdFpf());
                 close();
-            } catch (error) {
+            }).catch ((error)=> {
                 showNotification({
-                    title: t('common.saveError'),
+                    title: t('common.updateError'),
                     message: `${error}`,
                     color: "red",
                 });
-            }
+            });
         } else {
-            try {
-                const newEntity = await createHardware(hardware);
+            createHardware(hardware).then((result) => {
                 showNotification({
                     title: t('common.saveSuccess'),
                     message: '',
                     color: "green",
                 });
+                dispatch(createdFpf());
                 close();
-            } catch (error) {
+            }).catch ((error)=> {
                 showNotification({
                     title: t('common.saveError'),
                     message: `${error}`,
                     color: "red",
                 });
-            }
+            });
         }
     };
 
     return (
         <Box>
-            <TextInput
+            <MultiLanguageInput
                 label={t("hardware.name")}
                 placeholder={t("hardware.name")}
-                required
-                type="string"
+                required={true}
                 value={hardware.name}
-                onChange={(e) => {
-                    handleInputChange("name", e.currentTarget.value);
-                }}
-                style={{ width: "100%", marginBottom: "15px" }}
+                onChange={(value) => handleInputChange("name", value)}
             />
             <Flex justify="flex-end">
                 <Button

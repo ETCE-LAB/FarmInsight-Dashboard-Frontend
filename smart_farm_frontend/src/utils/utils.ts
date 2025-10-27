@@ -69,7 +69,9 @@ export function capitalizeFirstLetter(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function getBackendTranslation(value: string, languageCode: string) {
+export function getBackendTranslation(value: string | undefined, languageCode: string) {
+    if (!value) return ''
+
     const split = value.split(';');
     if (languageCode === 'de' && split.length > 1) {
         return split[1];
@@ -90,4 +92,8 @@ export function getWsUrl() {
     }
 
     return baseUrl;
+}
+
+export function truncateText(text: string, limit: number) {
+    return text.length > limit ? `${text.slice(0, limit)}...` : text;
 }

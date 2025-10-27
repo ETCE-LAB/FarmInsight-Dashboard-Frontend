@@ -1,10 +1,10 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
-import {EditSensor} from "../models/Sensor";
+import {Organization} from "../models/Organization";
 import {BACKEND_URL} from "../../../env-config";
 
 
-export const updateSensor = (data: EditSensor) => {
+export const getAllOrganizations = () => {
     const apiClient = new APIClient()
 
     const user = getUser();
@@ -13,7 +13,8 @@ export const updateSensor = (data: EditSensor) => {
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    const url = `${BACKEND_URL}/api/sensors/${data.id}`;
+    const url = `${BACKEND_URL}/api/organizations/all`;
 
-    return apiClient.put(url, data, headers);
+    const result:  Promise<Organization[]> = apiClient.get(url, headers)
+    return result
 }

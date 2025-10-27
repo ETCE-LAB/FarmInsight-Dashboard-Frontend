@@ -1,7 +1,7 @@
 import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
-import {ActionScriptField} from "../ui/controllableActionForm";
+import {ActionScript} from "../models/actionScript";
 
 export const fetchAvailableActionScripts = () => {
     const apiClient = new APIClient()
@@ -13,7 +13,7 @@ export const fetchAvailableActionScripts = () => {
         {'Authorization': `Bearer ${token}`}
 
     const url = `${BACKEND_URL}/api/action-scripts/types`;
-    const result:  Promise<{action_script_class_id:string, name:string, description:string, action_values:[], fields:ActionScriptField[]}[]> = apiClient.get(url, headers)
+    const result:  Promise<ActionScript[]> = apiClient.get(url, headers)
 
     return result
 }

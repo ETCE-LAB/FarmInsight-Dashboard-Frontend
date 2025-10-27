@@ -13,6 +13,7 @@ import { updateSensor } from "../useCase/updateSensor";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconMobiledata, IconMobiledataOff, IconSum, IconSumOff} from "@tabler/icons-react";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditSensor, setClosed }) => {
     const auth = useAuth();
@@ -49,8 +50,8 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
             setClosed(false);
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Updating Sensor on your FPF',
+                title: t('common.loading'),
+                message: t('sensor.updatingSensor'),
                 autoClose: false,
                 withCloseButton: false,
             });
@@ -67,26 +68,24 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 aggregate,
                 hardwareConfiguration,
             }).then((sensor) => {
-                if (sensor) {
-                    dispatch(receivedSensor());
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `Sensor updated successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error updating the sensor.',
-                        message: `${sensor}`,
-                        color: 'red',
-                        loading: false,
-                        autoClose: 10000,
-                    });
-                }
+                notifications.update({
+                    id,
+                    title: t('common.updateSuccess'),
+                    message: ``,
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
+                dispatch(receivedSensor());
+            }).catch((error) => {
+                notifications.update({
+                    id,
+                    title: t('common.updateError'),
+                    message: `${error}`,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 10000,
+                });
             });
         }
     };
@@ -97,36 +96,34 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
             const interval = +intervalSeconds;
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Saving Sensor on your FPF',
+                title: t('common.loading'),
+                message: t('sensor.creatingSensor'),
                 autoClose: false,
                 withCloseButton: false,
             });
             createSensor({
                 id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, aggregate ,hardwareConfiguration,
             }).then((response) => {
-                if (response) {
-                    notifications.update({
-                        id,
-                        title: 'Success',
-                        message: `Sensor saved successfully.`,
-                        color: 'green',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                } else {
-                    notifications.update({
-                        id,
-                        title: 'There was an error saving the sensor.',
-                        message: `${response}`,
-                        color: 'red',
-                        loading: false,
-                        autoClose: 2000,
-                    });
-                }
+                notifications.update({
+                    id,
+                    title: t('common.saveSuccess'),
+                    message: ``,
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
                 dispatch(receivedSensor());
 
                 navigate(AppRoutes.editFpf.replace(":organizationId", organizationId).replace(":fpfId", fpfId));
+            }).catch((error) => {
+                notifications.update({
+                    id,
+                    title: t('common.saveError'),
+                    message: `${error}`,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 2000,
+                });
             });
         }
     };
@@ -145,12 +142,12 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                     <Grid gutter="md">
                         {/* Name */}
                         <Grid.Col span={6}>
-                            <TextInput
+                            <MultiLanguageInput
                                 label={t("header.name")}
                                 placeholder={t("header.enterName")}
-                                required
+                                required={true}
                                 value={name}
-                                onChange={(e) => setName(e.currentTarget.value)}
+                                onChange={(value) => {console.log(value);setName(value);}}
                                 description={t("sensor.hint.nameHint")}
                             />
                         </Grid.Col>

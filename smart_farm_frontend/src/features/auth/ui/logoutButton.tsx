@@ -6,13 +6,13 @@ import {BACKEND_URL} from "../../../env-config";
 
 export const LogoutButton = () => {
     const auth = useAuth();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     return (
         <>
         {
             auth.isAuthenticated &&
-            (<Button onClick={() => { void auth.removeUser(); window.location.href = `${BACKEND_URL}/api/logout` }} variant="filled" color="red">{t('header.logout')}</Button>)
+            (<Button onClick={() => { window.location.href = `${BACKEND_URL}/api/logout?lc=${i18n.language}`; void auth.removeUser();  }} variant="filled" color="red">{t('header.logout')}</Button>)
         }
         </>
     )

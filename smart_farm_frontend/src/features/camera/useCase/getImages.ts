@@ -2,8 +2,8 @@ import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
 import {BACKEND_URL} from "../../../env-config";
 
-export const getImages = (cameraId:string, from?:string) => {
 
+export const getImages = (cameraId:string, from?:string) => {
     if (!from) {
         const currentDate = new Date();
         const pastDate = new Date();
@@ -17,18 +17,16 @@ export const getImages = (cameraId:string, from?:string) => {
         from = `${year}-${month}-${day}`;
     }
 
-    const apiClient = new APIClient()
+    const apiClient = new APIClient();
 
     const user = getUser();
     const token = user?.access_token;
 
     const headers =
-        {'Authorization': `Bearer ${token}`}
+        {'Authorization': `Bearer ${token}`};
+
     let url = `${BACKEND_URL}/api/cameras/${cameraId}/images?from=${from}`;
 
-    const result:Promise<[{url:string, measuredAt:string, camera:string}]> = apiClient.get(url, headers)
-
-
-
+    const result: Promise<[{url:string, measuredAt:string, camera:string}]> = apiClient.get(url, headers);
     return result
 }

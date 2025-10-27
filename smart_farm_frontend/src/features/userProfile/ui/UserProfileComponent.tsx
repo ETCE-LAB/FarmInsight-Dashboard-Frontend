@@ -8,6 +8,8 @@ import {useAuth} from "react-oidc-context";
 import {receiveUserProfile} from "../useCase/receiveUserProfile";
 import {IconUserCog} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
+import {showNotification} from "@mantine/notifications";
+import {useTranslation} from "react-i18next";
 
 const UserProfileComponent: React.FC<{onNavigate?: () => void}> = ({onNavigate}) => {
     const auth = useAuth();
@@ -15,23 +17,21 @@ const UserProfileComponent: React.FC<{onNavigate?: () => void}> = ({onNavigate})
     const userProfileReceivedEventListener = useAppSelector(receivedUserProfileEvent);
     const changedUserProfile = useAppSelector(changedUserProfileEvent);
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (auth.isAuthenticated) {
-            receiveUserProfile()
-                .then((resp) => {
-                    if (resp) {
-                        setUserProfile(resp);
-                    } else {
-                        console.warn('No user profile data received');
-                        setUserProfile(null);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user profile:', error);
+            receiveUserProfile().then((resp) => {
+                setUserProfile(resp);
+            }).catch((error) => {
+                showNotification({
+                    title: t("common.loadError"),
+                    message: `${error}`,
+                    color: 'red',
                 });
+            });
         }
-    }, [auth.isAuthenticated, userProfileReceivedEventListener, changedUserProfile]);
+    }, [auth.isAuthenticated, userProfileReceivedEventListener, changedUserProfile, t]);
 
     const editProfile = () => {
         navigate(AppRoutes.editUserProfile);

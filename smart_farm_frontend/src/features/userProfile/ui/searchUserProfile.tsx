@@ -4,6 +4,7 @@ import { getUserProfilesBySearchString } from "../useCase/getUserProfilesBySearc
 import { UserProfile } from "../models/UserProfile";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import {showNotification} from "@mantine/notifications";
 
 interface SearchUserProfileProps {
     onUserSelected: (user: UserProfile) => void;
@@ -34,12 +35,18 @@ export const SearchUserProfile = ({ onUserSelected }: SearchUserProfileProps) =>
 
                         setUserProfiles(filteredProfiles);
                     }
+                }).catch((error) => {
+                    showNotification({
+                        title: t("common.loadError"),
+                        message: `${error}`,
+                        color: 'red',
+                    });
                 });
             }
         }, 300);
 
         return () => clearTimeout(delayDebounce);
-    }, [searchTerm, organizationId]);
+    }, [searchTerm, organizationId, t]);
 
     return (
         <>

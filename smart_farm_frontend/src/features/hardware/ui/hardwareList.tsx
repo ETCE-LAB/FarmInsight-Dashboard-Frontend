@@ -16,16 +16,19 @@ import {
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
 import {IconCirclePlus, IconEdit, IconGripVertical, IconSquareRoundedMinus} from "@tabler/icons-react";
 import {useTranslation} from "react-i18next";
-import {moveArrayItem} from "../../../utils/utils";
+import {getBackendTranslation, moveArrayItem} from "../../../utils/utils";
 import {postHardwareOrder} from "../useCase/postHardwareOrder";
 import {HardwareForm} from "./HardwareForm";
 import {removeHardware} from "../useCase/removeHardware";
 import {showNotification} from "@mantine/notifications";
+import {useAppDispatch} from "../../../utils/Hooks";
+import {createdFpf} from "../../fpf/state/FpfSlice";
 
 
 export const HardwareList: React.FC<{ hardwareToDisplay?: Hardware[], fpfId: string, isAdmin:Boolean }> = ({ hardwareToDisplay, fpfId, isAdmin }) => {
     const [hardwares, setHardwares] = useState<Hardware[] | undefined>(undefined);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const dispatch = useAppDispatch();
 
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedHardware, setSelectedHardware] = useState<Hardware | undefined>(undefined);
@@ -51,6 +54,7 @@ export const HardwareList: React.FC<{ hardwareToDisplay?: Hardware[], fpfId: str
                     color: "green",
                 });
                 setConfirmationModalOpen(false);
+                dispatch(createdFpf());
             }).catch(() => {
                 showNotification({
                     title: t('common.deleteError'),
@@ -137,7 +141,7 @@ export const HardwareList: React.FC<{ hardwareToDisplay?: Hardware[], fpfId: str
                                                             </div>
                                                         </Table.Td>
                                                     }
-                                                    <Table.Td>{hardware.name}</Table.Td>
+                                                    <Table.Td>{getBackendTranslation(hardware.name, i18n.language)}</Table.Td>
                                                     {isAdmin &&
                                                         <Table.Td>
                                                             <Flex justify='space-between'>

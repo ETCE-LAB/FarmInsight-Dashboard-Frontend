@@ -18,11 +18,12 @@ import {IntervalTriggerForm} from "./TriggerTypes/intervalTriggerForm";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 
 export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: ActionTrigger, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ actionId, toEditTrigger, setClosed }) => {
     const auth = useAuth();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch();
 
@@ -53,8 +54,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
     }, [toEditTrigger]);
 
     useEffect(() => {
-        if (actionId && fpfId){
-
+        if (actionId && fpfId) {
             fetchAvailableActionScripts().then(scripts => {
                 const actionScripts = scripts?.map(s => ({
                   value: s.action_script_class_id,
@@ -203,12 +203,12 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
                         {/* Description */}
                         <Grid.Col span={6}>
-                            <TextInput
+                            <MultiLanguageInput
                                 label={t("controllableActionList.trigger.description")}
                                 placeholder={t("controllableActionList.trigger.enterDescription")}
-                                required
+                                required={true}
                                 value={description}
-                                onChange={(e) => setDescription(e.currentTarget.value)}
+                                onChange={(value) => setDescription(value)}
                                 description={t("controllableActionList.trigger.hint.descriptionHint")}
                             />
                         </Grid.Col>

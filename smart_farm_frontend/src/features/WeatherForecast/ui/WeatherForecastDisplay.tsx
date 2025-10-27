@@ -8,6 +8,7 @@ import {Location} from "../../location/models/location";
 import {FaBolt, FaCloud, FaCloudRain, FaSmog, FaSnowflake, FaSun} from "react-icons/fa";
 import {IconArrowsDiagonalMinimize2, IconSunFilled, IconWind} from "@tabler/icons-react";
 import {useMediaQuery} from "@mantine/hooks";
+import {showNotification} from "@mantine/notifications";
 
 
 export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ location }) => {
@@ -17,13 +18,18 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     useEffect(() => {
-        if(location) {
-            getWeatherForecast(location.id)
-                .then(resp => {
-                    setWeatherForecasts(resp.reverse());
-                })
+        if (location) {
+            getWeatherForecast(location.id).then(resp => {
+                setWeatherForecasts(resp.reverse());
+            }).catch((error) => {
+                showNotification({
+                    title: t("common.loadError"),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
         }
-    }, [location]);
+    }, [location, t]);
 
     const formatDuration = (seconds: number) => {
         const hrs = Math.floor(seconds / 3600);

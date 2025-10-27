@@ -13,7 +13,7 @@ interface FpfSlice {
 const initialState: FpfSlice = {
     createdFpfEvent: 0,
     fpf: {
-        id: "0",
+        id: "",
         name: "",
         isPublic: true,
         Sensors: [],

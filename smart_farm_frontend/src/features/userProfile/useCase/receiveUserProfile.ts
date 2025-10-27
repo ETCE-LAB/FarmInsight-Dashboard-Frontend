@@ -18,7 +18,7 @@ export const receiveUserProfile = () => {
         const result:  Promise<UserProfile> = apiClient.get(url, headers)
 
         return result
-}
+    }
     else {
         return Promise.reject("Not logged in")
     }
