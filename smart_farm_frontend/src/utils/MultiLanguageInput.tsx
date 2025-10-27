@@ -59,7 +59,7 @@ export const MultiLanguageInput: React.FC<CustomInputProps> = ({label, placehold
             />
             <TextInput
                 placeholder={placeholder}
-                required={required !== undefined ? required : false}
+                required={false}
                 value={gerValue}
                 onChange={(e) => {onInputChanged(e.currentTarget.value, 'de');}}
                 description={`${description || ''} ${t('common.inGerman')}`}
