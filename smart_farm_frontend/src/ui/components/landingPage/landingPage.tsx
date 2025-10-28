@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import Footer from '../footer/footer';
 import { useMediaQuery } from '@mantine/hooks';
 import {showNotification} from "@mantine/notifications";
+import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
 
 const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     const auth = useAuth();
@@ -60,6 +61,12 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     // Paginate the filtered fpfs list
     const paginatedFpfs = filteredFpfs?.slice(startIndex, endIndex);
+
+    //Redux Store
+    //Redux hooks
+    const dispatch = useAppDispatch();
+    const userProfileSelector = useAppSelector((state) => state.userProfile.ownUserProfile);
+    const changedUserProfileEvent = useAppSelector((state) => state.userProfile.changedUserProfileEvent);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
