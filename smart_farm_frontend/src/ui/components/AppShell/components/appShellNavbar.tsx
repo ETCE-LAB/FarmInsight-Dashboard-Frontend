@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Menu, Text, Flex, Divider, Modal, Paper, useMantineTheme } from "@mantine/core";
 import { IconSettings, IconSquareRoundedPlus } from "@tabler/icons-react";
-import { OrganizationMembership } from "../../../../features/organization/models/Organization";
+import {Organization, OrganizationMembership} from "../../../../features/organization/models/Organization";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppRoutes } from "../../../../utils/appRoutes";
 import { getMyOrganizations } from "../../../../features/organization/useCase/getMyOrganizations";
@@ -12,6 +12,11 @@ import DynamicFontText from "../../../../utils/DynamicFontText";
 import { useTranslation } from "react-i18next";
 import { FpfForm } from "../../../../features/fpf/ui/fpfForm";
 import {showNotification} from "@mantine/notifications";
+import {useAppDispatch, useAppSelector} from "../../../../utils/Hooks";
+import {
+    storeMyOrganizations,
+    storeSelectedOrganization
+} from "../../../../features/organization/state/OrganizationSlice";
 
 export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onNavbarShouldClose}) => {
     const theme = useMantineTheme();
@@ -29,10 +34,16 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
     const auth = useAuth();
     const location = useLocation();
 
+    //redux Store
+    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
+    const dispatch = useAppDispatch();
+
     useEffect(() => {
         if (auth.isAuthenticated) {
             getMyOrganizations().then((resp) => {
                 setMyOrganizations(resp);
+                dispatch(storeMyOrganizations(resp))
+
             }).catch((error) => {
                 showNotification({
                     title: t('common.loadError'),
@@ -41,18 +52,20 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
                 })
             });
         }
-    }, [auth.isAuthenticated, t]);
+    }, [auth.isAuthenticated, t, dispatch]);
 
     useEffect(() => {
         if (auth.isAuthenticated) {
             const path = location.pathname.split("/");
             const organizationPathIndex = path.indexOf("organization");
+
             if (organizationPathIndex !== -1 && path.length > organizationPathIndex + 1) {
                 const orgId = path[organizationPathIndex + 1];
                 setOrganizationId(orgId);
                 getOrganization(orgId).then((resp) => {
                     setFpfList(resp.FPFs);
                     setSelectedOrganization({ name: resp.name, id: resp.id });
+                    //dispatch(storeSelectedOrganization(resp))
                     const fpfPathIndex = path.indexOf("fpf");
                     if (fpfPathIndex !== -1 && path.length > fpfPathIndex + 1) {
                         const fpfId = path[fpfPathIndex + 1];
@@ -65,25 +78,23 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
                         color: 'red',
                     })
                 });
+                //What is the purpose of this code block?? When you have no Organizations??? When none is selected??
             } else {
                 setSelectedFPFId(null);
                 setFpfList([]);
                 setSelectedOrganization({ name: t("header.myOrganizations"), id: "" });
+                // Why even is this line of code here? YOu already fetch my-organizations in the other useEffect
                 getMyOrganizations().then((resp) => {
                     setMyOrganizations(resp);
-                }).catch((error) => {
-                    showNotification({
-                        title: t('common.loadError'),
-                        message: `${error}`,
-                        color: 'red',
-                    })
-                });
+                })
             }
         }
-    }, [location, t, auth.isAuthenticated]);
+    }, [location, t, auth.isAuthenticated, dispatch]);
 
     const handleOrganizationSelect = (name: string, id: string) => {
         setSelectedOrganization({ name, id });
+        //console.log(organizations.find(org => org.id === id))
+        //dispatch(storeSelectedOrganization(organizations.find(org => org.id === id)));
         navigate(AppRoutes.organization.replace(":organizationId", id));
         onNavbarShouldClose();
     };
@@ -146,9 +157,7 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
                     }
                 />
             </Flex>
-
             <Divider my="sm" />
-
             {/* FpF List */}
             <Container p="0 1rem">
                 {fpfList.map((fpf) => (

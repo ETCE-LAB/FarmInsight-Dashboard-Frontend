@@ -16,7 +16,6 @@ import {
 } from '@mantine/core';
 import { IconPlant } from '@tabler/icons-react';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { getMyOrganizations } from '../../../features/organization/useCase/getMyOrganizations';
 import {OrganizationMembership} from '../../../features/organization/models/Organization';
 import { useAuth } from 'react-oidc-context';
 import { useSelector } from 'react-redux';
@@ -30,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 import Footer from '../footer/footer';
 import { useMediaQuery } from '@mantine/hooks';
 import {showNotification} from "@mantine/notifications";
-import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
+import {useAppSelector} from "../../../utils/Hooks";
 
 const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     const auth = useAuth();
@@ -63,10 +62,8 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     const paginatedFpfs = filteredFpfs?.slice(startIndex, endIndex);
 
     //Redux Store
-    //Redux hooks
-    const dispatch = useAppDispatch();
-    const userProfileSelector = useAppSelector((state) => state.userProfile.ownUserProfile);
-    const changedUserProfileEvent = useAppSelector((state) => state.userProfile.changedUserProfileEvent);
+    //const dispatch = useAppDispatch();
+    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -94,17 +91,9 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     useEffect(() => {
         if (auth.isAuthenticated) {
-            getMyOrganizations().then((resp) => {
-                setOrganizations(resp);
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadError'),
-                    message: `${error}`,
-                    color: 'red',
-                })
-            });
+            setOrganizations(myOrganizationsSelector);
         }
-    }, [auth.isAuthenticated, organizationEventListener, t]);
+    }, [auth.isAuthenticated, organizationEventListener, t, myOrganizationsSelector]);
 
     const handleFpfSelect = (organizationId: string, fpfId: string) => {
         navigate(

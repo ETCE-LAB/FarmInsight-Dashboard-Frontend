@@ -97,7 +97,6 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                 autoClose: false,
                 withCloseButton: false,
             })
-
             createLocation({
                 id: "",
                 name: name,
@@ -117,8 +116,8 @@ export const LocationForm: React.FC<{ toEditLocation?: Location, setClosed: Reac
                     autoClose: 2000,
                     withCloseButton: true,
                 });
-                dispatch(receivedLocation());
                 setClosed(false);
+                dispatch(receivedLocation());
             }).catch((error) => {
                 notifications.update({
                     id,

@@ -35,7 +35,6 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                     return;
                 }
             }
-            console.log("Fetching new weather forecast data...");
             getWeatherForecast(location.id).then(resp => {
                 setWeatherForecasts(resp.reverse());
                 dispatch(registerWeatherForecasts({[location.id]: resp.reverse()}));

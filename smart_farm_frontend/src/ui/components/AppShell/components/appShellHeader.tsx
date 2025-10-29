@@ -15,6 +15,7 @@ import {showNotification} from "@mantine/notifications";
 import {getMyOrganizations} from "../../../../features/organization/useCase/getMyOrganizations";
 import {useAppDispatch, useAppSelector} from "../../../../utils/Hooks";
 import {receivedUserProfile} from "../../../../features/userProfile/state/UserProfileSlice";
+import {storeMyOrganizations} from "../../../../features/organization/state/OrganizationSlice";
 
 const languageOptions = [
     { code: 'en', label: 'English', flag: 'us' },
@@ -37,6 +38,7 @@ export const AppShellHeader: React.FC = () => {
     //Redux hooks
     const dispatch = useAppDispatch();
     const userProfileSelector = useAppSelector((state) => state.userProfile.ownUserProfile);
+    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
 
     // Set default language based on the browser's language
     useEffect(() => {
@@ -58,10 +60,9 @@ export const AppShellHeader: React.FC = () => {
     //Initial fetching of user profile and organizations
     useEffect(() => {
         if (auth.isAuthenticated) {
-            console.log("appShellHeader:");
-            console.log(userProfileSelector?.email && userProfileSelector.email.length > 0)
             if (userProfileSelector?.email && userProfileSelector.email.length > 0) {
                 setIsAdmin(userProfileSelector.systemRole === SystemRole.ADMIN);
+                setHasOrgs(myOrganizationsSelector.length > 0);
             } else {
                 receiveUserProfile()
                     .then((user) => {
@@ -71,7 +72,10 @@ export const AppShellHeader: React.FC = () => {
                         }
                         return getMyOrganizations();
                     })
-                    .then((orgs) => setHasOrgs(orgs.length > 0))
+                    .then((orgs) => {
+                        setHasOrgs(orgs.length > 0)
+                        dispatch(storeMyOrganizations(orgs))
+                    })
                     .catch((error) => {
                         showNotification({
                             title: t('common.loadError'),

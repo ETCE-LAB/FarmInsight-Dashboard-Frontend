@@ -3,12 +3,9 @@ import {AppRoutes} from "../../../utils/appRoutes";
 import {Text, Group} from '@mantine/core';
 import {UserProfile} from "../models/UserProfile"
 import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
-import {receivedUserProfile} from "../state/UserProfileSlice";
 import {useAuth} from "react-oidc-context";
-import {receiveUserProfile} from "../useCase/receiveUserProfile";
 import {IconUserCog} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
-import {showNotification} from "@mantine/notifications";
 import {useTranslation} from "react-i18next";
 
 const UserProfileComponent: React.FC<{onNavigate?: () => void}> = ({onNavigate}) => {
