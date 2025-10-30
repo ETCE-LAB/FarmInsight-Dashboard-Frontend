@@ -78,12 +78,10 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
                         color: 'red',
                     })
                 });
-                //What is the purpose of this code block?? When you have no Organizations??? When none is selected??
             } else {
                 setSelectedFPFId(null);
                 setFpfList([]);
                 setSelectedOrganization({ name: t("header.myOrganizations"), id: "" });
-                // Why even is this line of code here? YOu already fetch my-organizations in the other useEffect
                 getMyOrganizations().then((resp) => {
                     setMyOrganizations(resp);
                 })
