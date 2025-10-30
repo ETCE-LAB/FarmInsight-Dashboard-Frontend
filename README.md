@@ -90,30 +90,33 @@ The dashboard provides:
    ```bash
    git clone https://github.com/ETCE-LAB/FarmInsight-Dashboard-Frontend.git
    ```
+2. **Move into directory:**
+   ```bash
+   cd .\smart_farm_frontend\
+   ```
 
-2. **Install dependencies:**
+3. **Install dependencies:**
    ```bash
    npm install
    ```
-3. **Set up .env-Config:**
+4. **Set up .env-Config:**
    Setup .env files at:
     * smart_farm_frontend/src/env-config.ts
     
-
-   Example of .env file:
+Example of .env file:
    ```bash
    export const BACKEND_URL = "http://127.0.0.1:8000";
   ```
    
    
-3. **Start the development server:**
+5. **Start the development server:**
    ```bash
    npm start
    ```
    The development server will run by default at [http://localhost:3000](http://localhost:3000).
 
 
-4. **Set up the backend:**
+6. **Set up the backend:**
 
    Please follow the instructions in the [Backend Repository](https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend) to set up the API.
 
