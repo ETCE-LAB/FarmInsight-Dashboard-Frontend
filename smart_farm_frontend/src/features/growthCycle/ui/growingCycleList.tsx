@@ -57,7 +57,6 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
         if (cycleToDelete) {
             removeGrowingCycle(cycleToDelete.id).then((result) => {
                 dispatch(deleteGrowingCycle(cycleToDelete.id));
-                dispatch(changedGrowingCycle());
                 showNotification({
                     title: t('common.deleteSuccess'),
                     message: '',

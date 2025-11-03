@@ -4,7 +4,7 @@ import {GrowingCycle} from "../models/growingCycle";
 import {BACKEND_URL} from "../../../env-config";
 
 
-export const createGrowingCycle = async (data:GrowingCycle) => {
+export const createGrowingCycle = (data:GrowingCycle) => {
     const apiClient = new APIClient()
 
     const user = getUser();
@@ -15,11 +15,6 @@ export const createGrowingCycle = async (data:GrowingCycle) => {
 
     const url = `${BACKEND_URL}/api/growing-cycles`;
 
-    try {
-        const result: GrowingCycle = await apiClient.post(url, data, headers)
-        return result;
-    } catch (error){
-        console.error("Error while creating cycle:", error);
-        throw error;
-    }
+    const result:  Promise<GrowingCycle> = apiClient.post(url, data, headers)
+    return result
 }
