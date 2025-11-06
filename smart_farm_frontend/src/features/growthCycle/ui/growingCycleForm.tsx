@@ -6,7 +6,7 @@ import { createGrowingCycle } from "../useCase/createGrowingCycle";
 import { GrowingCycle } from "../models/growingCycle";
 import { modifyGrowingCycle } from "../useCase/modifyGrowingCycle";
 import { useAppDispatch } from "../../../utils/Hooks";
-import { addGrowingCycle, updateGrowingCycle } from "../state/GrowingCycleSlice";
+import {addGrowingCycle, updateGrowingCycle} from "../state/GrowingCycleSlice";
 import { showNotification } from "@mantine/notifications";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
