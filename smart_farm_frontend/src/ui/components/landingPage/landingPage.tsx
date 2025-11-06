@@ -166,6 +166,27 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                                     e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
                                                 }}
                                             >
+                                                {!fpf.isActive && (
+                                                    <Box
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            right: 0,
+                                                            bottom: 0,
+                                                            backgroundColor: 'rgba(128, 128, 128, 0.5)',
+                                                            display: 'flex',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            borderRadius: 'inherit',
+                                                            zIndex: 1,
+                                                        }}
+                                                    >
+                                                        <Text c="yellow" fw={700} size="xl">
+                                                            {t('Currently in maintenance')}
+                                                        </Text>
+                                                    </Box>
+                                                )}
                                                 <Flex justify="space-between" align="center" mb="sm">
                                                     <Title
                                                         order={3}
