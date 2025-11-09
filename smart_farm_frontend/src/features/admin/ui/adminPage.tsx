@@ -18,6 +18,7 @@ import {Fpf} from "../../fpf/models/Fpf";
 import {moveArrayItem} from "../../../utils/utils";
 import {IconGripVertical} from "@tabler/icons-react";
 import {postOrganizationOrder} from "../../organization/useCase/postOrganizationOrder";
+import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
 
 
 export const AdminPage = () => {
@@ -30,29 +31,25 @@ export const AdminPage = () => {
     const [inactiveUsers, setInactiveUsers] = useState<UserProfile[] | undefined>(undefined);
     const [orgs, setOrgs] = useState<Organization[]>([]);
 
+    //Redux hooks
+    //const dispatch = useAppDispatch();
+    const userProfileSelector = useAppSelector((state) => state.userProfile.ownUserProfile);
+
+
     useEffect(() => {
-        if (auth.isAuthenticated) {
-            receiveUserProfile().then((user) => {
-                if (user.systemRole === SystemRole.ADMIN) {
-                    setIsAdmin(true);
-                    getAllUserprofiles().then((users) => {
-                        setActiveUsers(users.filter(v => v.isActive));
-                        setInactiveUsers(users.filter(v => !v.isActive));
-                    });
-                    getAllOrganizations().then((organizations) => {
-                        setOrgs(organizations);
-                    })
-                } else {
-                    navigate(AppRoutes.base);
-                }
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadErrorGeneric'),
-                    message: `${error}`,
-                    color: 'red',
+        if (auth.isAuthenticated && userProfileSelector.email.length > 0) {
+            if (userProfileSelector.systemRole === SystemRole.ADMIN) {
+                setIsAdmin(true);
+                getAllUserprofiles().then((users) => {
+                    setActiveUsers(users.filter(v => v.isActive));
+                    setInactiveUsers(users.filter(v => !v.isActive));
                 });
+                getAllOrganizations().then((organizations) => {
+                    setOrgs(organizations);
+                })
+            } else {
                 navigate(AppRoutes.base);
-            });
+            }
         } else {
             navigate(AuthRoutes.signin);
         }

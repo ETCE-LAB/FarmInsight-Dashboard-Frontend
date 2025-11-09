@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
 import {DemoteMembershipButton} from "./DemoteMembershipButton";
 import {showNotification} from "@mantine/notifications";
+import {useAppSelector} from "../../../utils/Hooks";
+import {RootState} from "../../../utils/store";
 
 
 export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) => {
@@ -16,22 +18,21 @@ export  const MembershipList: React.FC<{members:Membership[]}> = ( {members} ) =
     const [user, setUser] = useState<UserProfile | null>(null);
     const { t } = useTranslation();
 
+    const userProfileSelector =  useAppSelector((state) => state.userProfile.ownUserProfile);
+
+    const selectedOrganization = useAppSelector((state: RootState) => state.organization.selectedOrganization);
+
     useEffect(() => {
-        receiveUserProfile().then((user) => {
-            setUser(user);
-            const userIsAdmin = members.some(
-                (member) => member.userprofile.id === user.id && member.membershipRole === MembershipRole.ADMIN
+        if(userProfileSelector && selectedOrganization ){
+
+            setUser(userProfileSelector);
+            const userIsAdmin = selectedOrganization.memberships.some(
+                (member) => member.userprofile.id === userProfileSelector.id && member.membershipRole === MembershipRole.ADMIN
             );
             setIsAdmin(userIsAdmin);
-            setIsSysAdmin(user.systemRole === SystemRole.ADMIN);
-        }).catch((error) => {
-            showNotification({
-                title: t('common.error'),
-                message: `${error}`,
-                color: 'red',
-            });
-        });
-    }, [members, t]);
+            setIsSysAdmin(userProfileSelector.systemRole === SystemRole.ADMIN);
+        }
+    }, [members, t, userProfileSelector]);
 
     return (
         <Table striped highlightOnHover withColumnBorders>

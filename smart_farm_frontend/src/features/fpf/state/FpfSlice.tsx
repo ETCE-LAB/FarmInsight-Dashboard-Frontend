@@ -26,8 +26,6 @@ const initialState: FpfSlice = {
     }
 }
 
-//Über reducer Events verschicken
-//reducer wäre der "Event-Bus"
 
 const fpfSlice = createSlice({
     name: 'fpf',
