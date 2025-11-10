@@ -55,6 +55,7 @@ export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({
                     // Match CSS size to pixel size so it displays at original resolution
                     canvas.style.width = `${580}px`;
                     canvas.style.height = `${340}px`;
+
                 }
             };
 
@@ -88,10 +89,19 @@ export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({
     }, [lastMessage]);
 
     return (
-        <>
+        <div
+            style={{
+                position: "relative",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+        >
             <canvas
                 ref={canvasRef}
-                style={{ display: "block" }}
+                style={{ display: "block,",}}
             />
             {isLoading && (
                 <div
@@ -105,6 +115,7 @@ export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({
                         fontWeight: 600,
                         pointerEvents: "none",
                         textAlign: "center",
+                        height: "100%",
                     }}
                 >
                     {t("common.loading")}
@@ -122,6 +133,6 @@ export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({
             >
                 {src.title}
             </Badge>
-        </>
+        </div>
     );
 };
