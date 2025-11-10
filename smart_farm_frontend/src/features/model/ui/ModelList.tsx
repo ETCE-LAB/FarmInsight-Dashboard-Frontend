@@ -80,15 +80,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                             <LogMessageModalButton resourceType={ResourceType.MODEL} resourceId={model.id}></LogMessageModalButton>
                         </Flex>
                     </Table.Td>
-                    <Table.Td>
-                        <Button
-                            variant="subtle"
-                            size="xs"
-                            onClick={() => setOpen(!open)}
-                        >
-                            {open ? <IconChevronDown size={16} /> : <IconChevronLeft size={16} />}
-                        </Button>
-                    </Table.Td>
+
                     {isAdmin &&
                         <Table.Td>
                             <Flex justify='center' align='center'>
@@ -155,10 +147,10 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                         <Table.Thead>
                         <Table.Tr>
                             {isAdmin && <Table.Th />}
-                            <Table.Th>{t('modelList.name')}</Table.Th>
-                            <Table.Th>{t('modelList.activeScenario')}</Table.Th>
-                            <Table.Th>{t('modelList.intervalSeconds')}</Table.Th>
-                            <Table.Th>{t('modelList.isActive')}</Table.Th>
+                            <Table.Th>{t('model.name')}</Table.Th>
+                            <Table.Th>{t('model.activeScenario')}</Table.Th>
+                            <Table.Th>{t('model.intervalSeconds')}</Table.Th>
+                            <Table.Th>{t('model.isActive')}</Table.Th>
                             <Table.Th>{t('header.status')}</Table.Th>
                             {isAdmin && <Table.Th />}
                         </Table.Tr>

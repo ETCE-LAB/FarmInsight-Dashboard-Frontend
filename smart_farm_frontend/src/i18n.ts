@@ -32,6 +32,8 @@ i18n
                         networkError: 'Network response not ok. Status:',
                         inEnglish: 'in english',
                         inGerman: 'in german (optional)',
+                        next: 'Next',
+                        back: 'Back',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -125,6 +127,9 @@ i18n
                         adminPage: 'Admin',
                         ping: 'Ping',
                         fpfs: 'FPFs',
+                        url: 'URL',
+                        addModel: 'Create model',
+                        enterUrl: 'Enter URL',
                     },
                     sensor: {
                         addSensor: 'Add Sensor',
@@ -151,6 +156,26 @@ i18n
                         measurementsProcessError: "Failed to process incoming data.",
                         updatingSensor: 'Updating Sensor on your FPF',
                         creatingSensor: 'Saving Sensor on your FPF',
+                    },
+                    model: {
+                        title: 'Models',
+                        name: 'Model',
+                        activeScenario: 'Active Scenario',
+                        intervalSeconds: 'Interval in Seconds',
+                        isActive: 'Active',
+                        addModel: 'New Model',
+                        editModel: 'Edit Model',
+                        noModelsFound: 'No Models found',
+                        updatingModel: 'Model was updated',
+                        creatingModel: 'Model was created',
+                        enterUrl: 'Enter URL',
+                        urlStepDesc: 'Enter the base URL of the model',
+                        configureModel: 'Configure model',
+                        configStepDesc: 'Configure parameters for the model',
+                        hint: {
+                            locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>) The URL must provide sub endpoint /param and /farm-insight. For more details see the documentation.',
+                            interval: 'The interval in which the model will do the calculation (default 1 day)',
+                        }
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -512,6 +537,8 @@ i18n
                         networkError: 'Netzwerk Antwort fehlerhaft. Status:',
                         inEnglish: 'auf Englisch',
                         inGerman: 'auf Deutsch (optional)',
+                        next: 'Weiter',
+                        back: 'Zurück',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -602,6 +629,9 @@ i18n
                         adminPage: 'Admin',
                         ping: 'Ping',
                         fpfs: 'FPFs',
+                        url: 'URL',
+                        addModel: 'Modell erstellen',
+                        enterUrl: 'URL eingeben',
                     },
                     sensor: {
                         addSensor: 'Sensor hinzufügen',
@@ -628,6 +658,26 @@ i18n
                         measurementsProcessError: "Fehler beim Verarbeiten der erhaltenen Werte.",
                         updatingSensor: 'Sensor wird in Ihrer FPF aktualisiert',
                         creatingSensor: 'Sensor wird in Ihrer FPF erzeugt',
+                    },
+                    model: {
+                        title: 'Modelle',
+                        name: 'Modell',
+                        activeScenario: 'Aktives Szenario',
+                        intervalSeconds: 'Intervall in Sekunden',
+                        isActive: 'Aktiv',
+                        addModel: 'Neues Modell',
+                        editModel: 'Modell bearbeiten',
+                        noModelsFound: 'Kein Modell gefunden',
+                        updatingModel: 'Modell wurde aktualisiert',
+                        creatingModel: 'Modell wurde erstellt',
+                        enterUrl: 'URL eingeben',
+                        urlStepDesc: 'Gebe die URL des Modells ein',
+                        configureModel: 'Konfiguriere das Modell',
+                        configStepDesc: 'Konfiguriere die Parameter des Modells',
+                        hint: {
+                            locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>). Die URL muss die Endpunkte /param und /farm-insight bereitstellen. Weitere Informationen sind in der Dokumentation zu finden.',
+                            interval: 'Das Intervall in welchem das Modell die Berechnungen durchführt (Standard 1 Tag)',
+                        }
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',

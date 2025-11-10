@@ -52,6 +52,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
             setAvailableScenarios(toEditModel.availableScenarios || []);
             setRequiredParameters(toEditModel.required_parameters || []);
             setActions(toEditModel.actions || []);
+            setActiveScenario(toEditModel.activeScenario || "");
         }
     }, [toEditModel]);
 
@@ -153,7 +154,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
             setLoading(true);
 
             const data = await getModelParams(url);
-            console.log(data)
+
             setRequiredParameters(data || []);
             setForecasts(data.forecasts)
             setAvailableScenarios(data.scenarios?.map((s: any) => s.name) || []);
@@ -179,7 +180,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
     };
 
     const handleSubmit = async () => {
-        console.log(forecasts)
+
     if (!fpfId || !organizationId || !requiredParameters || !actions || !forecasts) return;
 
     const id = notifications.show({
@@ -202,7 +203,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
         required_parameters: requiredParameters,
         availableScenarios,
         actions,
-          forecasts
+        forecasts
       };
 
       if (toEditModel) {
@@ -247,7 +248,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
       ) : (
         <Stepper active={activeStep} onStepClick={setActiveStep} allowNextStepsSelect={false}>
           {/* Step 1: URL input */}
-          <Stepper.Step label={t("model.enterUrl")} description={t("model.urlStepDesc")} allowStepSelect={false}>
+          <Stepper.Step label={t("model.enterUrl")} description={t("model.urlStepDesc")} allowStepSelect={!!toEditModel}>
             <TextInput
               label={t("header.url")}
               placeholder={t("header.enterUrl")}
@@ -262,7 +263,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
           </Stepper.Step>
 
           {/* Step 2: Model configuration */}
-          <Stepper.Step label={t("model.configureModel")} description={t("model.configStepDesc")} allowStepSelect={false}>
+          <Stepper.Step label={t("model.configureModel")} description={t("model.configStepDesc")} allowStepSelect={!!toEditModel}>
             <Grid gutter="md">
               <Grid.Col span={6}>
                 <MultiLanguageInput
@@ -280,12 +281,14 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                   placeholder={t("camera.enterIntervalSeconds")}
                   required
                   value={intervalSeconds}
+                  description={t("model.hint.interval")}
                   onChange={(value) => setIntervalSeconds(value as number ?? 86400)}
                 />
               </Grid.Col>
 
-              <Grid.Col span={6} style={{ textAlign: "center" }}>
-                <Text>{t("header.isActive")}</Text>
+
+              <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <Text style={{marginTop:"1rem"}}>{t("header.isActive")}</Text>
                 <Switch
                   onLabel={<IconMobiledata size={16} />}
                   offLabel={<IconMobiledataOff size={16} />}
@@ -363,7 +366,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
            <Stepper.Step
               label="Assign Actions"
               description="Map actions to controllable actions"
-              allowStepSelect={false}
+              allowStepSelect={!!toEditModel}
             >
            <Grid>
               <Grid.Col span={12}>
@@ -395,7 +398,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                    <Button variant="default" onClick={() => setActiveStep(1)}>
                        {t("common.back")}
                    </Button>
-                   <Button onClick={handleSubmit}>
+                   <Button onClick={() => (toEditModel ? handleEdit() : handleSubmit())}>
                        {toEditModel ? t("userprofile.saveChanges") : t("header.addModel")}
                 </Button>
               </Box>
