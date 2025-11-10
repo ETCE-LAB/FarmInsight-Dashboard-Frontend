@@ -47,13 +47,25 @@ export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({
             const ctx = canvas.getContext("2d");
             if (!ctx) return;
 
-            // Prefer createImageBitmap (faster & non-blocking)
+            // helper: ensure canvas matches the frame's intrinsic size
+            const ensureCanvasSize = (w: number, h: number) => {
+                if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w
+                    canvas.height = h
+                    // Match CSS size to pixel size so it displays at original resolution
+                    canvas.style.width = `${580}px`;
+                    canvas.style.height = `${340}px`;
+                }
+            };
+
+            // Use createImageBitmap if available
             if ("createImageBitmap" in window) {
                 (window as any).createImageBitmap(blob)
                     .then((bitmap: ImageBitmap) => {
-                        // Clear and draw scaled to canvas
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+                        ensureCanvasSize(bitmap.width, bitmap.height);
+                        ctx.clearRect(0, 0, bitmap.width, bitmap.height);
+                        // draw at native size (no scaling)
+                        ctx.drawImage(bitmap, 0, 0);
                         setIsLoading(false);
                         bitmap.close?.();
                     })
@@ -62,8 +74,9 @@ export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({
                 // Fallback: Image + object URL
                 const img = new Image();
                 img.onload = () => {
+                    ensureCanvasSize(img.naturalWidth, img.naturalHeight);
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
                     URL.revokeObjectURL(img.src);
                     setIsLoading(false);
                 };
@@ -74,28 +87,11 @@ export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({
         }
     }, [lastMessage]);
 
-    // Optional: adjust canvas pixel size to display size for crisper rendering
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const dpr = window.devicePixelRatio || 1;
-        const styleWidth = 640;
-        const styleHeight = 360;
-        canvas.width = Math.round(styleWidth * dpr);
-        canvas.height = Math.round(styleHeight * dpr);
-        canvas.style.width = `${styleWidth}px`;
-        canvas.style.height = `${styleHeight}px`;
-        const ctx = canvas.getContext("2d");
-        if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }, [src.cameraId]);
-
     return (
         <>
             <canvas
                 ref={canvasRef}
-                width={640}
-                height={360}
-                style={{ height: "100%", width: "100%" }}
+                style={{ display: "block" }}
             />
             {isLoading && (
                 <div
