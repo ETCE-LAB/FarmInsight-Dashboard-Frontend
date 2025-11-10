@@ -28,6 +28,8 @@ import ControllableActionOverview from "../../controllables/ui/controllableActio
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {showNotification} from "@mantine/notifications";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../utils/store";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -42,6 +44,7 @@ export const FpfOverview = () => {
     const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
     const [isMember, setIsMember] = useState<boolean>(false);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const growingCycles = useSelector((state: RootState) => state.growingCycle.growingCycles);
 
     //Redux Store
     const dispatch = useAppDispatch();
@@ -165,18 +168,13 @@ export const FpfOverview = () => {
                         </Box>
                     )}
 
-                    {/* Growing Cycle Section: only render if cycles exist or user is signed in */}
-                    {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
-                        <Box
-                            style={{
-                                borderRadius: '10px',
-                                padding: '1rem',
-                            }}
-                        >
-                            {(fpf.GrowingCycles ?? []).length > 0 ? (
-                                <GrowingCycleList fpfId={fpf.id} isAdmin={isAdmin} />
+                    {/* Growing Cycle Section: only render if user is signed in */}
+                    {auth.user && (
+                        <Box style={{ borderRadius: '10px', padding: '1rem' }}>
+                            {growingCycles.length > 0 ? (
+                                <GrowingCycleList fpfId={fpf?.id ?? ""} isAdmin={isAdmin} />
                             ) : (
-                                <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Center>
                                     <Button
                                         variant="light"
                                         leftSection={<IconPlant />}
@@ -185,7 +183,7 @@ export const FpfOverview = () => {
                                     >
                                         {t("growingCycleForm.addCycle")}
                                     </Button>
-                                </Box>
+                                </Center>
                             )}
                         </Box>
                     )}
@@ -254,17 +252,12 @@ export const FpfOverview = () => {
                             </Box>
                         )}
                         {/*Growing Cycle Section*/}
-                        {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
-                            <Box
-                                style={{
-                                    borderRadius: '10px',
-                                    padding: '1rem',
-                                }}
-                            >
-                                {(fpf.GrowingCycles ?? []).length > 0 ? (
-                                    <GrowingCycleList fpfId={fpf.id} isAdmin={isAdmin} />
+                        {auth.user && (
+                            <Box style={{ borderRadius: '10px', padding: '1rem' }}>
+                                {growingCycles.length > 0 ? (
+                                    <GrowingCycleList fpfId={fpf?.id ?? ""} isAdmin={isAdmin} />
                                 ) : (
-                                    <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Center>
                                         <Button
                                             variant="light"
                                             leftSection={<IconPlant />}
@@ -273,7 +266,7 @@ export const FpfOverview = () => {
                                         >
                                             {t("growingCycleForm.addCycle")}
                                         </Button>
-                                    </Box>
+                                    </Center>
                                 )}
                             </Box>
                         )}
