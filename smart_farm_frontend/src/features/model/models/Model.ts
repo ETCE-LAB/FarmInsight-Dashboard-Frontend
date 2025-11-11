@@ -54,3 +54,48 @@ export interface EditModel {
         }[]// TODO add the forecast of actions here
 
 }
+
+// Return Type for getPrediction use case
+//Yes this made it much easier to navigate
+export interface ModelPrediction {
+    fpf_id: string;
+    models: ModelEntry[];
+}
+
+export interface ModelEntry {
+    timestamp: string;
+    modelId: string;
+    modelName: string;
+    data: ModelData;
+}
+
+export interface ModelData {
+    forecasts: Forecast[];
+    actions: ActionCase[];
+}
+
+export interface Forecast {
+    name: string;
+    values: ForecastCase[];
+}
+
+export interface ForecastCase {
+    name: string; // best-case | average-case | worst-case
+    value: ForecastValue[];
+}
+
+export interface ForecastValue {
+    timestamp: string;
+    value: number;
+}
+
+export interface ActionCase {
+    name: string; // best-case | average-case | worst-case
+    value: ActionValue[];
+}
+
+export interface ActionValue {
+    timestamp: string;
+    value: number;
+    action: string;
+}

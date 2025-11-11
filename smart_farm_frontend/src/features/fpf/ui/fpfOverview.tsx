@@ -30,6 +30,7 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {showNotification} from "@mantine/notifications";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
+import {PredictionView} from "../../model/ui/PredictionView";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -135,6 +136,11 @@ export const FpfOverview = () => {
                         </Box>
                     )}
 
+                    {/* Prediction Graphs */}
+                    {fpf?.Models && fpf.Models.length > 0 && (
+                        <PredictionView fpfId={fpf.id}/>
+                    )}
+
                     {/* Sensor graphs come next */}
                     {fpf?.Sensors && fpf.Sensors.length > 0 ? (
                         <>
@@ -203,6 +209,11 @@ export const FpfOverview = () => {
                             >
                                 <WeatherForecastDisplay location={fpf.Location} />
                             </Box>
+                        )}
+
+                        {/* Prediction Graphs */}
+                        {fpf?.Models && fpf.Models.length > 0 && (
+                            <PredictionView fpfId={fpf.id}/>
                         )}
 
                         <TimeRangeSelector onDateChange={setDateRange} defaultSelected={true} />
