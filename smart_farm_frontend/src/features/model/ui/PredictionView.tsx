@@ -16,6 +16,13 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
     const [show, setShow] = useState<boolean>(false);
     const [model_predictions, setModelPredictions] = useState<any>(null);
 
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        return `${day}.${month}`;
+    };
+
     //Gather Prediction Data when UI is opened
     useEffect(() => {
         if (show) {
@@ -32,7 +39,7 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
         <>
             {auth.isAuthenticated &&
                 <>
-                    <Flex align="center" gap="xs">
+                    <Flex align="center" gap="xs" style={{marginBottom: '20px'}}>
                         <Button variant="subtle" size="xs" onClick={() => setShow(!show)}>
                             {show ? <IconChevronDown size={16}/> : <IconChevronRight size={16}/>}
                         </Button>
@@ -40,8 +47,8 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
                     </Flex>
                     {show && model_predictions?.models && model_predictions.models.map((model: ModelEntry ) => (
                        <>
-                            <Flex>
-                                {model.modelName}
+                            <Flex style={{marginBottom: '20px', marginTop: '10px'}}>
+                                <Title order={4}>{model.modelName}</Title>
                             </Flex>
                             {model.data.forecasts.length > 0 && model.data.forecasts.map((forecast: Forecast) => (
                                 <Box key={forecast.name}
