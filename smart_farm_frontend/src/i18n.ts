@@ -464,6 +464,16 @@ i18n
                             }
                         },
                     },
+                    notification: {
+                        title: 'Notification Rooms',
+                        confirmDeletion: 'Confirm Deletion',
+                        add: 'Add Notification Room',
+                        roomId: 'Room ID',
+                        name: 'Name',
+                        notFound: 'No notification rooms found.',
+                        roomIdPlaceholder: 'Enter Matrix Room ID (e.g., !...:matrix.org)',
+                        namePlaceholder: 'Enter a display name (e.g., \'Errors Channel\')',
+                    },
                     overview: {
                         green: 'All good',
                         yellow: 'One missed value',
@@ -940,6 +950,16 @@ i18n
                                 message: 'Standort konnte nicht gesendet werden',
                             },
                         },
+                    },
+                    notification: {
+                        title: 'Benachrichtigungsräume',
+                        confirmDeletion: 'Löschung bestätigen',
+                        add: 'Benachrichtigungsraum hinzufügen',
+                        roomId: 'Raum-ID',
+                        name: 'Name',
+                        notFound: 'Keine Benachrichtigungsräume gefunden.',
+                        roomIdPlaceholder: 'Matrix-Raum-ID eingeben (z.B. !...:matrix.org)',
+                        namePlaceholder: 'Anzeigenamen eingeben',
                     },
                     overview: {
                         green: 'Alles gut',

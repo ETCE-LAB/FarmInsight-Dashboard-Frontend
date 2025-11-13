@@ -19,7 +19,7 @@ import {moveArrayItem} from "../../../utils/utils";
 import {IconGripVertical} from "@tabler/icons-react";
 import {postOrganizationOrder} from "../../organization/useCase/postOrganizationOrder";
 import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
-
+import {NotificationList} from "../../notification/ui/NotificationList";
 
 export const AdminPage = () => {
     const auth = useAuth();
@@ -269,6 +269,11 @@ export const AdminPage = () => {
                     </Table>
                 </>
             }
-        </Container>
+
+            {/* Notification Rooms Section */}
+            <Card mt="xl" p="lg" shadow="sm">
+                <NotificationList isAdmin={true} />
+            </Card>
+        </MantineContainer>
     );
 }
