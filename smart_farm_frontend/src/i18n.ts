@@ -172,6 +172,7 @@ i18n
                         urlStepDesc: 'Enter the base URL of the model',
                         configureModel: 'Configure model',
                         configStepDesc: 'Configure parameters for the model',
+                        predictionViewTitle:'Model Predictions',
                         hint: {
                             locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>) The URL must provide sub endpoint /param and /farm-insight. For more details see the documentation.',
                             interval: 'The interval in which the model will do the calculation (default 1 day)',
@@ -674,6 +675,7 @@ i18n
                         urlStepDesc: 'Gebe die URL des Modells ein',
                         configureModel: 'Konfiguriere das Modell',
                         configStepDesc: 'Konfiguriere die Parameter des Modells',
+                        predictionViewTitle: 'Modell Vorhersagen',
                         hint: {
                             locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>). Die URL muss die Endpunkte /param und /farm-insight bereitstellen. Weitere Informationen sind in der Dokumentation zu finden.',
                             interval: 'Das Intervall in welchem das Modell die Berechnungen durchführt (Standard 1 Tag)',

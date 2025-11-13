@@ -91,58 +91,54 @@ export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) 
                 // but it seems like it has issues in our case
                 // therefore "we" create a custom Legend here to make sure all Cases are shown correctly with their colors
                 legendProps={{
-                verticalAlign: 'bottom',
-                align: 'center',
-                height: 50,
-                content: (props: any) => {
-                    const items = props?.payload ?? [];
-                    return (
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                gap: 16,
-                                paddingTop: 8,
-                                flexWrap: 'wrap',
-                            }}
-                        >
-                            {items.map((it: any) => (
-                                <div
-                                    key={it.value}
-                                    style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: 8,
-                                    }}
-                                >
-                              <span
-                                  style={{
-                                      width: 10,
-                                      height: 10,
-                                      borderRadius: '50%',
-                                      background: it.color,
-                                      display: 'inline-block',
-                                  }}
-                              />
-                                    <span>{it.value}</span>
-                                </div>
-                            ))}
-                        </div>
-                    );
-                },
-            }}
+                    verticalAlign: 'bottom',
+                    align: 'center',
+                    height: 50,
+                    content: (props: any) => {
+                        const items = props?.payload ?? [];
+                        return (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    gap: 16,
+                                    paddingTop: 8,
+                                    flexWrap: 'wrap',
+                                }}
+                            >
+                                {items.map((it: any) => (
+                                    <div
+                                        key={it.value}
+                                        style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: 8,
+                                        }}
+                                    >
+                                  <span
+                                      style={{
+                                          width: 10,
+                                          height: 10,
+                                          borderRadius: '50%',
+                                          background: it.color,
+                                          display: 'inline-block',
+                                      }}
+                                  />
+                                        <span>{it.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    },
+                }}
                 tooltipProps={{
                     content: ({ label, payload }) => {
                         if (payload && payload.length > 0) {
                             return (
                                 <Card color="grey">
                                     <strong>
-                                        {new Date(label).toLocaleDateString([], {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                        })}
+                                        {new Date(label).toLocaleDateString('de-DE')}
                                     </strong>
                                     {payload.map((item) => (
                                         <Flex key={item.name}>

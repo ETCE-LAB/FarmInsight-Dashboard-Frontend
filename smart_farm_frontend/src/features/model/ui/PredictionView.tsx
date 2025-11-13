@@ -43,7 +43,7 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
                         <Button variant="subtle" size="xs" onClick={() => setShow(!show)}>
                             {show ? <IconChevronDown size={16}/> : <IconChevronRight size={16}/>}
                         </Button>
-                        <Title order={3}>{t('model.statusOverview')}</Title>
+                        <Title order={3}>{t('model.predictionViewTitle')}</Title>
                     </Flex>
                     {show && model_predictions?.models && model_predictions.models.map((model: ModelEntry ) => (
                        <>
