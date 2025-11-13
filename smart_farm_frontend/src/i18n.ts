@@ -176,7 +176,8 @@ i18n
                         hint: {
                             locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>) The URL must provide sub endpoint /param and /farm-insight. For more details see the documentation.',
                             interval: 'The interval in which the model will do the calculation (default 1 day)',
-                        }
+                        },
+                        overwriteParameters: 'Retrieve model parameters (This overwrites the current config!)'
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -679,7 +680,8 @@ i18n
                         hint: {
                             locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>). Die URL muss die Endpunkte /param und /farm-insight bereitstellen. Weitere Informationen sind in der Dokumentation zu finden.',
                             interval: 'Das Intervall in welchem das Modell die Berechnungen durchführt (Standard 1 Tag)',
-                        }
+                        },
+                        overwriteParameters: 'Model Parameter abfragen (Dies überschreibt die aktuelle Konfiguration!)'
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
