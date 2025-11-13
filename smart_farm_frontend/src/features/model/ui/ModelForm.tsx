@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay} from "@mantine/core";
+import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { EditModel } from "../models/Model";
 import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { updateModel } from "../useCase/updateModel";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
-import {IconMobiledata, IconMobiledataOff, IconSum, IconSumOff} from "@tabler/icons-react";
+import {IconMobiledata, IconMobiledataOff, IconRefresh, IconSum, IconSumOff} from "@tabler/icons-react";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 import {getModelParams} from "../useCase/getModelParams";
 import {useSelector} from "react-redux";
@@ -53,6 +53,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
             setRequiredParameters(toEditModel.required_parameters || []);
             setActions(toEditModel.actions || []);
             setActiveScenario(toEditModel.activeScenario || "");
+            setForecasts(toEditModel.forecasts)
         }
     }, [toEditModel]);
 
@@ -149,7 +150,6 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
           });
           return;
         }
-
         try {
             setLoading(true);
 
@@ -257,9 +257,31 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
               onChange={(e) => setUrl(e.currentTarget.value)}
               description={t("model.hint.locationHint")}
             />
-            <Box mt="md" style={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button onClick={handleFetchParameters}>{t("common.next")}</Button>
-            </Box>
+                {/* Small overwrite warning button if in edit mode */}
+                  {toEditModel && (
+                    <Anchor
+                      mt="xs"
+                      underline="hover"
+                      style={{ cursor: "pointer"}}
+                      onClick={handleFetchParameters}
+                    >
+                        <IconRefresh size={16} />
+                      {t("model.overwriteParameters")}
+                    </Anchor>
+                  )}
+
+              <Box mt="md" style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  onClick={() => {
+                    if (!toEditModel) {
+                      handleFetchParameters();   // only run if NOT editing
+                    }
+                    setActiveStep(1);            // always go to next step
+                  }}
+                >
+                  {t("common.next")}
+                </Button>
+              </Box>
           </Stepper.Step>
 
           {/* Step 2: Model configuration */}
