@@ -5,7 +5,7 @@ import {useTranslation} from "react-i18next";
 import {IconChevronDown, IconChevronRight} from "@tabler/icons-react";
 import {GraphPrediction} from "./GraphPrediction";
 import {getPrediction} from "../useCase/getPrediction";
-import {Forecast, ModelEntry, ModelPrediction} from "../models/Model";
+import {Forecast, ModelEntry} from "../models/Model";
 import {showNotification as showMantineNotification} from "@mantine/notifications";
 
 
@@ -13,22 +13,14 @@ import {showNotification as showMantineNotification} from "@mantine/notification
 
 export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
     const auth = useAuth()
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation();
     const [show, setShow] = useState<boolean>(false);
     const [model_predictions, setModelPredictions] = useState<any>(null);
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        return `${day}.${month}`;
-    };
 
     //Gather Prediction Data when UI is opened
     useEffect(() => {
         if (show) {
            getPrediction(fpfId).then(resp => {
-
                setModelPredictions(resp)
            }).catch(
                 err => showMantineNotification({
@@ -38,8 +30,7 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
                 })
            )
         }
-
-    }, [show]);
+    }, [show, fpfId, t]);
 
 
     return (
