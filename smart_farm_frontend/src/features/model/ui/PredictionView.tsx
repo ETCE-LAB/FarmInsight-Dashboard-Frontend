@@ -6,6 +6,7 @@ import {IconChevronDown, IconChevronRight} from "@tabler/icons-react";
 import {GraphPrediction} from "./GraphPrediction";
 import {getPrediction} from "../useCase/getPrediction";
 import {Forecast, ModelEntry, ModelPrediction} from "../models/Model";
+import {showNotification as showMantineNotification} from "@mantine/notifications";
 
 
 
@@ -27,9 +28,15 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
     useEffect(() => {
         if (show) {
            getPrediction(fpfId).then(resp => {
+               console.log(resp);
                setModelPredictions(resp)
-
-           })
+           }).catch(
+                err => showMantineNotification({
+                    title: t('common.loadingError'),
+                    message: `${err}`,
+                    color: "red",
+                })
+           )
         }
 
     }, [show]);
