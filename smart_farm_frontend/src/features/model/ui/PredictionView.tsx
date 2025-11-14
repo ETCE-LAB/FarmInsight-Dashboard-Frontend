@@ -28,7 +28,7 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
     useEffect(() => {
         if (show) {
            getPrediction(fpfId).then(resp => {
-               console.log(resp);
+
                setModelPredictions(resp)
            }).catch(
                 err => showMantineNotification({
