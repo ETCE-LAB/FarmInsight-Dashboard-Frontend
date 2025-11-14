@@ -1,112 +1,108 @@
-import React, {useEffect, useRef, useState} from "react";
-import {getUser} from "../../../utils/getUser";
-import {Badge, rem} from "@mantine/core";
-import {displayObject} from "./CameraCarousel";
-import {useTranslation} from "react-i18next";
+import React, { useEffect, useRef, useState } from "react";
+import { getUser } from "../../../utils/getUser";
+import { Badge, rem } from "@mantine/core";
+import { displayObject } from "./CameraCarousel";
+import { useTranslation } from "react-i18next";
+import useWebSocket from "react-use-websocket";
+import { getWsUrl } from "../../../utils/utils";
 
-export const Livestream: React.FC<{ src: displayObject, showing: boolean }> = ({src, showing}) => {
+export const Livestream: React.FC<{ src: displayObject; showing: boolean }> = ({ src, showing }) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const abortControllerRef = useRef<AbortController | null>(null);
-
     const [isLoading, setIsLoading] = useState(true);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+
+    // WebSocket URL (getWsUrl() sollte ggf. Token enthalten)
+    const wsUrl = `${getWsUrl()}/ws/camera/${src.cameraId}`;
+
+    const { lastMessage } = useWebSocket(wsUrl, {
+        shouldReconnect: () => true,
+        onOpen: () => {
+            setIsLoading(true);
+        },
+    }, showing); // third arg steuert connect/disconnect
 
     useEffect(() => {
-        if (!showing) return;
+        if (!lastMessage) return;
 
-        let isMounted = true;
-        const canvas = canvasRef.current;
-        const ctx = canvas?.getContext("2d");
-        abortControllerRef.current = new AbortController();
+        try {
+            const payload = JSON.parse(lastMessage.data);
+            const frameB64 = payload?.frame_data;
+            if (!frameB64) return;
 
-        setIsLoading(true);
-
-        const fetchStream = async () => {
-            try {
-                const response = await fetch(src.url, {
-                    headers: {
-                        ...{'Authorization': `Bearer ${getUser()?.access_token}`},
-                    },
-                    signal: abortControllerRef.current?.signal,
-                });
-
-                if (!response.body) throw new Error("No response body for stream");
-
-                const reader = response.body.getReader();
-                let imageBuffer: Uint8Array = new Uint8Array();
-
-                // Read incoming stream data
-                while (isMounted) {
-                    const {value, done} = await reader.read();
-                    if (done) break;
-
-                    // Append new data to the buffer
-                    const tempBuffer = new Uint8Array(imageBuffer.length + (value?.length || 0));
-                    tempBuffer.set(imageBuffer);
-                    if (value) tempBuffer.set(value, imageBuffer.length);
-                    imageBuffer = tempBuffer;
-
-                    // Look for JPEG start (0xFFD8) and end (0xFFD9) markers
-                    let start = -1, end = -1;
-                    for (let i = 0; i < imageBuffer.length - 1; i++) {
-                        if (imageBuffer[i] === 0xFF && imageBuffer[i + 1] === 0xD8) {
-                            start = i; // JPEG SOI (Start of Image)
-                        }
-                        if (imageBuffer[i] === 0xFF && imageBuffer[i + 1] === 0xD9) {
-                            end = i + 2; // JPEG EOI (End of Image)
-                            break;
-                        }
-                    }
-
-                    // If a full frame (SOI -> EOI) is found, render it
-                    if (start !== -1 && end !== -1) {
-                        const frameData = imageBuffer.slice(start, end);
-                        imageBuffer = imageBuffer.slice(end); // Remove processed frame from buffer
-
-                        // Render the frame
-                        const blob = new Blob([frameData], {type: "image/jpeg"});
-                        const img = new Image();
-                        img.src = URL.createObjectURL(blob);
-                        img.onload = () => {
-                            ctx?.clearRect(0, 0, canvas?.width || 0, canvas?.height || 0);
-                            ctx?.drawImage(img, 0, 0, canvas?.width || 0, canvas?.height || 0);
-                            URL.revokeObjectURL(img.src);
-
-                            if (isMounted) setIsLoading(false);
-                        };
-                    }
-                }
-            } catch (error) {
-                if ((error as Error).name === "AbortError") {
-                    console.log("Stream fetch aborted.");
-                } else {
-                    console.error("Error during stream fetch:", (error as Error).message);
-                }
+            if (typeof frameB64 === "string" && frameB64.startsWith("ERROR")) {
+                console.error(frameB64);
+                return;
             }
-        };
 
-        fetchStream();
+            // base64 -> Uint8Array
+            const binary = atob(frameB64);
+            const len = binary.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
 
-        return () => {
-            isMounted = false;
-            setIsLoading(true);
+            const blob = new Blob([bytes], { type: "image/jpeg" });
 
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return;
+
+            // helper: ensure canvas matches the frame's intrinsic size
+            const ensureCanvasSize = (w: number, h: number) => {
+                if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w
+                    canvas.height = h
+                    // Match CSS size to pixel size so it displays at original resolution
+                    canvas.style.width = `${580}px`;
+                    canvas.style.height = `${340}px`;
+
+                }
+            };
+
+            // Use createImageBitmap if available
+            if ("createImageBitmap" in window) {
+                (window as any).createImageBitmap(blob)
+                    .then((bitmap: ImageBitmap) => {
+                        ensureCanvasSize(bitmap.width, bitmap.height);
+                        ctx.clearRect(0, 0, bitmap.width, bitmap.height);
+                        // draw at native size (no scaling)
+                        ctx.drawImage(bitmap, 0, 0);
+                        setIsLoading(false);
+                        bitmap.close?.();
+                    })
+                    .catch((err: unknown) => console.error("createImageBitmap error:", err));
+            } else {
+                // Fallback: Image + object URL
+                const img = new Image();
+                img.onload = () => {
+                    ensureCanvasSize(img.naturalWidth, img.naturalHeight);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                    URL.revokeObjectURL(img.src);
+                    setIsLoading(false);
+                };
+                img.src = URL.createObjectURL(blob);
             }
-        };
-    }, [src, showing]);
+        } catch (err) {
+            console.error("Error handling websocket frame:", err);
+        }
+    }, [lastMessage]);
 
     return (
-        <>
+        <div
+            style={{
+                position: "relative",
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+        >
             <canvas
                 ref={canvasRef}
-                width={640}
-                height={360}
-                style={{height: "100%", width: "100%"}}
-            ></canvas>
-
-            {/* Show loading state */}
+                style={{ display: "block,",}}
+            />
             {isLoading && (
                 <div
                     style={{
@@ -119,12 +115,12 @@ export const Livestream: React.FC<{ src: displayObject, showing: boolean }> = ({
                         fontWeight: 600,
                         pointerEvents: "none",
                         textAlign: "center",
+                        height: "100%",
                     }}
                 >
                     {t("common.loading")}
                 </div>
             )}
-
             <Badge
                 color="dark"
                 variant="filled"
@@ -137,6 +133,6 @@ export const Livestream: React.FC<{ src: displayObject, showing: boolean }> = ({
             >
                 {src.title}
             </Badge>
-        </>
+        </div>
     );
 };

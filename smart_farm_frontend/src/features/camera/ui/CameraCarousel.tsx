@@ -25,6 +25,7 @@ import {getBackendTranslation} from "../../../utils/utils";
 
 export interface displayObject {
     url: string;
+    cameraId: string;
     title: string;
     isLiveStream: boolean;
 }
@@ -40,7 +41,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-    type DisplayObj = { url: string; title: string; isLiveStream: boolean };
+    type DisplayObj = { url: string; cameraId:string; title: string; isLiveStream: boolean };
 
     useEffect(() => {
         let cancelled = false;                       // verhindert Race-Conditions bei schnellem Wechsel
@@ -59,6 +60,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                     if (showLivestream) {
                         items.push({
                             url: `${BACKEND_URL}/api/cameras/${camera.id}/livestream`,
+                            cameraId: camera.id,
                             title: `${getBackendTranslation(camera.name, i18n.language)} LiveStream`,
                             isLiveStream: true,
                         });
@@ -68,6 +70,7 @@ export const CameraCarousel: React.FC<{ camerasToDisplay: Camera[] }> = ({ camer
                         if (image) {
                             items.push({
                                 url: image.url,
+                                cameraId: camera.id,
                                 title: getBackendTranslation(camera.name, i18n.language),
                                 isLiveStream: false,
                             });
