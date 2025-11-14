@@ -5,7 +5,7 @@ import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
 import {useNavigate} from "react-router-dom";
 import {AppRoutes} from "../../../utils/appRoutes";
-import {Button, Container, Flex, Modal, Table, Text, CopyButton, Title, Card} from "@mantine/core";
+import {Button, Container as MantineContainer, Flex, Modal, Table, Text, CopyButton, Title, Card} from "@mantine/core";
 import {getAllUserprofiles} from "../useCase/getAllUserprofiles";
 import {restUserprofilePassword} from "../useCase/resetUserprofilePassword";
 import {showNotification} from "@mantine/notifications";
@@ -19,7 +19,7 @@ import {moveArrayItem} from "../../../utils/utils";
 import {IconGripVertical} from "@tabler/icons-react";
 import {postOrganizationOrder} from "../../organization/useCase/postOrganizationOrder";
 import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
-
+import {NotificationList} from "../../notification/ui/NotificationList";
 
 export const AdminPage = () => {
     const auth = useAuth();
@@ -81,7 +81,7 @@ export const AdminPage = () => {
     const [confirmActiveChangeModal, setConfirmActiveChangeModal] = useState<{open: boolean, userId?: string, active?: boolean}>({open: false});
 
     return (
-        <Container>
+        <MantineContainer>
             {isAdmin &&
                 <>
                     <Modal
@@ -269,6 +269,11 @@ export const AdminPage = () => {
                     </Table>
                 </>
             }
-        </Container>
+
+            {/* Notification Rooms Section */}
+            <Card mt="xl" p="lg" shadow="sm">
+                <NotificationList isAdmin={true} />
+            </Card>
+        </MantineContainer>
     );
 }
