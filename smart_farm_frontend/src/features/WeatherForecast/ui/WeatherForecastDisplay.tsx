@@ -276,7 +276,6 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                     <IconSunFilled ></IconSunFilled>
                                     </Box>
                                 </Box>
-                  
 
                                 <Text>{forecast.temperatureMinC}°C - {forecast.temperatureMaxC}°C</Text>
                             </Card>
