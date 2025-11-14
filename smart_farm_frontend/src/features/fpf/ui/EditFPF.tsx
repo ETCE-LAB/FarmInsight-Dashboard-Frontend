@@ -26,6 +26,8 @@ import {Hardware} from "../../hardware/models/hardware";
 import {showNotification} from "@mantine/notifications";
 import {useAuth} from "react-oidc-context";
 import {AuthRoutes} from "../../../utils/Router";
+import {ModelList} from "../../model/ui/ModelList";
+import {Model} from "../../model/models/Model";
 
 
 export const EditFPF: React.FC = () => {
@@ -36,12 +38,14 @@ export const EditFPF: React.FC = () => {
 
     const [organization, setOrganization] = useState<Organization>();
     const [sensors, setSensors] = useState<Sensor[]>();
+    const [models, setModels] = useState<Model[]>();
     const [cameras, setCameras] = useState<Camera[]>();
     const [hardware, setHardware] = useState<Hardware[]>();
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
 
     const SensorEventListener = useSelector((state: RootState) => state.sensor.receivedSensorEvent);
+    const ModelEventListener = useSelector((state: RootState) => state.model.receivedModelEvent);
     const CameraEventListener = useSelector((state: RootState) => state.camera.createdCameraEvent);
     const fpfCreatedEventListener = useSelector((state: RootState) => state.fpf.createdFpfEvent);
 
@@ -94,6 +98,12 @@ export const EditFPF: React.FC = () => {
     }, [fpf]);
 
     useEffect(() => {
+        if (fpf?.Models && fpf.Models.length >= 1) {
+            setModels(fpf.Models);
+        }
+    }, [fpf]);
+
+    useEffect(() => {
         if (fpf?.Hardware && fpf.Hardware.length >= 1) {
             setHardware(fpf.Hardware);
         }
@@ -126,6 +136,20 @@ export const EditFPF: React.FC = () => {
             });
         }
     }, [SensorEventListener]);
+
+    useEffect(() => {
+        if (fpfId) {
+            getFpf(fpfId).then((resp) => {
+                setModels(resp.Models);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
+        }
+    }, [ModelEventListener]);
 
     useEffect(() => {
         if (fpfId) {
@@ -185,6 +209,10 @@ export const EditFPF: React.FC = () => {
 
             <Card padding="lg" radius="md">
                 <SensorList sensorsToDisplay={sensors} fpfId={fpf.id} isAdmin={isAdmin} />
+            </Card>
+
+            <Card padding="lg" radius="md">
+                <ModelList modelsToDisplay={models} fpfId={fpf.id} isAdmin={isAdmin} />
             </Card>
 
             <Card padding="lg" radius="md">

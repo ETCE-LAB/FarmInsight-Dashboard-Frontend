@@ -11,7 +11,7 @@ import GrowingCycleReducer from "../features/growthCycle/state/GrowingCycleSlice
 import LocationReducer from "../features/location/state/LocationSlice";
 import ControllableActionReducer from "../features/controllables/state/ControllableActionSlice";
 import WeatherForecastReducer from "../features/WeatherForecast/state/WeatherForecastSlice";
-
+import ModelReducer from "../features/model/state/ModelSlice";
 
 
 export const store = configureStore({
@@ -21,6 +21,7 @@ export const store = configureStore({
         organization :OrganizationReducer,
         sensor: SensorReducer,
         fpf : FpfReducer,
+        model : ModelReducer,
         measurement: measurementReducer,
         membership: MembershipReducer,
         growingCycle: GrowingCycleReducer,

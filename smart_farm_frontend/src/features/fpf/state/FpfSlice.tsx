@@ -17,6 +17,7 @@ const initialState: FpfSlice = {
         name: "",
         isPublic: true,
         Sensors: [],
+        Models: [],
         Cameras: [],
         sensorServiceIp: "",
         Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false},

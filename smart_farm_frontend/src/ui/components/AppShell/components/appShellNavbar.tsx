@@ -91,8 +91,6 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
 
     const handleOrganizationSelect = (name: string, id: string) => {
         setSelectedOrganization({ name, id });
-        //console.log(organizations.find(org => org.id === id))
-        //dispatch(storeSelectedOrganization(organizations.find(org => org.id === id)));
         navigate(AppRoutes.organization.replace(":organizationId", id));
         onNavbarShouldClose();
     };

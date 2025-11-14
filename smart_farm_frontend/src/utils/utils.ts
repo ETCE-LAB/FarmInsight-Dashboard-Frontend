@@ -47,6 +47,19 @@ export const getSensorStateColor = (measuredAt: Date, isActive: boolean, interva
     return 'red';
 }
 
+export const getModelStateColor = (timestamp: Date, isActive: boolean, intervalSeconds: number): string => {
+    const measured_ms = timestamp.getTime();
+    const now_ms = new Date().getTime();
+    const difference_seconds = (now_ms - measured_ms) / 1000;
+    const slack = 120; // to avoid sensors instantly turning yellow when the task is still working
+
+    if (!isActive) return 'grey';
+    if (difference_seconds < (intervalSeconds + slack)) return 'green';
+    if (difference_seconds < (intervalSeconds + slack) * 2) return 'yellow';
+
+    return 'red';
+}
+
 export const getSensorStateColorHint = (color: string)=> {
     if (color === 'green')  return i18n.t("overview.green");
     if (color === 'yellow') return i18n.t('overview.yellow');
