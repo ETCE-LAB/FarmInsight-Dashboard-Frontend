@@ -8,9 +8,6 @@ import {getPrediction} from "../useCase/getPrediction";
 import {Forecast, ModelEntry} from "../models/Model";
 import {showNotification as showMantineNotification} from "@mantine/notifications";
 
-
-
-
 export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
     const auth = useAuth()
     const {t} = useTranslation();
@@ -32,7 +29,6 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
         }
     }, [show, fpfId, t]);
 
-
     return (
         <>
             {auth.isAuthenticated &&
@@ -43,7 +39,7 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
                         </Button>
                         <Title order={3}>{t('model.predictionViewTitle')}</Title>
                     </Flex>
-                    {show && model_predictions?.models && model_predictions.models.map((model: ModelEntry ) => (
+                    {show && model_predictions?.models && model_predictions.models.length > 0 && model_predictions.models.map((model: ModelEntry ) => (
                        <>
                             <Flex style={{marginBottom: '20px', marginTop: '10px'}}>
                                 <Title order={4}>{model.modelName}</Title>
