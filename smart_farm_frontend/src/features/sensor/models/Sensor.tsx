@@ -44,5 +44,6 @@ export interface EditSensor {
     hardwareConfiguration: {
         sensorClassId:string,
         additionalInformation: Record<string, any>
-    }
+    },
+    hardwareId?: string | null,
 }

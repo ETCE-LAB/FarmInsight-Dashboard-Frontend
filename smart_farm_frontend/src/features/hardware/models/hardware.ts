@@ -4,4 +4,5 @@ export interface Hardware {
     FPF:string;
     name: string;
     canBeDeleted?: boolean;
+    pingEndpoint: string;
 }

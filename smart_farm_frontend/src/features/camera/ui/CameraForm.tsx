@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
-import {Box, Button, Grid, NumberInput, Switch, Text, TextInput} from "@mantine/core";
+import {Box, Button, Grid, NumberInput, Select, Switch, Text, TextInput} from "@mantine/core";
 import { useAppDispatch } from "../../../utils/Hooks";
 import { EditCamera } from "../models/camera";
 import { createCamera } from "../useCase/createCamera";
 import { updateCamera } from "../useCase/updateCamera";
 import { createdCamera } from "../state/CameraSlice";
 import { useTranslation } from "react-i18next";
-import {notifications} from "@mantine/notifications";
+import {notifications, showNotification} from "@mantine/notifications";
 import { IconVideo, IconVideoOff } from "@tabler/icons-react";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
+import {Hardware} from "../../hardware/models/hardware";
+import {fetchAvailableHardware} from "../../controllables/useCase/fetchAvailableHardware";
+import {getBackendTranslation} from "../../../utils/utils";
 
 
 export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void, fpfId: string }> = ({ toEditCamera, close, fpfId }) => {
@@ -24,7 +27,9 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
     const [resolution, setResolution] = useState<string>("")
     const [snapshotUrl, setSnapshotUrl] = useState<string>("")
     const [livestreamUrl, setLivestreamUrl] = useState<string>("")
-    const { t } = useTranslation();
+    const [availableHardware, setAvailableHardware] = useState<Hardware[]>();
+    const [hardwareId, setHardwareId] = useState<string | null>();
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         if (toEditCamera) {
@@ -37,8 +42,18 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
             setResolution(toEditCamera.resolution || "")
             setSnapshotUrl(toEditCamera.snapshotUrl || "")
             setLivestreamUrl(toEditCamera.livestreamUrl)
+            setHardwareId(toEditCamera.hardwareId);
         }
-    }, [toEditCamera]);
+        fetchAvailableHardware(fpfId).then(hardwareList => {
+            setAvailableHardware(hardwareList)
+        }).catch((error) => {
+            showNotification({
+                title: t('common.loadError') + t('hardware.title'),
+                message: `${error}`,
+                color: 'red',
+            });
+        });
+    }, [toEditCamera, fpfId, t]);
 
     const handleEdit = () => {
         if (toEditCamera) {
@@ -50,7 +65,7 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
                 withCloseButton: false,
             });
             updateCamera({
-                fpfId, id: toEditCamera.id, name, location, modelNr, resolution, isActive, intervalSeconds, snapshotUrl, livestreamUrl
+                fpfId, id: toEditCamera.id, name, location, modelNr, resolution, isActive, intervalSeconds, snapshotUrl, livestreamUrl, hardwareId
             }).then((camera) => {
                 close();
                 dispatch(createdCamera())
@@ -84,7 +99,7 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
             withCloseButton: false,
         });
         createCamera({
-            fpfId, id: "", name, location, modelNr, resolution, isActive, intervalSeconds, livestreamUrl, snapshotUrl
+            fpfId, id: "", name, location, modelNr, resolution, isActive, intervalSeconds, snapshotUrl, livestreamUrl, hardwareId
         }).then((camera) => {
             if (camera) {
                 dispatch(createdCamera());
@@ -206,7 +221,21 @@ export const CameraForm: React.FC<{ toEditCamera?: EditCamera, close: () => void
                             />
                         </Grid.Col>
 
-                        {/* Active Switch next to Snapshot URL */}
+                        {availableHardware &&
+                            <Grid.Col span={6}>
+                                <Select
+                                    label={t("hardware.title")}
+                                    placeholder={t("hardware.select")}
+                                    description={t("hardware.toPing")}
+                                    checkIconPosition="left"
+                                    data={availableHardware.map((v): { value: string; label: string } => ({ value: v.id, label: getBackendTranslation(v.name, i18n.language)}))}
+                                    value={hardwareId}
+                                    onChange={setHardwareId}
+                                />
+                            </Grid.Col>
+                        }
+
+                        {/* Active Switch */}
                         <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center" ,justifyContent: "center" }}>
                             {/* Active Text */}
                             <Text style={{ marginBottom: '8px' }}>

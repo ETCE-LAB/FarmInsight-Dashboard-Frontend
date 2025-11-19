@@ -80,8 +80,8 @@ export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLog
                             withAsterisk
                             value={sensorId}
                             onChange={setSensorId}
-                    />
-                </Grid.Col>
+                        />
+                    </Grid.Col>
                     <Grid.Col span={2}>
                         <Select
                             label={"Operator"}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Grid, NumberInput, Switch, TextInput, Text } from "@mantine/core";
+import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Select} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { EditSensor } from "../models/Sensor";
 import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
@@ -10,10 +10,13 @@ import { receivedSensor } from "../state/SensorSlice";
 import { AppRoutes } from "../../../utils/appRoutes";
 import { useNavigate } from "react-router-dom";
 import { updateSensor } from "../useCase/updateSensor";
-import { notifications } from "@mantine/notifications";
+import {notifications, showNotification} from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import {IconMobiledata, IconMobiledataOff, IconSum, IconSumOff} from "@tabler/icons-react";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
+import {Hardware} from "../../hardware/models/hardware";
+import {fetchAvailableHardware} from "../../controllables/useCase/fetchAvailableHardware";
+import {getBackendTranslation} from "../../../utils/utils";
 
 export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditSensor, setClosed }) => {
     const auth = useAuth();
@@ -27,8 +30,10 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
     const [location, setLocation] = useState<string>("");
     const[aggregate, setAggregate] = useState<boolean>(false);
     const [hardwareConfiguration, setHardwareConfiguration] = useState<{ sensorClassId: string, additionalInformation: Record<string, any> } | undefined>(undefined);
+    const [availableHardware, setAvailableHardware] = useState<Hardware[]>();
+    const [hardwareId, setHardwareId] = useState<string | null>();
     const navigate = useNavigate();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const dispatch = useAppDispatch();
 
@@ -42,8 +47,21 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
             setIntervalSeconds(toEditSensor.intervalSeconds || 1);
             setLocation(toEditSensor.location || "");
             setAggregate(toEditSensor.aggregate || false);
+            setHardwareId(toEditSensor.hardwareId);
         }
-    }, [toEditSensor]);
+        const id = fpfId || toEditSensor?.fpfId;
+        if (id) {
+            fetchAvailableHardware(id).then(hardwareList => {
+                setAvailableHardware(hardwareList)
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError') + t('hardware.title'),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
+        }
+    }, [toEditSensor, fpfId, t]);
 
     const handleEdit = () => {
         if (toEditSensor && hardwareConfiguration) {
@@ -67,6 +85,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 fpfId: toEditSensor.fpfId,
                 aggregate,
                 hardwareConfiguration,
+                hardwareId,
             }).then((sensor) => {
                 notifications.update({
                     id,
@@ -102,7 +121,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 withCloseButton: false,
             });
             createSensor({
-                id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, aggregate ,hardwareConfiguration,
+                id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, aggregate ,hardwareConfiguration, hardwareId
             }).then((response) => {
                 notifications.update({
                     id,
@@ -176,6 +195,20 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                             />
                         </Grid.Col>
 
+                        {availableHardware &&
+                            <Grid.Col span={6}>
+                                <Select
+                                    label={t("hardware.title")}
+                                    placeholder={t("hardware.select")}
+                                    description={t("hardware.toPing")}
+                                    checkIconPosition="left"
+                                    data={availableHardware.map((v): { value: string; label: string } => ({ value: v.id, label: getBackendTranslation(v.name, i18n.language)}))}
+                                    value={hardwareId}
+                                    onChange={setHardwareId}
+                                />
+                            </Grid.Col>
+                        }
+
                         {/* Aggregate Switch */}
                         <Grid.Col span={6} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                             <Text style={{marginBottom:"1rem"}}>{t("sensorList.aggregate")}</Text>
@@ -200,7 +233,6 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                                 onChange={() => setIsActive(!isActive)}
                             />
                         </Grid.Col>
-
 
                         {/* Hardware Configuration */}
                         <Grid.Col span={12}>

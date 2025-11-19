@@ -41,7 +41,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [selectedActionScript, setSelectedActionScript] = useState<ActionScript>();
     const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
-    const [hardware, setHardware] = useState<Hardware>({id: "", FPF: "", name: ""});
+    const [hardware, setHardware] = useState<Hardware>({id: "", FPF: "", name: "", pingEndpoint: ""});
     const [availableHardware, setAvailableHardware] = useState<Hardware[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
@@ -57,12 +57,13 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                     id: toEditAction.hardware.id,
                     FPF: fpfId || "",
                     name: toEditAction.hardware.name,
+                    pingEndpoint: toEditAction.hardware.pingEndpoint,
                 };
                 setHardware(initial);
                 setHardwareInput(getBackendTranslation(initial.name, i18n.language));
             } else {
                 // Reset states when no hardware is present
-                setHardware({id: "", FPF: "", name: ""});
+                setHardware({id: "", FPF: "", name: "", pingEndpoint: ""});
                 setHardwareInput("");
             }
         }
@@ -246,15 +247,13 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                     description={t("controllableActionList.hint.hardware")}
                                     onChange={(val) => {
                                         setHardwareInput(val);
-                                        setHardware({ id: "", FPF: fpfId, name: val })
                                         if (availableHardware && val) {
                                             const foundItem = availableHardware.find(h => h.id === val);
                                             if (foundItem) {
                                                 setHardware(foundItem);
                                             }
-                                        }
-                                        else {
-                                            setHardware({ id: "", FPF: fpfId, name: hardwareInput })
+                                        } else {
+                                            setHardware({ id: "", FPF: fpfId, name: hardwareInput, pingEndpoint: "" })
                                         }
                                     }}
                                 />

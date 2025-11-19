@@ -71,6 +71,11 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
                 value={hardware.name}
                 onChange={(value) => handleInputChange("name", value)}
             />
+            <TextInput
+                label={t("hardware.pingEndpoint")}
+                value={hardware.pingEndpoint}
+                onChange={(value) => handleInputChange("pingEndpoint", value)}
+            />
             <Flex justify="flex-end">
                 <Button
                     style={{ width: "30%", marginTop: "1rem" }}

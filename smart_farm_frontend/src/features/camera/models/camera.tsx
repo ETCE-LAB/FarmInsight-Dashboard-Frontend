@@ -29,4 +29,5 @@ export interface EditCamera {
     intervalSeconds: number,
     snapshotUrl: string,
     livestreamUrl: string,
+    hardwareId?: string | null,
 }

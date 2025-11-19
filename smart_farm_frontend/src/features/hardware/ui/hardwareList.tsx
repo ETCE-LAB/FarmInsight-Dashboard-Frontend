@@ -124,6 +124,7 @@ export const HardwareList: React.FC<{ hardwareToDisplay?: Hardware[], fpfId: str
                             <Table.Tr>
                                 {isAdmin && <Table.Th />}
                                 <Table.Th>{t("header.name")}</Table.Th>
+                                <Table.Th>{t("hardware.pingEndpointShort")}</Table.Th>
                                 {isAdmin && <Table.Th />}
                             </Table.Tr>
                         </Table.Thead>
@@ -142,6 +143,7 @@ export const HardwareList: React.FC<{ hardwareToDisplay?: Hardware[], fpfId: str
                                                         </Table.Td>
                                                     }
                                                     <Table.Td>{getBackendTranslation(hardware.name, i18n.language)}</Table.Td>
+                                                    <Table.Td>{hardware.pingEndpoint}</Table.Td>
                                                     {isAdmin &&
                                                         <Table.Td>
                                                             <Flex justify='space-between'>
