@@ -14,6 +14,7 @@ import {
     Grid,
     Loader,
 } from '@mantine/core';
+import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { IconPlant } from '@tabler/icons-react';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { getMyOrganizations } from '../../../features/organization/useCase/getMyOrganizations';
@@ -71,18 +72,27 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     };
 
     useEffect(() => {
-        setLoading(true);
-        receiveVisibleFpfs().then((r) =>
-            setFpfs(r)
-        ).catch((error) => {
-            showNotification({
-                title: t('common.loadError'),
-                message: `${error}`,
-                color: 'red',
-            })
-        }).finally(() =>
-            setLoading(false)
-        );
+        const fetchFpfs = () => {
+            setLoading(true);
+            receiveVisibleFpfs()
+                .then((r) => setFpfs(r))
+                .catch((error) => {
+                    showNotification({
+                        title: t('common.loadError'),
+                        message: `${error}`,
+                        color: 'red',
+                    });
+                })
+                .finally(() => setLoading(false));
+        };
+
+        // Initial fetch
+        fetchFpfs();
+
+        // Poll every 5 minutes
+        const interval = setInterval(fetchFpfs, 300000);
+
+        return () => clearInterval(interval);
     }, [t]);
 
     useEffect(() => {
@@ -176,14 +186,21 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                                             bottom: 0,
                                                             backgroundColor: 'rgba(128, 128, 128, 0.5)',
                                                             display: 'flex',
+                                                            flexDirection: 'column',
+                                                            gap: '16px',
                                                             justifyContent: 'center',
                                                             alignItems: 'center',
                                                             borderRadius: 'inherit',
                                                             zIndex: 1,
+                                                            backdropFilter: 'blur(1px)'
                                                         }}
                                                     >
-                                                        <Text c="yellow" fw={700} size="xl">
+
+                                                        <HiOutlineWrenchScrewdriver size={64} color="red" />
+                                                        <Text c="red" fw={700} size="xl">
+
                                                             {t('Currently in maintenance')}
+
                                                         </Text>
                                                     </Box>
                                                 )}
