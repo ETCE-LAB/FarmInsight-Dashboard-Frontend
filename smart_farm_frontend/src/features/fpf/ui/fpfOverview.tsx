@@ -16,7 +16,7 @@ import {
 import GrowingCycleList from "../../growthCycle/ui/growingCycleList";
 import { GrowingCycleForm } from "../../growthCycle/ui/growingCycleForm";
 import { CameraCarousel } from "../../camera/ui/CameraCarousel";
-import { useAppDispatch } from "../../../utils/Hooks";
+import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
 import { setGrowingCycles } from "../../growthCycle/state/GrowingCycleSlice";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mantine/hooks";
@@ -28,11 +28,13 @@ import ControllableActionOverview from "../../controllables/ui/controllableActio
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {showNotification} from "@mantine/notifications";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../utils/store";
+import {PredictionView} from "../../model/ui/PredictionView";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
     const [fpf, setFpf] = useState<Fpf | null>(null);
-    const dispatch = useAppDispatch();
     const params = useParams();
     const { t } = useTranslation();
     const [isCameraActive, setCameraActive] = useState(false);
@@ -43,24 +45,21 @@ export const FpfOverview = () => {
     const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
     const [isMember, setIsMember] = useState<boolean>(false);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const growingCycles = useSelector((state: RootState) => state.growingCycle.growingCycles);
+
+    //Redux Store
+    const dispatch = useAppDispatch();
+    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
 
     useEffect(() => {
         if (organizationId && auth.isAuthenticated) {
-            getMyOrganizations().then((organizations) => {
-                const org = organizations.find((o) => o.id === organizationId);
-                if (org) {
-                    setIsMember(true);
-                    setIsAdmin(org.membership.role === 'admin');
-                }
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadingError'),
-                    message: `${error}`,
-                    color: "red",
-                });
-            });
+            const org = myOrganizationsSelector.find((o) => o.id === organizationId);
+            if (org) {
+                setIsMember(true);
+                setIsAdmin(org.membership.role === 'admin');
+            }
         }
-    }, [organizationId, auth.isAuthenticated, t]);
+    }, [organizationId, auth.isAuthenticated, t, myOrganizationsSelector]);
 
     useEffect(() => {
         if (params?.fpfId) {
@@ -137,6 +136,11 @@ export const FpfOverview = () => {
                         </Box>
                     )}
 
+                    {/* Prediction Graphs */}
+                    {fpf?.Models && fpf.Models.length > 0 && (
+                        <PredictionView fpfId={fpf.id}/>
+                    )}
+
                     {/* Sensor graphs come next */}
                     {fpf?.Sensors && fpf.Sensors.length > 0 ? (
                         <>
@@ -170,18 +174,13 @@ export const FpfOverview = () => {
                         </Box>
                     )}
 
-                    {/* Growing Cycle Section: only render if cycles exist or user is signed in */}
-                    {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
-                        <Box
-                            style={{
-                                borderRadius: '10px',
-                                padding: '1rem',
-                            }}
-                        >
-                            {(fpf.GrowingCycles ?? []).length > 0 ? (
-                                <GrowingCycleList fpfId={fpf.id} isAdmin={isAdmin} />
+                    {/* Growing Cycle Section: only render if user is signed in */}
+                    {auth.user && (
+                        <Box style={{ borderRadius: '10px', padding: '1rem' }}>
+                            {growingCycles.length > 0 ? (
+                                <GrowingCycleList fpfId={fpf?.id ?? ""} isAdmin={isAdmin} />
                             ) : (
-                                <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Center>
                                     <Button
                                         variant="light"
                                         leftSection={<IconPlant />}
@@ -190,7 +189,7 @@ export const FpfOverview = () => {
                                     >
                                         {t("growingCycleForm.addCycle")}
                                     </Button>
-                                </Box>
+                                </Center>
                             )}
                         </Box>
                     )}
@@ -210,6 +209,11 @@ export const FpfOverview = () => {
                             >
                                 <WeatherForecastDisplay location={fpf.Location} />
                             </Box>
+                        )}
+
+                        {/* Prediction Graphs */}
+                        {fpf?.Models && fpf.Models.length > 0 && (
+                            <PredictionView fpfId={fpf.id}/>
                         )}
 
                         <TimeRangeSelector onDateChange={setDateRange} defaultSelected={true} />
@@ -259,17 +263,12 @@ export const FpfOverview = () => {
                             </Box>
                         )}
                         {/*Growing Cycle Section*/}
-                        {fpf && (((fpf.GrowingCycles ?? []).length > 0) || auth.user) && (
-                            <Box
-                                style={{
-                                    borderRadius: '10px',
-                                    padding: '1rem',
-                                }}
-                            >
-                                {(fpf.GrowingCycles ?? []).length > 0 ? (
-                                    <GrowingCycleList fpfId={fpf.id} isAdmin={isAdmin} />
+                        {auth.user && (
+                            <Box style={{ borderRadius: '10px', padding: '1rem' }}>
+                                {growingCycles.length > 0 ? (
+                                    <GrowingCycleList fpfId={fpf?.id ?? ""} isAdmin={isAdmin} />
                                 ) : (
-                                    <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <Center>
                                         <Button
                                             variant="light"
                                             leftSection={<IconPlant />}
@@ -278,7 +277,7 @@ export const FpfOverview = () => {
                                         >
                                             {t("growingCycleForm.addCycle")}
                                         </Button>
-                                    </Box>
+                                    </Center>
                                 )}
                             </Box>
                         )}

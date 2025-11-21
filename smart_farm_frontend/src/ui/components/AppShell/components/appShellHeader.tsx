@@ -13,6 +13,9 @@ import {receiveUserProfile} from "../../../../features/userProfile/useCase/recei
 import {SystemRole} from "../../../../features/userProfile/models/UserProfile";
 import {showNotification} from "@mantine/notifications";
 import {getMyOrganizations} from "../../../../features/organization/useCase/getMyOrganizations";
+import {useAppDispatch, useAppSelector} from "../../../../utils/Hooks";
+import {receivedUserProfile} from "../../../../features/userProfile/state/UserProfileSlice";
+import {storeMyOrganizations} from "../../../../features/organization/state/OrganizationSlice";
 
 const languageOptions = [
     { code: 'en', label: 'English', flag: 'us' },
@@ -32,6 +35,11 @@ export const AppShellHeader: React.FC = () => {
     // Detect mobile devices (viewport widths 768px or less)
     const isMobile = useMediaQuery('(max-width: 768px)');
 
+    //Redux hooks
+    const dispatch = useAppDispatch();
+    const userProfileSelector = useAppSelector((state) => state.userProfile.ownUserProfile);
+    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
+
     // Set default language based on the browser's language
     useEffect(() => {
         const browserLanguage = navigator.language.split('-')[0];
@@ -49,28 +57,33 @@ export const AppShellHeader: React.FC = () => {
         i18n.changeLanguage(lang.code);
     };
 
+    //Initial fetching of user profile and organizations
     useEffect(() => {
         if (auth.isAuthenticated) {
-            receiveUserProfile().then((user) => {
-                if (user) {
-                    setIsAdmin(user.systemRole === SystemRole.ADMIN);
-                }
-                getMyOrganizations().then((orgs) => {
-                    setHasOrgs(orgs.length > 0);
-                }).catch((error) => {
-                    showNotification({
-                        title: t('common.loadError'),
-                        message: `${error}`,
-                        color: 'red',
+            if (userProfileSelector?.email && userProfileSelector.email.length > 0) {
+                setIsAdmin(userProfileSelector.systemRole === SystemRole.ADMIN);
+                setHasOrgs(myOrganizationsSelector.length > 0);
+            } else {
+                receiveUserProfile()
+                    .then((user) => {
+                        if (user) {
+                            setIsAdmin(user.systemRole === SystemRole.ADMIN);
+                            dispatch(receivedUserProfile(user));
+                        }
+                        return getMyOrganizations();
                     })
-                });
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadError'),
-                    message: `${error}`,
-                    color: 'red',
-                })
-            });
+                    .then((orgs) => {
+                        setHasOrgs(orgs.length > 0)
+                        dispatch(storeMyOrganizations(orgs))
+                    })
+                    .catch((error) => {
+                        showNotification({
+                            title: t('common.loadError'),
+                            message: `${error}`,
+                            color: 'red',
+                        });
+                    });
+            }
         } else {
             setIsAdmin(false);
         }

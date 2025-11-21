@@ -14,4 +14,5 @@ export enum ResourceType {
     CAMERA = 'camera',
     ORGANIZATION = 'org',
     ADMIN = 'admin',
+    MODEL = 'model' // The resource management models
 }

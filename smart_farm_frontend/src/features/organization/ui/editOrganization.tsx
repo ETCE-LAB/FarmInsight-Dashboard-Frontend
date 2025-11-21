@@ -33,7 +33,7 @@ import { FpfForm } from "../../fpf/ui/fpfForm";
 import {useSelector} from "react-redux";
 import {changedMembership} from "../../membership/state/MembershipSlice";
 import {editOrganization} from "../useCase/editOrganization";
-import {useAppDispatch} from "../../../utils/Hooks";
+import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
 import {RootState} from "../../../utils/store";
 import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {ResourceType} from "../../logMessages/models/LogMessage";
@@ -46,12 +46,16 @@ import {moveArrayItem} from "../../../utils/utils";
 import {Fpf} from "../../fpf/models/Fpf";
 import {postFpfOrder} from "../../fpf/useCase/postFpfOrder";
 import {createdFpf} from "../../fpf/state/FpfSlice";
+import {MembershipRole} from "../../membership/models/membership";
+import {storeSelectedOrganization} from "../state/OrganizationSlice";
 
 export const EditOrganization = () => {
     const { t } = useTranslation();
     const auth = useAuth();
     const navigate = useNavigate();
+
     const dispatch = useAppDispatch();
+    const userProfileSelector =  useAppSelector((state) => state.userProfile.ownUserProfile);
 
     const { organizationId } = useParams();
 
@@ -75,6 +79,7 @@ export const EditOrganization = () => {
                 setNewOrganizationName(org.name);
                 setIsPublic(org.isPublic);
                 setIsModified(false);
+                dispatch(storeSelectedOrganization(org))
             }).catch((error) => {
                 showNotification({
                     title: t('common.loadError'),
@@ -88,19 +93,11 @@ export const EditOrganization = () => {
     }, [auth.isAuthenticated, navigate, organizationId, membershipEventListener, t]);
 
     useEffect(() => {
-        if (organization) {
-            receiveUserProfile().then((user) => {
-                const userIsAdmin = organization.memberships.some(
-                    (member) => member.userprofile.id === user.id && member.membershipRole === "admin"
-                );
-                setIsAdmin(userIsAdmin);
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadError'),
-                    message: `${error}`,
-                    color: 'red',
-                });
-            });
+        if (organization && userProfileSelector) {
+            const userIsAdmin = organization.memberships.some(
+                (member) => member.userprofile.id === userProfileSelector.id && member.membershipRole === MembershipRole.ADMIN
+            );
+            setIsAdmin(userIsAdmin);
         }
     }, [organization, t]);
 
