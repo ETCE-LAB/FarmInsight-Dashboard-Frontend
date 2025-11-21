@@ -22,10 +22,13 @@ const locationSlice = createSlice({
     reducers: {
         receivedLocation(state){
             state.receivedLocationEvent += 1
+        },
+        resetLocationEvent(state){
+            state.receivedLocationEvent = 0
         }
     }
 })
 
-export const {receivedLocation} = locationSlice.actions
+export const {receivedLocation, resetLocationEvent} = locationSlice.actions
 export const receivedLocationEvent = (state:RootState) => state.location.receivedLocationEvent;
 export default locationSlice.reducer

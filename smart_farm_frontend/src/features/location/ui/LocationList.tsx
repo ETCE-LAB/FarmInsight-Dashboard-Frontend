@@ -9,6 +9,8 @@ import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 import {getOrganization} from "../../organization/useCase/getOrganization";
 import {showNotification} from "@mantine/notifications";
+import {resetLocationEvent} from "../state/LocationSlice";
+import {useAppDispatch} from "../../../utils/Hooks";
 
 
 export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:boolean}> = ({ locationsToDisplay , isAdmin }) => {
@@ -19,8 +21,11 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
     const { organizationId } = useParams<{ organizationId: string }>();
     const locationEventListener = useSelector((state: RootState) => state.location.receivedLocationEvent);
 
+    const dispatch = useAppDispatch();
+
+    //UseEffect to reload locations on event
     useEffect(() => {
-        if (organizationId) {
+        if (organizationId && locationEventListener > 0) {
             getOrganization(organizationId).then((orga) => {
                 setLocations(orga.locations);
             }).catch((error) => {
@@ -33,9 +38,11 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
         }
     }, [locationEventListener, organizationId, t]);
 
+    //initial UseEffect to set location
     useEffect(() => {
         if (locationsToDisplay && locationsToDisplay.length > 0) {
             setLocations(locationsToDisplay);
+            dispatch(resetLocationEvent())
         }
     }, [locationsToDisplay]);
 

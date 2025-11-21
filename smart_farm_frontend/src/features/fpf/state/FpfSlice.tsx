@@ -17,6 +17,7 @@ const initialState: FpfSlice = {
         name: "",
         isPublic: true,
         Sensors: [],
+        Models: [],
         Cameras: [],
         sensorServiceIp: "",
         Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false},
@@ -27,8 +28,6 @@ const initialState: FpfSlice = {
     }
 }
 
-//Über reducer Events verschicken
-//reducer wäre der "Event-Bus"
 
 const fpfSlice = createSlice({
     name: 'fpf',

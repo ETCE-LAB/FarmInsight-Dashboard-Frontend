@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {useAppDispatch} from "../../../utils/Hooks";
+import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
 import {lowerFirst} from "@mantine/hooks";
@@ -20,6 +20,7 @@ import {useParams} from "react-router-dom";
 import {showNotification} from "@mantine/notifications";
 import {ControllableAction} from "../models/controllableAction";
 import {getBackendTranslation, truncateText} from "../../../utils/utils";
+import {useAuth} from "react-oidc-context";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -35,7 +36,8 @@ const getColor = (value: string) => {
 
 const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
     const { t, i18n } = useTranslation();
-    const dispatch = useAppDispatch();
+
+    const auth = useAuth();
     const controllableAction = useSelector(
         (state: RootState) => state.controllableAction.controllableAction
     );
@@ -50,30 +52,23 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
         isActive?: boolean;
     }>({ open: false });
 
+    //redux Store
+    const myOrganizationsSelector = useAppSelector(state => state.organization.myOrganizations);
+    const dispatch = useAppDispatch();
+
+
     useEffect(() => {
-        if (organizationId) {
-            getMyOrganizations().then((organizations) => {
-                let found = false;
-                if(organizations.length > 0) {
-                    organizations.forEach((org: any) => {
-                        if (org.id === organizationId) {
-                            setIsAdmin(org.membership.role === 'admin');
-                            found = true;
-                        }
-                    });
+        if (organizationId && myOrganizationsSelector) {
+            if (organizationId) {
+                const org = myOrganizationsSelector.find((o) => o.id === organizationId);
+                if (org) {
+                    setIsAdmin(org.membership.role === 'admin');
                 }
-                if (!found) {
-                    setIsAdmin(false);
-                }
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadingError'),
-                    message: `${error}`,
-                    color: 'red',
-                });
-            });
+            } else {
+                setIsAdmin(false);
+            }
         }
-    }, [organizationId, t]);
+    }, [organizationId, t, myOrganizationsSelector]);
 
     const handleTriggerChange = async (action: ControllableAction, triggerId: string, value: string, isActive: boolean) => {
         const hardwareId = action?.hardware?.id

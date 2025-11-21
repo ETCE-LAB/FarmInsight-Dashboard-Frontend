@@ -16,7 +16,7 @@ import {
 import GrowingCycleList from "../../growthCycle/ui/growingCycleList";
 import { GrowingCycleForm } from "../../growthCycle/ui/growingCycleForm";
 import { CameraCarousel } from "../../camera/ui/CameraCarousel";
-import { useAppDispatch } from "../../../utils/Hooks";
+import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
 import { setGrowingCycles } from "../../growthCycle/state/GrowingCycleSlice";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mantine/hooks";
@@ -30,11 +30,11 @@ import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations"
 import {showNotification} from "@mantine/notifications";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
+import {PredictionView} from "../../model/ui/PredictionView";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
     const [fpf, setFpf] = useState<Fpf | null>(null);
-    const dispatch = useAppDispatch();
     const params = useParams();
     const { t } = useTranslation();
     const [isCameraActive, setCameraActive] = useState(false);
@@ -47,23 +47,19 @@ export const FpfOverview = () => {
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const growingCycles = useSelector((state: RootState) => state.growingCycle.growingCycles);
 
+    //Redux Store
+    const dispatch = useAppDispatch();
+    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
+
     useEffect(() => {
         if (organizationId && auth.isAuthenticated) {
-            getMyOrganizations().then((organizations) => {
-                const org = organizations.find((o) => o.id === organizationId);
-                if (org) {
-                    setIsMember(true);
-                    setIsAdmin(org.membership.role === 'admin');
-                }
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadingError'),
-                    message: `${error}`,
-                    color: "red",
-                });
-            });
+            const org = myOrganizationsSelector.find((o) => o.id === organizationId);
+            if (org) {
+                setIsMember(true);
+                setIsAdmin(org.membership.role === 'admin');
+            }
         }
-    }, [organizationId, auth.isAuthenticated, t]);
+    }, [organizationId, auth.isAuthenticated, t, myOrganizationsSelector]);
 
     useEffect(() => {
         if (params?.fpfId) {
@@ -140,6 +136,11 @@ export const FpfOverview = () => {
                         </Box>
                     )}
 
+                    {/* Prediction Graphs */}
+                    {fpf?.Models && fpf.Models.length > 0 && (
+                        <PredictionView fpfId={fpf.id}/>
+                    )}
+
                     {/* Sensor graphs come next */}
                     {fpf?.Sensors && fpf.Sensors.length > 0 ? (
                         <>
@@ -208,6 +209,11 @@ export const FpfOverview = () => {
                             >
                                 <WeatherForecastDisplay location={fpf.Location} />
                             </Box>
+                        )}
+
+                        {/* Prediction Graphs */}
+                        {fpf?.Models && fpf.Models.length > 0 && (
+                            <PredictionView fpfId={fpf.id}/>
                         )}
 
                         <TimeRangeSelector onDateChange={setDateRange} defaultSelected={true} />
