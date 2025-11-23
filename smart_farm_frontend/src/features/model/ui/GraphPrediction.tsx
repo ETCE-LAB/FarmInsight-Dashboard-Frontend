@@ -4,16 +4,18 @@ import {LineChart} from "@mantine/charts";
 import {Forecast} from "../models/Model";
 import {Card, Flex} from "@mantine/core";
 import {formatFloatValue} from "../../../utils/utils";
+import {useAppSelector} from "../../../utils/Hooks";
 
 
 export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) => {
     const auth = useAuth();
-
     const [series, setSeries] = useState<any[]>([]);
     const [data, setData] = useState<any[]>([]);
 
     useEffect(() => {
         if (!forecast) return;
+
+
 
         // Hardcoded Colors for Cases
         setSeries([
@@ -72,6 +74,8 @@ export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) 
         const dataPoints = result.map(({ __key, ...rest }) => rest);
 
         setData(dataPoints);
+
+
     }, [forecast]);
 
 
