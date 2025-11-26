@@ -1,5 +1,4 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {RootState} from "../../../utils/store";
 import {Fpf} from "../models/Fpf";
 
 
@@ -43,5 +42,5 @@ const fpfSlice = createSlice({
 })
 
 export const {createdFpf, updatedFpf} = fpfSlice.actions
-export const receivedUserProfileEvent = (state:RootState) => state.fpf.createdFpfEvent;
+//export const receivedUserProfileEvent = (state:RootState) => state.fpf.createdFpfEvent;
 export default fpfSlice.reducer

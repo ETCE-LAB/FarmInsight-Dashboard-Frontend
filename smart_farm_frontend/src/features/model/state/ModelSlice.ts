@@ -1,5 +1,5 @@
 import {createSlice } from "@reduxjs/toolkit";
-import {RootState} from "../../../utils/store";
+
 
 
 //Currently: 2 States, Logged in and not logged in

@@ -26,7 +26,6 @@ import TimeRangeSelector from "../../../utils/TimeRangeSelector";
 import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDisplay";
 import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
-import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {showNotification} from "@mantine/notifications";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";

@@ -1,16 +1,14 @@
 import React, {useEffect, useState} from "react";
 import { EditModel, Model } from "../models/Model";
-import {Badge, Box, Group, Modal, Table, Text, Title, HoverCard, Flex, Button, Card} from "@mantine/core";
+import { Box, Group, Modal, Table, Text, Title, HoverCard, Flex } from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
-import {IconChevronDown, IconChevronLeft, IconCirclePlus, IconEdit, IconGripVertical } from "@tabler/icons-react";
+import {  IconCirclePlus, IconEdit, IconGripVertical } from "@tabler/icons-react";
 import { ModelForm } from "./ModelForm";
 import { useTranslation } from "react-i18next";
-import {getBackendTranslation, getModelStateColor, moveArrayItem} from "../../../utils/utils";
+import {getBackendTranslation,  moveArrayItem} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
-import {ThresholdList} from "../../threshold/ui/thresholdList";
-//import {postModelOrder} from "../useCase/postModelOrder";
-import {showNotification} from "@mantine/notifications";
+
 
 export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isAdmin:Boolean }> = ({ modelsToDisplay, fpfId, isAdmin }) => {
     const [models, setModels] = useState<Model[] | undefined>(undefined);
@@ -47,7 +45,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
     }
 
     const ModelRow: React.FC<{model: Model, provided: DraggableProvided}> = ({ model, provided }) => {
-        const [open, setOpen] = useState<boolean>(false);
+       // const [open, setOpen] = useState<boolean>(false);
 
         return (
             <>
