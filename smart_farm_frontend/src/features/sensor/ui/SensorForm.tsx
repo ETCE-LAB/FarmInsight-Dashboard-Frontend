@@ -67,7 +67,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
                 fpfId: toEditSensor.fpfId,
                 aggregate,
                 hardwareConfiguration,
-            }).then((sensor) => {
+            }).then(() => {
                 notifications.update({
                     id,
                     title: t('common.updateSuccess'),
@@ -103,7 +103,7 @@ export const SensorForm: React.FC<{ toEditSensor?: EditSensor, setClosed: React.
             });
             createSensor({
                 id: '', name, unit, parameter, location, modelNr, intervalSeconds: interval, isActive, fpfId, aggregate ,hardwareConfiguration,
-            }).then((response) => {
+            }).then(() => {
                 notifications.update({
                     id,
                     title: t('common.saveSuccess'),

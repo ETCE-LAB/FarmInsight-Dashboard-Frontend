@@ -30,7 +30,7 @@ export const MultiLanguageInput: React.FC<CustomInputProps> = ({label, placehold
     const onInputChanged = (val: string, lang: string) => {
         // english is the default so that's always gotta be set, but an empty german value shouldn't be sent out
         // cause then it would display nothing instead of falling back to english in utils.getBackendTranslation()
-        let result = '';
+        let result: string;
         if (lang === 'en') {
             if (gerValue) {
                 result = `${val};${gerValue}`;
