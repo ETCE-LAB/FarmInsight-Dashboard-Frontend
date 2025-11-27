@@ -362,7 +362,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                                     ? date.toLocaleDateString('de-DE')
                                                     : date.toLocaleTimeString('de-DE', {hour:'2-digit', minute: '2-digit'
                                                     })
-                                                 //return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                                //return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                                             },
                                         }}
                                         // Hier die neue domain-Logik:

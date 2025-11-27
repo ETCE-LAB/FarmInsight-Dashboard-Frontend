@@ -23,7 +23,8 @@ const initialState: FpfSlice = {
         Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false},
         GrowingCycles: [],
         ControllableAction: [],
-        Hardware: []
+        Hardware: [],
+        isActive: true
     }
 }
 
