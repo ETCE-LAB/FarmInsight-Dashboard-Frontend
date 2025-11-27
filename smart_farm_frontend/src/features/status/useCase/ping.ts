@@ -20,3 +20,7 @@ const pingResource = (resourceType: string, resourceId: string) => {
 export const pingSensor = (sensorId: string) => {
     return pingResource('sensor', sensorId);
 }
+
+export const pingHardware = (hardwareId: string) => {
+    return pingResource('hardware', hardwareId);
+}

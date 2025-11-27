@@ -32,6 +32,7 @@ i18n
                         networkError: 'Network response not ok. Status:',
                         inEnglish: 'in english',
                         inGerman: 'in german (optional)',
+                        ping: 'Ping',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -123,7 +124,6 @@ i18n
                         },
                         statusOverview: 'Status overview',
                         adminPage: 'Admin',
-                        ping: 'Ping',
                         fpfs: 'FPFs',
                     },
                     sensor: {
@@ -275,6 +275,8 @@ i18n
                         confirmDeletion: 'Are you sure you want to delete this hardware?',
                         pingEndpoint: 'Http endpoint to ping the hardware',
                         pingEndpointShort: 'Ping endpoint',
+                        isAvailable: 'Hardware ping successful',
+                        isNotAvailable: 'Hardware ping failed',
                     },
                     button: {
                         loginToManage: 'Login to manage organization',
@@ -516,6 +518,7 @@ i18n
                         networkError: 'Netzwerk Antwort fehlerhaft. Status:',
                         inEnglish: 'auf Englisch',
                         inGerman: 'auf Deutsch (optional)',
+                        ping: 'Ping',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -604,7 +607,6 @@ i18n
                         },
                         statusOverview: 'Status Übersicht',
                         adminPage: 'Admin',
-                        ping: 'Ping',
                         fpfs: 'FPFs',
                     },
                     sensor: {
@@ -756,6 +758,8 @@ i18n
                         confirmDeletion: 'Wollen Sie die Hardware wirklich löschen?',
                         pingEndpoint: 'Http Endpunkt um die Erreichbarkeit zu prüfen',
                         pingEndpointShort: 'Ping Endpunkt',
+                        isAvailable: 'Hardware ping erfolgreich',
+                        isNotAvailable: 'Hardware ping fehlgeschlagen',
                     },
                     button: {
                         loginToManage: 'Anmelden, um Organisation zu verwalten',

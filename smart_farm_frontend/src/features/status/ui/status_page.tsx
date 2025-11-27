@@ -16,16 +16,19 @@ import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole} from "../../userProfile/models/UserProfile";
 import {IconChevronDown, IconChevronRight, IconCircleFilled, IconSettings} from "@tabler/icons-react";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
-import {pingSensor} from "../useCase/ping";
+import {pingHardware, pingSensor} from "../useCase/ping";
 import {showNotification} from "@mantine/notifications";
 import {AppRoutes} from "../../../utils/appRoutes";
 import {useNavigate} from "react-router-dom";
 import {useInterval} from "@mantine/hooks";
 import {AuthRoutes} from "../../../utils/Router";
+import {Hardware} from "../../hardware/models/hardware";
+import {getAllHardwares} from "../../hardware/useCase/getAllHardwares";
 
 export const StatusPage = () => {
     const auth = useAuth();
     const [organizations, setOrganizations] = useState<OrganizationMembership[]>([]);
+    const [hardwares, setHardwares] = useState<Hardware[]>([]);
     const { t, i18n } = useTranslation();
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
@@ -55,6 +58,60 @@ export const StatusPage = () => {
             navigate(AuthRoutes.signin);
         }
     }, [auth.isAuthenticated, t, navigate]);
+
+    useEffect(() => {
+        if (isAdmin) {
+            getAllHardwares().then((hs) => setHardwares(hs));
+        }
+    }, [isAdmin]);
+
+    const HardwareOverview: React.FC<{hardware: Hardware}> = ({hardware}) => {
+        const [currentlyPinging, setCurrentlyPinging] = useState(false);
+
+        const getHardwarePing = () => {
+            if (currentlyPinging) return;
+            setCurrentlyPinging(true);
+
+            pingHardware(hardware.id).then((result) => {
+                if (result.hasOwnProperty('result')) {
+                    if (result.result) {
+                        showNotification({
+                            title: t('overview.pingResult'),
+                            message: t('hardware.isAvailable'),
+                            color: 'green',
+                        });
+                    } else {
+                        showNotification({
+                            title: t('overview.pingResult'),
+                            message: t('hardware.isNotAvailable'),
+                            color: 'red',
+                        });
+                    }
+                } else {
+                    showNotification({
+                        title: t('overview.pingResult'),
+                        message: `${JSON.stringify(result)}`,
+                        color: 'green',
+                    });
+                }
+            }).catch((err) => {
+                showNotification({
+                    title: t('overview.pingResult'),
+                    message: `${err}`,
+                    color: 'red',
+                });
+            }).finally(()=> {
+                setCurrentlyPinging(false);
+            });
+        }
+
+        return (
+            <Table.Tr>
+                <Table.Td>{getBackendTranslation(hardware.name, i18n.language)}</Table.Td>
+                <Table.Td><Button onClick={getHardwarePing} variant="default" disabled={currentlyPinging}>{t('common.ping')}</Button></Table.Td>
+            </Table.Tr>
+        );
+    }
 
     const SensorOverview: React.FC<{sensor: Sensor}> = ({sensor})=> {
         let { lastMessage } = useWebSocket(`${getWsUrl()}/ws/sensor/${sensor?.id}`);
@@ -120,7 +177,7 @@ export const StatusPage = () => {
                 <Table.Td>{measuredAt.toLocaleString(navigator.language)}</Table.Td>
                 <Table.Td>{lastValue}{sensor.unit}</Table.Td>
                 <Table.Td><LogMessageModalButton resourceType={ResourceType.SENSOR} resourceId={sensor.id} /></Table.Td>
-                <Table.Td><Button onClick={getSensorPing} variant="default" disabled={currentlyPinging}>{t('header.ping')}</Button></Table.Td>
+                <Table.Td><Button onClick={getSensorPing} variant="default" disabled={currentlyPinging}>{t('common.ping')}</Button></Table.Td>
             </Table.Tr>
         )
     } 
@@ -169,7 +226,7 @@ export const StatusPage = () => {
                                     <Table.Th>{t('sensor.lastMeasurementAt')}</Table.Th>
                                     <Table.Th>{t('sensor.lastValue')}</Table.Th>
                                     <Table.Th>{t('log.showMessages')}</Table.Th>
-                                    <Table.Th>{t('header.ping')}</Table.Th>
+                                    <Table.Th>{t('common.ping')}</Table.Th>
                                 </Table.Tr>
                             </Table.Thead>
                             <Table.Tbody>
@@ -291,11 +348,34 @@ export const StatusPage = () => {
                     }
                 </Flex>
                 {showOverview &&
-                    <Grid grow gutter='lg' mt='lg'>
-                        {organizations && (organizations.map(org =>
-                            <OrgOverview id={org.id} key={org.id} />
-                        ))}
-                    </Grid>
+                    <>
+                        <Grid grow gutter='lg' mt='lg'>
+                            {organizations && (organizations.map(org =>
+                                <OrgOverview id={org.id} key={org.id} />
+                            ))}
+                        </Grid>
+
+                        {hardwares &&
+                            <Card mt='md' >
+                                <Title order={2}>{t('hardware.toPing')}</Title>
+                                <Table mt='md'>
+                                    <Table.Thead>
+                                        <Table.Tr>
+                                            <Table.Th>{t('hardware.name')}</Table.Th>
+                                            <Table.Th>{t('common.ping')}</Table.Th>
+                                        </Table.Tr>
+                                    </Table.Thead>
+                                    {hardwares.map(hardware =>
+                                        <>
+                                            {hardware.pingEndpoint &&
+                                                <HardwareOverview hardware={hardware} />
+                                            }
+                                        </>
+                                    )}
+                                </Table>
+                            </Card>
+                        }
+                    </>
                 }
             </Card>
             <SystemMessageView />
