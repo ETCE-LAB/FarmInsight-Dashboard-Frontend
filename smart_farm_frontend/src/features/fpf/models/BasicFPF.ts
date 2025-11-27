@@ -12,4 +12,5 @@ export interface BasicFPF {
     organization:BasicOrganization,
     lastImageUrl:string,
     sensors: Sensor[],
+    isActive: boolean
 }

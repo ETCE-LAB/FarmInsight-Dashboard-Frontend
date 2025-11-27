@@ -496,14 +496,14 @@ i18n
                         },
                     },
                     notification: {
-                        title: 'Notification Rooms',
+                        title: 'Matrix Notification Rooms',
                         confirmDeletion: 'Confirm Deletion',
                         add: 'Add Notification Room',
                         roomId: 'Room ID',
                         name: 'Name',
                         notFound: 'No notification rooms found.',
                         roomIdPlaceholder: 'Enter Matrix Room ID (e.g., !...:matrix.org)',
-                        namePlaceholder: 'Enter a display name (e.g., \'Errors Channel\')',
+                        namePlaceholder: 'Enter a display name',
                     },
                     overview: {
                         green: 'All good',
@@ -1014,7 +1014,7 @@ i18n
                         },
                     },
                     notification: {
-                        title: 'Benachrichtigungsräume',
+                        title: 'Matrix Benachrichtigungsräume',
                         confirmDeletion: 'Löschung bestätigen',
                         add: 'Benachrichtigungsraum hinzufügen',
                         roomId: 'Raum-ID',

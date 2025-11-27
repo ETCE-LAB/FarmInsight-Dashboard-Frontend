@@ -18,4 +18,5 @@ export interface Fpf {
     ControllableAction: ControllableAction[]
     Location: Location
     Hardware: Hardware[]
+    isActive: boolean
 }

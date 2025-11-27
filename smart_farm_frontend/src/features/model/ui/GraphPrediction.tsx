@@ -142,7 +142,7 @@ export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) 
                             return (
                                 <Card color="grey">
                                     <strong>
-                                        {new Date(label).toLocaleDateString('de-DE')}
+                                        {label}
                                     </strong>
                                     {payload.map((item) => (
                                         <Flex key={item.name}>
