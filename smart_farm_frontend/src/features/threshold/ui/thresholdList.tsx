@@ -9,7 +9,7 @@ import {deleteThreshold} from "../useCase/deleteThreshold";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {ThresholdForm} from "./thresholdForm";
 
-export const ThresholdList: React.FC<{ sensorId: string, thresholds: Threshold[] }> = ({ sensorId, thresholds }) => {
+export const ThresholdList: React.FC<{ ressourceId: string, thresholds: Threshold[], resourceType:string }> = ({ ressourceId, thresholds, resourceType }) => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
@@ -36,7 +36,7 @@ export const ThresholdList: React.FC<{ sensorId: string, thresholds: Threshold[]
                 title={toEditThreshold ? t('threshold.editTitle') : t('threshold.addTitle')}
                 centered
             >
-                <ThresholdForm sensorId={sensorId} toEditThreshold={toEditThreshold} onSuccess={() => setEditThresholdModalOpen(false)} />
+                <ThresholdForm sensorId={ressourceId} toEditThreshold={toEditThreshold} onSuccess={() => setEditThresholdModalOpen(false)} />
             </Modal>
             <Table highlightOnHover withColumnBorders>
                 <Table.Thead>

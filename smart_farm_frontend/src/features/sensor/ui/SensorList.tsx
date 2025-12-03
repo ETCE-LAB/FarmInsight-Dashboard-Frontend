@@ -113,7 +113,7 @@ export const SensorList: React.FC<{ sensorsToDisplay?: Sensor[], fpfId: string, 
                     <Table.Tr>
                         <Table.Td colSpan={isAdmin ? 9 : 8} >
                             <Card withBorder shadow="sm" p="sm">
-                                <ThresholdList sensorId={sensor.id} thresholds={sensor.thresholds} />
+                                <ThresholdList ressourceId={sensor.id} resourceType={'sensor'} thresholds={sensor.thresholds} />
                             </Card>
                         </Table.Td>
                     </Table.Tr>

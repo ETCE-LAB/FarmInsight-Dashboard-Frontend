@@ -53,11 +53,11 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
             <>
                 <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
                     {isAdmin &&
-                        <Table.Td>
-                            <div {...provided.dragHandleProps}>
-                                <IconGripVertical size={18} stroke={1.5} />
-                            </div>
-                        </Table.Td>
+                            <Table.Td>
+                                <div {...provided.dragHandleProps}>
+                                    <IconGripVertical size={18} stroke={1.5} />
+                                </div>
+                            </Table.Td>
                     }
                     <Table.Td>{getBackendTranslation(model.name, i18n.language)}</Table.Td>
                     <Table.Td>{model.activeScenario}</Table.Td>
@@ -66,7 +66,9 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                     <Table.Td>
                         <Flex justify='space-between' align='center'>
                             <HoverCard>
-                                {/*<HoverCard.Target>
+
+                                {/* STATUS DETAILS TO BE IMPLEMENTED LATER -> Circle color depending on last forecast time
+                                <HoverCard.Target>
                                     <Badge color={getModelStateColor(new Date(model.forecasts[0].forecast[0].timestamp), model.isActive, model.intervalSeconds)}>
                                         {!model.isActive && (<>{t("camera.inactive")}</>)}
                                     </Badge>
@@ -81,20 +83,44 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                         </Flex>
                     </Table.Td>
 
+
                     {isAdmin &&
-                        <Table.Td>
-                            <Flex justify='center' align='center'>
-                                <IconEdit
-                                    color={"#199ff4"}
-                                    size={20}
-                                    stroke={2}
-                                    onClick={() => onClickEdit(model)}
-                                    style={{ cursor: "pointer" }}
-                                />
-                            </Flex>
-                        </Table.Td>
+                        <>
+                            <Table.Td>
+                                {isAdmin &&
+                                    <Button
+                                        variant="subtle"
+                                        size="xs"
+                                        onClick={() => setOpen(!open)}
+                                    >
+                                        {open ? <IconChevronDown size={16} /> : <IconChevronLeft size={16} />}
+                                    </Button>
+                                    //<ThresholdList resourceType={ResourceType.MODEL} thresholds={[]} ressourceId={model.id} />
+                                }
+                            </Table.Td>
+                            <Table.Td>
+                                <Flex justify='center' align='center'>
+                                    <IconEdit
+                                        color={"#199ff4"}
+                                        size={20}
+                                        stroke={2}
+                                        onClick={() => onClickEdit(model)}
+                                        style={{ cursor: "pointer" }}
+                                    />
+                                </Flex>
+                            </Table.Td>
+                        </>
                     }
                 </Table.Tr>
+                {open &&
+                    <Table.Tr>
+                        <Table.Td colSpan={isAdmin ? 9 : 8} >
+                            <Card withBorder shadow="sm" p="sm">
+                                <ThresholdList ressourceId={model.id} resourceType={'sensor'} thresholds={model.thresholds} />
+                            </Card>
+                        </Table.Td>
+                    </Table.Tr>
+                }
             </>
         )
     }
@@ -151,7 +177,8 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                             <Table.Th>{t('model.activeScenario')}</Table.Th>
                             <Table.Th>{t('model.intervalSeconds')}</Table.Th>
                             <Table.Th>{t('model.isActive')}</Table.Th>
-                            <Table.Th>{t('header.status')}</Table.Th>
+                             <Table.Th>{t('header.status')}</Table.Th>
+
                             {isAdmin && <Table.Th />}
                         </Table.Tr>
                         </Table.Thead>

@@ -1,9 +1,12 @@
+import {Threshold} from "../../threshold/models/threshold";
+
 export interface Model {
     id:string,
     name:string,
     URL:string,
     intervalSeconds:number,
     isActive:boolean,
+    thresholds:Threshold[],
     required_parameters:
         {
         name: string,
