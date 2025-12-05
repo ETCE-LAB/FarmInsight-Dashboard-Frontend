@@ -4,7 +4,7 @@ import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal } from "@mantine/core";
+import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import { RootState } from "../../../utils/store";
 import { CameraList } from "../../camera/ui/CameraList";
 import { Camera } from "../../camera/models/camera";
 import { useTranslation } from "react-i18next";
-import { IconEdit } from "@tabler/icons-react";
+import { IconEdit, IconBolt } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
 import { useAppDispatch } from "../../../utils/Hooks";
 import {updatedFpf} from "../state/FpfSlice";
@@ -201,7 +201,17 @@ export const EditFPF: React.FC = () => {
                             <Text size="lg" fw="bold" c="dimmed">
                                 {t('fpf.address')}: {fpf.Location?.name || t('fpf.noAddress')}
                             </Text>
-                            <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpfId}></LogMessageModalButton>
+                            <Flex gap="sm">
+                                <Button 
+                                    variant="light" 
+                                    color="yellow" 
+                                    leftSection={<IconBolt size={16} />}
+                                    onClick={() => navigate(`/organization/${organizationId}/fpf/${fpfId}/energy`)}
+                                >
+                                    {t('energy.dashboardTitle')}
+                                </Button>
+                                <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpfId}></LogMessageModalButton>
+                            </Flex>
                         </Flex>
                     </Grid.Col>
                 </Grid>

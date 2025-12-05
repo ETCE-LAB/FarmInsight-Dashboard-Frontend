@@ -3,6 +3,7 @@ export class AppRoutes {
     static organization = "/organization/:organizationId"
     static editFpf = "/organization/:organizationId/fpf/:fpfId/edit"
     static displayFpf = "/organization/:organizationId/fpf/:fpfId"
+    static energyDashboard = "/organization/:organizationId/fpf/:fpfId/energy"
     static editUserProfile = "/userprofile/edit"
     static legalNotice = "/legal-notice"
     static statusOverview = "/status-overview"

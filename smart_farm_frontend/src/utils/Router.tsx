@@ -12,6 +12,7 @@ import {EditFPF} from "../features/fpf/ui/EditFPF";
 import LegalNoticePage from "../ui/components/footer/legalNoticePage";
 import {StatusPage} from "../features/status/ui/status_page";
 import {AdminPage} from "../features/admin/ui/adminPage";
+import EnergyDashboard from "../features/energy/ui/EnergyDashboard";
 
 export class AuthRoutes {
     static callback = "auth/callback";
@@ -33,6 +34,7 @@ export const Router = () => {
                     <Route path={AppRoutes.editUserProfile} element={<EditUserProfile />} />
                     <Route path={AppRoutes.displayFpf} element={<FpfOverview />} />
                     <Route path={AppRoutes.editFpf} element={<EditFPF />} />
+                    <Route path={AppRoutes.energyDashboard} element={<EnergyDashboard />} />
                     <Route path={AppRoutes.legalNotice} element={<LegalNoticePage />} />
 
                     <Route path={AppRoutes.statusOverview} element={<StatusPage />} />

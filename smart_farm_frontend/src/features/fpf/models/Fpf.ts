@@ -19,4 +19,10 @@ export interface Fpf {
     Location: Location
     Hardware: Hardware[]
     isActive: boolean
+    // Energy Management Configuration
+    energyGridConnectThreshold?: number
+    energyShutdownThreshold?: number
+    energyWarningThreshold?: number
+    energyBatteryMaxWh?: number
+    energyGridDisconnectThreshold?: number
 }
