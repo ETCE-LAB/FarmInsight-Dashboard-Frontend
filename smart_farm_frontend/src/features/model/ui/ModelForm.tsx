@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { EditModel } from "../models/Model";
-import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
+
 import { createModel } from "../useCase/createModel";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { updateModel } from "../useCase/updateModel";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
-import {IconMobiledata, IconMobiledataOff, IconRefresh, IconSum, IconSumOff} from "@tabler/icons-react";
+import {IconMobiledata, IconMobiledataOff, IconRefresh} from "@tabler/icons-react";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 import {getModelParams} from "../useCase/getModelParams";
 import {useSelector} from "react-redux";
@@ -80,7 +80,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                 actions: actions ?? [],
                 forecasts: forecasts ?? []
 
-            }).then((model) => {
+            }).then(() => {
                 notifications.update({
                     id,
                     title: t('common.updateSuccess'),
@@ -116,7 +116,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
             });
             createModel({
                 id: '', name, URL:url, activeScenario, intervalSeconds: interval, isActive, fpfId, required_parameters: requiredParameters, availableScenarios, actions, forecasts
-            }).then((response) => {
+            }).then(() => {
                 notifications.update({
                     id,
                     title: t('common.saveSuccess'),

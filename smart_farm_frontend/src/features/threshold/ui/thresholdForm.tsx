@@ -22,7 +22,7 @@ export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Thresho
 
     const handleSubmit = () => {
         if (toEditThreshold) {
-            modifyThreshold(toEditThreshold.id, threshold).then((v) => {
+            modifyThreshold(toEditThreshold.id, threshold).then(() => {
                 showNotification({
                     title: t('common.updateSuccess'),
                     message: ``,
@@ -38,7 +38,7 @@ export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Thresho
                 });
             });
         } else {
-            createThreshold(threshold).then((v) => {
+            createThreshold(threshold).then(() => {
                 showNotification({
                     title: t('common.saveSuccess'),
                     message: ``,
@@ -65,7 +65,7 @@ export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Thresho
             return threshold.upperBound > threshold.lowerBound;
 
         return threshold.upperBound || threshold.lowerBound;
-    }, [threshold]);
+    }, [threshold.upperBound, threshold.lowerBound]);
 
     return (
         <>

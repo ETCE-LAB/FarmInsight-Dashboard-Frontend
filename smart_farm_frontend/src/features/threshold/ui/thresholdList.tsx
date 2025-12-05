@@ -17,7 +17,7 @@ export const ThresholdList: React.FC<{ ressourceId: string, thresholds: Threshol
     const [toEditThreshold, setToEditThreshold] = useState<Threshold | null>(null);
 
     const handleDelete = (threshold: Threshold)=> {
-        deleteThreshold(threshold.id).then((v) => {
+        deleteThreshold(threshold.id).then(() => {
             dispatch(receivedSensor());
         }).catch((error) => {
             showNotification({

@@ -7,7 +7,7 @@ import {formatFloatValue} from "../../../utils/utils";
 
 
 export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) => {
-    const auth = useAuth();
+
 
     const [series, setSeries] = useState<any[]>([]);
     const [data, setData] = useState<any[]>([]);

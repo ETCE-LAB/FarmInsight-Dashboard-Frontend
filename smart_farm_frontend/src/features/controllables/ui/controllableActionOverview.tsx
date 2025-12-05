@@ -15,12 +15,10 @@ import {
 } from "@mantine/core";
 import {executeTrigger} from "../useCase/executeTrigger";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
-import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {useParams} from "react-router-dom";
 import {showNotification} from "@mantine/notifications";
 import {ControllableAction} from "../models/controllableAction";
 import {getBackendTranslation, truncateText} from "../../../utils/utils";
-import {useAuth} from "react-oidc-context";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -37,7 +35,6 @@ const getColor = (value: string) => {
 const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
     const { t, i18n } = useTranslation();
 
-    const auth = useAuth();
     const controllableAction = useSelector(
         (state: RootState) => state.controllableAction.controllableAction
     );
@@ -159,7 +156,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                             return (
                                 <>
                                     <Text>{t("controllableActionList.confirmMessage")}</Text>
-                                    <Text color="red" size="sm">
+                                    <Text c="red" size="sm">
                                         ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
                                     </Text>
                                 </>
@@ -187,7 +184,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                 confirmModal.triggerId,
                                 confirmModal.value,
                                 confirmModal.isActive
-                            );
+                            ).then(() =>console.log("Trigger change executed"));
                         }
                     }}>
                         {t("common.confirm")}

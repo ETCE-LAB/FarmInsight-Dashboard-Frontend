@@ -14,7 +14,7 @@ export const PromoteMembershipButton:React.FC<{member:Membership}> = ({member}) 
 
     function handlePromote() {
         if (member) {
-            updateMembershipRole({id: member.id, membershipRole: MembershipRole.ADMIN}).then(r => {
+            updateMembershipRole({id: member.id, membershipRole: MembershipRole.ADMIN}).then(() => {
                 showNotification({
                     title: t('common.success'),
                     message: t('userManagement.userPromoted'),

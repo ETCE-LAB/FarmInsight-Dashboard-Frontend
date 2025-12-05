@@ -23,7 +23,7 @@ import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 
 export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: ActionTrigger, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ actionId, toEditTrigger, setClosed }) => {
     const auth = useAuth();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const { organizationId, fpfId } = useParams();
     const dispatch = useAppDispatch();
 

@@ -15,6 +15,5 @@ export const deleteThreshold = (thresholdId:string) => {
 
     const url = `${BACKEND_URL}/api/thresholds/${thresholdId}`;
 
-    const result: Promise<Response> = apiClient.delete(url, headers);
-    return result;
+    return apiClient.delete(url, headers);
 }
