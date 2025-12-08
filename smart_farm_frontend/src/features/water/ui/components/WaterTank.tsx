@@ -73,14 +73,102 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
     })), []);
 
     // Color Logic
-    // Normal: Blue/Cyan
-    // Frozen: Icy White/Pale Cyan
     const waterColorStart = isFrozen ? '#E0F7FA' : theme.colors.blue[8];
     const waterColorMid = isFrozen ? '#B2EBF2' : theme.colors.cyan[4];
     const waterOpacity = isFrozen ? 0.9 : 0.8;
     const animationState = isFrozen ? 'paused' : 'running';
 
+    // Subtler Architectural Background Logic
+    // Base: Dark Grey Metal Structure + Glass
+    const structureColor = '#263238'; // Dark Blue-Grey Metal
+    const glassBase = '#1A1B1E'; // Dark glass
+
+    // Tint for the glass based on weather (Subtle!)
+    let glassTint = 'transparent';
+    if (isFrozen) glassTint = 'rgba(179, 229, 252, 0.1)'; // Icy tint
+    else if (isRaining) glassTint = 'rgba(33, 150, 243, 0.05)'; // Blue tint
+    else if (isSunny) glassTint = 'rgba(255, 235, 59, 0.05)'; // Warm tint
+    else if (isCloudy) glassTint = 'rgba(144, 164, 174, 0.1)'; // Grey/Blue-Grey tint for Cloudy
+
+    // Lighting Overlay (God rays or flat light)
+    let lightOverlay = 'none';
+    if (isSunny && !isFrozen) {
+        lightOverlay = `radial-gradient(circle at 80% 10%, rgba(255, 235, 59, 0.15) 0%, transparent 60%)`;
+    } else if (isRaining) {
+        lightOverlay = `linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 100%)`; // Darker top
+    } else if (isCloudy && !isFrozen) {
+        // Flat, diffused white light for cloudy
+        lightOverlay = `linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%)`;
+    }
+
     const styles = `
+        .tank-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            background-color: ${glassBase};
+            transition: background 1s ease;
+        }
+
+        /* Architectural Structure (CSS Drawing) */
+        .greenhouse-structure {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 1;
+            pointer-events: none;
+            
+            /* Glass Tint */
+            background-color: ${glassTint};
+            
+            /* Structural Beams (Vertical & Horizontal perspective) */
+            background-image:
+                /* Vertical Beams */
+                linear-gradient(90deg, 
+                    transparent 19%, ${structureColor} 19%, ${structureColor} 20%, transparent 20%,
+                    transparent 39%, ${structureColor} 39%, ${structureColor} 40%, transparent 40%,
+                    transparent 59%, ${structureColor} 59%, ${structureColor} 60%, transparent 60%,
+                    transparent 79%, ${structureColor} 79%, ${structureColor} 80%, transparent 80%
+                ),
+                /* Horizontal Beams (Perspective curved) */
+                linear-gradient(to bottom, 
+                    ${structureColor} 2px, transparent 2px
+                );
+            background-size: 100% 100%, 100% 33%; /* Grid spacing */
+            
+            /* Depth Shadow (Vignette) */
+             box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+        }
+        
+        /* Subtle Perspective Roof Lines */
+        .greenhouse-roof {
+             position: absolute;
+             top: 0; left: 0; width: 100%; height: 40%;
+             background: repeating-linear-gradient(
+                160deg,
+                transparent,
+                transparent 50px,
+                rgba(255,255,255,0.03) 50px,
+                rgba(255,255,255,0.03) 51px
+             );
+             z-index: 1;
+             pointer-events: none;
+             mask-image: linear-gradient(to bottom, black, transparent);
+        }
+
+        /* Lighting Overlay */
+        .lighting-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: ${lightOverlay};
+            pointer-events: none;
+            z-index: 2;
+            transition: background 1s ease;
+            mix-blend-mode: screen; /* Lighten mode */
+        }
+
         .tank-container {
             perspective: 1000px;
             width: 200px;
@@ -88,6 +176,8 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             margin: 0 auto;
             position: relative;
             cursor: pointer;
+            z-index: 10; /* Above background elements */
+            margin-top: 20px;
         }
 
         .cylinder {
@@ -98,7 +188,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             transform: rotateX(-10deg);
         }
 
-        /* Weather Overlay Container */
+        /* Weather Overlay Container (Rain drops) */
         .weather-overlay {
             position: absolute;
             top: -50px;
@@ -116,7 +206,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             position: absolute;
             width: 2px;
             height: 10px;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.4);
             top: -20px;
             animation: fall linear infinite;
         }
@@ -125,19 +215,18 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             to { transform: translateY(400px); }
         }
 
-        /* Sun Shine Animation */
+         /* Sun Shine Animation (Subtler) */
         .sun-glare {
             position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, rgba(255,255,200,0.6) 0%, rgba(255,255,255,0) 70%);
-            filter: blur(20px);
+            top: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+            filter: blur(25px);
             z-index: 30;
+            opacity: 0.6;
             animation: pulse-sun 4s infinite ease-in-out;
-            opacity: 0.8;
-            transition: opacity 1s;
         }
         
          /* Cloud Shadow Animation */
@@ -147,12 +236,12 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
+            background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%);
             z-index: 25;
             pointer-events: none;
-            animation: cloud-pass 8s infinite alternate ease-in-out;
-            opacity: 0.6;
-            mix-blend-mode: multiply;
+            animation: cloud-pass 10s infinite alternate ease-in-out;
+            opacity: 0.8; /* Increased visibility */
+            mix-blend-mode: multiply; /* Better blending */
         }
         
         /* Ice Overlay Texture */
@@ -166,19 +255,19 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             z-index: 22;
             pointer-events: none;
             mix-blend-mode: overlay;
-            opacity: ${isFrozen ? 0.6 : 0};
+            opacity: ${isFrozen ? 0.4 : 0};
             transition: opacity 1s;
         }
 
         @keyframes pulse-sun {
-            0% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 0.7; }
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 0.5; }
         }
         
-        @keyframes cloud-pass {
-            0% { background-position: 0% 0%; opacity: 0.4; }
-            100% { background-position: 100% 0%; opacity: 0.7; }
+         @keyframes cloud-pass {
+            0% { background-position: 0% 0%; opacity: 0.3; }
+            100% { background-position: 100% 0%; opacity: 0.6; }
         }
 
         .glass-back {
@@ -186,8 +275,8 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             top: 0;
             width: 200px;
             height: 300px;
-            background: linear-gradient(to right, rgba(200,200,255,0.1), rgba(200,200,255,0.05) 40%, rgba(200,200,255,0.05) 60%, rgba(200,200,255,0.1));
-            border: 1px solid rgba(255,255,255,0.2);
+            background: linear-gradient(to right, rgba(200,200,255,0.05), rgba(200,200,255,0.02) 40%, rgba(200,200,255,0.02) 60%, rgba(200,200,255,0.05));
+            border: 1px solid rgba(255,255,255,0.1);
             border-bottom-left-radius: 100px 20px;
             border-bottom-right-radius: 100px 20px;
             z-index: 1;
@@ -200,10 +289,10 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             width: 200px;
             height: 40px;
             border-radius: 50%;
-            border: 2px solid rgba(200,200,255,0.5);
+            border: 2px solid rgba(200,200,255,0.3);
             background: rgba(255,255,255,0.05);
             z-index: 50; 
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            box-shadow: 0 0 5px rgba(255,255,255,0.1);
         }
 
         .rim-bottom {
@@ -213,10 +302,10 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             width: 200px;
             height: 40px;
             border-radius: 50%;
-            background: rgba(200,200,255,0.2);
-            border: 1px solid rgba(200,200,255,0.3);
+            background: rgba(200,200,255,0.1);
+            border: 1px solid rgba(200,200,255,0.2);
             z-index: 0;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
         .water-column {
@@ -270,7 +359,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                 ${waterColorMid} 40%, 
                 ${waterColorStart} 100%);
             z-index: 3;
-            box-shadow: 0 0 30px ${waterColorMid}; /* Enhanced glow for depth */
+            box-shadow: 0 0 30px ${waterColorMid}; 
             animation: wave-breathe 5s ease-in-out infinite;
             animation-play-state: ${animationState};
             transition: background 1s, box-shadow 1s;
@@ -367,16 +456,17 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
     `;
 
     return (
-        <Card padding="xl" radius="md" withBorder style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            background: 'linear-gradient(180deg, #1A1B1E 0%, #101113 100%)',
-            overflow: 'hidden'
-        }}>
+        <Card padding="xl" radius="md" withBorder className="tank-card">
             <style>{styles}</style>
-            <Text fw={500} size="lg" mb={40} c="dimmed">{t('water.tankLevel', 'Water Tank Level')}</Text>
+
+            {/* Background Layers: Structural Greenhouse */}
+            <Box className="greenhouse-structure" />
+            <Box className="greenhouse-roof" />
+            <Box className="lighting-overlay" />
+
+            <Text fw={500} size="lg" mb={40} c="dimmed" style={{ zIndex: 10, position: 'relative' }}>
+                {t('water.tankLevel', 'Water Tank Level')}
+            </Text>
 
             <Box className="tank-container" onClick={handleTankClick}>
                 {/* Weather Effects Layer */}
