@@ -1,0 +1,477 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { Box, Card, Text, useMantineTheme } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
+
+interface WaterTankProps {
+    level: number; // Percentage 0-100
+    capacity?: number;
+    weather?: 'sunny' | 'rainy' | 'cloudy';
+    temperature?: number; // Celsius
+}
+
+export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity, weather = 'sunny', temperature = 20 }) => {
+    const { t } = useTranslation();
+    const theme = useMantineTheme();
+
+    // Animation State: Level rises on mount
+    const [displayedLevel, setDisplayedLevel] = useState(0);
+
+    useEffect(() => {
+        // Animate from 0 to target level on mount
+        const timeout = setTimeout(() => {
+            setDisplayedLevel(Math.min(Math.max(level, 0), 100));
+        }, 100);
+        return () => clearTimeout(timeout);
+    }, [level]);
+
+    const isRaining = weather === 'rainy';
+    const isSunny = weather === 'sunny';
+    const isCloudy = weather === 'cloudy';
+    const isFrozen = temperature <= 0;
+
+    // Interactive Physics State
+    const [splashes, setSplashes] = useState<{ id: number, x: number }[]>([]);
+
+    const handleTankClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isFrozen) return; // No splashes on ice!
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const relativeX = (x / rect.width) * 100;
+
+        const newSplash = { id: Date.now(), x: relativeX };
+        setSplashes(prev => [...prev, newSplash]);
+
+        // Remove splash after animation
+        setTimeout(() => {
+            setSplashes(prev => prev.filter(s => s.id !== newSplash.id));
+        }, 1000);
+    };
+
+    // Optimization: Memoize random values
+    const rainDrops = useMemo(() => Array.from({ length: 20 }).map((_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        animationDuration: 0.5 + Math.random() * 0.5,
+        animationDelay: Math.random()
+    })), []);
+
+    const bubbles = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
+        id: i,
+        left: Math.random() * 80 + 10,
+        width: Math.random() * 6 + 4,
+        height: Math.random() * 6 + 4,
+        animationDuration: Math.random() * 3 + 2,
+        animationDelay: Math.random() * 2
+    })), []);
+
+    const rainRipples = useMemo(() => Array.from({ length: 3 }).map((_, i) => ({
+        id: i,
+        left: 20 + Math.random() * 60,
+        top: 20 + Math.random() * 60,
+        animationDelay: Math.random()
+    })), []);
+
+    // Color Logic
+    // Normal: Blue/Cyan
+    // Frozen: Icy White/Pale Cyan
+    const waterColorStart = isFrozen ? '#E0F7FA' : theme.colors.blue[8];
+    const waterColorMid = isFrozen ? '#B2EBF2' : theme.colors.cyan[4];
+    const waterOpacity = isFrozen ? 0.9 : 0.8;
+    const animationState = isFrozen ? 'paused' : 'running';
+
+    const styles = `
+        .tank-container {
+            perspective: 1000px;
+            width: 200px;
+            height: 300px;
+            margin: 0 auto;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cylinder {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-10deg);
+        }
+
+        /* Weather Overlay Container */
+        .weather-overlay {
+            position: absolute;
+            top: -50px;
+            left: -20px;
+            width: 240px;
+            height: 400px;
+            pointer-events: none;
+            z-index: 20;
+            overflow: hidden;
+            mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+        }
+
+        /* Rain Animation */
+        .rain-drop {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            top: -20px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(400px); }
+        }
+
+        /* Sun Shine Animation */
+        .sun-glare {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255,255,200,0.6) 0%, rgba(255,255,255,0) 70%);
+            filter: blur(20px);
+            z-index: 30;
+            animation: pulse-sun 4s infinite ease-in-out;
+            opacity: 0.8;
+            transition: opacity 1s;
+        }
+        
+         /* Cloud Shadow Animation */
+        .cloud-shadow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
+            z-index: 25;
+            pointer-events: none;
+            animation: cloud-pass 8s infinite alternate ease-in-out;
+            opacity: 0.6;
+            mix-blend-mode: multiply;
+        }
+        
+        /* Ice Overlay Texture */
+        .ice-texture {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
+            z-index: 22;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            opacity: ${isFrozen ? 0.6 : 0};
+            transition: opacity 1s;
+        }
+
+        @keyframes pulse-sun {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        
+        @keyframes cloud-pass {
+            0% { background-position: 0% 0%; opacity: 0.4; }
+            100% { background-position: 100% 0%; opacity: 0.7; }
+        }
+
+        .glass-back {
+            position: absolute;
+            top: 0;
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(to right, rgba(200,200,255,0.1), rgba(200,200,255,0.05) 40%, rgba(200,200,255,0.05) 60%, rgba(200,200,255,0.1));
+            border: 1px solid rgba(255,255,255,0.2);
+            border-bottom-left-radius: 100px 20px;
+            border-bottom-right-radius: 100px 20px;
+            z-index: 1;
+        }
+
+        .rim-top {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 200px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(200,200,255,0.5);
+            background: rgba(255,255,255,0.05);
+            z-index: 50; 
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        .rim-bottom {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 200px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(200,200,255,0.2);
+            border: 1px solid rgba(200,200,255,0.3);
+            z-index: 0;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .water-column {
+            position: absolute;
+            bottom: 0;
+            left: 5px; 
+            width: 190px;
+            height: ${displayedLevel}%;
+            background: linear-gradient(to right, 
+                ${waterColorStart}, 
+                ${waterColorMid} 50%, 
+                ${waterColorStart});
+            opacity: ${waterOpacity};
+            transition: height 2s ease-in-out, background 1s ease, opacity 1s;
+            z-index: 2;
+            border-bottom-left-radius: 95px 20px;
+            border-bottom-right-radius: 95px 20px;
+        }
+
+        /* Multi-layer Wave Animation */
+        .wave-layer {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 190px;
+            height: 40px;
+            border-radius: 50%;
+            pointer-events: none;
+            transition: background 1s;
+        }
+
+        .wave-1 {
+            background: rgba(255, 255, 255, 0.1);
+            animation: wave-slosh-1 4s ease-in-out infinite;
+            animation-play-state: ${animationState};
+            z-index: 4;
+            transform-origin: 50% 50%;
+        }
+
+        .wave-2 {
+            background: rgba(255, 255, 255, 0.15);
+            animation: wave-slosh-2 3s ease-in-out infinite;
+            animation-play-state: ${animationState};
+            z-index: 5;
+            transform-origin: 50% 50%;
+        }
+
+        .wave-main {
+            background: radial-gradient(circle at 50% 50%, 
+                rgba(255,255,255,0.9) 0%, 
+                ${waterColorMid} 40%, 
+                ${waterColorStart} 100%);
+            z-index: 3;
+            box-shadow: 0 0 30px ${waterColorMid}; /* Enhanced glow for depth */
+            animation: wave-breathe 5s ease-in-out infinite;
+            animation-play-state: ${animationState};
+            transition: background 1s, box-shadow 1s;
+        }
+
+        @keyframes wave-slosh-1 {
+            0%, 100% { transform: scale(1) rotate(0deg) translateX(0); }
+            50% { transform: scale(1.02) rotate(2deg) translateX(2px); }
+        }
+
+        @keyframes wave-slosh-2 {
+            0%, 100% { transform: scale(1) rotate(0deg) translateX(0); }
+            50% { transform: scale(0.98) rotate(-3deg) translateX(-3px); }
+        }
+
+        @keyframes wave-breathe {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.05); }
+        }
+        
+        .interaction-splash {
+             position: absolute;
+             width: 10px;
+             height: 10px;
+             border: 2px solid white;
+             border-radius: 50%;
+             top: 50%;
+             transform: translate(-50%, -50%);
+             opacity: 0;
+             animation: big-splash 0.8s ease-out forwards;
+             z-index: 10;
+        }
+        
+        @keyframes big-splash {
+             0% { width: 0; height: 0; opacity: 1; border-width: 4px; }
+             100% { width: 100px; height: 30px; opacity: 0; border-width: 0; }
+        }
+
+        /* Rain impact on water surface */
+        .rain-ripple {
+             position: absolute;
+             width: 10px;
+             height: 10px;
+             border: 1px solid white;
+             border-radius: 50%;
+             top: 50%;
+             left: 50%;
+             opacity: 0;
+             animation: ripple-splash 1s infinite;
+        }
+        
+        @keyframes ripple-splash {
+             0% { width: 0; height: 0; opacity: 1; }
+             100% { width: 50px; height: 10px; opacity: 0; }
+        }
+
+        .bubbles {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .bubble {
+            position: absolute;
+            bottom: -10px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            animation: rise 4s infinite ease-in;
+            animation-play-state: ${animationState};
+        }
+
+        @keyframes rise {
+            0% { bottom: -10px; transform: translateX(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { bottom: 100%; transform: translateX(-20px); opacity: 0; }
+        }
+
+        /* Front Glass Shine */
+        .glass-front-shine {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0) 30%);
+            z-index: 20;
+            pointer-events: none;
+            border-radius: 10px; 
+        }
+    `;
+
+    return (
+        <Card padding="xl" radius="md" withBorder style={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            background: 'linear-gradient(180deg, #1A1B1E 0%, #101113 100%)',
+            overflow: 'hidden'
+        }}>
+            <style>{styles}</style>
+            <Text fw={500} size="lg" mb={40} c="dimmed">{t('water.tankLevel', 'Water Tank Level')}</Text>
+
+            <Box className="tank-container" onClick={handleTankClick}>
+                {/* Weather Effects Layer */}
+                {isRaining && (
+                    <Box className="weather-overlay">
+                        {rainDrops.map((drop) => (
+                            <Box
+                                key={`rain-${drop.id}`}
+                                className="rain-drop"
+                                style={{
+                                    left: `${drop.left}%`,
+                                    animationDuration: `${drop.animationDuration}s`,
+                                    animationDelay: `${drop.animationDelay}s`
+                                }}
+                            />
+                        ))}
+                    </Box>
+                )}
+
+                {isSunny && <Box className="sun-glare" />}
+                {isCloudy && <Box className="cloud-shadow" />}
+
+                {/* Ice Texture Overlay */}
+                <Box className="ice-texture" />
+
+                <Box className="cylinder-base">
+                    <Box className="rim-top" />
+                    <Box className="glass-back" />
+
+                    <Box className="water-column">
+                        {/* Multi-Layer Wave System */}
+                        <Box className="wave-layer wave-1" />
+                        <Box className="wave-layer wave-2" />
+
+                        <Box className="wave-layer wave-main">
+                            {/* User Click Splashes */}
+                            {splashes.map((splash) => (
+                                <Box
+                                    key={splash.id}
+                                    className="interaction-splash"
+                                    style={{ left: `${splash.x}%`, top: '50%', position: 'absolute' }}
+                                />
+                            ))}
+
+                            {/* Rain ripples on surface if raining */}
+                            {isRaining && !isFrozen && rainRipples.map((ripple) => (
+                                <Box
+                                    key={`ripple-${ripple.id}`}
+                                    className="rain-ripple"
+                                    style={{
+                                        left: `${ripple.left}%`,
+                                        top: `${ripple.top}%`,
+                                        animationDelay: `${ripple.animationDelay}s`,
+                                        position: 'absolute'
+                                    }}
+                                />
+                            ))}
+                        </Box>
+
+                        <Box className="bubbles">
+                            {bubbles.map((bubble) => (
+                                <Box
+                                    key={bubble.id}
+                                    className="bubble"
+                                    style={{
+                                        left: `${bubble.left}%`,
+                                        width: `${bubble.width}px`,
+                                        height: `${bubble.height}px`,
+                                        animationDuration: `${bubble.animationDuration}s`,
+                                        animationDelay: `${bubble.animationDelay}s`
+                                    }}
+                                />
+                            ))}
+                        </Box>
+                    </Box>
+
+                    {/* Front Glass Reflection Overlay */}
+                    <Box className="glass-front-shine" />
+                    <Box className="rim-bottom" />
+                </Box>
+            </Box>
+
+            <Box mt="xl" style={{ textAlign: 'center', zIndex: 30 }}>
+                <Text size="3rem" fw={800} c="white" style={{ textShadow: '0 0 10px #228BE6' }}>
+                    {displayedLevel.toFixed(0)}%
+                </Text>
+                {capacity && (
+                    <Text size="sm" c="dimmed">
+                        {((displayedLevel / 100) * capacity).toFixed(0)} / {capacity} L
+                    </Text>
+                )}
+                <Text size="xs" c={isRaining ? 'blue.3' : isSunny ? 'yellow.3' : 'dimmed'} mt={5} fw={700} style={{ textTransform: 'uppercase' }}>
+                    {t(`weather.${weather}`, weather)} | {temperature}°C {isFrozen && '(FROZEN)'}
+                </Text>
+            </Box>
+        </Card>
+    );
+});
