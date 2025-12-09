@@ -8,11 +8,26 @@ import {modifyThreshold} from "../useCase/modifyThreshold";
 import {createThreshold} from "../useCase/createThreshold";
 import {receivedSensor} from "../../sensor/state/SensorSlice";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
+import {receivedModel} from "../../model/state/ModelSlice";
 
-export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Threshold | null; onSuccess: () => void;}> = ({ sensorId, toEditThreshold, onSuccess }) => {
+export const ThresholdForm: React.FC<{objectId: string; toEditThreshold: Threshold | null; thresholdType: string; rMMForecastName?:string; onSuccess: () => void;}> = ({ objectId, toEditThreshold, thresholdType,rMMForecastName,  onSuccess }) => {
     const { t } = useTranslation();
-    const [threshold, setThreshold] = useState<Threshold>({ sensorId: sensorId } as Threshold);
+    const [threshold, setThreshold] = useState<Threshold>({thresholdType: thresholdType  } as Threshold);
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+       if(thresholdType === "sensor") {
+           threshold.thresholdType = "sensor";
+           threshold.sensorId = objectId
+           threshold.resourceManagementModelId = null
+       }
+       else if(thresholdType === "model") {
+           threshold.thresholdType = "model";
+           threshold.resourceManagementModelId = objectId
+           threshold.sensorId = null
+           threshold.rMMForecastName = rMMForecastName
+       }
+    }, [thresholdType, threshold]);
 
     useEffect(() => {
         if (toEditThreshold) {
@@ -28,7 +43,12 @@ export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Thresho
                     message: ``,
                     color: "green",
                 });
-                dispatch(receivedSensor());
+                if(thresholdType == "sensor") {
+                    dispatch(receivedSensor());
+                }
+                else if(thresholdType == "model") {
+                    dispatch(receivedModel());
+                }
                 onSuccess();
             }).catch((error) => {
                 showNotification({
@@ -44,7 +64,12 @@ export const ThresholdForm: React.FC<{sensorId: string; toEditThreshold: Thresho
                     message: ``,
                     color: "green",
                 });
-                dispatch(receivedSensor());
+                if(thresholdType == "sensor") {
+                    dispatch(receivedSensor());
+                }
+                else if(thresholdType == "model") {
+                    dispatch(receivedModel());
+                }
                 onSuccess();
             }).catch((error) => {
                 showNotification({

@@ -58,6 +58,9 @@ export interface EditModel {
 
 }
 
+
+//-------------------
+
 // Return Type for getPrediction use case
 //Yes this made it much easier to navigate
 export interface ModelPrediction {

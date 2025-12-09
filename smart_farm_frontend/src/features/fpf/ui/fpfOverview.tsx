@@ -137,7 +137,11 @@ export const FpfOverview = () => {
 
                     {/* Prediction Graphs */}
                     {fpf?.Models && fpf.Models.length > 0 && (
-                        <PredictionView fpfId={fpf.id}/>
+                        <>
+                            {fpf.Models.map((model) => (
+                                <PredictionView fpfId={fpf.id} thresholds={model.thresholds}/>
+                            ))}
+                        </>
                     )}
 
                     {/* Sensor graphs come next */}
@@ -212,7 +216,11 @@ export const FpfOverview = () => {
 
                         {/* Prediction Graphs */}
                         {fpf?.Models && fpf.Models.length > 0 && (
-                            <PredictionView fpfId={fpf.id}/>
+                            <>
+                                {fpf.Models.map((model) => (
+                                    <PredictionView fpfId={fpf.id} thresholds={model.thresholds}/>
+                                ))}
+                            </>
                         )}
 
                         <TimeRangeSelector onDateChange={setDateRange} defaultSelected={true} />

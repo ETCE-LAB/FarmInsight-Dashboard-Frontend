@@ -6,7 +6,7 @@ import {BACKEND_URL} from "../../../env-config";
 
 export const createThreshold = (data:Threshold) => {
     const apiClient = new APIClient()
-
+    console.log(data)
     const user = getUser();
     const token = user?.access_token;
 

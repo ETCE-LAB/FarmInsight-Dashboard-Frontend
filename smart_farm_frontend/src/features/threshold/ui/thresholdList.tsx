@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Threshold} from "../models/threshold";
 import {Modal, Table} from "@mantine/core";
 import {useTranslation} from "react-i18next";
@@ -8,8 +8,9 @@ import {receivedSensor} from "../../sensor/state/SensorSlice";
 import {deleteThreshold} from "../useCase/deleteThreshold";
 import {useAppDispatch} from "../../../utils/Hooks";
 import {ThresholdForm} from "./thresholdForm";
+import {receivedModel} from "../../model/state/ModelSlice";
 
-export const ThresholdList: React.FC<{ ressourceId: string, thresholds: Threshold[], resourceType:string }> = ({ ressourceId, thresholds, resourceType }) => {
+export const ThresholdList: React.FC<{ ressourceId: string, thresholds: Threshold[], ressourceType:string, rMMForecastName?:string }> = ({ ressourceId, thresholds, ressourceType, rMMForecastName }) => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
@@ -18,7 +19,12 @@ export const ThresholdList: React.FC<{ ressourceId: string, thresholds: Threshol
 
     const handleDelete = (threshold: Threshold)=> {
         deleteThreshold(threshold.id).then(() => {
-            dispatch(receivedSensor());
+            if(ressourceType === "sensor") {
+                dispatch(receivedSensor());
+            }
+            else if(ressourceType === "model") {
+                 dispatch(receivedModel());
+            }
         }).catch((error) => {
             showNotification({
                 title: t('common.deleteError'),
@@ -36,7 +42,7 @@ export const ThresholdList: React.FC<{ ressourceId: string, thresholds: Threshol
                 title={toEditThreshold ? t('threshold.editTitle') : t('threshold.addTitle')}
                 centered
             >
-                <ThresholdForm sensorId={ressourceId} toEditThreshold={toEditThreshold} onSuccess={() => setEditThresholdModalOpen(false)} />
+                <ThresholdForm objectId={ressourceId} toEditThreshold={toEditThreshold} thresholdType={ressourceType} rMMForecastName={rMMForecastName} onSuccess={() => setEditThresholdModalOpen(false)} />
             </Modal>
             <Table highlightOnHover withColumnBorders>
                 <Table.Thead>

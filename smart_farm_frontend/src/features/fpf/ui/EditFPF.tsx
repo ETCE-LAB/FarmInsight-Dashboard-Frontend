@@ -154,6 +154,20 @@ export const EditFPF: React.FC = () => {
     useEffect(() => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
+                setModels(resp.Models);
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
+        }
+    }, [ModelEventListener]);
+
+    useEffect(() => {
+        if (fpfId) {
+            getFpf(fpfId).then((resp) => {
                 setCameras(resp.Cameras);
             }).catch((error) => {
                 showNotification({
