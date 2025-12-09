@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Grid, NumberInput, Select} from "@mantine/core";
+import {useTranslation} from "react-i18next";
 
 type IntervalTriggerLogic = {
   delayInSeconds: number;
@@ -11,6 +12,8 @@ interface Props {
 }
 
 export const IntervalTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLogic }) => {
+    const { t } = useTranslation();
+
     const parsedLogic: Partial<IntervalTriggerLogic> = (() => {
     try {
         if (triggerLogic)
@@ -52,9 +55,9 @@ export const IntervalTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerL
                   onChange={(value) => setDelay(value as number ?? 1)}
                   min={0}
                   step={1}
-                  description={"How long until the actionValue will be triggered again."}
+                  description={t("controllableActionList.trigger.intervalTriggerDesc")}
                   hideControls
-                  label={"Delay"}
+                  label={t("controllableActionList.trigger.delay")}
                 />
            </Grid.Col>
            <Grid.Col span={6}>

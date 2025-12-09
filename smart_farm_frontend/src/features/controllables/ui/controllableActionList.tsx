@@ -55,7 +55,8 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
             trigger: action.trigger,
             isAutomated: action.isAutomated,
             actionScriptName: action.actionScriptName,
-            status: action.status
+            status: action.status,
+            nextAction: action.nextAction,
         };
 
         setSelectedAction(editAction);
@@ -115,6 +116,17 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
       acc[key].push(action);
       return acc;
     }, {});
+
+    const getActionChain = (action: ControllableAction) => {
+        let actions = [];
+        let nextAction = controllableAction.find(x => x.id === action.nextAction);
+        while (nextAction) {
+            actions.push(nextAction.name);
+            nextAction = controllableAction.find(x => x.id === nextAction?.nextAction);
+        }
+
+        return actions;
+    }
 
     return (
         <Box>
@@ -400,6 +412,25 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                 </Table.Tbody>
                                             </Table>
                                         </Card>
+                                        {action.nextAction &&
+                                            <Card mt='sm'>
+                                                <Text fw={500}>{t("controllableActionList.actionChain")}</Text>
+                                                <Flex>
+                                                    {getActionChain(action).map((acts, index) => (
+                                                        <>
+                                                            {index !== 0 &&
+                                                                <Text>
+                                                                    &nbsp;&gt;&gt;&nbsp;
+                                                                </Text>
+                                                            }
+                                                            <Text>
+                                                                {getBackendTranslation(acts, i18n.language)}
+                                                            </Text>
+                                                        </>
+                                                    ))}
+                                                </Flex>
+                                            </Card>
+                                        }
                                     </Table.Td>
                                 </Table.Tr>
                             )}

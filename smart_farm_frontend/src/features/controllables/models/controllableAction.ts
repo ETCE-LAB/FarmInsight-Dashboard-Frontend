@@ -13,7 +13,8 @@ export interface ControllableAction{
     additionalInformation: string,
     hardware: Hardware,
     trigger: ActionTrigger[],
-    status: string
+    status: string,
+    nextAction: string | null,
 }
 
 export interface EditControllableAction{
@@ -27,4 +28,5 @@ export interface EditControllableAction{
     hardwareId: string | null,
     hardware: Hardware,
     trigger: ActionTrigger[],
+    nextAction: string | null,
 }

@@ -2,9 +2,10 @@ import React, {useEffect, useState} from "react";
 import { TimeInput } from '@mantine/dates';
 
 import {Grid} from "@mantine/core";
+import {useTranslation} from "react-i18next";
 
 type TimeTriggerLogic = {
-  comparison: "between";
+  comparison: string;
   from: string;
   to: string;
 };
@@ -15,10 +16,12 @@ interface Props {
 }
 
 export const TimeTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLogic }) => {
+    const { t } = useTranslation();
+
   const parsedLogic: Partial<TimeTriggerLogic> = (() => {
     try {
         if (triggerLogic)
-      return JSON.parse(triggerLogic);
+            return JSON.parse(triggerLogic);
         return {}
     } catch {
       return {};
@@ -42,14 +45,14 @@ export const TimeTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLogic
         <Grid>
             <Grid.Col span={6}>
                 <TimeInput
-                    label={"From"}
+                    label={t('common.from')}
                     onChange={(event) => setFrom(event.currentTarget.value)}
                     value={from}
                 />
             </Grid.Col>
             <Grid.Col span={6}>
                 <TimeInput
-                    label={"To"}
+                    label={t('common.to')}
                     onChange={(event) => setTo(event.currentTarget.value)}
                     value={to}
                 />

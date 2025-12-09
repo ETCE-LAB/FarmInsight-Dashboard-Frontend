@@ -65,7 +65,7 @@ export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLog
                 color: "red",
             });
         });
-    }, [fpfId]);
+    }, [fpfId, t, i18n]);
 
     return (
         <>
@@ -73,8 +73,8 @@ export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLog
                 <Grid>
                     <Grid.Col span={5}>
                         <Select
-                            label={"Sensor"}
-                            placeholder={"Select Sensor"}
+                            label={t("controllableActionList.trigger.sensor")}
+                            placeholder={t("controllableActionList.trigger.sensorPlaceholder")}
                             checkIconPosition="left"
                             data={sensorsToDisplay}
                             withAsterisk
@@ -84,7 +84,7 @@ export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLog
                     </Grid.Col>
                     <Grid.Col span={2}>
                         <Select
-                            label={"Operator"}
+                            label={t("controllableActionList.trigger.operator")}
                             data={["<", ">", "=="]}
                             withAsterisk
                             value={operator}
@@ -93,8 +93,8 @@ export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLog
                     </Grid.Col>
                     <Grid.Col span={4}>
                         <NumberInput
-                            label={"Value"}
-                            placeholder={"Enter Value"}
+                            label={t("controllableActionList.trigger.value")}
+                            placeholder={t("controllableActionList.trigger.enterValue")}
                             withAsterisk
                             value={value}
                             onChange={setValue}
@@ -103,7 +103,7 @@ export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLog
                     </Grid.Col>
                 </Grid>
             ) : (
-                <Text>No Sensors available!</Text>
+                <Text>{t("controllableActionList.trigger.noSensorAvailable")}</Text>
             )}
         </>
     )

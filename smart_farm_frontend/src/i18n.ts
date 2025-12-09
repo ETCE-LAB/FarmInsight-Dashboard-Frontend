@@ -33,6 +33,8 @@ i18n
                         inEnglish: 'in english',
                         inGerman: 'in german (optional)',
                         ping: 'Ping',
+                        from: 'From',
+                        to: "To",
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -220,6 +222,9 @@ i18n
                         enableAutoMode: 'Activate Auto Trigger',
                         updating: 'Updating Controllable Action',
                         creating: 'Creating Controllable action..',
+                        nextAction: 'Next Action',
+                        nextActionDesc: 'The action to get executed after this action has finished.',
+                        actionChain: 'Followup actions',
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -233,6 +238,7 @@ i18n
                             type: 'Type of trigger',
                             valueType: 'Value type',
                             value: 'Value',
+                            enterValue: "Enter Value",
                             status: 'Status',
                             enterType: 'Enter type',
                             actionValueType: 'Action value type',
@@ -253,7 +259,13 @@ i18n
                                 actionValueHint: 'Check on your desired action script for allowed values.',
                                 triggerLogicHint: 'Advanced trigger logic for the trigger in JSON format.',
                                 descriptionHint: 'Describe the trigger in more detail',
-                            }
+                            },
+                            sensor: "Sensor",
+                            sensorPlaceholder: "Select Sensor",
+                            operator: "Operator",
+                            noSensorsAvailable: "No Sensors available!",
+                            intervalTriggerDesc: "How long until the actionValue will be triggered again.",
+                            delay: 'Delay',
                         },
                         queue: {
                             noEntriesFound: 'No Entry found',
@@ -519,6 +531,8 @@ i18n
                         inEnglish: 'auf Englisch',
                         inGerman: 'auf Deutsch (optional)',
                         ping: 'Ping',
+                        from: 'Von',
+                        to: "Bis",
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -703,6 +717,9 @@ i18n
                         enableAutoMode: 'Aktiviere Auto Trigger',
                         updating: 'Steuerbare Aktion wird geändert',
                         creating: 'Steuerbare Aktion wird erstellt',
+                        nextAction: 'Nächste Aktion',
+                        nextActionDesc: 'Die Aktion die ausgeführt wird, sobald diese Aktion endet.',
+                        actionChain: 'Nachfolgende Aktionen',
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",
@@ -716,6 +733,7 @@ i18n
                             type: "Auslöser-Typ",
                             valueType: "Werttyp",
                             value: "Wert",
+                            enterValue: "Wert eingeben",
                             status: "Status",
                             enterType: "Typ eingeben",
                             actionValueType: "Aktionswerttyp",
@@ -736,7 +754,13 @@ i18n
                                 actionValueHint: 'Prüfe in deinem gewünschten Aktions-Skript, welche Werte zulässig sind.',
                                 triggerLogicHint: 'Erweiterte Trigger-Logik für den Auslöser im JSON-Format.',
                                 descriptionHint: 'Beschreibe den Auslöser näher'
-                            }
+                            },
+                            sensor: "Sensor",
+                            sensorPlaceholder: "Sensor auswählen",
+                            operator: "Operator",
+                            noSensorsAvailable: "Keine Sensoren verfügbar!",
+                            intervalTriggerDesc: "Dauer bis der Aktionswert wieder ausgeführt wird.",
+                            delay: 'Abstand',
                         },
                         queue: {
                             noEntriesFound: 'Kein Warteschlangeneintrag gefunden',

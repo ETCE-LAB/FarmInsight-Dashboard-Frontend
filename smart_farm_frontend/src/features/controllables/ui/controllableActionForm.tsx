@@ -28,6 +28,7 @@ import {updateControllableAction} from "../useCase/updateControllableAction";
 import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
 import {ActionScript} from "../models/actionScript";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
+import {fetchAvailableActions} from "../useCase/fetchAvailableActions";
 
 
 export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditAction, setClosed }) => {
@@ -38,6 +39,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
 
     const [name, setName] = useState<string>("");
     const [availableActionScripts, setAvailableActionScripts] = useState<ActionScript[]>();
+    const [availableActions, setAvailableActions] = useState<ControllableAction[]>();
     const [selectedActionScript, setSelectedActionScript] = useState<ActionScript>();
     const [isActive, setIsActive] = useState<boolean>(true);
     const [maximumDurationSeconds, setMaximumDurationSeconds] = useState<number>(0);
@@ -45,14 +47,16 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
     const [availableHardware, setAvailableHardware] = useState<Hardware[]>();
     const [hardwareInput, setHardwareInput] = useState<string>("");
     const [dynamicFieldValues, setDynamicFieldValues] = useState<Record<string, string>>({});
+    const [nextAction, setNextAction] = useState<string | null>(null);
 
     useEffect(() => {
         if (toEditAction) {
             setName(toEditAction.name || "");
             setIsActive(toEditAction.isActive || false);
             setMaximumDurationSeconds(toEditAction.maximumDurationSeconds || 0);
+            setNextAction(toEditAction.nextAction || "");
 
-            if (toEditAction && toEditAction.hardware) {
+            if (toEditAction.hardware) {
                 const initial: Hardware = {
                     id: toEditAction.hardware.id,
                     FPF: fpfId || "",
@@ -105,8 +109,37 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                     color: 'red',
                 });
             });
+
+            fetchAvailableActions(fpfId).then(actions => {
+                if (toEditAction) {
+                    setAvailableActions(actions.filter(action => action.id !== toEditAction.id));
+                } else {
+                    setAvailableActions(actions);
+                }
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadErrorGeneric'),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
         }
     }, [toEditAction, fpfId, t]);
+
+    useEffect(() => {
+        if (availableActions && toEditAction) {
+            // make sure to avoid loops, if this action is already a followup action of another one
+            let prevActions: ControllableAction[] = [];
+            let prevAction = availableActions.find(x => x.nextAction === toEditAction.id);
+            while (prevAction) {
+                prevActions.push(prevAction);
+                prevAction = availableActions.find(x => x.nextAction === prevAction?.id);
+            }
+
+            const actions = availableActions.filter(x => !prevActions.includes(x));
+            //setAvailableActions(actions);
+        }
+    }, [availableActions, toEditAction]);
 
     const handleDynamicFieldChange = (fieldName: string, value: string) => {
       setDynamicFieldValues(prev => ({
@@ -142,6 +175,7 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 hardwareId: hardware ? hardware.id : null ,
                 hardware: hardware,
                 trigger: [],
+                nextAction: nextAction || "",
             }).then((action) => {
                 dispatch(updateControllableActionSlice(action));
                 notifications.update({
@@ -186,7 +220,8 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                 additionalInformation: JSON.stringify(dynamicFieldValues),
                 hardwareId: hardware?.id || "",
                 hardware: hardware,
-                trigger: []
+                trigger: [],
+                nextAction: nextAction || "",
             }).then((response) => {
                 if (response) {
                     dispatch(addControllableAction(response));
@@ -359,6 +394,24 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                 description={t("controllableActionList.hint.maximumDurationSeconds")}
                             />
                         </Grid.Col>
+
+                        <Grid.Col span={10}>
+                            <Select
+                                label={t('controllableActionList.nextAction')}
+                                description={t('controllableActionList.nextActionDesc')}
+                                value={nextAction}
+                                data={availableActions?.map((v) => ({value: v.id, label: getBackendTranslation(v.name, i18n.language)}))}
+                                onChange={setNextAction}
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={2}>
+                            <Flex direction='column' justify='end' h='100%'>
+                                <Button onClick={() => setNextAction(null)}>
+                                    Clear
+                                </Button>
+                            </Flex>
+                        </Grid.Col>
+
 
                         {/* Active Switch */}
                         <Grid.Col span={12} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
