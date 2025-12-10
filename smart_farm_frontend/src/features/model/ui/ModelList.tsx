@@ -11,6 +11,7 @@ import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
 //import {postModelOrder} from "../useCase/postModelOrder";
 //import {showNotification} from "@mantine/notifications";
+import {postModelOrder} from "../useCase/postModelOrder";
 import {Threshold} from "../../threshold/models/threshold";
 
 interface Forecast {
@@ -129,6 +130,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                             <LogMessageModalButton resourceType={ResourceType.MODEL} resourceId={model.id}></LogMessageModalButton>
                         </Flex>
                     </Table.Td>
+
                     {isAdmin &&
                         <>
                             <Table.Td>
@@ -207,7 +209,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                     <DragDropContext
                         onDragEnd={({ destination, source }) => {
                             const models_: Model[] = moveArrayItem(models, source.index, destination?.index || 0);
-                            /* TODO implement later
+
                             setModels(models_);
 
                             postModelOrder(fpfId, models_.map((x: Model) => x.id)).then(() => {
@@ -218,7 +220,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                                    message: `${error}`,
                                    color: 'red',
                                })
-                            });*/
+                            });
                         }}
                     >
                         <Table.Thead>

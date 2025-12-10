@@ -11,6 +11,7 @@ export interface Model {
         {
         name: string,
         type: string, // ENUM "static" or "sensor"
+        input_type: string,
         value: any // number, string or uuid
         }[],
     activeScenario:string,
@@ -46,6 +47,7 @@ export interface EditModel {
         {
         name: string,
         type: string, // ENUM "static" or "sensor"
+        input_type: string,
         value: any // number, string or uuid
         }[],
     availableScenarios:string[],
