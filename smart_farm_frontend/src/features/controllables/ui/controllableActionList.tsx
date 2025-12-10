@@ -14,7 +14,7 @@ import {useAppDispatch} from "../../../utils/Hooks";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {showNotification} from "@mantine/notifications";
 import {getBackendTranslation} from "../../../utils/utils";
-
+import { IconRobot } from "@tabler/icons-react";
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
     const { t, i18n } = useTranslation();

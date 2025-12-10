@@ -33,7 +33,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
     const [isActive, setIsActive] = useState<boolean>(true);
     const [availableScenarios, setAvailableScenarios] = useState<string[]>([]);
     const [activeScenario, setActiveScenario] = useState<string>("");
-    const [requiredParameters, setRequiredParameters] = useState<{ name: string, type: string, value: any }[] | undefined>(undefined);
+    const [requiredParameters, setRequiredParameters] = useState<{ name: string, type: string, input_type: string, value: any }[] | undefined>(undefined);
     const [actions, setActions] = useState<{ name: string; controllable_action_id: string; }[] | undefined>(undefined);
 
     const [forecasts, setForecasts] = useState<{name: string}[] | undefined>(undefined);
@@ -56,6 +56,16 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
             setForecasts(toEditModel.forecasts)
         }
     }, [toEditModel]);
+
+const handleParamChange = (index: number, value: any) => {
+  setRequiredParameters((prev) => {
+    if (!prev) return prev; // or return [] if you prefer never-undefined afterwards
+
+    const updated = [...prev];
+    updated[index] = { ...updated[index], value };
+    return updated;
+  });
+};
 
     const handleEdit = () => {
         if (toEditModel && requiredParameters) {
@@ -162,10 +172,18 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
               data.input_parameters?.map((p: any) => ({
                 name: p.name,
                 type: p.type,
+                input_type : p.input_type,
                 value: p.default ?? "",
               })) || []
             );
             setActions(data.actions || []);
+            if(!data){
+            notifications.show({
+                title: "Error",
+                message: "Error fetching the ",
+                color: "red",
+          });
+            }
             setActiveStep(1);
 
         } catch (err: any) {
@@ -342,17 +360,26 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                   <Box key={i} mt="xs">
                     <Text size="sm" fw={500}>{param.name}</Text>
                     {param.type === "static" ? (
-                      <TextInput
-                        placeholder={`Enter ${param.name}`}
-                        required
-                        value={param.value}
-                        onChange={(e) => {
-                          const updated = [...requiredParameters];
-                          updated[i].value = e.currentTarget.value;
-                          setRequiredParameters(updated);
-                        }}
-                      />
+                        <>
+                          {param.input_type === "int" || param.input_type === "float" ? (
+                            <NumberInput
+                              placeholder={`Enter ${param.name}`}
+                              value={param.value}
+                              onChange={(v) => handleParamChange(i, v)}
+                              allowDecimal={param.input_type === "float"}
+                              hideControls
+                            />
+                          ) : (
+                            <TextInput
+                              placeholder={`Enter ${param.name}`}
+                              value={param.value}
+                              onChange={(e) => handleParamChange(i, e.currentTarget.value)}
+                            />
+                          )}
+                        </>
+
                     ) : (
+
                         <select
                             style={{width: "100%", padding: "8px"}}
                             value={param.value}
@@ -386,8 +413,8 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
           </Stepper.Step>
 
            <Stepper.Step
-              label="Assign Actions"
-              description="Map actions to controllable actions"
+              label={t("model.assignActions")}
+              description={t("model.assignActionsDescr")}
               allowStepSelect={!!toEditModel}
             >
            <Grid>
@@ -428,5 +455,4 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
         </Stepper>
       )}
     </>
-  );
-};
+)};

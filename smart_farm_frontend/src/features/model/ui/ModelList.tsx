@@ -11,6 +11,7 @@ import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
 //import {postModelOrder} from "../useCase/postModelOrder";
 import {showNotification} from "@mantine/notifications";
+import {postModelOrder} from "../useCase/postModelOrder";
 
 export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isAdmin:Boolean }> = ({ modelsToDisplay, fpfId, isAdmin }) => {
     const [models, setModels] = useState<Model[] | undefined>(undefined);
@@ -130,7 +131,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                     <DragDropContext
                         onDragEnd={({ destination, source }) => {
                             const models_: Model[] = moveArrayItem(models, source.index, destination?.index || 0);
-                            /* TODO implement later
+
                             setModels(models_);
 
                             postModelOrder(fpfId, models_.map((x: Model) => x.id)).then(() => {
@@ -141,7 +142,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                                    message: `${error}`,
                                    color: 'red',
                                })
-                            });*/
+                            });
                         }}
                     >
                         <Table.Thead>

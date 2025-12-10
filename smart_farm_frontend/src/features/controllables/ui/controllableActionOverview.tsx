@@ -21,6 +21,7 @@ import {showNotification} from "@mantine/notifications";
 import {ControllableAction} from "../models/controllableAction";
 import {getBackendTranslation, truncateText} from "../../../utils/utils";
 import {useAuth} from "react-oidc-context";
+import { IconRobot } from "@tabler/icons-react";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -283,8 +284,10 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                             <Flex direction="column" gap="sm">
                                 {actions.map((action) => {
                                     const manualTriggers = action.trigger.filter((t) => t.type === "manual" && t.isActive);
-                                    const hasAuto = action.trigger.some((t) => t.type !== "manual" && t.isActive);
+                                    const hasAuto = action.trigger.some((t) => t.type !== "manual" && t.type !== "forecast" && t.isActive);
 
+                                    // @ts-ignore
+                                    // @ts-ignore
                                     return (
                                         <Card key={action.id} p="sm" shadow="none" style={
                                             groupLoading[hardwareId] ? {
@@ -327,6 +330,30 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                                             </Button>
                                                         );
                                                     })}
+
+                                                    {/* Forecast triggers (read only) */}
+                                                        {action.trigger
+                                                          .filter((t) => t.type === "forecast")
+                                                          .map((trigger) => (
+                                                            <Flex key={trigger.id} align="center" gap="4px">
+                                                              <IconRobot size={18} color="#4dabf7" />
+                                                              <Text size="xs">
+                                                                  {((): string => {
+                                                                    try {
+                                                                      const logic = typeof trigger.triggerLogic === "string"
+                                                                        ? JSON.parse(trigger.triggerLogic)
+                                                                        : trigger.triggerLogic;
+
+                                                                      return logic?.timestamp
+                                                                        ? new Date(logic.timestamp).toLocaleString(navigator.language)
+                                                                        : t("controllableActionList.forecastPending");
+                                                                    } catch {
+                                                                      return t("controllableActionList.forecastPending");
+                                                                    }
+                                                                  })()}
+                                                                </Text>
+                                                            </Flex>
+                                                          ))}
 
                                                     {hasAuto && (
                                                         <Button
