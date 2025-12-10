@@ -1,17 +1,27 @@
 import React, {useEffect, useState} from "react";
 import { EditModel, Model } from "../models/Model";
-import {Badge, Box, Group, Modal, Table, Text, Title, HoverCard, Flex, Button, Card} from "@mantine/core";
+import { Box, Group, Modal, Table, Text, Title, HoverCard, Flex, Card, Button } from "@mantine/core";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from '@hello-pangea/dnd';
-import {IconChevronDown, IconChevronLeft, IconCirclePlus, IconEdit, IconGripVertical } from "@tabler/icons-react";
+import {  IconCirclePlus, IconEdit, IconGripVertical, IconChevronLeft, IconChevronDown } from "@tabler/icons-react";
 import { ModelForm } from "./ModelForm";
 import { useTranslation } from "react-i18next";
-import {getBackendTranslation, getModelStateColor, moveArrayItem} from "../../../utils/utils";
+import {getBackendTranslation,  moveArrayItem} from "../../../utils/utils";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
 //import {postModelOrder} from "../useCase/postModelOrder";
-import {showNotification} from "@mantine/notifications";
+//import {showNotification} from "@mantine/notifications";
 import {postModelOrder} from "../useCase/postModelOrder";
+import {Threshold} from "../../threshold/models/threshold";
+
+interface Forecast {
+    name: string // Scenario
+    forecast:
+    {
+        timestamp: Date,
+            value:number,
+    }[],
+}
 
 export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isAdmin:Boolean }> = ({ modelsToDisplay, fpfId, isAdmin }) => {
     const [models, setModels] = useState<Model[] | undefined>(undefined);
@@ -47,6 +57,43 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
         setModelModalOpen(true);
     }
 
+
+    const ModelForecastRow: React.FC<{forecast:Forecast, model:Model}> = ({ forecast, model }) => {
+        const [open, setOpen] = useState<boolean>(false);
+
+        const matchingThresholds = (forecastName: string): Threshold[]  => {
+            if (!model.thresholds) return [];
+            return model.thresholds.filter(t => t.rMMForecastName === forecastName);
+        }
+
+        return (
+            <>
+                  <Table.Tr>
+                        <Table.Td> {forecast.name} </Table.Td>
+                        <Table.Td>
+                            <Button
+                                variant="subtle"
+                                size="xs"
+                                onClick={() => setOpen(!open)}
+                            >
+                                {open ? <IconChevronDown size={16} /> : <IconChevronLeft size={16} />}
+                            </Button>
+                        </Table.Td>
+                    </Table.Tr>
+                {open &&
+                    <Table.Tr>
+                        <Table.Td colSpan={isAdmin ? 9 : 8} >
+                            <Card withBorder shadow="sm" p="sm">
+                                <ThresholdList ressourceId={model.id} ressourceType={'model'} thresholds={matchingThresholds(forecast.name)} rMMForecastName={forecast.name} />
+
+                            </Card>
+                        </Table.Td>
+                    </Table.Tr>
+                }
+            </>
+        )
+    }
+
     const ModelRow: React.FC<{model: Model, provided: DraggableProvided}> = ({ model, provided }) => {
         const [open, setOpen] = useState<boolean>(false);
 
@@ -54,11 +101,11 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
             <>
                 <Table.Tr ref={provided.innerRef} {...provided.draggableProps}>
                     {isAdmin &&
-                        <Table.Td>
-                            <div {...provided.dragHandleProps}>
-                                <IconGripVertical size={18} stroke={1.5} />
-                            </div>
-                        </Table.Td>
+                            <Table.Td>
+                                <div {...provided.dragHandleProps}>
+                                    <IconGripVertical size={18} stroke={1.5} />
+                                </div>
+                            </Table.Td>
                     }
                     <Table.Td>{getBackendTranslation(model.name, i18n.language)}</Table.Td>
                     <Table.Td>{model.activeScenario}</Table.Td>
@@ -67,7 +114,9 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                     <Table.Td>
                         <Flex justify='space-between' align='center'>
                             <HoverCard>
-                                {/*<HoverCard.Target>
+
+                                {/* STATUS DETAILS TO BE IMPLEMENTED LATER -> Circle color depending on last forecast time
+                                <HoverCard.Target>
                                     <Badge color={getModelStateColor(new Date(model.forecasts[0].forecast[0].timestamp), model.isActive, model.intervalSeconds)}>
                                         {!model.isActive && (<>{t("camera.inactive")}</>)}
                                     </Badge>
@@ -83,19 +132,48 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                     </Table.Td>
 
                     {isAdmin &&
-                        <Table.Td>
-                            <Flex justify='center' align='center'>
-                                <IconEdit
-                                    color={"#199ff4"}
-                                    size={20}
-                                    stroke={2}
-                                    onClick={() => onClickEdit(model)}
-                                    style={{ cursor: "pointer" }}
-                                />
-                            </Flex>
-                        </Table.Td>
+                        <>
+                            <Table.Td>
+                                {isAdmin &&
+                                    <Button
+                                        variant="subtle"
+                                        size="xs"
+                                        onClick={() => setOpen(!open)}
+                                    >
+                                        {open ? <IconChevronDown size={16} /> : <IconChevronLeft size={16} />}
+                                    </Button>
+
+                                }
+                            </Table.Td>
+                            <Table.Td>
+                                <Flex justify='center' align='center'>
+                                    <IconEdit
+                                        color={"#199ff4"}
+                                        size={20}
+                                        stroke={2}
+                                        onClick={() => onClickEdit(model)}
+                                        style={{ cursor: "pointer" }}
+                                    />
+                                </Flex>
+                            </Table.Td>
+                        </>
                     }
                 </Table.Tr>
+                {open &&
+                    <Table.Tr>
+                        <Table.Td colSpan={isAdmin ? 9 : 8} >
+                            <Card withBorder shadow="sm" p="sm">
+                                <Table.Tbody >
+                                    <Table.Th>{t('model.name')}</Table.Th>
+                                    <Table.Th>{t('threshold.title')}</Table.Th>
+                                    {model.forecasts?.map((forecast) => (
+                                        <ModelForecastRow key={forecast.name} forecast={forecast} model ={model}/>
+                                    ))}
+                                </Table.Tbody>
+                            </Card>
+                        </Table.Td>
+                    </Table.Tr>
+                }
             </>
         )
     }
@@ -152,7 +230,8 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                             <Table.Th>{t('model.activeScenario')}</Table.Th>
                             <Table.Th>{t('model.intervalSeconds')}</Table.Th>
                             <Table.Th>{t('model.isActive')}</Table.Th>
-                            <Table.Th>{t('header.status')}</Table.Th>
+                             <Table.Th>{t('header.status')}</Table.Th>
+
                             {isAdmin && <Table.Th />}
                         </Table.Tr>
                         </Table.Thead>

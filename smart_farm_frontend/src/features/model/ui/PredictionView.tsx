@@ -5,10 +5,12 @@ import {useTranslation} from "react-i18next";
 import {IconChevronDown, IconChevronRight} from "@tabler/icons-react";
 import {GraphPrediction} from "./GraphPrediction";
 import {getPrediction} from "../useCase/getPrediction";
-import {Forecast, ModelEntry} from "../models/Model";
+import {Forecast, Model, ModelEntry} from "../models/Model";
 import {showNotification as showMantineNotification} from "@mantine/notifications";
+import {Threshold} from "../../threshold/models/threshold";
+import {LabelPosition} from "recharts/types/component/Label";
 
-export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
+export const PredictionView: React.FC<{fpfId:string, thresholds:Threshold[]}> = ({fpfId, thresholds}) => {
     const auth = useAuth()
     const {t} = useTranslation();
     const [show, setShow] = useState<boolean>(false);
@@ -29,6 +31,11 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
         }
     }, [show, fpfId, t]);
 
+    const matchingThresholds = (forecastName: string): Threshold[]  => {
+        if (!thresholds) return [];
+        return thresholds.filter(t => t.rMMForecastName === forecastName);
+    }
+
     return (
         <>
             {auth.isAuthenticated &&
@@ -39,7 +46,7 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
                         </Button>
                         <Title order={3}>{t('model.predictionViewTitle')}</Title>
                     </Flex>
-                    {show && model_predictions?.models && model_predictions.models.length > 0 && model_predictions.models.map((model: ModelEntry ) => (
+                    {(show && model_predictions?.models && model_predictions.models[0]?.modelName) && model_predictions.models.map((model: ModelEntry ) => (
                        <>
                             <Flex style={{marginBottom: '20px', marginTop: '10px'}}>
                                 <Title order={4}>{model.modelName}</Title>
@@ -50,7 +57,7 @@ export const PredictionView: React.FC<{fpfId:string}> = ({fpfId}) => {
                                     borderRadius: '10px',
                                     marginBottom: '20px',
                                 }} >
-                                    <GraphPrediction forecast={forecast}/>
+                                    <GraphPrediction forecast={forecast} thresholds={matchingThresholds(forecast.name)} />
                                 </Box>
                             ))}
                        </>

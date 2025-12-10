@@ -65,7 +65,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                 setIsLoading(false);
                 showNotification({
                     title: t('common.loadingError'),
-                    message: '',
+                    message: error,
                     color: 'red',
                 });
             });

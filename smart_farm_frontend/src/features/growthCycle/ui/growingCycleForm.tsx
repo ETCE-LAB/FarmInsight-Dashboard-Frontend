@@ -84,7 +84,7 @@ export const GrowingCycleForm: React.FC<{
 
     const isFormValid = useMemo(() => {
         return growingCycle.plants?.trim() && growingCycle.startDate && !dateError;
-    }, [growingCycle, dateError]);
+    }, [dateError, growingCycle.plants, growingCycle.startDate]);
 
     useEffect(() => {
         if (toEditGrowingCycle) {

@@ -24,7 +24,7 @@ export const LogMessageList: React.FC<{ resourceType: string, resourceId?: strin
                     message: `${error}`,
                     color: "red",
                 });
-            });;
+            });
     }, [resourceType, resourceId, dateRange]);
 
     return (

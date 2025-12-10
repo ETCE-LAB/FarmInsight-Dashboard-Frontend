@@ -146,7 +146,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
     // Aggregate Function and hardcoded Units
     useEffect(() => {
         if (sensor.aggregate && measurements.length > 0) {
-            let sum = 0;
+            let sum: number;
             if(sensor.unit === 'W') {
                 sum = calculateMovingAverage ? computeHourlyConsumption(averagedMeasurements):  computeHourlyConsumption(measurements);
                 setAggregatedUnit('Wh');

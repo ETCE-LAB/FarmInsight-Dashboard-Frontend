@@ -4,18 +4,18 @@ import {LineChart} from "@mantine/charts";
 import {Forecast} from "../models/Model";
 import {Card, Flex} from "@mantine/core";
 import {formatFloatValue} from "../../../utils/utils";
-import {useAppSelector} from "../../../utils/Hooks";
+import {Threshold} from "../../threshold/models/threshold";
+import {LabelPosition} from "recharts/types/component/Label";
 
 
-export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) => {
-    const auth = useAuth();
+export const GraphPrediction: React.FC<{ forecast: Forecast, thresholds:Threshold[] }> = ({ forecast, thresholds }) => {
+
+
     const [series, setSeries] = useState<any[]>([]);
     const [data, setData] = useState<any[]>([]);
 
     useEffect(() => {
         if (!forecast) return;
-
-
 
         // Hardcoded Colors for Cases
         setSeries([
@@ -74,10 +74,33 @@ export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) 
         const dataPoints = result.map(({ __key, ...rest }) => rest);
 
         setData(dataPoints);
-
-
     }, [forecast]);
 
+    const getThresholdLines = (thresholds: Threshold[]) => {
+        const lines: any[] = [];
+        try {
+            for (const t of thresholds) {
+                if (t.lowerBound != null && t.upperBound == null) {
+                    lines.push({ y: t.lowerBound, label: t.description, color: t.color });
+                }
+                if (t.upperBound != null && t.lowerBound == null) {
+                    lines.push({
+                        y: t.upperBound,
+                        label: t.description,
+                        color: t.color,
+                        labelPosition: 'insideTopLeft' as LabelPosition,
+                    });
+                }
+                if (t.upperBound != null && t.lowerBound != null) {
+                    lines.push({ y: t.lowerBound, label: t.description, color: t.color });
+                    lines.push({ y: t.upperBound, color: t.color });
+                }
+            }
+        } catch (e) {
+            console.error("Error processing thresholds:", e);
+        }
+        return lines;
+    };
 
     return (
         <Card p="md" radius="md" style={{ marginBottom: '20px', width: "100%", height: '150%' , boxSizing: 'border-box' }}>
@@ -155,6 +178,8 @@ export const GraphPrediction: React.FC<{ forecast: Forecast }> = ({ forecast }) 
                         return null;
                     },
                 }}
+                referenceLines={getThresholdLines(thresholds)}
+
             />
         </Card>
     );

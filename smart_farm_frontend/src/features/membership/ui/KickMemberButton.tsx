@@ -12,7 +12,7 @@ export const KickMemberButton:React.FC<{id:string}> = ({id}) => {
     const { t } = useTranslation();
 
     function handleKick(id: string) {
-        kickMember({id}).then(r =>{
+        kickMember({id}).then(() =>{
             showNotification({
                     title: t('common.success'),
                     message: t('userManagement.userKicked'),
