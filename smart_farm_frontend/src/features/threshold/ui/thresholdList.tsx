@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useState} from "react";
 import {Threshold} from "../models/threshold";
 import {Modal, Table} from "@mantine/core";
 import {useTranslation} from "react-i18next";

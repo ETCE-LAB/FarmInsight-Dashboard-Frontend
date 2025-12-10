@@ -43,10 +43,10 @@ export const ThresholdForm: React.FC<{objectId: string; toEditThreshold: Thresho
                     message: ``,
                     color: "green",
                 });
-                if(thresholdType == "sensor") {
+                if(thresholdType === "sensor") {
                     dispatch(receivedSensor());
                 }
-                else if(thresholdType == "model") {
+                else if(thresholdType === "model") {
                     dispatch(receivedModel());
                 }
                 onSuccess();
@@ -64,10 +64,10 @@ export const ThresholdForm: React.FC<{objectId: string; toEditThreshold: Thresho
                     message: ``,
                     color: "green",
                 });
-                if(thresholdType == "sensor") {
+                if(thresholdType === "sensor") {
                     dispatch(receivedSensor());
                 }
-                else if(thresholdType == "model") {
+                else if(thresholdType === "model") {
                     dispatch(receivedModel());
                 }
                 onSuccess();
