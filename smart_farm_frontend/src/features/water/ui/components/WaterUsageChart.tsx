@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, Text, useMantineTheme } from '@mantine/core';
 import { AreaChart } from '@mantine/charts';
 
@@ -9,7 +8,7 @@ export const WaterUsageChart = () => {
         { date: 'Mon', usage: 120 },
         { date: 'Tue', usage: 140 },
         { date: 'Wed', usage: 110 },
-        { date: 'Thu', usage: 160 },
+        { date: 'Thu', usage: 150 },
         { date: 'Fri', usage: 130 },
         { date: 'Sat', usage: 90 },
         { date: 'Sun', usage: 80 },
@@ -28,7 +27,7 @@ export const WaterUsageChart = () => {
             <Text fw={600} size="sm" mb="lg" c="dimmed">Water Consumption (Last 7 Days)</Text>
 
             <AreaChart
-                h={200}
+                h={300}
                 data={data}
                 dataKey="date"
                 series={[
@@ -38,7 +37,9 @@ export const WaterUsageChart = () => {
                 fillOpacity={0.2}
                 gridAxis="xy"
                 tickLine="none"
-                withYAxis={false}
+                withYAxis={true}
+                withXAxis={true}
+                withTooltip={false}
             />
         </Card>
     );

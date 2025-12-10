@@ -5,7 +5,6 @@ import { IconPlant, IconSeeding, IconLeaf } from '@tabler/icons-react';
 export const FieldMoistureMap = React.memo(() => {
     const theme = useMantineTheme();
 
-    // Static Data for Fields (Deterministic)
     const fields = [
         { id: 1, moisture: 45, crop: 'Corn' }, { id: 2, moisture: 72, crop: 'Soy' }, { id: 3, moisture: 28, crop: 'Fallow' },
         { id: 4, moisture: 65, crop: 'Soy' }, { id: 5, moisture: 80, crop: 'Rice' }, { id: 6, moisture: 42, crop: 'Corn' },
@@ -102,7 +101,7 @@ export const FieldMoistureMap = React.memo(() => {
                 <Badge size="xs" variant="dot" color="green">Status</Badge>
             </Group>
 
-            <SimpleGrid cols={4} spacing="xs" style={{ position: 'relative', zIndex: 3 }}>
+            <SimpleGrid cols={3} spacing="xs" style={{ position: 'relative', zIndex: 3 }}>
                 {fields.map((field) => {
                     const data = getMoistureData(field.moisture);
                     return (

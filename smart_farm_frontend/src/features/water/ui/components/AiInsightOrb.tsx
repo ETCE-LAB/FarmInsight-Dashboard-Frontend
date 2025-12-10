@@ -60,7 +60,7 @@ export const AiInsightOrb = () => {
                     >
                         <Text fw={700} c="green.4" mb={5} size="sm" tt="uppercase" style={{ letterSpacing: 1 }}>AI Insight</Text>
                         <Text size="sm" c="white" style={{ lineHeight: 1.4 }}>
-                            Rain probability is high (85%). Recommended to pause irrigation for 24h to save 450L of water.
+                            Rain probability is high (85%).
                         </Text>
                     </Box>
                 )}

@@ -1,39 +1,43 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Box, Card, Text, useMantineTheme } from '@mantine/core';
+import { Badge, Box, Card, Text, useMantineTheme } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 
 interface WaterTankProps {
     level: number; // Percentage 0-100
     capacity?: number;
-    weather?: 'sunny' | 'rainy' | 'cloudy';
+    weatherCode?: number; // WMO Weather Code
     temperature?: number; // Celsius
 }
 
-export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity, weather = 'sunny', temperature = 20 }) => {
+export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity, weatherCode = 0, temperature = 20 }) => {
     const { t } = useTranslation();
     const theme = useMantineTheme();
 
-    // Animation State: Level rises on mount
     const [displayedLevel, setDisplayedLevel] = useState(0);
 
     useEffect(() => {
-        // Animate from 0 to target level on mount
         const timeout = setTimeout(() => {
             setDisplayedLevel(Math.min(Math.max(level, 0), 100));
         }, 100);
         return () => clearTimeout(timeout);
     }, [level]);
 
-    const isRaining = weather === 'rainy';
-    const isSunny = weather === 'sunny';
-    const isCloudy = weather === 'cloudy';
+    const isSunny = weatherCode === 0 || weatherCode === 1;
+    const isCloudy = weatherCode === 2 || weatherCode === 3;
+    const isFoggy = weatherCode === 45 || weatherCode === 48;
+
+    const isRainy = (weatherCode >= 51 && weatherCode <= 67) || (weatherCode >= 80 && weatherCode <= 82);
+
+    const isSnowy = (weatherCode >= 71 && weatherCode <= 77) || (weatherCode >= 85 && weatherCode <= 86);
+
+    const isStormy = weatherCode >= 95;
+
     const isFrozen = temperature <= 0;
 
-    // Interactive Physics State
     const [splashes, setSplashes] = useState<{ id: number, x: number }[]>([]);
 
     const handleTankClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (isFrozen) return; // No splashes on ice!
+        if (isFrozen) return;
 
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -42,18 +46,25 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
         const newSplash = { id: Date.now(), x: relativeX };
         setSplashes(prev => [...prev, newSplash]);
 
-        // Remove splash after animation
         setTimeout(() => {
             setSplashes(prev => prev.filter(s => s.id !== newSplash.id));
         }, 1000);
     };
 
-    // Optimization: Memoize random values
-    const rainDrops = useMemo(() => Array.from({ length: 20 }).map((_, i) => ({
+    const rainDrops = useMemo(() => Array.from({ length: 30 }).map((_, i) => ({
         id: i,
         left: Math.random() * 100,
-        animationDuration: 0.5 + Math.random() * 0.5,
+        animationDuration: 0.4 + Math.random() * 0.4,
         animationDelay: Math.random()
+    })), []);
+
+    const snowFlakes = useMemo(() => Array.from({ length: 40 }).map((_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        animationDuration: 2 + Math.random() * 3,
+        animationDelay: Math.random() * 2,
+        opacity: 0.4 + Math.random() * 0.6,
+        size: 2 + Math.random() * 3
     })), []);
 
     const bubbles = useMemo(() => Array.from({ length: 8 }).map((_, i) => ({
@@ -65,39 +76,34 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
         animationDelay: Math.random() * 2
     })), []);
 
-    const rainRipples = useMemo(() => Array.from({ length: 3 }).map((_, i) => ({
+    const rainRipples = useMemo(() => Array.from({ length: 5 }).map((_, i) => ({
         id: i,
         left: 20 + Math.random() * 60,
         top: 20 + Math.random() * 60,
         animationDelay: Math.random()
     })), []);
 
-    // Color Logic
     const waterColorStart = isFrozen ? '#E0F7FA' : theme.colors.blue[8];
     const waterColorMid = isFrozen ? '#B2EBF2' : theme.colors.cyan[4];
     const waterOpacity = isFrozen ? 0.9 : 0.8;
     const animationState = isFrozen ? 'paused' : 'running';
-
-    // Subtler Architectural Background Logic
-    // Base: Dark Grey Metal Structure + Glass
-    const structureColor = '#263238'; // Dark Blue-Grey Metal
-    const glassBase = '#1A1B1E'; // Dark glass
-
-    // Tint for the glass based on weather (Subtle!)
+    const structureColor = '#263238';
+    const glassBase = '#1A1B1E';
     let glassTint = 'transparent';
     if (isFrozen) glassTint = 'rgba(179, 229, 252, 0.1)'; // Icy tint
-    else if (isRaining) glassTint = 'rgba(33, 150, 243, 0.05)'; // Blue tint
-    else if (isSunny) glassTint = 'rgba(255, 235, 59, 0.05)'; // Warm tint
-    else if (isCloudy) glassTint = 'rgba(144, 164, 174, 0.1)'; // Grey/Blue-Grey tint for Cloudy
+    else if (isStormy) glassTint = 'rgba(20, 20, 30, 0.3)';
+    else if (isRainy) glassTint = 'rgba(33, 150, 243, 0.05)';
+    else if (isSunny) glassTint = 'rgba(255, 235, 59, 0.05)';
+    else if (isCloudy || isFoggy) glassTint = 'rgba(144, 164, 174, 0.1)';
 
-    // Lighting Overlay (God rays or flat light)
     let lightOverlay = 'none';
     if (isSunny && !isFrozen) {
         lightOverlay = `radial-gradient(circle at 80% 10%, rgba(255, 235, 59, 0.15) 0%, transparent 60%)`;
-    } else if (isRaining) {
-        lightOverlay = `linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 100%)`; // Darker top
-    } else if (isCloudy && !isFrozen) {
-        // Flat, diffused white light for cloudy
+    } else if (isStormy) {
+        lightOverlay = `linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 100%)`;
+    } else if (isRainy) {
+        lightOverlay = `linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 100%)`;
+    } else if ((isCloudy || isFoggy) && !isFrozen) {
         lightOverlay = `linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%)`;
     }
 
@@ -188,7 +194,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             transform: rotateX(-10deg);
         }
 
-        /* Weather Overlay Container (Rain drops) */
+        /* Weather Overlay Container (Rain/Snow) */
         .weather-overlay {
             position: absolute;
             top: -50px;
@@ -207,6 +213,15 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             width: 2px;
             height: 10px;
             background: rgba(255, 255, 255, 0.4);
+            top: -20px;
+            animation: fall linear infinite;
+        }
+        
+        /* Snow Animation */
+        .snow-flake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
             top: -20px;
             animation: fall linear infinite;
         }
@@ -242,6 +257,44 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             animation: cloud-pass 10s infinite alternate ease-in-out;
             opacity: 0.8; /* Increased visibility */
             mix-blend-mode: multiply; /* Better blending */
+        }
+        
+        /* Fog Overlay */
+        .fog-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 100%);
+            z-index: 28;
+            pointer-events: none;
+            filter: blur(20px);
+            animation: fog-drift 20s infinite alternate linear;
+        }
+        
+        @keyframes fog-drift {
+            0% { transform: translateX(-10px); opacity: 0.6; }
+            100% { transform: translateX(10px); opacity: 0.8; }
+        }
+        
+        /* Storm Overlay (Lightning) */
+        .storm-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: white; /* For flash */
+            opacity: 0;
+            z-index: 40;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+            animation: lightning-flash 5s infinite;
+        }
+        
+        @keyframes lightning-flash {
+            0%, 95% { opacity: 0; }
+            96% { opacity: 0.8; }
+            96.5% { opacity: 0; }
+            97% { opacity: 0; }
+            98% { opacity: 0.5; }
+            98.5% { opacity: 0; }
+            100% { opacity: 0; }
         }
         
         /* Ice Overlay Texture */
@@ -459,18 +512,18 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
         <Card padding="xl" radius="md" withBorder className="tank-card">
             <style>{styles}</style>
 
-            {/* Background Layers: Structural Greenhouse */}
             <Box className="greenhouse-structure" />
             <Box className="greenhouse-roof" />
             <Box className="lighting-overlay" />
+            {isStormy && <Box className="storm-overlay" />}
+            {isFoggy && <Box className="fog-overlay" />}
 
-            <Text fw={500} size="lg" mb={40} c="dimmed" style={{ zIndex: 10, position: 'relative' }}>
+            <Text fw={500} size="lg" mb={40} c="dimmed" style={{ zIndex: 30, position: 'relative' }}>
                 {t('water.tankLevel', 'Water Tank Level')}
             </Text>
 
             <Box className="tank-container" onClick={handleTankClick}>
-                {/* Weather Effects Layer */}
-                {isRaining && (
+                {isRainy && (
                     <Box className="weather-overlay">
                         {rainDrops.map((drop) => (
                             <Box
@@ -486,10 +539,28 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                     </Box>
                 )}
 
-                {isSunny && <Box className="sun-glare" />}
-                {isCloudy && <Box className="cloud-shadow" />}
+                {isSnowy && (
+                    <Box className="weather-overlay">
+                        {snowFlakes.map((flake) => (
+                            <Box
+                                key={`snow-${flake.id}`}
+                                className="snow-flake"
+                                style={{
+                                    left: `${flake.left}%`,
+                                    width: `${flake.size}px`,
+                                    height: `${flake.size}px`,
+                                    opacity: flake.opacity,
+                                    animationDuration: `${flake.animationDuration}s`,
+                                    animationDelay: `${flake.animationDelay}s`
+                                }}
+                            />
+                        ))}
+                    </Box>
+                )}
 
-                {/* Ice Texture Overlay */}
+                {isSunny && <Box className="sun-glare" />}
+                {isCloudy && !isStormy && <Box className="cloud-shadow" />}
+
                 <Box className="ice-texture" />
 
                 <Box className="cylinder-base">
@@ -497,12 +568,10 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                     <Box className="glass-back" />
 
                     <Box className="water-column">
-                        {/* Multi-Layer Wave System */}
                         <Box className="wave-layer wave-1" />
                         <Box className="wave-layer wave-2" />
 
                         <Box className="wave-layer wave-main">
-                            {/* User Click Splashes */}
                             {splashes.map((splash) => (
                                 <Box
                                     key={splash.id}
@@ -511,8 +580,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                                 />
                             ))}
 
-                            {/* Rain ripples on surface if raining */}
-                            {isRaining && !isFrozen && rainRipples.map((ripple) => (
+                            {isRainy && !isFrozen && rainRipples.map((ripple) => (
                                 <Box
                                     key={`ripple-${ripple.id}`}
                                     className="rain-ripple"
@@ -543,7 +611,6 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                         </Box>
                     </Box>
 
-                    {/* Front Glass Reflection Overlay */}
                     <Box className="glass-front-shine" />
                     <Box className="rim-bottom" />
                 </Box>
@@ -558,8 +625,8 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                         {((displayedLevel / 100) * capacity).toFixed(0)} / {capacity} L
                     </Text>
                 )}
-                <Text size="xs" c={isRaining ? 'blue.3' : isSunny ? 'yellow.3' : 'dimmed'} mt={5} fw={700} style={{ textTransform: 'uppercase' }}>
-                    {t(`weather.${weather}`, weather)} | {temperature}°C {isFrozen && '(FROZEN)'}
+                <Text size="xs" c={isRainy || isStormy ? 'blue.3' : isSunny ? 'yellow.3' : 'dimmed'} mt={5} fw={700} style={{ textTransform: 'uppercase' }}>
+                    Weather Code: {weatherCode} | {temperature}°C {isFrozen && <Badge size="xs" color="cyan" variant="light">FROZEN</Badge>}
                 </Text>
             </Box>
         </Card>
