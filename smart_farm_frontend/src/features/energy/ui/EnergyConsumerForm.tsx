@@ -85,9 +85,15 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
             label: `${c.name} (${c.consumptionWatts}W)`
         }));
 
-    // Sensor options - filter for power-related sensors
+    // Sensor options - filter for power-related sensors (unit W or parameter containing watt)
     const sensorOptions = sensors
         .filter((s: any) => s.isActive)
+        .filter((s: any) => {
+            const unit = (s.unit || '').toLowerCase();
+            const parameter = (s.parameter || '').toLowerCase();
+            // Show sensors that measure power (W) - for consumption measurement
+            return unit === 'w' || parameter.includes('watt');
+        })
         .map((s: any) => ({
             value: s.id,
             label: `${s.name} (${s.unit || s.parameter || 'N/A'})`
@@ -211,13 +217,18 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
 
                 <NumberInput
                     label={t('energy.consumptionWatts')}
-                    description={sensorId ? t('energy.consumptionLiveNote') : undefined}
-                    placeholder="0"
+                    description={sensorId
+                        ? t('energy.consumptionLiveMeasured')
+                        : t('energy.consumptionManualDescription')
+                    }
+                    placeholder={sensorId ? t('energy.measuredBySensor') : "0"}
                     value={consumptionWatts}
                     onChange={(val) => setConsumptionWatts(Number(val) || 0)}
                     min={0}
                     suffix=" W"
-                    required
+                    required={!sensorId}
+                    disabled={!!sensorId}
+                    styles={sensorId ? { input: { backgroundColor: 'var(--mantine-color-gray-1)', color: 'var(--mantine-color-dimmed)' } } : undefined}
                 />
 
                 <Select

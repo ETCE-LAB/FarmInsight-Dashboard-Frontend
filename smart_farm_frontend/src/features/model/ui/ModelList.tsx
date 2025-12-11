@@ -29,6 +29,7 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
             URL: model.URL,
             intervalSeconds: model.intervalSeconds,
             isActive: model.isActive,
+            model_type: model.model_type,
             required_parameters: model.required_parameters,
             activeScenario: model.activeScenario,
             availableScenarios: model.availableScenarios,

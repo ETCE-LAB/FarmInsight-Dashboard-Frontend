@@ -65,9 +65,22 @@ export const EnergySourceForm: React.FC<EnergySourceFormProps> = ({
         { value: 'generator', label: t('energy.sourceGenerator') },
     ];
 
-    // Sensor options - filter for power-related sensors
+    // Sensor options - filter based on source type
+    // For battery: show energy sensors (Wh), for other sources: show power sensors (W)
     const sensorOptions = sensors
         .filter((s: any) => s.isActive)
+        .filter((s: any) => {
+            const unit = (s.unit || '').toLowerCase();
+            const parameter = (s.parameter || '').toLowerCase();
+
+            if (sourceType === 'battery') {
+                // Battery sources need energy sensors (Wh) for state of charge
+                return unit === 'wh' || parameter.includes('battery') || parameter.includes('energy');
+            } else {
+                // Other sources need power sensors (W) for output measurement
+                return unit === 'w' || parameter.includes('watt');
+            }
+        })
         .map((s: any) => ({
             value: s.id,
             label: `${s.name} (${s.unit || s.parameter || 'N/A'})`
@@ -101,7 +114,15 @@ export const EnergySourceForm: React.FC<EnergySourceFormProps> = ({
         } else {
             setWeatherDependent(false);
         }
-    }, [sourceType]);
+
+        // Clear sensor selection if the current sensor is not compatible with the new source type
+        if (sensorId) {
+            const isValidSensor = sensorOptions.some((s: any) => s.value === sensorId);
+            if (!isValidSensor) {
+                setSensorId(null);
+            }
+        }
+    }, [sourceType, sensorOptions, sensorId]);
 
     const handleSubmit = async () => {
         if (!name.trim()) {
@@ -220,25 +241,33 @@ export const EnergySourceForm: React.FC<EnergySourceFormProps> = ({
                 />
 
                 <NumberInput
-                    label={t('energy.maxOutputWatts')}
+                    label={sourceType === 'battery' ? t('energy.batteryCapacitySource') : t('energy.maxOutputWatts')}
+                    description={sourceType === 'battery' ? t('energy.batteryCapacitySourceDescription') : undefined}
                     placeholder="0"
                     value={maxOutputWatts}
                     onChange={(val) => setMaxOutputWatts(Number(val) || 0)}
                     min={0}
-                    suffix=" W"
+                    suffix={sourceType === 'battery' ? " Wh" : " W"}
                     required
                 />
 
-                <NumberInput
-                    label={t('energy.currentOutputWatts')}
-                    description={sensorId ? t('energy.outputLiveNote') : undefined}
-                    placeholder="0"
-                    value={currentOutputWatts}
-                    onChange={(val) => setCurrentOutputWatts(Number(val) || 0)}
-                    min={0}
-                    max={maxOutputWatts}
-                    suffix=" W"
-                />
+                {sourceType !== 'battery' && (
+                    <NumberInput
+                        label={t('energy.currentOutputWatts')}
+                        description={sensorId
+                            ? t('energy.outputLiveMeasured')
+                            : t('energy.outputManualDescription')
+                        }
+                        placeholder={sensorId ? t('energy.measuredBySensor') : "0"}
+                        value={currentOutputWatts}
+                        onChange={(val) => setCurrentOutputWatts(Number(val) || 0)}
+                        min={0}
+                        max={maxOutputWatts}
+                        suffix=" W"
+                        disabled={!!sensorId}
+                        styles={sensorId ? { input: { backgroundColor: 'var(--mantine-color-gray-1)', color: 'var(--mantine-color-dimmed)' } } : undefined}
+                    />
+                )}
 
                 {/* Linked Sensor for Live Measurement */}
                 <Paper p="md" withBorder radius="md" style={{ borderLeft: '4px solid var(--mantine-color-blue-6)' }}>

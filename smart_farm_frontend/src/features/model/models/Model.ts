@@ -1,3 +1,5 @@
+export type ModelType = 'energy' | 'water';
+
 export interface Model {
     id:string,
     name:string,
@@ -13,6 +15,7 @@ export interface Model {
     activeScenario:string,
     availableScenarios:string[],
     fpfId:string,
+    model_type: ModelType,
     forecasts:
             {
                 name: string // Scenario
@@ -36,6 +39,7 @@ export interface EditModel {
     intervalSeconds:number,
     activeScenario: string,
     isActive:boolean,
+    model_type: ModelType,
     forecasts: {
         name: string // Name of the forecast e.g. "Water level in tank"
     }[],

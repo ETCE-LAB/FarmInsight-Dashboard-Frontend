@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor} from "@mantine/core";
+import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor, Select} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
-import { EditModel } from "../models/Model";
+import { EditModel, ModelType } from "../models/Model";
 import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
 import { createModel } from "../useCase/createModel";
 import { useParams } from "react-router-dom";
@@ -31,6 +31,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
     const [intervalSeconds, setIntervalSeconds] = useState<number>(86400);
     const [url, setUrl] = useState<string>("");
     const [isActive, setIsActive] = useState<boolean>(true);
+    const [modelType, setModelType] = useState<ModelType>('energy');
     const [availableScenarios, setAvailableScenarios] = useState<string[]>([]);
     const [activeScenario, setActiveScenario] = useState<string>("");
     const [requiredParameters, setRequiredParameters] = useState<{ name: string, type: string, value: any }[] | undefined>(undefined);
@@ -49,6 +50,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
             setUrl(toEditModel.URL || "");
             setIsActive(toEditModel.isActive || false);
             setIntervalSeconds(toEditModel.intervalSeconds || 86400); // default is one day
+            setModelType(toEditModel.model_type || 'energy');
             setAvailableScenarios(toEditModel.availableScenarios || []);
             setRequiredParameters(toEditModel.required_parameters || []);
             setActions(toEditModel.actions || []);
@@ -73,6 +75,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                 URL:url,
                 intervalSeconds,
                 isActive,
+                model_type: modelType,
                 fpfId: toEditModel.fpfId,
                 activeScenario,
                 required_parameters: requiredParameters,
@@ -115,7 +118,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                 withCloseButton: false,
             });
             createModel({
-                id: '', name, URL:url, activeScenario, intervalSeconds: interval, isActive, fpfId, required_parameters: requiredParameters, availableScenarios, actions, forecasts
+                id: '', name, URL:url, activeScenario, intervalSeconds: interval, isActive, model_type: modelType, fpfId, required_parameters: requiredParameters, availableScenarios, actions, forecasts
             }).then((response) => {
                 notifications.update({
                     id,
@@ -198,6 +201,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
         URL: url,
         intervalSeconds,
         isActive,
+        model_type: modelType,
         fpfId,
         activeScenario,
         required_parameters: requiredParameters,
@@ -317,6 +321,19 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                   size="md"
                   checked={isActive}
                   onChange={() => setIsActive(!isActive)}
+                />
+              </Grid.Col>
+
+              <Grid.Col span={6}>
+                <Select
+                  label={t("model.modelType")}
+                  description={t("model.modelTypeDescription")}
+                  data={[
+                    { value: 'energy', label: t("model.modelTypeEnergy") },
+                    { value: 'water', label: t("model.modelTypeWater") },
+                  ]}
+                  value={modelType}
+                  onChange={(value) => setModelType(value as ModelType)}
                 />
               </Grid.Col>
 

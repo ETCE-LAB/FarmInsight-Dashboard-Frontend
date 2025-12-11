@@ -239,3 +239,49 @@ export const DEFAULT_ENERGY_THRESHOLDS: EnergyThresholds = {
     gridDisconnectPercent: 50,
     batteryMaxWh: 1600 // 1.6 kWh in Wh
 };
+
+/**
+ * Graph Data Point - single data point for energy graphs
+ */
+export interface EnergyGraphDataPoint {
+    timestamp: string;
+    value_watts: number;
+}
+
+/**
+ * Forecast Generation Data - contains expected, worst_case and best_case forecasts
+ */
+export interface ForecastGenerationData {
+    expected: EnergyGraphDataPoint[];
+    worst_case: EnergyGraphDataPoint[];
+    best_case: EnergyGraphDataPoint[];
+}
+
+/**
+ * Energy Graph Data - complete data for energy dashboard graphs
+ */
+export interface EnergyGraphData {
+    historical_consumption: EnergyGraphDataPoint[];
+    forecast_generation: ForecastGenerationData;
+    forecast_consumption: EnergyGraphDataPoint[];
+}
+
+/**
+ * Extended Energy Dashboard with Graph Data
+ */
+export interface EnergyDashboardWithGraphData extends EnergyDashboard {
+    graph_data?: EnergyGraphData;
+}
+
+/**
+ * Battery State Response
+ */
+export interface BatteryState {
+    battery_level_wh: number;
+    percentage: number;
+    max_wh: number;
+    last_updated: string | null;
+    source_name: string;
+    source_id: string;
+}
+
