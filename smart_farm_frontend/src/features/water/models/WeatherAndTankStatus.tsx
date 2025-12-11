@@ -5,10 +5,13 @@ export interface WeatherStatus {
     rainProbabilityToday: number;
 }
 
-export interface WeatherAndTankStatus {
-    tankWaterLevel: number;
-    tankCapacity: number;
+export interface WaterStatus {
+    waterLevel: number;
+    capacity: number;
     pumpLastRun: Date;
-    fpfStatus: string;
-    weather: WeatherStatus
+}
+
+export interface WeatherAndWaterStatus {
+    waterStatus: WaterStatus;
+    weatherStatus: WeatherStatus;
 }

@@ -13,7 +13,7 @@ import ControllableActionReducer from "../features/controllables/state/Controlla
 import WeatherForecastReducer from "../features/WeatherForecast/state/WeatherForecastSlice";
 import ModelReducer from "../features/model/state/ModelSlice";
 import EnergyReducer from "../features/energy/state/EnergySlice";
-import WeatherAndTankStatusReducer from "../features/water/state/WeatherAndTankStatusSlice";
+import WeatherAndWaterStatusReducer from "../features/water/state/WeatherAndWaterStatusSlice";
 
 
 export const store = configureStore({
@@ -32,7 +32,7 @@ export const store = configureStore({
         location: LocationReducer,
         weatherForecast: WeatherForecastReducer,
         energy: EnergyReducer,
-        weatherAndTankStatus: WeatherAndTankStatusReducer
+        weatherAndWaterStatus: WeatherAndWaterStatusReducer
     }
 })
 

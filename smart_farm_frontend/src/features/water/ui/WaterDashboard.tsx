@@ -17,9 +17,10 @@ import { RootState } from '../../../utils/store';
 import { WeatherForecast } from '../../WeatherForecast/models/WeatherForecast';
 import { getWeatherForecast } from '../../WeatherForecast/useCase/getWeatherForecast';
 import { registerWeatherForecasts } from '../../WeatherForecast/state/WeatherForecastSlice';
-import { getWeatherAndTankStatus } from '../useCase/getWeatherAndTankStatus';
-import { registerWeatherAndTankStatus } from '../state/WeatherAndTankStatusSlice';
+import { getWeatherAndWaterStatus } from '../useCase/getWeatherAndWaterStatus';
+import { registerWeatherAndWaterStatus } from '../state/WeatherAndWaterStatusSlice';
 import { useAppDispatch } from '../../../utils/Hooks';
+import { WeatherAndWaterStatus } from '../models/WeatherAndWaterStatus';
 
 export const WaterDashboard = () => {
     const { t } = useTranslation();
@@ -28,16 +29,21 @@ export const WaterDashboard = () => {
     const [fpf, setFpf] = useState<Fpf | null>(null);
     const params = useParams();
 
-    const weatherAndTankStatusSelector = useSelector((state: RootState) => state.weatherAndTankStatus);
-    const [weatherForecasts, setWeatherForecasts] = useState<WeatherForecast[]>([]);
-
-    const [waterLevel] = useState(70);
-    const [capacity] = useState(210);
-    const [dailyUsage] = useState(5);
-    const [pumpStatus] = useState<'active' | 'inactive' | 'error'>('active');
+    const weatherAndWaterStatusSelector = useSelector((state: RootState) => state.weatherAndWaterStatus);
 
     const [weatherCode, setWeatherCode] = useState<string>('0'); // Default Clear
     const [temperature, setTemperature] = useState(22);
+    const [weatherAndWaterStatus, setWeatherAndWaterStatus] = useState<WeatherAndWaterStatus | null>(null);
+
+    // Derived state or defaults
+    const waterLevel = weatherAndWaterStatus?.waterStatus.waterLevel ?? 0;
+    const capacity = weatherAndWaterStatus?.waterStatus.capacity ?? 200;
+    const dailyUsage = weatherAndWaterStatus?.waterStatus.dailyUsage ?? 0;
+    const pumpStatus = weatherAndWaterStatus?.waterStatus.pumpStatus ?? 'inactive';
+    const pumpLastRun = weatherAndWaterStatus?.waterStatus.pumpLastRun ?? new Date();
+    const tankConnected = weatherAndWaterStatus?.waterStatus.tankConnected ?? true;
+
+    const waterPercentage = capacity > 0 ? Math.round((waterLevel / capacity) * 100) : 0;
 
     const WEATHER_CODES = [
         { value: '0', label: 'Clear Sky' },
@@ -110,40 +116,49 @@ export const WaterDashboard = () => {
 
     useEffect(() => {
         if (fpf?.Location) {
-            if (weatherAndTankStatusSelector.WeatherAndTankStatus) {
-                const cachedDataWrapper = weatherAndTankStatusSelector.WeatherAndTankStatus.find(obj => obj[fpf.Location.id]);
+            if (weatherAndWaterStatusSelector.WeatherAndWaterStatus) {
+                const cachedDataWrapper = weatherAndWaterStatusSelector.WeatherAndWaterStatus.find(obj => obj[fpf.Location.id]);
                 if (cachedDataWrapper) {
                     const data = cachedDataWrapper[fpf.Location.id];
-                    setTemperature(data.weather.currentTemperature);
-                    setWeatherCode(data.weather.weatherCode);
+                    setTemperature(data.weatherStatus.currentTemperature);
+                    setWeatherCode(data.weatherStatus.weatherCode);
+                    setWeatherAndWaterStatus(data);
                     return;
                 }
             }
 
-            if (fpf.Sensors && fpf.Sensors.length > 3) {
-                getWeatherAndTankStatus(fpf.Location.id, fpf.Sensors[3].id).then((resp) => {
-                    dispatch(registerWeatherAndTankStatus({ [fpf.Location.id]: resp }));
-                    setTemperature(resp.weather.currentTemperature);
-                    setWeatherCode(resp.weather.weatherCode);
-                }).catch((error) => {
-                    showNotification({
-                        title: t("common.loadError"),
-                        message: `${error}`,
-                        color: 'red',
-                    });
+            //const sensorId = fpf.Sensors?.find(sensor => sensor.name === 'Weather')?.id;
+            const sensorId = "Sensor1";
+            if (!sensorId) {
+                showNotification({
+                    title: t("common.loadError"),
+                    message: "No weather sensor found",
+                    color: "red",
                 });
+                return;
             }
+
+            getWeatherAndWaterStatus(fpf.Location.id, sensorId).then((resp) => {
+                dispatch(registerWeatherAndWaterStatus({ [fpf.Location.id]: resp }));
+                setTemperature(resp.weatherStatus.currentTemperature);
+                setWeatherCode(resp.weatherStatus.weatherCode);
+                setWeatherAndWaterStatus(resp);
+            }).catch((error) => {
+                showNotification({
+                    title: t("common.loadError"),
+                    message: `${error}`,
+                    color: 'red',
+                });
+            });
         }
-    }, [fpf, t, dispatch, weatherAndTankStatusSelector]);
+    }, [fpf, t, dispatch, weatherAndWaterStatusSelector]);
 
     return (
         <Container fluid p="md" style={{ position: 'relative' }}>
-            {/* AI Insight Orb - Floating Action Button Style */}
             <Box style={{ position: 'fixed', bottom: '40px', right: '40px', zIndex: 1000 }}>
                 <AiInsightOrb />
             </Box>
 
-            {/* Header */}
             <Group justify="space-between" mb="lg">
                 <Group>
                     <ThemeIcon size={32} radius="md" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
@@ -153,7 +168,7 @@ export const WaterDashboard = () => {
                 </Group>
 
                 <Group>
-                    {/* Temperature Control */}
+                    {/* Temperature Control (Demo) */}
                     <Box w={200} mr="md">
                         {<Slider
                             value={temperature}
@@ -185,21 +200,20 @@ export const WaterDashboard = () => {
                 </Group>
             </Group>
 
-            {/* Status Overview Cards */}
             <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md" mb="xl">
-                <StatusCard
+                {/*<StatusCard
                     title={t('water.currentLevel', 'Current Level')}
-                    value={`${waterLevel}%`}
-                    subtext={`${((waterLevel / 100) * capacity).toFixed(0)} Liters available`}
+                    value={`${waterPercentage}%`}
+                    subtext={`${waterLevel} Liters available`}
                     icon={<IconDroplet size={18} />}
-                    color={getStatusColor(waterLevel)}
-                />
+                    color={getStatusColor(waterPercentage)}
+                />*/}
                 <StatusCard
                     title={t('water.systemStatus', 'System Status')}
-                    value={waterLevel < 20 ? 'Critical' : 'Normal'}
-                    subtext={waterLevel < 20 ? 'Water level low' : 'Everything looks good'}
-                    icon={waterLevel < 20 ? <IconAlertTriangle size={18} /> : <IconCheck size={18} />}
-                    color={waterLevel < 20 ? 'red' : 'green'}
+                    value={waterPercentage < 20 ? 'Critical' : 'Normal'}
+                    subtext={waterPercentage < 20 ? 'Water level low' : 'Everything looks good'}
+                    icon={waterPercentage < 20 ? <IconAlertTriangle size={18} /> : <IconCheck size={18} />}
+                    color={waterPercentage < 20 ? 'red' : 'green'}
                 />
                 <StatusCard
                     title={t('water.dailyUsage', 'Daily Usage')}
@@ -211,43 +225,34 @@ export const WaterDashboard = () => {
                 <StatusCard
                     title={t('water.pumpStatus', 'Pump Status')}
                     value={pumpStatus === 'active' ? 'Running' : 'Stopped'}
-                    subtext="Last started: 2 hours ago"
+                    subtext={`Last started: ${pumpLastRun}`}
                     icon={<IconTopologyStar3 size={18} />}
                     color={pumpStatus === 'active' ? 'green' : 'gray'}
                 />
             </SimpleGrid>
 
-            {/* Main Content Grid */}
             <Grid gutter="xl">
-                {/* Left Column: Water Tank & Distribution */}
                 <Grid.Col span={{ base: 12, lg: 4 }}>
                     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)' }}>
-                        {/* Tank */}
                         <Box style={{ flexGrow: 1, minHeight: 400 }}>
-                            <WaterTank level={waterLevel} capacity={capacity} weatherCode={parseInt(weatherCode)} temperature={temperature} />
+                            <WaterTank level={waterPercentage} capacity={capacity} weatherCode={parseInt(weatherCode)} temperature={temperature} />
                         </Box>
 
-                        {/* Pipe Distribution System */}
                         <Card withBorder radius="md" p="md">
                             <Text fw={600} size="sm" mb="sm" c="dimmed">Distribution Network</Text>
-                            <PipeDistribution active={pumpStatus === 'active'} />
+                            <PipeDistribution connected={tankConnected} />
                         </Card>
                     </Box>
                 </Grid.Col>
 
-                {/* Right Column: Analytics & Predictions */}
                 <Grid.Col span={{ base: 12, lg: 8 }}>
                     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)', height: '100%' }}>
 
                         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
-                            {/* Glassmorphism Usage Chart */}
-                            <WaterUsageChart />
-
-                            {/* Field Moisture Heatmap */}
-                            <FieldMoistureMap />
+                            <WaterUsageChart data={weatherAndWaterStatus?.waterUsage} />
+                            <FieldMoistureMap data={weatherAndWaterStatus?.fieldMoisture} />
                         </SimpleGrid>
 
-                        {/* Predictions */}
                         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flexGrow: 1 }}>
                             <Title order={3} mb="lg" size="h4">{t('water.modelsTitle', 'Water Consumption Forecast')}</Title>
                             {fpfId ? (

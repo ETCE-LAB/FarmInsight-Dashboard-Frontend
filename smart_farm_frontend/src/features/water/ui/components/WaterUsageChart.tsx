@@ -1,10 +1,15 @@
 import { Card, Text, useMantineTheme } from '@mantine/core';
 import { AreaChart } from '@mantine/charts';
+import { WaterUsageData } from '../../models/WeatherAndWaterStatus';
 
-export const WaterUsageChart = () => {
+interface WaterUsageChartProps {
+    data?: WaterUsageData[];
+}
+
+export const WaterUsageChart = ({ data }: WaterUsageChartProps) => {
     const theme = useMantineTheme();
 
-    const data = [
+    const chartData = data && data.length > 0 ? data : [
         { date: 'Mon', usage: 120 },
         { date: 'Tue', usage: 140 },
         { date: 'Wed', usage: 110 },
@@ -28,7 +33,7 @@ export const WaterUsageChart = () => {
 
             <AreaChart
                 h={300}
-                data={data}
+                data={chartData}
                 dataKey="date"
                 series={[
                     { name: 'usage', color: 'cyan.6' },

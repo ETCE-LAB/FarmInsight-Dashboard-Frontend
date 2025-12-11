@@ -13,7 +13,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
     const { t } = useTranslation();
     const theme = useMantineTheme();
 
-    const [displayedLevel, setDisplayedLevel] = useState(0);
+    const [displayedLevel, setDisplayedLevel] = useState(level);
 
     useEffect(() => {
         const timeout = setTimeout(() => {

@@ -1,16 +1,31 @@
 import React, { useMemo } from 'react';
 import { Card, Text, SimpleGrid, Box, Tooltip, useMantineTheme, Group, Badge } from '@mantine/core';
 import { IconPlant, IconSeeding, IconLeaf } from '@tabler/icons-react';
+import { FieldMoistureData } from '../../models/WeatherAndWaterStatus';
 
-export const FieldMoistureMap = React.memo(() => {
+interface FieldMoistureMapProps {
+    data?: FieldMoistureData[];
+}
+
+export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => {
     const theme = useMantineTheme();
 
-    const fields = [
-        { id: 1, moisture: 45, crop: 'Corn' }, { id: 2, moisture: 72, crop: 'Soy' }, { id: 3, moisture: 28, crop: 'Fallow' },
-        { id: 4, moisture: 65, crop: 'Soy' }, { id: 5, moisture: 80, crop: 'Rice' }, { id: 6, moisture: 42, crop: 'Corn' },
-        { id: 7, moisture: 35, crop: 'Wheat' }, { id: 8, moisture: 55, crop: 'Corn' }, { id: 9, moisture: 60, crop: 'Soy' },
-        { id: 10, moisture: 25, crop: 'Fallow' }, { id: 11, moisture: 70, crop: 'Wheat' }, { id: 12, moisture: 50, crop: 'Rice' },
-    ];
+    const fields = useMemo(() => {
+        if (data && data.length > 0) {
+            return data.map(field => ({
+                id: field.fieldId,
+                moisture: field.moisture,
+                crop: field.crop
+            }));
+        }
+        // Fallback to generated data
+        const crops = ['Corn', 'Soy', 'Wheat', 'Rice', 'Fallow'];
+        return Array.from({ length: 21 }, (_, i) => ({
+            id: i + 1,
+            moisture: Math.floor(Math.random() * (90 - 10 + 1)) + 10,
+            crop: crops[Math.floor(Math.random() * crops.length)]
+        }));
+    }, [data]);
 
     const getMoistureData = (level: number) => {
         if (level < 30) return { color: '#8D6E63', label: 'Dry', icon: <IconSeeding size={16} color="#D7CCC8" /> }; // Brown

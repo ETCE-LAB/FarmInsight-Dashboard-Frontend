@@ -3,10 +3,10 @@ import { Box, useMantineTheme, Text, Group } from '@mantine/core';
 import { IconHome } from '@tabler/icons-react';
 
 interface PipeDistributionProps {
-    active: boolean;
+    connected: boolean;
 }
 
-export const PipeDistribution: React.FC<PipeDistributionProps> = React.memo(({ active }) => {
+export const PipeDistribution: React.FC<PipeDistributionProps> = React.memo(({ connected }) => {
     const theme = useMantineTheme();
 
     // CSS for animated flow
@@ -55,7 +55,7 @@ export const PipeDistribution: React.FC<PipeDistributionProps> = React.memo(({ a
                 />
 
                 {/* Active Water Flow */}
-                {active && (
+                {connected && (
                     <path
                         d="M0 50 L255 50"
                         stroke={theme.colors.cyan[4]}
