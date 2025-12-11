@@ -10,7 +10,7 @@ import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton"
 import {ResourceType} from "../../logMessages/models/LogMessage";
 import {ThresholdList} from "../../threshold/ui/thresholdList";
 //import {postModelOrder} from "../useCase/postModelOrder";
-//import {showNotification} from "@mantine/notifications";
+import {showNotification} from "@mantine/notifications";
 import {postModelOrder} from "../useCase/postModelOrder";
 import {Threshold} from "../../threshold/models/threshold";
 
