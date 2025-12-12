@@ -65,22 +65,10 @@ export const EnergySourceForm: React.FC<EnergySourceFormProps> = ({
         { value: 'generator', label: t('energy.sourceGenerator') },
     ];
 
-    // Sensor options - filter based on source type
-    // For battery: show energy sensors (Wh), for other sources: show power sensors (W)
+    // Sensor options - show all active sensors
+    // Users can choose any sensor they want to link to this energy source
     const sensorOptions = sensors
         .filter((s: any) => s.isActive)
-        .filter((s: any) => {
-            const unit = (s.unit || '').toLowerCase();
-            const parameter = (s.parameter || '').toLowerCase();
-
-            if (sourceType === 'battery') {
-                // Battery sources need energy sensors (Wh) for state of charge
-                return unit === 'wh' || parameter.includes('battery') || parameter.includes('energy');
-            } else {
-                // Other sources need power sensors (W) for output measurement
-                return unit === 'w' || parameter.includes('watt');
-            }
-        })
         .map((s: any) => ({
             value: s.id,
             label: `${s.name} (${s.unit || s.parameter || 'N/A'})`
@@ -114,15 +102,7 @@ export const EnergySourceForm: React.FC<EnergySourceFormProps> = ({
         } else {
             setWeatherDependent(false);
         }
-
-        // Clear sensor selection if the current sensor is not compatible with the new source type
-        if (sensorId) {
-            const isValidSensor = sensorOptions.some((s: any) => s.value === sensorId);
-            if (!isValidSensor) {
-                setSensorId(null);
-            }
-        }
-    }, [sourceType, sensorOptions, sensorId]);
+    }, [sourceType]);
 
     const handleSubmit = async () => {
         if (!name.trim()) {

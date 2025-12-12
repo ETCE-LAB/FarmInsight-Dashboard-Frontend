@@ -85,15 +85,10 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
             label: `${c.name} (${c.consumptionWatts}W)`
         }));
 
-    // Sensor options - filter for power-related sensors (unit W or parameter containing watt)
+    // Sensor options - show all active sensors
+    // Users can choose any sensor they want to link to this energy consumer
     const sensorOptions = sensors
         .filter((s: any) => s.isActive)
-        .filter((s: any) => {
-            const unit = (s.unit || '').toLowerCase();
-            const parameter = (s.parameter || '').toLowerCase();
-            // Show sensors that measure power (W) - for consumption measurement
-            return unit === 'w' || parameter.includes('watt');
-        })
         .map((s: any) => ({
             value: s.id,
             label: `${s.name} (${s.unit || s.parameter || 'N/A'})`

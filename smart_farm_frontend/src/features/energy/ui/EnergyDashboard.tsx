@@ -38,6 +38,8 @@ import { useSelector } from 'react-redux';
 import { notifications } from '@mantine/notifications';
 
 import { useAppDispatch } from '../../../utils/Hooks';
+import { getFpf } from '../../fpf/useCase/getFpf';
+import { updatedFpf } from '../../fpf/state/FpfSlice';
 import {
     selectEnergyConsumers,
     selectEnergySources,
@@ -121,6 +123,10 @@ const EnergyDashboard: React.FC = () => {
         dispatch(setError(null));
 
         try {
+            // Load FPF data to ensure sensors are available in Redux state
+            const fpfData = await getFpf(fpfId);
+            dispatch(updatedFpf(fpfData));
+
             // First, try to get live battery state
             await loadBatteryState();
 
