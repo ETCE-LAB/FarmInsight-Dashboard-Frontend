@@ -195,7 +195,7 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                                         <HiOutlineWrenchScrewdriver size={64} color="white" />
                                                         <Text c="white" fw={700} size="xl">
 
-                                                            {t('Currently in maintenance')}
+                                                            {t('common.maintenance')}
 
                                                         </Text>
                                                     </Box>

@@ -34,6 +34,7 @@ i18n
                         inGerman: 'in german (optional)',
                         next: 'Next',
                         back: 'Back',
+                        maintenance: 'Under Maintenance',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -551,6 +552,7 @@ i18n
                         inGerman: 'auf Deutsch (optional)',
                         next: 'Weiter',
                         back: 'Zurück',
+                        maintenance: 'Wartungsmodus',
                     },
                     threshold: {
                         title: 'Grenzwerte',
