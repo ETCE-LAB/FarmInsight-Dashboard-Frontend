@@ -118,11 +118,11 @@ export interface UpdateEnergySource {
 /**
  * Energy State - represents the current energy state of an FPF
  */
-export type EnergyAction = 
-    | 'normal' 
-    | 'connect_grid' 
-    | 'disconnect_grid' 
-    | 'shutdown_non_critical' 
+export type EnergyAction =
+    | 'normal'
+    | 'connect_grid'
+    | 'disconnect_grid'
+    | 'shutdown_non_critical'
     | 'emergency_shutdown';
 
 export type EnergyStatus = 'normal' | 'warning' | 'critical';

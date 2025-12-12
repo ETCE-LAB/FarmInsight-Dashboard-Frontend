@@ -16,7 +16,7 @@ import { RootState } from '../../../utils/store';
 import { WeatherForecast } from '../../WeatherForecast/models/WeatherForecast';
 import { getWeatherForecast } from '../../WeatherForecast/useCase/getWeatherForecast';
 import { registerWeatherForecasts } from '../../WeatherForecast/state/WeatherForecastSlice';
-import { getWeatherAndWaterStatus } from '../useCase/getWeatherAndWaterStatus';
+import { waterResource } from '../../../core/resources';
 import { registerWeatherAndWaterStatus } from '../state/WeatherAndWaterStatusSlice';
 import { useAppDispatch } from '../../../utils/Hooks';
 import { WeatherAndWaterStatus } from '../models/WeatherAndWaterStatus';
@@ -137,7 +137,7 @@ export const WaterDashboard = () => {
                 return;
             }
 
-            getWeatherAndWaterStatus(fpf.Location.id, sensorId).then((resp) => {
+            waterResource.getState(fpf.Location.id, { locationId: fpf.Location.id, sensorId }).then((resp) => {
                 dispatch(registerWeatherAndWaterStatus({ [fpf.Location.id]: resp }));
                 setTemperature(resp.weatherStatus.currentTemperature);
                 setWeatherCode(resp.weatherStatus.weatherCode);

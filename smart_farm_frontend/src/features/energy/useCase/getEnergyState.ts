@@ -46,8 +46,8 @@ export const getEnergyDashboard = async (fpfId: string, batteryLevelWh?: number)
  * Evaluate and optionally execute an energy management action
  */
 export const evaluateEnergyAction = async (
-    fpfId: string, 
-    batteryLevelWh: number, 
+    fpfId: string,
+    batteryLevelWh: number,
     execute: boolean = false
 ): Promise<EnergyActionResponse> => {
     const apiClient = new APIClient();

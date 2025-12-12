@@ -53,7 +53,7 @@ import {
     setError
 } from '../state/EnergySlice';
 import { EnergyConsumer, EnergySource, DEFAULT_ENERGY_THRESHOLDS } from '../models/Energy';
-import { getEnergyDashboard } from '../useCase/getEnergyState';
+import { energyResource } from '../../../core/resources';
 import { EnergyConsumerForm } from './EnergyConsumerForm';
 import { EnergySourceForm } from './EnergySourceForm';
 import { EnergyConfigPanel } from './EnergyConfigPanel';
@@ -97,7 +97,7 @@ const EnergyDashboard: React.FC = () => {
         dispatch(setError(null));
 
         try {
-            const dashboardData = await getEnergyDashboard(fpfId, batteryLevelWh);
+            const dashboardData = await energyResource.getDashboard(fpfId, batteryLevelWh);
             dispatch(setEnergyDashboard(dashboardData));
 
             // Update thresholds from backend
