@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { Box, Text, Transition, useMantineTheme } from '@mantine/core';
 import { IconBrain } from '@tabler/icons-react';
 
-export const AiInsightOrb = () => {
+interface AiInsightOrbProps {
+    rainProbability: number;
+}
+
+export const AiInsightOrb: React.FC<AiInsightOrbProps> = React.memo(({ rainProbability }: AiInsightOrbProps) => {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
 
@@ -60,11 +64,11 @@ export const AiInsightOrb = () => {
                     >
                         <Text fw={700} c="green.4" mb={5} size="sm" tt="uppercase" style={{ letterSpacing: 1 }}>AI Insight</Text>
                         <Text size="sm" c="white" style={{ lineHeight: 1.4 }}>
-                            Rain probability is high (85%).
+                            Rain probability today is ({rainProbability}%).
                         </Text>
                     </Box>
                 )}
             </Transition>
         </Box>
     );
-};
+});

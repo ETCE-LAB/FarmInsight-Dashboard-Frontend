@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { PredictionView } from '../../model/ui/PredictionView';
 import { WaterTank } from './components/WaterTank';
-import { PipeDistribution } from './components/PipeDistribution';
 import { WaterUsageChart } from './components/WaterUsageChart';
 import { FieldMoistureMap } from './components/FieldMoistureMap';
 import { AiInsightOrb } from './components/AiInsightOrb';
@@ -128,7 +127,7 @@ export const WaterDashboard = () => {
             }
 
             //const sensorId = fpf.Sensors?.find(sensor => sensor.name === 'Weather')?.id;
-            const sensorId = "Sensor1";
+            const sensorId = "f3c9187a-5d3b-4e2c-8b6f-1c2d3e4f5678";
             if (!sensorId) {
                 showNotification({
                     title: t("common.loadError"),
@@ -156,7 +155,7 @@ export const WaterDashboard = () => {
     return (
         <Container fluid p="md" style={{ position: 'relative' }}>
             <Box style={{ position: 'fixed', bottom: '40px', right: '40px', zIndex: 1000 }}>
-                <AiInsightOrb />
+                <AiInsightOrb rainProbability={weatherAndWaterStatus?.weatherStatus?.rainProbabilityToday || 0} />
             </Box>
 
             <Group justify="space-between" mb="lg">
@@ -237,11 +236,6 @@ export const WaterDashboard = () => {
                         <Box style={{ flexGrow: 1, minHeight: 400 }}>
                             <WaterTank level={waterPercentage} capacity={capacity} weatherCode={parseInt(weatherCode)} temperature={temperature} />
                         </Box>
-
-                        <Card withBorder radius="md" p="md">
-                            <Text fw={600} size="sm" mb="sm" c="dimmed">Distribution Network</Text>
-                            <PipeDistribution connected={tankConnected} />
-                        </Card>
                     </Box>
                 </Grid.Col>
 
