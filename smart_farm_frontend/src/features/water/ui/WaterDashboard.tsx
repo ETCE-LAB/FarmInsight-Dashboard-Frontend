@@ -154,7 +154,7 @@ export const WaterDashboard = () => {
                     <ThemeIcon size={32} radius="md" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
                         <IconDroplet size={20} />
                     </ThemeIcon>
-                    <Title order={2}>{t('water.dashboardTitle', 'Water Management')}</Title>
+                    <Title order={2}>{t('water.dashboardTitle')}</Title>
                 </Group>
 
                 <Group>
@@ -202,21 +202,21 @@ export const WaterDashboard = () => {
                     color={getStatusColor(waterPercentage)}
                 />*/}
                 <StatusCard
-                    title={t('water.systemStatus', 'System Status')}
-                    value={waterPercentage < 20 ? 'Critical' : 'Normal'}
-                    subtext={waterPercentage < 20 ? 'Water level low' : 'Everything looks good'}
+                    title={t('water.systemStatus')}
+                    value={waterPercentage < 20 ? t('water.statusCritical') : t('water.statusNormal')}
+                    subtext={waterPercentage < 20 ? t('water.statusLow') : t('water.statusGood')}
                     icon={waterPercentage < 20 ? <IconAlertTriangle size={18} /> : <IconCheck size={18} />}
                     color={waterPercentage < 20 ? 'red' : 'green'}
                 />
                 <StatusCard
-                    title={t('water.dailyUsage', 'Average Usage')}
+                    title={t('water.dailyUsage')}
                     value={`${avgUsage} L / day`}
                     icon={<IconActivity size={18} />}
                     color="blue"
                 />
                 <StatusCard
-                    title={t('water.pumpStatus', 'Pump Status')}
-                    value={pumpStatus === 'thisWeekActive' ? 'This week active' : 'This week inactive'}
+                    title={t('water.pumpStatus')}
+                    value={pumpStatus === 'thisWeekActive' ? t('water.pumpActive') : t('water.pumpInactive')}
                     subtext={`Last started: ${pumpLastRun}`}
                     icon={<IconTopologyStar3 size={18} />}
                     color={pumpStatus === 'thisWeekActive' ? 'green' : 'gray'}
@@ -241,11 +241,11 @@ export const WaterDashboard = () => {
                         </SimpleGrid>
 
                         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flexGrow: 1 }}>
-                            <Title order={3} mb="lg" size="h4">{t('water.modelsTitle', 'Water Consumption Forecast')}</Title>
+                            <Title order={3} mb="lg" size="h4">{t('water.modelsTitle')}</Title>
                             {fpfId ? (
                                 <PredictionView fpfId={fpfId} />
                             ) : (
-                                <Text c="dimmed">{t('No data available')}</Text>
+                                <Text c="dimmed">{t('water.noData')}</Text>
                             )}
                         </Card>
                     </Box>

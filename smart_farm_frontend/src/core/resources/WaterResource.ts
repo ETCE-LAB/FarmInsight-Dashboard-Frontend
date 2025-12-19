@@ -55,6 +55,13 @@ export class WaterResource extends AbstractResource<
     Partial<WaterSource>,
     Partial<WaterConsumer>
 > {
+    readonly resourceKey = 'water';
+    readonly displayName = 'Water';
+    readonly capabilities = {
+        sources: false,
+        consumers: false,
+        config: false
+    };
     // ─────────────────────────────────────────────────────────────────────────────
     // State Access
     // ─────────────────────────────────────────────────────────────────────────────

@@ -1,14 +1,14 @@
 /**
  * Abstract Resource Module
  * 
- * Provides a standardized interface for resource-like frontend modules (Water, Energy).
+ * Provides a standardized interface for resource-like frontend modules.
  * Uses TypeScript generics to allow type-safe resource operations while delegating
  * to existing useCase functions.
  */
 
 /**
  * Error thrown when a resource operation is not implemented for a specific resource type.
- * Used by resources like Water where certain operations (e.g., createSource) are not yet available.
+ * Used by resources where certain operations are not yet available.
  */
 export class ResourceNotImplementedError extends Error {
     constructor(resourceKey: string, operation: string) {
@@ -18,12 +18,21 @@ export class ResourceNotImplementedError extends Error {
 }
 
 /**
+ * Interface defining what features a resource supports.
+ */
+export interface ResourceCapabilities {
+    sources: boolean;
+    consumers: boolean;
+    config: boolean;
+}
+
+/**
  * Abstract base class for resource modules.
  * 
- * @typeParam TState - The state type returned by getState (e.g., EnergyState, WeatherAndWaterStatus)
- * @typeParam TConfig - The configuration type for updateConfig (e.g., EnergyConfig)
- * @typeParam TSource - The source entity type (e.g., EnergySource)
- * @typeParam TConsumer - The consumer entity type (e.g., EnergyConsumer)
+ * @typeParam TState - The state type returned by getState
+ * @typeParam TConfig - The configuration type for updateConfig
+ * @typeParam TSource - The source entity type
+ * @typeParam TConsumer - The consumer entity type
  * @typeParam TCreateSource - The type for creating a source
  * @typeParam TCreateConsumer - The type for creating a consumer
  * @typeParam TUpdateSource - The type for updating a source
@@ -40,7 +49,7 @@ export abstract class AbstractResource<
     TUpdateConsumer = Partial<TConsumer>
 > {
     /**
-     * Unique identifier for this resource type (e.g., 'water', 'energy')
+     * Unique identifier for this resource type
      */
     abstract readonly resourceKey: string;
 
@@ -48,6 +57,11 @@ export abstract class AbstractResource<
      * Human-readable display name for this resource
      */
     abstract readonly displayName: string;
+
+    /**
+     * Capabilities supported by this resource
+     */
+    abstract readonly capabilities: ResourceCapabilities;
 
     // ─────────────────────────────────────────────────────────────────────────────
     // State Access

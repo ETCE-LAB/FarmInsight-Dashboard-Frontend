@@ -27,6 +27,6 @@ export const updateRmm = (fpfId: string, updateRmm: UpdateRmm): Promise<Resource
     const url = `${BACKEND_URL}/api/sensors/${fpfId}/resource-management/rmm-sensor-config`;
 
     const result: Promise<ResourceManagementConfig> = apiClient.put(url, updateRmm, headers)
-    console.log("result:", result)
+
     return result
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Text, Transition, useMantineTheme } from '@mantine/core';
 import { IconBrain } from '@tabler/icons-react';
 
@@ -7,6 +8,7 @@ interface AiInsightOrbProps {
 }
 
 export const AiInsightOrb: React.FC<AiInsightOrbProps> = React.memo(({ rainProbability }: AiInsightOrbProps) => {
+    const { t } = useTranslation();
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
 
@@ -62,9 +64,9 @@ export const AiInsightOrb: React.FC<AiInsightOrbProps> = React.memo(({ rainProba
                             zIndex: 99
                         }}
                     >
-                        <Text fw={700} c="green.4" mb={5} size="sm" tt="uppercase" style={{ letterSpacing: 1 }}>AI Insight</Text>
+                        <Text fw={700} c="green.4" mb={5} size="sm" tt="uppercase" style={{ letterSpacing: 1 }}>{t('water.aiInsight')}</Text>
                         <Text size="sm" c="white" style={{ lineHeight: 1.4 }}>
-                            Rain probability today is ({rainProbability}%).
+                            {t('water.rainProbability')} ({rainProbability}%).
                         </Text>
                     </Box>
                 )}

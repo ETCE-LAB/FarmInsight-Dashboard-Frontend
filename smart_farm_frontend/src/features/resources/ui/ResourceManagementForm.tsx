@@ -21,7 +21,6 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
     const [waterSensorId, setWaterSensorId] = useState(fpf.resourceManagementConfig?.rmmSensorConfig?.waterSensorId || '');
     const [soilSensorId, setSoilSensorId] = useState(fpf.resourceManagementConfig?.rmmSensorConfig?.soilSensorId || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    console.log("fpf:", fpf);
 
     useEffect(() => {
         setEnabled(fpf.resourceManagementConfig?.rmmActive ?? false);
@@ -56,7 +55,6 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
 
         try {
             const updated = await updateRmm(fpf.id, updatedData);
-            console.log("updated:", updated);
             const newFpf = {
                 ...fpf,
                 ...updated
@@ -88,7 +86,7 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
 
     return (
         <Card padding="lg" radius="md" withBorder>
-            <Title order={3} mb="md">{t('resources.managementTitle', 'Resource Management')}</Title>
+            <Title order={3} mb="md">{t('resources.managementTitle')}</Title>
 
             <Stack gap="lg">
                 <Box>
@@ -96,9 +94,9 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
                         <Group>
                             <IconDroplet size={24} color="#228be6" />
                             <div>
-                                <Text fw={500}>{t('resources.waterResourceTitle', 'Water Resource Management')}</Text>
+                                <Text fw={500}>{t('resources.waterResourceTitle')}</Text>
                                 <Text size="sm" c="dimmed">
-                                    {t('resources.waterResourceDesc', 'Enable water and soil monitoring features')}
+                                    {t('resources.waterResourceDesc')}
                                 </Text>
                             </div>
                         </Group>
@@ -114,21 +112,21 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
                             <Grid gutter="md">
                                 <Grid.Col span={6}>
                                     <TextInput
-                                        label={t('resources.waterSensorName', 'Water Sensor Name')}
-                                        placeholder={t('resources.waterSensorNamePlaceholder', 'e.g. Water Level')}
+                                        label={t('resources.waterSensorId')}
+                                        placeholder={t('resources.waterSensorIdPlaceholder')}
                                         value={waterSensorId}
                                         onChange={(event) => setWaterSensorId(event.currentTarget.value)}
-                                        description={t('resources.waterSensorNameDesc', 'Exact name of the sensor measuring water level')}
+                                        description={t('resources.waterSensorIdDesc')}
                                         required
                                     />
                                 </Grid.Col>
                                 <Grid.Col span={6}>
                                     <TextInput
-                                        label={t('resources.soilSensorName', 'Soil Sensor Name')}
-                                        placeholder={t('resources.soilSensorNamePlaceholder', 'e.g. Soil Moisture')}
+                                        label={t('resources.soilSensorId')}
+                                        placeholder={t('resources.soilSensorIdPlaceholder')}
                                         value={soilSensorId}
                                         onChange={(event) => setSoilSensorId(event.currentTarget.value)}
-                                        description={t('resources.soilSensorNameDesc', 'Exact name of the sensor measuring soil moisture')}
+                                        description={t('resources.soilSensorIdDesc')}
                                         required
                                     />
                                 </Grid.Col>
@@ -146,7 +144,7 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
                         loading={isSubmitting}
                         disabled={enabled && (missingSensors)}
                     >
-                        {t('common.save')}
+                        {t('common.saveButton')}
                     </Button>
                 </Group>
             </Stack>

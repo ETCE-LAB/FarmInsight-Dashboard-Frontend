@@ -1,4 +1,5 @@
 import { Card, Text, useMantineTheme } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { AreaChart } from '@mantine/charts';
 import { WaterUsageData } from '../../models/WeatherAndWaterStatus';
 
@@ -7,6 +8,7 @@ interface WaterLevelChartProps {
 }
 
 export const WaterLevelChart = ({ data }: WaterLevelChartProps) => {
+    const { t } = useTranslation();
     const theme = useMantineTheme();
 
     const chartData = data && data.length > 0 ? data : [
@@ -29,7 +31,7 @@ export const WaterLevelChart = ({ data }: WaterLevelChartProps) => {
                 border: `1px solid ${theme.colors.dark[4]}`
             }}
         >
-            <Text fw={600} size="sm" mb="lg" c="dimmed">Water Level (Last 7 Days)</Text>
+            <Text fw={600} size="sm" mb="lg" c="dimmed">{t('water.waterLevelChartTitle')}</Text>
 
             <AreaChart
                 h={300}

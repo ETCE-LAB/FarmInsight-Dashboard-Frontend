@@ -50,7 +50,7 @@ export function getAllResourceInstances(): AbstractResource<unknown, unknown, un
 export function supportsSourceOperations(
     resource: AbstractResource<unknown, unknown, unknown, unknown>
 ): boolean {
-    return resource.supportsSourceOperations;
+    return resource.capabilities.sources;
 }
 
 /**
@@ -59,7 +59,7 @@ export function supportsSourceOperations(
 export function supportsConsumerOperations(
     resource: AbstractResource<unknown, unknown, unknown, unknown>
 ): boolean {
-    return resource.supportsConsumerOperations;
+    return resource.capabilities.consumers;
 }
 
 /**
@@ -68,7 +68,7 @@ export function supportsConsumerOperations(
 export function supportsConfigOperations(
     resource: AbstractResource<unknown, unknown, unknown, unknown>
 ): boolean {
-    return resource.supportsConfigOperations;
+    return resource.capabilities.config;
 }
 
 // Re-export concrete resource types for type-safe usage

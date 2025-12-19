@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Text, SimpleGrid, Box, Tooltip, useMantineTheme, Group, Badge } from '@mantine/core';
 import { IconPlant, IconSeeding, IconLeaf } from '@tabler/icons-react';
 import { FieldMoistureData } from '../../models/WeatherAndWaterStatus';
@@ -8,6 +9,7 @@ interface FieldMoistureMapProps {
 }
 
 export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => {
+    const { t } = useTranslation();
     const theme = useMantineTheme();
 
     const fields = useMemo(() => {
@@ -28,10 +30,10 @@ export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => 
     }, [data]);
 
     const getMoistureData = (level: number) => {
-        if (level < 30) return { color: '#8D6E63', label: 'Dry', icon: <IconSeeding size={16} color="#D7CCC8" /> }; // Brown
-        if (level < 50) return { color: '#D4E157', label: 'Moderate', icon: <IconPlant size={16} color="#F9FBE7" /> }; // Yellow-Green
-        if (level < 70) return { color: '#66BB6A', label: 'Moist', icon: <IconLeaf size={16} color="#E8F5E9" /> }; // Green
-        return { color: '#26A69A', label: 'Wet', icon: <IconPlant size={16} color="#E0F2F1" /> }; // Teal/Green
+        if (level < 30) return { color: '#8D6E63', label: t('water.dry'), icon: <IconSeeding size={16} color="#D7CCC8" /> }; // Brown
+        if (level < 50) return { color: '#D4E157', label: t('water.moderate'), icon: <IconPlant size={16} color="#F9FBE7" /> }; // Yellow-Green
+        if (level < 70) return { color: '#66BB6A', label: t('water.moist'), icon: <IconLeaf size={16} color="#E8F5E9" /> }; // Green
+        return { color: '#26A69A', label: t('water.wet'), icon: <IconPlant size={16} color="#E0F2F1" /> }; // Teal/Green
     };
 
     const styles = `
@@ -112,8 +114,8 @@ export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => 
             <Box className="scan-line" />
 
             <Group justify="space-between" mb="sm" style={{ zIndex: 10, position: 'relative' }}>
-                <Text fw={600} size="sm" c="dimmed" tt="uppercase" style={{ letterSpacing: 1 }}>Field Moisture Values</Text>
-                <Badge size="xs" variant="dot" color="green">Status</Badge>
+                <Text fw={600} size="sm" c="dimmed" tt="uppercase" style={{ letterSpacing: 1 }}>{t('water.fieldMoisture')}</Text>
+                <Badge size="xs" variant="dot" color="green">{t('water.status')}</Badge>
             </Group>
 
             <SimpleGrid cols={3} spacing="xs" style={{ position: 'relative', zIndex: 3 }}>
@@ -124,10 +126,10 @@ export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => 
                             key={field.id}
                             label={
                                 <Box p={4}>
-                                    <Text size="xs" fw={700} c="white">Field {field.id} - {field.crop}</Text>
+                                    <Text size="xs" fw={700} c="white">{t('water.field')} {field.id} - {field.crop}</Text>
                                     <Group gap={4}>
                                         <Badge size="xs" color={field.moisture < 30 ? 'red' : 'teal'} variant="light">{data.label}</Badge>
-                                        <Text size="xs" c="dimmed">{field.moisture}% Moisture</Text>
+                                        <Text size="xs" c="dimmed">{field.moisture}% {t('water.moisture')}</Text>
                                     </Group>
                                 </Box>
                             }

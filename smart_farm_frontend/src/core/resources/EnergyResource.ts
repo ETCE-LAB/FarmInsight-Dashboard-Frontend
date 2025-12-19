@@ -44,6 +44,11 @@ export class EnergyResource extends AbstractResource<
 > {
     readonly resourceKey = 'energy';
     readonly displayName = 'Energy';
+    readonly capabilities = {
+        sources: true,
+        consumers: true,
+        config: true
+    };
 
     // ─────────────────────────────────────────────────────────────────────────────
     // State Access

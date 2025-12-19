@@ -519,7 +519,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
             {isFoggy && <Box className="fog-overlay" />}
 
             <Text fw={500} size="lg" mb={40} c="dimmed" style={{ zIndex: 30, position: 'relative' }}>
-                {t('water.tankLevel', 'Water Tank Level')}
+                {t('water.tankLevel')}
             </Text>
 
             <Box className="tank-container" onClick={handleTankClick}>
@@ -626,7 +626,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                     </Text>
                 )}
                 <Text size="xs" c={isRainy || isStormy ? 'blue.3' : isSunny ? 'yellow.3' : 'dimmed'} mt={5} fw={700} style={{ textTransform: 'uppercase' }}>
-                    Weather Code: {weatherCode} | {temperature}°C {isFrozen && <Badge size="xs" color="cyan" variant="light">FROZEN</Badge>}
+                    {t('weatherForecast.weatherCode.weatherCode')}: {weatherCode} | {temperature}°C {isFrozen && <Badge size="xs" color="cyan" variant="light">{t('water.frozen')}</Badge>}
                 </Text>
             </Box>
         </Card>
