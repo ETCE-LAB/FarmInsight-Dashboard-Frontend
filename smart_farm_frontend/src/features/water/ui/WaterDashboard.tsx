@@ -35,14 +35,13 @@ export const WaterDashboard = () => {
     const [weatherAndWaterStatus, setWeatherAndWaterStatus] = useState<WeatherAndWaterStatus | null>(null);
 
     // Derived state or defaults
-    const waterLevel = weatherAndWaterStatus?.waterStatus.waterLevel ?? 0;
-    const capacity = weatherAndWaterStatus?.waterStatus.capacity ?? 200;
-    const avgUsage = weatherAndWaterStatus?.waterStatus.avgUsage ?? 0;
-    const pumpStatus = weatherAndWaterStatus?.waterStatus.pumpStatus ?? 'inactive';
-    const pumpLastRun = weatherAndWaterStatus?.waterStatus.pumpLastRun ?? new Date();
-    const tankConnected = weatherAndWaterStatus?.waterStatus.tankConnected ?? true;
+    const waterLevel = weatherAndWaterStatus?.waterStatus?.waterLevel;
+    const capacity = weatherAndWaterStatus?.waterStatus?.capacity;
+    const avgUsage = weatherAndWaterStatus?.waterStatus?.avgUsage;
+    const pumpStatus = weatherAndWaterStatus?.waterStatus?.pumpStatus ?? 'inactive';
+    const pumpLastRun = weatherAndWaterStatus?.waterStatus?.pumpLastRun;
 
-    const waterPercentage = capacity > 0 ? Math.round((waterLevel / capacity) * 100) : 0;
+    const waterPercentage = capacity && waterLevel ? Math.round((waterLevel / capacity) * 100) : 0;
 
     const WEATHER_CODES = [
         { value: '0', label: 'Clear Sky' },
@@ -126,11 +125,12 @@ export const WaterDashboard = () => {
                 }
             }
 
-            waterResource.getState(fpf.Location.id, { locationId: fpf.Location.id }).then((resp) => {
+            waterResource.getState(fpf.id, { locationId: fpf.Location.id }).then((resp) => {
                 dispatch(registerWeatherAndWaterStatus({ [fpf.Location.id]: resp }));
                 setTemperature(resp.weatherStatus.currentTemperature);
                 setWeatherCode(resp.weatherStatus.weatherCode);
                 setWeatherAndWaterStatus(resp);
+                console.log("resp:", resp);
             }).catch((error) => {
                 showNotification({
                     title: t("common.loadError"),
@@ -147,8 +147,6 @@ export const WaterDashboard = () => {
                 <AiInsightOrb rainProbability={weatherAndWaterStatus?.weatherStatus?.rainProbabilityToday || 0} />
             </Box>
 
-
-
             <Group justify="space-between" mb="lg">
                 <Group>
                     <ThemeIcon size={32} radius="md" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
@@ -158,38 +156,11 @@ export const WaterDashboard = () => {
                 </Group>
 
                 <Group>
-                    {/* Temperature Control (Demo) */}
-                    <Box w={200} mr="md">
-                        {<Slider
-                            value={temperature}
-                            onChange={setTemperature}
-                            min={-10}
-                            max={40}
-                            color={temperature <= 0 ? 'cyan' : 'orange'}
-                            size="sm"
-                            marks={[
-                                { value: 0, label: '0°' },
-                                { value: 20, label: '20°' },
-                            ]}
-                        />}
-                    </Box>
-
-                    {/* Weather Controls (Demo) */}
-                    <Select
-                        value={weatherCode}
-                        onChange={(value) => setWeatherCode(value || '0')}
-                        data={WEATHER_CODES}
-                        allowDeselect={false}
-                        w={250}
-                        leftSection={<IconCloud size={16} />}
-                    />
-
+                    {/*
                     <ActionIcon variant="light" size="lg">
                         <IconRefresh size={20} />
                     </ActionIcon>
-
-
-
+                    */}
                 </Group>
             </Group>
 
@@ -203,24 +174,23 @@ export const WaterDashboard = () => {
                 />*/}
                 <StatusCard
                     title={t('water.systemStatus')}
-                    value={waterPercentage < 20 ? t('water.statusCritical') : t('water.statusNormal')}
-                    subtext={waterPercentage < 20 ? t('water.statusLow') : t('water.statusGood')}
+                    value={weatherAndWaterStatus ? (waterPercentage < 20 ? t('water.statusCritical') : t('water.statusNormal')) : t('water.noData')}
                     icon={waterPercentage < 20 ? <IconAlertTriangle size={18} /> : <IconCheck size={18} />}
-                    color={waterPercentage < 20 ? 'red' : 'green'}
+                    color={weatherAndWaterStatus ? (waterPercentage < 20 ? 'red' : 'green') : 'gray'}
                 />
-                <StatusCard
+                {avgUsage && <StatusCard
                     title={t('water.dailyUsage')}
-                    value={`${avgUsage} L / day`}
+                    value={weatherAndWaterStatus ? `${avgUsage} L / day` : t('water.noData')}
                     icon={<IconActivity size={18} />}
-                    color="blue"
-                />
-                <StatusCard
+                    color={weatherAndWaterStatus ? "blue" : "gray"}
+                />}
+                {pumpStatus && pumpLastRun && <StatusCard
                     title={t('water.pumpStatus')}
-                    value={pumpStatus === 'thisWeekActive' ? t('water.pumpActive') : t('water.pumpInactive')}
-                    subtext={`Last started: ${pumpLastRun}`}
+                    value={weatherAndWaterStatus ? (pumpStatus === 'thisWeekActive' ? t('water.pumpActive') : t('water.pumpInactive')) : t('water.noData')}
+                    subtext={weatherAndWaterStatus ? `Last started: ${pumpLastRun}` : null}
                     icon={<IconTopologyStar3 size={18} />}
-                    color={pumpStatus === 'thisWeekActive' ? 'green' : 'gray'}
-                />
+                    color={weatherAndWaterStatus ? (pumpStatus === 'thisWeekActive' ? 'green' : 'gray') : 'gray'}
+                />}
             </SimpleGrid>
 
             <Grid gutter="xl">
@@ -236,7 +206,7 @@ export const WaterDashboard = () => {
                     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)', height: '100%' }}>
 
                         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
-                            <WaterLevelChart data={weatherAndWaterStatus?.waterUsage} />
+                            <WaterLevelChart data={weatherAndWaterStatus?.waterLevels} />
                             <FieldMoistureMap data={weatherAndWaterStatus?.fieldMoisture} />
                         </SimpleGrid>
 

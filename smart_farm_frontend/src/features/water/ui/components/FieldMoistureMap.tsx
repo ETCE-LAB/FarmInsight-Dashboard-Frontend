@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Text, SimpleGrid, Box, Tooltip, useMantineTheme, Group, Badge } from '@mantine/core';
+import { Card, Text, SimpleGrid, Box, Tooltip, useMantineTheme, Group, Badge, Center } from '@mantine/core';
 import { IconPlant, IconSeeding, IconLeaf } from '@tabler/icons-react';
 import { FieldMoistureData } from '../../models/WeatherAndWaterStatus';
 
@@ -13,20 +13,14 @@ export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => 
     const theme = useMantineTheme();
 
     const fields = useMemo(() => {
-        if (data && data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
             return data.map(field => ({
                 id: field.fieldId,
                 moisture: field.moisture,
                 crop: field.crop
             }));
         }
-        // Fallback to generated data
-        const crops = ['Corn', 'Soy', 'Wheat', 'Rice', 'Fallow'];
-        return Array.from({ length: 21 }, (_, i) => ({
-            id: i + 1,
-            moisture: Math.floor(Math.random() * (90 - 10 + 1)) + 10,
-            crop: crops[Math.floor(Math.random() * crops.length)]
-        }));
+        return [];
     }, [data]);
 
     const getMoistureData = (level: number) => {
@@ -118,47 +112,53 @@ export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => 
                 <Badge size="xs" variant="dot" color="green">{t('water.status')}</Badge>
             </Group>
 
-            <SimpleGrid cols={3} spacing="xs" style={{ position: 'relative', zIndex: 3 }}>
-                {fields.map((field) => {
-                    const data = getMoistureData(field.moisture);
-                    return (
-                        <Tooltip
-                            key={field.id}
-                            label={
-                                <Box p={4}>
-                                    <Text size="xs" fw={700} c="white">{t('water.field')} {field.id} - {field.crop}</Text>
-                                    <Group gap={4}>
-                                        <Badge size="xs" color={field.moisture < 30 ? 'red' : 'teal'} variant="light">{data.label}</Badge>
-                                        <Text size="xs" c="dimmed">{field.moisture}% {t('water.moisture')}</Text>
-                                    </Group>
-                                </Box>
-                            }
-                            color="dark"
-                            withArrow
-                        >
-                            <Box
-                                className="field-cell"
-                                style={{
-                                    height: '60px',
-                                    backgroundColor: data.color,
-                                    border: `1px solid ${theme.colors.dark[4]}`,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                }}
+            {fields.length > 0 ? (
+                <SimpleGrid cols={3} spacing="xs" style={{ position: 'relative', zIndex: 3 }}>
+                    {fields.map((field) => {
+                        const data = getMoistureData(field.moisture);
+                        return (
+                            <Tooltip
+                                key={field.id}
+                                label={
+                                    <Box p={4}>
+                                        <Text size="xs" fw={700} c="white">{t('water.field')} {field.id} - {field.crop}</Text>
+                                        <Group gap={4}>
+                                            <Badge size="xs" color={field.moisture < 30 ? 'red' : 'teal'} variant="light">{data.label}</Badge>
+                                            <Text size="xs" c="dimmed">{field.moisture}% {t('water.moisture')}</Text>
+                                        </Group>
+                                    </Box>
+                                }
+                                color="dark"
+                                withArrow
                             >
-                                <Box className="field-texture" />
-                                <Box style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    {data.icon}
-                                    <Text size="10px" fw={800} c="rgba(255,255,255,0.9)" mt={2}>{field.moisture}%</Text>
+                                <Box
+                                    className="field-cell"
+                                    style={{
+                                        height: '60px',
+                                        backgroundColor: data.color,
+                                        border: `1px solid ${theme.colors.dark[4]}`,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    <Box className="field-texture" />
+                                    <Box style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        {data.icon}
+                                        <Text size="10px" fw={800} c="rgba(255,255,255,0.9)" mt={2}>{field.moisture}%</Text>
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </Tooltip>
-                    );
-                })}
-            </SimpleGrid>
+                            </Tooltip>
+                        );
+                    })}
+                </SimpleGrid>
+            ) : (
+                <Center h={200}>
+                    <Text c="dimmed">{t('water.noData')}</Text>
+                </Center>
+            )}
         </Card>
     );
 });

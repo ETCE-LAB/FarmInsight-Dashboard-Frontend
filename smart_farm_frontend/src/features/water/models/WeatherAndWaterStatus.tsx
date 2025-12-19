@@ -11,9 +11,9 @@ export interface FieldMoistureData {
     crop: string;
 }
 
-export interface WaterUsageData {
+export interface WaterLevels {
     date: string;
-    usage: number;
+    waterLevel: number;
 }
 
 export interface WaterStatus {
@@ -22,14 +22,11 @@ export interface WaterStatus {
     avgUsage: number;
     pumpStatus: 'thisWeekActive' | 'thisWeekInactive';
     pumpLastRun: Date;
-    tankConnected: boolean;
-    moistureMap: FieldMoistureData[];
-    waterUsageChart: WaterUsageData[];
 }
 
 export interface WeatherAndWaterStatus {
     waterStatus: WaterStatus;
     weatherStatus: WeatherStatus;
     fieldMoisture: FieldMoistureData[];
-    waterUsage: WaterUsageData[];
+    waterLevels: WaterLevels[];
 }

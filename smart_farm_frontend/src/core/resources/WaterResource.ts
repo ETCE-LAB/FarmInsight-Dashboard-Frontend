@@ -68,7 +68,7 @@ export class WaterResource extends AbstractResource<
 
     async getState(fpfId: string, additionalParams?: Record<string, unknown>): Promise<WeatherAndWaterStatus> {
         // fpfId is actually locationId for the water module
-        const locationId = (additionalParams?.locationId as string) ?? fpfId;
+        const locationId = (additionalParams?.locationId as string);
         return getWeatherAndWaterStatus(locationId, fpfId);
     }
 

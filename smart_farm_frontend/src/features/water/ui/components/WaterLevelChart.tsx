@@ -1,26 +1,18 @@
-import { Card, Text, useMantineTheme } from '@mantine/core';
+import { Card, Text, useMantineTheme, Center } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { AreaChart } from '@mantine/charts';
-import { WaterUsageData } from '../../models/WeatherAndWaterStatus';
+import { WaterLevels } from '../../models/WeatherAndWaterStatus';
 
 interface WaterLevelChartProps {
-    data?: WaterUsageData[];
+    data?: WaterLevels[];
 }
 
 export const WaterLevelChart = ({ data }: WaterLevelChartProps) => {
     const { t } = useTranslation();
     const theme = useMantineTheme();
 
-    const chartData = data && data.length > 0 ? data : [
-        { date: 'Mon', level: 120 },
-        { date: 'Tue', level: 140 },
-        { date: 'Wed', level: 110 },
-        { date: 'Thu', level: 150 },
-        { date: 'Fri', level: 130 },
-        { date: 'Sat', level: 90 },
-        { date: 'Sun', level: 80 },
-    ];
-
+    const chartData = Array.isArray(data) && data.length > 0 ? data : [];
+    console.log(chartData);
     return (
         <Card
             radius="md"
@@ -33,21 +25,27 @@ export const WaterLevelChart = ({ data }: WaterLevelChartProps) => {
         >
             <Text fw={600} size="sm" mb="lg" c="dimmed">{t('water.waterLevelChartTitle')}</Text>
 
-            <AreaChart
-                h={300}
-                data={chartData}
-                dataKey="date"
-                series={[
-                    { name: 'level', color: 'cyan.6' },
-                ]}
-                curveType="natural"
-                fillOpacity={0.2}
-                gridAxis="xy"
-                tickLine="none"
-                withYAxis={true}
-                withXAxis={true}
-                withTooltip={false}
-            />
+            {chartData.length > 0 ? (
+                <AreaChart
+                    h={300}
+                    data={chartData}
+                    dataKey="date"
+                    series={[
+                        { name: 'waterLevel', color: 'cyan.6' },
+                    ]}
+                    curveType="natural"
+                    fillOpacity={0.2}
+                    gridAxis="xy"
+                    tickLine="none"
+                    withYAxis={true}
+                    withXAxis={true}
+                    withTooltip={false}
+                />
+            ) : (
+                <Center h={300}>
+                    <Text c="dimmed">{t('water.noData')}</Text>
+                </Center>
+            )}
         </Card>
     );
 };

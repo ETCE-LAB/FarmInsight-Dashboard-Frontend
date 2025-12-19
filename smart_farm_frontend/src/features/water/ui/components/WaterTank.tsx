@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Badge, Box, Card, Text, useMantineTheme } from '@mantine/core';
+import { Badge, Box, Card, Center, Text, useMantineTheme } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 
 interface WaterTankProps {
@@ -508,6 +508,43 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
         }
     `;
 
+    function getWeatherDescription(code: number): string {
+        const sCode = code.toString();
+        switch (sCode) {
+            case "0": return t('weatherForecast.weatherCode.clear');
+            case "1": return t('weatherForecast.weatherCode.mainlyClear');
+            case "2": return t('weatherForecast.weatherCode.partlyCloudy');
+            case "3": return t('weatherForecast.weatherCode.overcast');
+            case "45": return t('weatherForecast.weatherCode.fog');
+            case "48": return t('weatherForecast.weatherCode.fogWithRime');
+            case "51": return t('weatherForecast.weatherCode.drizzleLight');
+            case "53": return t('weatherForecast.weatherCode.drizzleModerate');
+            case "55": return t('weatherForecast.weatherCode.drizzleDense');
+            case "56": return t('weatherForecast.weatherCode.freezingDrizzleLight');
+            case "57": return t('weatherForecast.weatherCode.freezingDrizzleDense');
+            case "61": return t('weatherForecast.weatherCode.rainLight');
+            case "63": return t('weatherForecast.weatherCode.rainModerate');
+            case "65": return t('weatherForecast.weatherCode.rainHeavy');
+            case "66": return t('weatherForecast.weatherCode.freezingRainLight');
+            case "67": return t('weatherForecast.weatherCode.freezingRainHeavy');
+            case "71": return t('weatherForecast.weatherCode.snowFallSlight');
+            case "73": return t('weatherForecast.weatherCode.snowFallModerate');
+            case "75": return t('weatherForecast.weatherCode.snowFallHeavy');
+            case "77": return t('weatherForecast.weatherCode.snowGrains');
+            case "80": return t('weatherForecast.weatherCode.rainShowersLight');
+            case "81": return t('weatherForecast.weatherCode.rainShowersModerate');
+            case "82": return t('weatherForecast.weatherCode.rainShowersHeavy');
+            case "85": return t('weatherForecast.weatherCode.snowShowersLight');
+            case "86": return t('weatherForecast.weatherCode.snowShowersHeavy');
+            case "95": return t('weatherForecast.weatherCode.thunderstormWithLightHail');
+            case "96": return t('weatherForecast.weatherCode.thunderstormWithModerateHail');
+            case "99": return t('weatherForecast.weatherCode.thunderstormWithHeavyHail');
+            default: return t('weatherForecast.weatherCode.unknownWeatherCode');
+        }
+    }
+
+    const hasTankData = typeof level === 'number' && typeof capacity === 'number';
+
     return (
         <Card padding="xl" radius="md" withBorder className="tank-card">
             <style>{styles}</style>
@@ -522,7 +559,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                 {t('water.tankLevel')}
             </Text>
 
-            <Box className="tank-container" onClick={handleTankClick}>
+            <Box className="tank-container" onClick={hasTankData ? handleTankClick : undefined}>
                 {isRainy && (
                     <Box className="weather-overlay">
                         {rainDrops.map((drop) => (
@@ -563,70 +600,81 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
 
                 <Box className="ice-texture" />
 
-                <Box className="cylinder-base">
-                    <Box className="rim-top" />
-                    <Box className="glass-back" />
+                {hasTankData ? (
+                    <Box className="cylinder-base">
+                        <Box className="rim-top" />
+                        <Box className="glass-back" />
 
-                    <Box className="water-column">
-                        <Box className="wave-layer wave-1" />
-                        <Box className="wave-layer wave-2" />
+                        <Box className="water-column">
+                            <Box className="wave-layer wave-1" />
+                            <Box className="wave-layer wave-2" />
 
-                        <Box className="wave-layer wave-main">
-                            {splashes.map((splash) => (
-                                <Box
-                                    key={splash.id}
-                                    className="interaction-splash"
-                                    style={{ left: `${splash.x}%`, top: '50%', position: 'absolute' }}
-                                />
-                            ))}
+                            <Box className="wave-layer wave-main">
+                                {splashes.map((splash) => (
+                                    <Box
+                                        key={splash.id}
+                                        className="interaction-splash"
+                                        style={{ left: `${splash.x}%`, top: '50%', position: 'absolute' }}
+                                    />
+                                ))}
 
-                            {isRainy && !isFrozen && rainRipples.map((ripple) => (
-                                <Box
-                                    key={`ripple-${ripple.id}`}
-                                    className="rain-ripple"
-                                    style={{
-                                        left: `${ripple.left}%`,
-                                        top: `${ripple.top}%`,
-                                        animationDelay: `${ripple.animationDelay}s`,
-                                        position: 'absolute'
-                                    }}
-                                />
-                            ))}
+                                {isRainy && !isFrozen && rainRipples.map((ripple) => (
+                                    <Box
+                                        key={`ripple-${ripple.id}`}
+                                        className="rain-ripple"
+                                        style={{
+                                            left: `${ripple.left}%`,
+                                            top: `${ripple.top}%`,
+                                            animationDelay: `${ripple.animationDelay}s`,
+                                            position: 'absolute'
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+
+                            <Box className="bubbles">
+                                {bubbles.map((bubble) => (
+                                    <Box
+                                        key={bubble.id}
+                                        className="bubble"
+                                        style={{
+                                            left: `${bubble.left}%`,
+                                            width: `${bubble.width}px`,
+                                            height: `${bubble.height}px`,
+                                            animationDuration: `${bubble.animationDuration}s`,
+                                            animationDelay: `${bubble.animationDelay}s`
+                                        }}
+                                    />
+                                ))}
+                            </Box>
                         </Box>
 
-                        <Box className="bubbles">
-                            {bubbles.map((bubble) => (
-                                <Box
-                                    key={bubble.id}
-                                    className="bubble"
-                                    style={{
-                                        left: `${bubble.left}%`,
-                                        width: `${bubble.width}px`,
-                                        height: `${bubble.height}px`,
-                                        animationDuration: `${bubble.animationDuration}s`,
-                                        animationDelay: `${bubble.animationDelay}s`
-                                    }}
-                                />
-                            ))}
-                        </Box>
+                        <Box className="glass-front-shine" />
+                        <Box className="rim-bottom" />
                     </Box>
-
-                    <Box className="glass-front-shine" />
-                    <Box className="rim-bottom" />
-                </Box>
+                ) : (
+                    <Center h="100%" style={{ zIndex: 30, position: 'relative' }}>
+                        <Box style={{ textAlign: 'center' }}>
+                            <Text c="dimmed" size="lg" fw={500}>{t('water.tankUnavailable')}</Text>
+                            <Text c="dimmed" size="sm" mt="xs">{t('water.noData')}</Text>
+                        </Box>
+                    </Center>
+                )}
             </Box>
 
             <Box mt="xl" style={{ textAlign: 'center', zIndex: 30 }}>
-                <Text size="3rem" fw={800} c="white" style={{ textShadow: '0 0 10px #228BE6' }}>
-                    {displayedLevel.toFixed(0)}%
-                </Text>
-                {capacity && (
-                    <Text size="sm" c="dimmed">
-                        {((displayedLevel / 100) * capacity).toFixed(0)} / {capacity} L
-                    </Text>
+                {hasTankData && (
+                    <>
+                        <Text size="3rem" fw={800} c="white" style={{ textShadow: '0 0 10px #228BE6' }}>
+                            {displayedLevel.toFixed(0)}%
+                        </Text>
+                        <Text size="sm" c="dimmed">
+                            {((displayedLevel / 100) * capacity).toFixed(0)} / {capacity} L
+                        </Text>
+                    </>
                 )}
                 <Text size="xs" c={isRainy || isStormy ? 'blue.3' : isSunny ? 'yellow.3' : 'dimmed'} mt={5} fw={700} style={{ textTransform: 'uppercase' }}>
-                    {t('weatherForecast.weatherCode.weatherCode')}: {weatherCode} | {temperature}°C {isFrozen && <Badge size="xs" color="cyan" variant="light">{t('water.frozen')}</Badge>}
+                    {getWeatherDescription(weatherCode)} | {temperature}°C {isFrozen && <Badge size="xs" color="cyan" variant="light">{t('water.frozen')}</Badge>}
                 </Text>
             </Box>
         </Card>
