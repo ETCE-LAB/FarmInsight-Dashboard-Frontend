@@ -12,7 +12,6 @@ export const WaterLevelChart = ({ data }: WaterLevelChartProps) => {
     const theme = useMantineTheme();
 
     const chartData = Array.isArray(data) && data.length > 0 ? data : [];
-    console.log(chartData);
     return (
         <Card
             radius="md"

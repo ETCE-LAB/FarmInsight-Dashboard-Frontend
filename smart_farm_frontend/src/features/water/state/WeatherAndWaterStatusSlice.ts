@@ -3,7 +3,7 @@ import { WeatherAndWaterStatus } from "../models/WeatherAndWaterStatus";
 
 
 interface WeatherAndWaterStatusSlice {
-    WeatherAndWaterStatus: [{ [locationId: string]: WeatherAndWaterStatus }];
+    WeatherAndWaterStatus: [{ [fpfId: string]: WeatherAndWaterStatus }];
 }
 
 const initialState: WeatherAndWaterStatusSlice = {
@@ -16,7 +16,7 @@ const weatherAndWaterStatusSlice = createSlice({
     initialState,
 
     reducers: {
-        registerWeatherAndWaterStatus(state, action: PayloadAction<{ [locationId: string]: WeatherAndWaterStatus }>) {
+        registerWeatherAndWaterStatus(state, action: PayloadAction<{ [fpfId: string]: WeatherAndWaterStatus }>) {
             state.WeatherAndWaterStatus.push(action.payload);
         }
     }

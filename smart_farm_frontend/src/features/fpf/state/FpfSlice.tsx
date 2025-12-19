@@ -29,7 +29,8 @@ const initialState: FpfSlice = {
             rmmActive: false,
             rmmSensorConfig: {
                 waterSensorId: "",
-                soilSensorId: ""
+                soilSensorId: "",
+                tankCapacity: 0
             }
         }
     }

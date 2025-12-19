@@ -3,13 +3,14 @@ import { Badge, Box, Card, Center, Text, useMantineTheme } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 
 interface WaterTankProps {
+    tankAvailable: boolean;
     level: number; // Percentage 0-100
     capacity?: number;
     weatherCode?: number; // WMO Weather Code
     temperature?: number; // Celsius
 }
 
-export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity, weatherCode = 0, temperature = 20 }) => {
+export const WaterTank: React.FC<WaterTankProps> = React.memo(({ tankAvailable, level, capacity, weatherCode, temperature }) => {
     const { t } = useTranslation();
     const theme = useMantineTheme();
 
@@ -22,17 +23,17 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
         return () => clearTimeout(timeout);
     }, [level]);
 
-    const isSunny = weatherCode === 0 || weatherCode === 1;
-    const isCloudy = weatherCode === 2 || weatherCode === 3;
-    const isFoggy = weatherCode === 45 || weatherCode === 48;
+    const isSunny = typeof weatherCode === 'number' && (weatherCode === 0 || weatherCode === 1);
+    const isCloudy = typeof weatherCode === 'number' && (weatherCode === 2 || weatherCode === 3);
+    const isFoggy = typeof weatherCode === 'number' && (weatherCode === 45 || weatherCode === 48);
 
-    const isRainy = (weatherCode >= 51 && weatherCode <= 67) || (weatherCode >= 80 && weatherCode <= 82);
+    const isRainy = typeof weatherCode === 'number' && ((weatherCode >= 51 && weatherCode <= 67) || (weatherCode >= 80 && weatherCode <= 82));
 
-    const isSnowy = (weatherCode >= 71 && weatherCode <= 77) || (weatherCode >= 85 && weatherCode <= 86);
+    const isSnowy = typeof weatherCode === 'number' && ((weatherCode >= 71 && weatherCode <= 77) || (weatherCode >= 85 && weatherCode <= 86));
 
-    const isStormy = weatherCode >= 95;
+    const isStormy = typeof weatherCode === 'number' && weatherCode >= 95;
 
-    const isFrozen = temperature <= 0;
+    const isFrozen = typeof temperature === 'number' && temperature <= 0;
 
     const [splashes, setSplashes] = useState<{ id: number, x: number }[]>([]);
 
@@ -543,7 +544,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
         }
     }
 
-    const hasTankData = typeof level === 'number' && typeof capacity === 'number';
+    const hasTankData = tankAvailable && typeof level === 'number' && typeof capacity === 'number';
 
     return (
         <Card padding="xl" radius="md" withBorder className="tank-card">
@@ -655,8 +656,7 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                 ) : (
                     <Center h="100%" style={{ zIndex: 30, position: 'relative' }}>
                         <Box style={{ textAlign: 'center' }}>
-                            <Text c="dimmed" size="lg" fw={500}>{t('water.tankUnavailable')}</Text>
-                            <Text c="dimmed" size="sm" mt="xs">{t('water.noData')}</Text>
+                            <Text c="dimmed" size="lg" fw={500}>{t('water.noData')}</Text>
                         </Box>
                     </Center>
                 )}
@@ -673,9 +673,13 @@ export const WaterTank: React.FC<WaterTankProps> = React.memo(({ level, capacity
                         </Text>
                     </>
                 )}
-                <Text size="xs" c={isRainy || isStormy ? 'blue.3' : isSunny ? 'yellow.3' : 'dimmed'} mt={5} fw={700} style={{ textTransform: 'uppercase' }}>
-                    {getWeatherDescription(weatherCode)} | {temperature}°C {isFrozen && <Badge size="xs" color="cyan" variant="light">{t('water.frozen')}</Badge>}
-                </Text>
+                {typeof weatherCode === 'number' && (
+                    <Text size="xs" c={isRainy || isStormy ? 'blue.3' : isSunny ? 'yellow.3' : 'dimmed'} mt={5} fw={700} style={{ textTransform: 'uppercase' }}>
+                        {getWeatherDescription(weatherCode)}
+                        {typeof temperature === 'number' && ` | ${temperature}°C`}
+                        {isFrozen && <Badge size="xs" color="cyan" variant="light" ml="xs">{t('water.frozen')}</Badge>}
+                    </Text>
+                )}
             </Box>
         </Card>
     );

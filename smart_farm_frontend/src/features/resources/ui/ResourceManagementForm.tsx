@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, Divider, Grid, Group, Stack, Switch, Text, TextInput, Title } from '@mantine/core';
+import { Box, Button, Card, Divider, Grid, Group, NumberInput, Stack, Switch, Text, TextInput, Title } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { IconDroplet, IconDeviceFloppy } from '@tabler/icons-react';
 import { Fpf } from '../../fpf/models/Fpf';
@@ -21,6 +21,7 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
     const [enabled, setEnabled] = useState(fpf.resourceManagementConfig?.rmmActive ?? false);
     const [waterSensorId, setWaterSensorId] = useState(fpf.resourceManagementConfig?.rmmSensorConfig?.waterSensorId || '');
     const [soilSensorId, setSoilSensorId] = useState(fpf.resourceManagementConfig?.rmmSensorConfig?.soilSensorId || '');
+    const [tankCapacity, setTankCapacity] = useState(fpf.resourceManagementConfig?.rmmSensorConfig?.tankCapacity ?? 0);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -31,7 +32,12 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
         setSoilSensorId(
             fpf.resourceManagementConfig?.rmmSensorConfig?.soilSensorId ?? ''
         );
+        setTankCapacity(
+            fpf.resourceManagementConfig?.rmmSensorConfig?.tankCapacity ?? 0
+        );
     }, [fpf]);
+
+
 
     const handleSave = async () => {
         setIsSubmitting(true);
@@ -50,6 +56,7 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
                 rmmSensorConfig: {
                     waterSensorId: waterSensorId,
                     soilSensorId: soilSensorId,
+                    tankCapacity: tankCapacity
                 }
             }
         };
@@ -118,7 +125,6 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
                                         placeholder={t('resources.waterSensorIdPlaceholder')}
                                         value={waterSensorId}
                                         onChange={(event) => setWaterSensorId(event.currentTarget.value)}
-                                        description={t('resources.waterSensorIdDesc')}
                                         required
                                     />
                                 </Grid.Col>
@@ -128,7 +134,13 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
                                         placeholder={t('resources.soilSensorIdPlaceholder')}
                                         value={soilSensorId}
                                         onChange={(event) => setSoilSensorId(event.currentTarget.value)}
-                                        description={t('resources.soilSensorIdDesc')}
+                                        required
+                                    />
+                                    <NumberInput
+                                        label={t('resources.tankCapacity')}
+                                        placeholder={t('resources.tankCapacityPlaceholder')}
+                                        value={tankCapacity}
+                                        onChange={(value) => setTankCapacity(value as number)}
                                         required
                                     />
                                 </Grid.Col>

@@ -109,7 +109,6 @@ export const FieldMoistureMap = React.memo(({ data }: FieldMoistureMapProps) => 
 
             <Group justify="space-between" mb="sm" style={{ zIndex: 10, position: 'relative' }}>
                 <Text fw={600} size="sm" c="dimmed" tt="uppercase" style={{ letterSpacing: 1 }}>{t('water.fieldMoisture')}</Text>
-                <Badge size="xs" variant="dot" color="green">{t('water.status')}</Badge>
             </Group>
 
             {fields.length > 0 ? (

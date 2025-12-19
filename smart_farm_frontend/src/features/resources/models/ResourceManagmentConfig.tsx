@@ -4,6 +4,7 @@
 export interface RMMSensorConfig {
     waterSensorId: string;
     soilSensorId: string;
+    tankCapacity: number;
 }
 
 

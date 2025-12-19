@@ -30,7 +30,7 @@ export const ResourceManagementModalButton: React.FC<ResourceManagementModalButt
                 centered
                 size="lg"
             >
-                <ResourceManagementForm fpf={fpf} onSuccess={() => setOpened(false)} />
+                <ResourceManagementForm fpf={fpf} onSuccess={() => { setOpened(false); }} />
             </Modal>
         </>
     );

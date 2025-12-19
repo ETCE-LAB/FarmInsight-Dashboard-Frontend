@@ -641,10 +641,9 @@ i18n
                         waterResourceDesc: 'Enable water and soil monitoring features',
                         waterSensorId: 'Water Sensor ID',
                         waterSensorIdPlaceholder: 'e.g. water-sensor-01',
-                        waterSensorIdDesc: 'Exact ID of the sensor measuring water level',
                         soilSensorId: 'Soil Sensor ID',
                         soilSensorIdPlaceholder: 'e.g. soil-moisture-01',
-                        soilSensorIdDesc: 'Exact ID of the sensor measuring soil moisture',
+                        tankCapacity: 'Tank Capacity',
                     },
                     water: {
                         dashboardTitle: 'Water Management',
@@ -1309,10 +1308,9 @@ i18n
                         waterResourceDesc: 'Funktionen zur Wasser- und Bodenüberwachung aktivieren',
                         waterSensorId: 'Wassersensor-ID',
                         waterSensorIdPlaceholder: 'z.B. wasser-sensor-01',
-                        waterSensorIdDesc: 'Exakte ID des Sensors zur Wasserstandsmessung',
                         soilSensorId: 'Bodensensor-ID',
                         soilSensorIdPlaceholder: 'z.B. boden-feuchte-01',
-                        soilSensorIdDesc: 'Exakte ID des Sensors zur Bodenfeuchtemessung',
+                        tankCapacity: 'Tankkapazität'
                     },
                     water: {
                         dashboardTitle: 'Wassermanagement',
