@@ -154,7 +154,7 @@ i18n
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
                         aggregatedValues: 'Aggregated values',
-                        movingAverage:'Smooth values',
+                        movingAverage: 'Smooth values',
                         measurementsLoadError: "Failed to fetch initial measurements.",
                         measurementsProcessError: "Failed to process incoming data.",
                         updatingSensor: 'Updating Sensor on your FPF',
@@ -175,7 +175,7 @@ i18n
                         urlStepDesc: 'Enter the base URL of the model',
                         configureModel: 'Configure model',
                         configStepDesc: 'Configure parameters for the model',
-                        predictionViewTitle:'Model Predictions',
+                        predictionViewTitle: 'Model Predictions',
                         hint: {
                             locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>) The URL must provide sub endpoint /param and /farm-insight. For more details see the documentation.',
                             interval: 'The interval in which the model will do the calculation (default 1 day)',
@@ -340,14 +340,14 @@ i18n
                         inactive: 'Inactive',
                         cameras: 'Cameras',
                         hint: {
-                                nameHint: 'Name of the camera',
-                                locationHint: 'Location of the camera',
-                                modelNrHint: 'Model number of the camera',
-                                intervalSecondsHint: 'Interval of capturing images',
-                                resolutionHint: 'Resolution of the camera',
-                                livestreamUrlHint: 'URL for the livestream',
-                                snapshotUrlHint: 'URL for the snapshot',
-                            },
+                            nameHint: 'Name of the camera',
+                            locationHint: 'Location of the camera',
+                            modelNrHint: 'Model number of the camera',
+                            intervalSecondsHint: 'Interval of capturing images',
+                            resolutionHint: 'Resolution of the camera',
+                            livestreamUrlHint: 'URL for the livestream',
+                            snapshotUrlHint: 'URL for the snapshot',
+                        },
                         cameraList: 'Camera List',
                         noCamerasFound: 'No Camera found',
                         location: 'Location',
@@ -453,7 +453,7 @@ i18n
                             thunderstormWithHeavyHail: 'Thunderstorm with Heavy Hail',
                         },
                     },
-                    location:{
+                    location: {
                         noLocation: 'No Location',
                         name: 'Name',
                         city: 'City',
@@ -464,7 +464,7 @@ i18n
                         gatherForecasts: 'Gather Forecasts',
                         gatherForecastsNotActive: 'No Forecasts',
                         gatherForecastsActive: 'Gathers Forecast',
-                        buttons:{
+                        buttons: {
                             showForm: 'Create new Location',
                             hideForm: 'Hide ',
                             addLocation: 'Add Location',
@@ -472,15 +472,15 @@ i18n
                             createLocation: 'Create Location',
 
                         },
-                        text:{
+                        text: {
                             location: 'Location',
                             locations: 'Locations',
                             addLocation: 'Add Location',
                             isActive: 'Gather Forecasts',
                             isNotActive: 'No Forecasts',
                         },
-                        notifications:{
-                            loading:{
+                        notifications: {
+                            loading: {
                                 title: 'Loading',
                                 message: 'Loading locations...',
                             },
@@ -633,6 +633,46 @@ i18n
                             shutdown_non_critical: 'Shutdown Non-Critical',
                             emergency_shutdown: 'Emergency Shutdown'
                         }
+                    },
+                    resources: {
+                        managementTitle: 'Resource Management',
+                        managementDesc: 'Configure resource monitoring and management',
+                        waterResourceTitle: 'Water Resource Management',
+                        waterResourceDesc: 'Enable water and soil monitoring features',
+                        waterSensorId: 'Water Sensor ID',
+                        waterSensorIdPlaceholder: 'e.g. water-sensor-01',
+                        waterSensorIdDesc: 'Exact ID of the sensor measuring water level',
+                        soilSensorId: 'Soil Sensor ID',
+                        soilSensorIdPlaceholder: 'e.g. soil-moisture-01',
+                        soilSensorIdDesc: 'Exact ID of the sensor measuring soil moisture',
+                    },
+                    water: {
+                        dashboardTitle: 'Water Management',
+                        tankLevel: 'Water Tank Level',
+                        currentLevel: 'Current Level',
+                        systemStatus: 'System Status',
+                        dailyUsage: 'Average Usage',
+                        pumpStatus: 'Pump Status',
+                        modelsTitle: 'Water Consumption Forecast',
+                        waterLevelChartTitle: 'Water Level (Last 7 Days)',
+                        fieldMoisture: 'Field Moisture Values',
+                        status: 'Status',
+                        moisture: 'Moisture',
+                        field: 'Field',
+                        dry: 'Dry',
+                        moderate: 'Moderate',
+                        moist: 'Moist',
+                        wet: 'Wet',
+                        aiInsight: 'AI Insight',
+                        rainProbability: 'Rain probability today is',
+                        statusCritical: 'Critical',
+                        statusNormal: 'Normal',
+                        statusLow: 'Water level low',
+                        statusGood: 'Everything looks good',
+                        pumpActive: 'This week active',
+                        pumpInactive: 'This week inactive',
+                        frozen: 'FROZEN',
+                        noData: 'No data available',
                     }
                 },
             },
@@ -782,7 +822,7 @@ i18n
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
                         aggregatedValues: 'Zusammengefasste Werte',
-                        movingAverage:'Mittelwert glätten',
+                        movingAverage: 'Mittelwert glätten',
                         measurementsLoadError: "Fehler beim Laden der initialen Werte.",
                         measurementsProcessError: "Fehler beim Verarbeiten der erhaltenen Werte.",
                         updatingSensor: 'Sensor wird in Ihrer FPF aktualisiert',
@@ -805,10 +845,10 @@ i18n
                         configStepDesc: 'Konfiguriere die Parameter des Modells',
                         predictionViewTitle: 'Modell Vorhersagen',
                         hint: {
-                            locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>). Die URL muss die Endpunkte /param und /farm-insight bereitstellen. Weitere Informationen sind in der Dokumentation zu finden.',
-                            interval: 'Das Intervall in welchem das Modell die Berechnungen durchführt (Standard 1 Tag)',
+                            locationHint: 'Die URL des Modells (z.B. http://<ip-adress>:<port>). Die URL muss die Endpunkte /param und /farm-insight bereitstellen. Für weitere Details siehe Dokumentation.',
+                            interval: 'Das Intervall, in dem das Modell die Berechnung durchführt (Standard 1 Tag)',
                         },
-                        overwriteParameters: 'Model Parameter abfragen (Dies überschreibt die aktuelle Konfiguration!)'
+                        overwriteParameters: 'Modellparameter abrufen (Überschreibt die aktuelle Konfiguration!)'
                     },
                     userManagement: {
                         userKicked: 'Benutzer wurde aus der Organisation entfernt.',
@@ -934,7 +974,7 @@ i18n
                         loginToManage: 'Anmelden, um Organisation zu verwalten',
                         create: 'Erstellen',
                         add: 'Hinzufügen',
-                        update:'Änderungen speichern,'
+                        update: 'Änderungen speichern,'
                     },
                     label: {
                         organizationName: 'Organisationsname',
@@ -968,13 +1008,13 @@ i18n
                         inactive: 'Inaktiv',
                         cameras: 'Kameras',
                         hint: {
-                                nameHint: 'Name der Kamera',
-                                locationHint: 'Standort der Kamera',
-                                modelNrHint: 'Modellnummer der Kamera',
-                                intervalSecondsHint: 'Intervall zum Aufnehmen von Bildern',
-                                resolutionHint: 'Auflösung der Kamera',
-                                livestreamUrlHint: 'URL für den Livestream',
-                                snapshotUrlHint: 'URL für den Schnappschuss',
+                            nameHint: 'Name der Kamera',
+                            locationHint: 'Standort der Kamera',
+                            modelNrHint: 'Modellnummer der Kamera',
+                            intervalSecondsHint: 'Intervall zum Aufnehmen von Bildern',
+                            resolutionHint: 'Auflösung der Kamera',
+                            livestreamUrlHint: 'URL für den Livestream',
+                            snapshotUrlHint: 'URL für den Schnappschuss',
                         },
                         cameraList: 'Kamera-Liste',
                         noCamerasFound: 'Keine Kamera gefunden',
@@ -1089,7 +1129,7 @@ i18n
                         houseNumber: 'Hausnummer',
                         latitude: 'Breitengrad',
                         longitude: 'Längengrad',
-                        gatherForecasts:'Wettervorhersage',
+                        gatherForecasts: 'Wettervorhersage',
                         gatherForecastsActive: 'Vorhersagen werden gesammelt',
                         gatherForecastsNotActive: 'Keine Vorhersagen',
                         buttons: {
