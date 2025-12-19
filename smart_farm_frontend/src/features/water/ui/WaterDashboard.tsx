@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Title, SimpleGrid, Box, Grid, Card, Group, Text, ThemeIcon, ActionIcon, SegmentedControl, Center, Slider, Badge, Select } from '@mantine/core';
+import { Container, Title, SimpleGrid, Box, Grid, Card, Group, Text, ThemeIcon, ActionIcon, SegmentedControl, Center, Slider, Badge, Select, Modal } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { PredictionView } from '../../model/ui/PredictionView';
 import { WaterTank } from './components/WaterTank';
-import { WaterUsageChart } from './components/WaterUsageChart';
+import { WaterLevelChart } from './components/WaterLevelChart';
 import { FieldMoistureMap } from './components/FieldMoistureMap';
 import { AiInsightOrb } from './components/AiInsightOrb';
-import { IconDroplet, IconActivity, IconTopologyStar3, IconRefresh, IconAlertTriangle, IconCheck, IconSun, IconCloudRain, IconCloud, IconThermometer } from '@tabler/icons-react';
+import { IconDroplet, IconActivity, IconTopologyStar3, IconRefresh, IconAlertTriangle, IconCheck, IconSun, IconCloudRain, IconCloud, IconThermometer, IconAlpha, IconEditCircle } from '@tabler/icons-react';
 import { Fpf } from '../../fpf/models/Fpf';
 import { getFpf } from '../../fpf/useCase/getFpf';
 import { showNotification } from '@mantine/notifications';
@@ -37,7 +37,7 @@ export const WaterDashboard = () => {
     // Derived state or defaults
     const waterLevel = weatherAndWaterStatus?.waterStatus.waterLevel ?? 0;
     const capacity = weatherAndWaterStatus?.waterStatus.capacity ?? 200;
-    const dailyUsage = weatherAndWaterStatus?.waterStatus.dailyUsage ?? 0;
+    const avgUsage = weatherAndWaterStatus?.waterStatus.avgUsage ?? 0;
     const pumpStatus = weatherAndWaterStatus?.waterStatus.pumpStatus ?? 'inactive';
     const pumpLastRun = weatherAndWaterStatus?.waterStatus.pumpLastRun ?? new Date();
     const tankConnected = weatherAndWaterStatus?.waterStatus.tankConnected ?? true;
@@ -126,18 +126,7 @@ export const WaterDashboard = () => {
                 }
             }
 
-            //const sensorId = fpf.Sensors?.find(sensor => sensor.name === 'Weather')?.id;
-            const sensorId = "f3c9187a-5d3b-4e2c-8b6f-1c2d3e4f5678";
-            if (!sensorId) {
-                showNotification({
-                    title: t("common.loadError"),
-                    message: "No weather sensor found",
-                    color: "red",
-                });
-                return;
-            }
-
-            waterResource.getState(fpf.Location.id, { locationId: fpf.Location.id, sensorId }).then((resp) => {
+            waterResource.getState(fpf.Location.id, { locationId: fpf.Location.id }).then((resp) => {
                 dispatch(registerWeatherAndWaterStatus({ [fpf.Location.id]: resp }));
                 setTemperature(resp.weatherStatus.currentTemperature);
                 setWeatherCode(resp.weatherStatus.weatherCode);
@@ -157,6 +146,8 @@ export const WaterDashboard = () => {
             <Box style={{ position: 'fixed', bottom: '40px', right: '40px', zIndex: 1000 }}>
                 <AiInsightOrb rainProbability={weatherAndWaterStatus?.weatherStatus?.rainProbabilityToday || 0} />
             </Box>
+
+
 
             <Group justify="space-between" mb="lg">
                 <Group>
@@ -196,6 +187,9 @@ export const WaterDashboard = () => {
                     <ActionIcon variant="light" size="lg">
                         <IconRefresh size={20} />
                     </ActionIcon>
+
+
+
                 </Group>
             </Group>
 
@@ -215,18 +209,17 @@ export const WaterDashboard = () => {
                     color={waterPercentage < 20 ? 'red' : 'green'}
                 />
                 <StatusCard
-                    title={t('water.dailyUsage', 'Daily Usage')}
-                    value={`${dailyUsage} L`}
-                    subtext="Average: 5 L / day"
+                    title={t('water.dailyUsage', 'Average Usage')}
+                    value={`${avgUsage} L / day`}
                     icon={<IconActivity size={18} />}
                     color="blue"
                 />
                 <StatusCard
                     title={t('water.pumpStatus', 'Pump Status')}
-                    value={pumpStatus === 'active' ? 'Running' : 'Stopped'}
+                    value={pumpStatus === 'thisWeekActive' ? 'This week active' : 'This week inactive'}
                     subtext={`Last started: ${pumpLastRun}`}
                     icon={<IconTopologyStar3 size={18} />}
-                    color={pumpStatus === 'active' ? 'green' : 'gray'}
+                    color={pumpStatus === 'thisWeekActive' ? 'green' : 'gray'}
                 />
             </SimpleGrid>
 
@@ -243,7 +236,7 @@ export const WaterDashboard = () => {
                     <Box style={{ display: 'flex', flexDirection: 'column', gap: 'var(--mantine-spacing-md)', height: '100%' }}>
 
                         <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
-                            <WaterUsageChart data={weatherAndWaterStatus?.waterUsage} />
+                            <WaterLevelChart data={weatherAndWaterStatus?.waterUsage} />
                             <FieldMoistureMap data={weatherAndWaterStatus?.fieldMoisture} />
                         </SimpleGrid>
 

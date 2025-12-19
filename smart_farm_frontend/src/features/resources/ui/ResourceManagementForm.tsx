@@ -1,0 +1,155 @@
+import React, { useEffect, useState } from 'react';
+import { Box, Button, Card, Divider, Grid, Group, Stack, Switch, Text, TextInput, Title } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
+import { IconDroplet, IconDeviceFloppy } from '@tabler/icons-react';
+import { Fpf } from '../../fpf/models/Fpf';
+import { useDispatch } from 'react-redux';
+import { updatedFpf } from '../../fpf/state/FpfSlice';
+import { notifications } from '@mantine/notifications';
+import { updateRmm } from '../../water/useCase/updateRmmSensors';
+
+interface ResourceManagementFormProps {
+    fpf: Fpf;
+}
+
+export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ fpf }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    // Initialize state with current FPF values
+    const [enabled, setEnabled] = useState(fpf.resourceManagementConfig?.rmmActive ?? false);
+    const [waterSensorId, setWaterSensorId] = useState(fpf.resourceManagementConfig?.rmmSensorConfig?.waterSensorId || '');
+    const [soilSensorId, setSoilSensorId] = useState(fpf.resourceManagementConfig?.rmmSensorConfig?.soilSensorId || '');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    console.log("fpf:", fpf);
+
+    useEffect(() => {
+        setEnabled(fpf.resourceManagementConfig?.rmmActive ?? false);
+        setWaterSensorId(
+            fpf.resourceManagementConfig?.rmmSensorConfig?.waterSensorId ?? ''
+        );
+        setSoilSensorId(
+            fpf.resourceManagementConfig?.rmmSensorConfig?.soilSensorId ?? ''
+        );
+    }, [fpf]);
+
+    const handleSave = async () => {
+        setIsSubmitting(true);
+        const id = notifications.show({
+            loading: true,
+            title: t('common.loading'),
+            message: t('common.saving'),
+            autoClose: false,
+            withCloseButton: false,
+        });
+
+        const updatedData = {
+            resourceManagementConfig:
+            {
+                rmmActive: enabled,
+                rmmSensorConfig: {
+                    waterSensorId: waterSensorId,
+                    soilSensorId: soilSensorId,
+                }
+            }
+        };
+
+        try {
+            const updated = await updateRmm(fpf.id, updatedData);
+            console.log("updated:", updated);
+            const newFpf = {
+                ...fpf,
+                ...updated
+            };
+            dispatch(updatedFpf(newFpf));
+            notifications.update({
+                id,
+                title: t('common.success'),
+                message: t('common.saveSuccess'),
+                color: 'green',
+                loading: false,
+                autoClose: 2000,
+            });
+        } catch (error) {
+            notifications.update({
+                id,
+                title: t('common.error'),
+                message: `${error}`,
+                color: 'red',
+                loading: false,
+                autoClose: 5000,
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const missingSensors = !waterSensorId || !soilSensorId;
+
+    return (
+        <Card padding="lg" radius="md" withBorder>
+            <Title order={3} mb="md">{t('resources.managementTitle', 'Resource Management')}</Title>
+
+            <Stack gap="lg">
+                <Box>
+                    <Group justify="space-between" mb="xs">
+                        <Group>
+                            <IconDroplet size={24} color="#228be6" />
+                            <div>
+                                <Text fw={500}>{t('resources.waterResourceTitle', 'Water Resource Management')}</Text>
+                                <Text size="sm" c="dimmed">
+                                    {t('resources.waterResourceDesc', 'Enable water and soil monitoring features')}
+                                </Text>
+                            </div>
+                        </Group>
+                        <Switch
+                            checked={enabled}
+                            onChange={(event) => setEnabled(event.currentTarget.checked)}
+                            size="md"
+                        />
+                    </Group>
+
+                    {enabled && (
+                        <Box mt="md" pl={40}>
+                            <Grid gutter="md">
+                                <Grid.Col span={6}>
+                                    <TextInput
+                                        label={t('resources.waterSensorName', 'Water Sensor Name')}
+                                        placeholder={t('resources.waterSensorNamePlaceholder', 'e.g. Water Level')}
+                                        value={waterSensorId}
+                                        onChange={(event) => setWaterSensorId(event.currentTarget.value)}
+                                        description={t('resources.waterSensorNameDesc', 'Exact name of the sensor measuring water level')}
+                                        required
+                                    />
+                                </Grid.Col>
+                                <Grid.Col span={6}>
+                                    <TextInput
+                                        label={t('resources.soilSensorName', 'Soil Sensor Name')}
+                                        placeholder={t('resources.soilSensorNamePlaceholder', 'e.g. Soil Moisture')}
+                                        value={soilSensorId}
+                                        onChange={(event) => setSoilSensorId(event.currentTarget.value)}
+                                        description={t('resources.soilSensorNameDesc', 'Exact name of the sensor measuring soil moisture')}
+                                        required
+                                    />
+                                </Grid.Col>
+                            </Grid>
+                        </Box>
+                    )}
+                </Box>
+
+                <Divider />
+
+                <Group justify="flex-end">
+                    <Button
+                        leftSection={<IconDeviceFloppy size={18} />}
+                        onClick={handleSave}
+                        loading={isSubmitting}
+                        disabled={enabled && (missingSensors)}
+                    >
+                        {t('common.save')}
+                    </Button>
+                </Group>
+            </Stack>
+        </Card>
+    );
+};

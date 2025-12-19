@@ -19,8 +19,8 @@ export interface WaterUsageData {
 export interface WaterStatus {
     waterLevel: number;
     capacity: number;
-    dailyUsage: number;
-    pumpStatus: 'active' | 'inactive' | 'error';
+    avgUsage: number;
+    pumpStatus: 'thisWeekActive' | 'thisWeekInactive';
     pumpLastRun: Date;
     tankConnected: boolean;
     moistureMap: FieldMoistureData[];

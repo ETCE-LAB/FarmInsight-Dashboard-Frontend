@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button } from "@mantine/core";
+import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button, Box } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";
@@ -15,19 +15,20 @@ import { useTranslation } from "react-i18next";
 import { IconEdit, IconBolt } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
 import { useAppDispatch } from "../../../utils/Hooks";
-import {updatedFpf} from "../state/FpfSlice";
+import { updatedFpf } from "../state/FpfSlice";
 import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
-import {ResourceType} from "../../logMessages/models/LogMessage";
-import {ControllableActionList} from "../../controllables/ui/controllableActionList";
-import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
-import {ActionQueueList} from "../../controllables/ui/actionQueueList";
-import {HardwareList} from "../../hardware/ui/hardwareList";
-import {Hardware} from "../../hardware/models/hardware";
-import {showNotification} from "@mantine/notifications";
-import {useAuth} from "react-oidc-context";
-import {AuthRoutes} from "../../../utils/Router";
-import {ModelList} from "../../model/ui/ModelList";
-import {Model} from "../../model/models/Model";
+import { ResourceType } from "../../logMessages/models/LogMessage";
+import { ControllableActionList } from "../../controllables/ui/controllableActionList";
+import { setControllableAction } from "../../controllables/state/ControllableActionSlice";
+import { ActionQueueList } from "../../controllables/ui/actionQueueList";
+import { HardwareList } from "../../hardware/ui/hardwareList";
+import { Hardware } from "../../hardware/models/hardware";
+import { showNotification } from "@mantine/notifications";
+import { useAuth } from "react-oidc-context";
+import { AuthRoutes } from "../../../utils/Router";
+import { ModelList } from "../../model/ui/ModelList";
+import { Model } from "../../model/models/Model";
+import { ResourceManagementForm } from "../../resources/ui/ResourceManagementForm";
 
 
 export const EditFPF: React.FC = () => {
@@ -75,7 +76,7 @@ export const EditFPF: React.FC = () => {
             navigate(AuthRoutes.signin);
         }
     }, [auth.isAuthenticated, fpf, navigate, organization, t]);
-    
+
     useEffect(() => {
         if (auth.isAuthenticated && fpfId) {
             getFpf(fpfId).then(resp => {
@@ -202,9 +203,9 @@ export const EditFPF: React.FC = () => {
                                 {t('fpf.address')}: {fpf.Location?.name || t('fpf.noAddress')}
                             </Text>
                             <Flex gap="sm">
-                                <Button 
-                                    variant="light" 
-                                    color="yellow" 
+                                <Button
+                                    variant="light"
+                                    color="yellow"
                                     leftSection={<IconBolt size={16} />}
                                     onClick={() => navigate(`/organization/${organizationId}/fpf/${fpfId}/energy`)}
                                 >
@@ -236,6 +237,10 @@ export const EditFPF: React.FC = () => {
             <Card padding="lg" radius="md">
                 <HardwareList hardwareToDisplay={hardware} fpfId={fpf.id} isAdmin={isAdmin} />
             </Card>
+
+            <Box>
+                <ResourceManagementForm fpf={fpf} />
+            </Box>
 
             <Card padding="lg" radius="md">
                 <ActionQueueList fpfId={fpf.id} />

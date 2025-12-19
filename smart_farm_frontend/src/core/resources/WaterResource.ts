@@ -55,20 +55,6 @@ export class WaterResource extends AbstractResource<
     Partial<WaterSource>,
     Partial<WaterConsumer>
 > {
-    readonly resourceKey = 'water';
-    readonly displayName = 'Water';
-
-    // Capability flags - clearly indicate what's supported
-    readonly supportsSourceOperations = false;
-    readonly supportsConsumerOperations = false;
-    readonly supportsConfigOperations = false;
-
-    /**
-     * Default sensor ID used when no specific sensor is provided.
-     * This matches the hardcoded value in WaterDashboard.tsx.
-     */
-    private readonly defaultSensorId = 'f3c9187a-5d3b-4e2c-8b6f-1c2d3e4f5678';
-
     // ─────────────────────────────────────────────────────────────────────────────
     // State Access
     // ─────────────────────────────────────────────────────────────────────────────
@@ -76,8 +62,7 @@ export class WaterResource extends AbstractResource<
     async getState(fpfId: string, additionalParams?: Record<string, unknown>): Promise<WeatherAndWaterStatus> {
         // fpfId is actually locationId for the water module
         const locationId = (additionalParams?.locationId as string) ?? fpfId;
-        const sensorId = (additionalParams?.sensorId as string) ?? this.defaultSensorId;
-        return getWeatherAndWaterStatus(locationId, sensorId);
+        return getWeatherAndWaterStatus(locationId, fpfId);
     }
 
     // ─────────────────────────────────────────────────────────────────────────────

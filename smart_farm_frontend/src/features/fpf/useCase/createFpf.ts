@@ -1,7 +1,7 @@
-import  APIClient from "../../../utils/APIClient";
-import {getUser} from "../../../utils/getUser";
-import {Fpf} from "../models/Fpf";
-import {BACKEND_URL} from "../../../env-config";
+import APIClient from "../../../utils/APIClient";
+import { getUser } from "../../../utils/getUser";
+import { Fpf } from "../models/Fpf";
+import { BACKEND_URL } from "../../../env-config";
 
 
 export const createFpf = (data: {
@@ -9,7 +9,7 @@ export const createFpf = (data: {
     name: string;
     isPublic: boolean;
     sensorServiceIp: string;
-    locationId: string
+    locationId: string;
 }) => {
     const apiClient = new APIClient()
 
@@ -17,7 +17,7 @@ export const createFpf = (data: {
     const token = user?.access_token;
 
     const headers =
-        {'Authorization': `Bearer ${token}`}
+        { 'Authorization': `Bearer ${token}` }
 
     const url = `${BACKEND_URL}/api/fpfs`;
 

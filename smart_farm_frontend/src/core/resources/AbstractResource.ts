@@ -144,26 +144,4 @@ export abstract class AbstractResource<
      * @throws ResourceNotImplementedError if not supported
      */
     abstract getConfig(fpfId: string): Promise<TConfig>;
-
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Capability Checks
-    // ─────────────────────────────────────────────────────────────────────────────
-
-    /**
-     * Indicates whether this resource supports source operations.
-     * UI components can use this to conditionally render source-related features.
-     */
-    abstract readonly supportsSourceOperations: boolean;
-
-    /**
-     * Indicates whether this resource supports consumer operations.
-     * UI components can use this to conditionally render consumer-related features.
-     */
-    abstract readonly supportsConsumerOperations: boolean;
-
-    /**
-     * Indicates whether this resource supports configuration operations.
-     * UI components can use this to conditionally render config-related features.
-     */
-    abstract readonly supportsConfigOperations: boolean;
 }

@@ -2,21 +2,21 @@ import { Card, Text, useMantineTheme } from '@mantine/core';
 import { AreaChart } from '@mantine/charts';
 import { WaterUsageData } from '../../models/WeatherAndWaterStatus';
 
-interface WaterUsageChartProps {
+interface WaterLevelChartProps {
     data?: WaterUsageData[];
 }
 
-export const WaterUsageChart = ({ data }: WaterUsageChartProps) => {
+export const WaterLevelChart = ({ data }: WaterLevelChartProps) => {
     const theme = useMantineTheme();
 
     const chartData = data && data.length > 0 ? data : [
-        { date: 'Mon', usage: 120 },
-        { date: 'Tue', usage: 140 },
-        { date: 'Wed', usage: 110 },
-        { date: 'Thu', usage: 150 },
-        { date: 'Fri', usage: 130 },
-        { date: 'Sat', usage: 90 },
-        { date: 'Sun', usage: 80 },
+        { date: 'Mon', level: 120 },
+        { date: 'Tue', level: 140 },
+        { date: 'Wed', level: 110 },
+        { date: 'Thu', level: 150 },
+        { date: 'Fri', level: 130 },
+        { date: 'Sat', level: 90 },
+        { date: 'Sun', level: 80 },
     ];
 
     return (
@@ -29,14 +29,14 @@ export const WaterUsageChart = ({ data }: WaterUsageChartProps) => {
                 border: `1px solid ${theme.colors.dark[4]}`
             }}
         >
-            <Text fw={600} size="sm" mb="lg" c="dimmed">Water Consumption (Last 7 Days)</Text>
+            <Text fw={600} size="sm" mb="lg" c="dimmed">Water Level (Last 7 Days)</Text>
 
             <AreaChart
                 h={300}
                 data={chartData}
                 dataKey="date"
                 series={[
-                    { name: 'usage', color: 'cyan.6' },
+                    { name: 'level', color: 'cyan.6' },
                 ]}
                 curveType="natural"
                 fillOpacity={0.2}

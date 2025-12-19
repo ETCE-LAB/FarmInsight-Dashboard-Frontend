@@ -45,11 +45,6 @@ export class EnergyResource extends AbstractResource<
     readonly resourceKey = 'energy';
     readonly displayName = 'Energy';
 
-    // Capability flags
-    readonly supportsSourceOperations = true;
-    readonly supportsConsumerOperations = true;
-    readonly supportsConfigOperations = true;
-
     // ─────────────────────────────────────────────────────────────────────────────
     // State Access
     // ─────────────────────────────────────────────────────────────────────────────
