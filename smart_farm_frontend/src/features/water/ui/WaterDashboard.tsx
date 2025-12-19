@@ -168,7 +168,14 @@ export const WaterDashboard = () => {
                         <Card shadow="sm" padding="lg" radius="md" withBorder style={{ flexGrow: 1 }}>
                             <Title order={3} mb="lg" size="h4">{t('water.modelsTitle')}</Title>
                             {fpfId ? (
-                                <PredictionView fpfId={fpfId} />
+                                /* Prediction Graphs */
+                                fpf?.Models && fpf.Models.length > 0 && (
+                                    <>
+                                        {fpf.Models.map((model) => (
+                                            <PredictionView fpfId={fpf.id} thresholds={model.thresholds}/>
+                                        ))}
+                                    </>
+                                )
                             ) : (
                                 <Text c="dimmed">{t('water.noData')}</Text>
                             )}
