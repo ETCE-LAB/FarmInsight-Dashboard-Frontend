@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {Hardware} from "../models/hardware";
-import {Box, Button, Flex, TextInput} from "@mantine/core";
+import {Box, Button, Flex} from "@mantine/core";
 import {showNotification} from "@mantine/notifications";
 import {updateHardware} from "../useCase/updateHardware";
 import {createHardware} from "../useCase/createHardware";
@@ -28,7 +28,7 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
 
     const handleSubmit = () => {
         if (toEditHardware) {
-            updateHardware(hardware).then((result) => {
+            updateHardware(hardware).then(() => {
                 showNotification({
                     title: t('common.updateSuccess'),
                     message: '',
@@ -44,7 +44,7 @@ export const HardwareForm : React.FC<{ toEditHardware?: Hardware, fpfId: string,
                 });
             });
         } else {
-            createHardware(hardware).then((result) => {
+            createHardware(hardware).then(() => {
                 showNotification({
                     title: t('common.saveSuccess'),
                     message: '',

@@ -1,6 +1,4 @@
-import APIClient from "../../../utils/APIClient";
 import {getUser} from "../../../utils/getUser";
-import {EditModel} from "../models/Model";
 import {BACKEND_URL} from "../../../env-config";
 
 

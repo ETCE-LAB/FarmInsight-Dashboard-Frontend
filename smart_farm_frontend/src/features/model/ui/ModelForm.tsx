@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor } from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { EditModel } from "../models/Model";
-import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
+
 import { createModel } from "../useCase/createModel";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
@@ -12,11 +12,11 @@ import { useNavigate } from "react-router-dom";
 import { updateModel } from "../useCase/updateModel";
 import { notifications } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
-import { IconMobiledata, IconMobiledataOff, IconRefresh, IconSum, IconSumOff } from "@tabler/icons-react";
-import { MultiLanguageInput } from "../../../utils/MultiLanguageInput";
-import { getModelParams } from "../useCase/getModelParams";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../utils/store";
+import {IconMobiledata, IconMobiledataOff, IconRefresh} from "@tabler/icons-react";
+import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
+import {getModelParams} from "../useCase/getModelParams";
+import {useSelector} from "react-redux";
+import {RootState} from "../../../utils/store";
 
 export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditModel, setClosed }) => {
   const auth = useAuth();
@@ -57,51 +57,61 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
     }
   }, [toEditModel]);
 
-  const handleEdit = () => {
-    if (toEditModel && requiredParameters) {
-      setClosed(false);
-      const id = notifications.show({
-        loading: true,
-        title: t('common.loading'),
-        message: t('model.updatingModel'),
-        autoClose: false,
-        withCloseButton: false,
-      });
-      updateModel({
-        id: toEditModel.id,
-        name,
-        URL: url,
-        intervalSeconds,
-        isActive,
-        fpfId: toEditModel.fpfId,
-        activeScenario,
-        required_parameters: requiredParameters,
-        availableScenarios,
-        actions: actions ?? [],
-        forecasts: forecasts ?? []
+const handleParamChange = (index: number, value: any) => {
+  setRequiredParameters((prev) => {
+    if (!prev) return prev; // or return [] if you prefer never-undefined afterwards
 
-      }).then((model) => {
-        notifications.update({
-          id,
-          title: t('common.updateSuccess'),
-          message: ``,
-          color: 'green',
-          loading: false,
-          autoClose: 2000,
-        });
-        dispatch(receivedModel());
-      }).catch((error) => {
-        notifications.update({
-          id,
-          title: t('common.updateError'),
-          message: `${error}`,
-          color: 'red',
-          loading: false,
-          autoClose: 10000,
-        });
-      });
-    }
-  };
+    const updated = [...prev];
+    updated[index] = { ...updated[index], value };
+    return updated;
+  });
+};
+
+    const handleEdit = () => {
+        if (toEditModel && requiredParameters) {
+            setClosed(false);
+            const id = notifications.show({
+                loading: true,
+                title: t('common.loading'),
+                message: t('model.updatingModel'),
+                autoClose: false,
+                withCloseButton: false,
+            });
+            updateModel({
+                id: toEditModel.id,
+                name,
+                URL:url,
+                intervalSeconds,
+                isActive,
+                fpfId: toEditModel.fpfId,
+                activeScenario,
+                required_parameters: requiredParameters,
+                availableScenarios,
+                actions: actions ?? [],
+                forecasts: forecasts ?? []
+
+            }).then(() => {
+                notifications.update({
+                    id,
+                    title: t('common.updateSuccess'),
+                    message: ``,
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
+                dispatch(receivedModel());
+            }).catch((error) => {
+                notifications.update({
+                    id,
+                    title: t('common.updateError'),
+                    message: `${error}`,
+                    color: 'red',
+                    loading: false,
+                    autoClose: 10000,
+                });
+            });
+        }
+    };
 
   const handleSave = () => {
     if (/*hardwareConfiguration &&*/ fpfId && organizationId && requiredParameters && actions && forecasts) {
@@ -126,6 +136,29 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
           autoClose: 2000,
         });
         dispatch(receivedModel());
+    const handleSave = () => {
+        if (/*hardwareConfiguration &&*/ fpfId && organizationId && requiredParameters && actions && forecasts) {
+            setClosed(false);
+            const interval = +intervalSeconds;
+            const id = notifications.show({
+                loading: true,
+                title: t('common.loading'),
+                message: t('model.creatingModel'),
+                autoClose: false,
+                withCloseButton: false,
+            });
+            createModel({
+                id: '', name, URL:url, activeScenario, intervalSeconds: interval, isActive, fpfId, required_parameters: requiredParameters, availableScenarios, actions, forecasts
+            }).then(() => {
+                notifications.update({
+                    id,
+                    title: t('common.saveSuccess'),
+                    message: ``,
+                    color: 'green',
+                    loading: false,
+                    autoClose: 2000,
+                });
+                dispatch(receivedModel());
 
         navigate(AppRoutes.editFpf.replace(":organizationId", organizationId).replace(":fpfId", fpfId));
       }).catch((error) => {
@@ -167,6 +200,26 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
       );
       setActions(data.actions || []);
       setActiveStep(1);
+            setRequiredParameters(data || []);
+            setForecasts(data.forecasts)
+            setAvailableScenarios(data.scenarios?.map((s: any) => s.name) || []);
+            setRequiredParameters(
+              data.input_parameters?.map((p: any) => ({
+                name: p.name,
+                type: p.type,
+                input_type : p.input_type,
+                value: p.default ?? "",
+              })) || []
+            );
+            setActions(data.actions || []);
+            if(!data){
+            notifications.show({
+                title: "Error",
+                message: "Error fetching the ",
+                color: "red",
+          });
+            }
+            setActiveStep(1);
 
     } catch (err: any) {
       notifications.show({
@@ -342,16 +395,24 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                   <Box key={i} mt="xs">
                     <Text size="sm" fw={500}>{param.name}</Text>
                     {param.type === "static" ? (
-                      <TextInput
-                        placeholder={`Enter ${param.name}`}
-                        required
-                        value={param.value}
-                        onChange={(e) => {
-                          const updated = [...requiredParameters];
-                          updated[i].value = e.currentTarget.value;
-                          setRequiredParameters(updated);
-                        }}
-                      />
+                        <>
+                          {param.input_type === "int" || param.input_type === "float" ? (
+                            <NumberInput
+                              placeholder={`Enter ${param.name}`}
+                              value={param.value}
+                              onChange={(v) => handleParamChange(i, v)}
+                              allowDecimal={param.input_type === "float"}
+                              hideControls
+                            />
+                          ) : (
+                            <TextInput
+                              placeholder={`Enter ${param.name}`}
+                              value={param.value}
+                              onChange={(e) => handleParamChange(i, e.currentTarget.value)}
+                            />
+                          )}
+                        </>
+
                     ) : (
                       <select
                         style={{ width: "100%", padding: "8px" }}
@@ -385,12 +446,12 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
 
           </Stepper.Step>
 
-          <Stepper.Step
-            label="Assign Actions"
-            description="Map actions to controllable actions"
-            allowStepSelect={!!toEditModel}
-          >
-            <Grid>
+           <Stepper.Step
+              label={t("model.assignActions")}
+              description={t("model.assignActionsDescr")}
+              allowStepSelect={!!toEditModel}
+            >
+           <Grid>
               <Grid.Col span={12}>
                 <Text fw={500} mb="xs">Model Actions</Text>
                 {actions?.map((action, i) => (
@@ -428,5 +489,4 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
         </Stepper>
       )}
     </>
-  );
-};
+)};

@@ -180,7 +180,10 @@ i18n
                             locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>) The URL must provide sub endpoint /param and /farm-insight. For more details see the documentation.',
                             interval: 'The interval in which the model will do the calculation (default 1 day)',
                         },
-                        overwriteParameters: 'Retrieve model parameters (This overwrites the current config!)'
+                        overwriteParameters: 'Retrieve model parameters (This overwrites the current config!)',
+                        errorFetchingModelParams: 'There was an error fetching the parameter of the models.',
+                        assignActions: 'Assign actions',
+                        assignActionsDescr: 'Map actions to controllable actions',
                     },
                     userManagement: {
                         userKicked: 'User was kicked from Organization.',
@@ -227,6 +230,7 @@ i18n
                         aggregate: 'Display Σ values?',
                     },
                     controllableActionList: {
+                        forecastPending: 'No actions forecasted',
                         noActionFound: 'No Action found',
                         auto: 'Auto',
                         title: 'Controllable Actions',
@@ -847,6 +851,9 @@ i18n
                             locationHint: 'Die URL des Modells (z.B. http://<ip-adress>:<port>). Die URL muss die Endpunkte /param und /farm-insight bereitstellen. Für weitere Details siehe Dokumentation.',
                             interval: 'Das Intervall, in dem das Modell die Berechnung durchführt (Standard 1 Tag)',
                         },
+                        errorFetchingModelParams: 'Es gab einen Fehler die Parameter vom Model abzurufen.',
+                        assignActions: 'Verknüpfe Aktionen',
+                        assignActionsDescr: 'Verknüpfe Aktionen vom Model zu kontrollierbaren Aktionen',
                         overwriteParameters: 'Modellparameter abrufen (Überschreibt die aktuelle Konfiguration!)'
                     },
                     userManagement: {
@@ -894,6 +901,7 @@ i18n
                         aggregate: 'Σ Werte ausgeben?'
                     },
                     controllableActionList: {
+                        forecastPending: 'Keine Aktionen geplant',
                         noActionFound: 'Keine Aktionen gefunden',
                         auto: "Auto",
                         title: "Steuerbare Aktionen",

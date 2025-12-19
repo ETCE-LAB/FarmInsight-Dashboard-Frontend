@@ -1,6 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../../../utils/store";
-import { Fpf } from "../models/Fpf";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {Fpf} from "../models/Fpf";
 
 
 //Currently: 2 States, Logged in and not logged in
@@ -20,7 +19,7 @@ const initialState: FpfSlice = {
         Models: [],
         Cameras: [],
         sensorServiceIp: "",
-        Location: { id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false },
+        Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false},
         GrowingCycles: [],
         ControllableAction: [],
         Hardware: [],
@@ -42,7 +41,7 @@ const fpfSlice = createSlice({
     initialState,
 
     reducers: {
-        createdFpf(state) {
+        createdFpf(state){
             state.createdFpfEvent += 1
         },
         updatedFpf(state, action: PayloadAction<Fpf>) {
@@ -51,6 +50,6 @@ const fpfSlice = createSlice({
     }
 })
 
-export const { createdFpf, updatedFpf } = fpfSlice.actions
-export const receivedUserProfileEvent = (state: RootState) => state.fpf.createdFpfEvent;
+export const {createdFpf, updatedFpf} = fpfSlice.actions
+//export const receivedUserProfileEvent = (state:RootState) => state.fpf.createdFpfEvent;
 export default fpfSlice.reducer

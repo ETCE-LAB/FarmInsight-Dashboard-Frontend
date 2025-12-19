@@ -54,7 +54,7 @@ const HarvestEntityList: React.FC<{ growingCycleID: string }> = ({ growingCycleI
 
     const confirmDelete = () => {
         if (entityToDelete) {
-            deleteHarvestEntity(entityToDelete.id).then((result) => {
+            deleteHarvestEntity(entityToDelete.id).then(() => {
                 dispatch(removeHarvestEntity({ cycleId: growingCycleID, harvestId: entityToDelete.id }));
                 dispatch(changedGrowingCycle());
                 showNotification({

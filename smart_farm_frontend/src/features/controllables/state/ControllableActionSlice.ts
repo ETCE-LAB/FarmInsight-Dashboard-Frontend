@@ -17,10 +17,14 @@ const ControllableActionSlice = createSlice({
     name: 'ControllableAction',
     initialState,
     reducers: {
-
+        /*
         changedControllableAction(state) {
             state.changeControllableActionEvent += 1
         },
+        deleteControllableAction(state, action: PayloadAction<string>) {
+            state.controllableAction = state.controllableAction.filter(cycle => cycle.id !== action.payload);
+        },
+        */
         setControllableAction(state, action: PayloadAction<ControllableAction[]>) {
             state.controllableAction = action.payload;
         },
@@ -33,9 +37,7 @@ const ControllableActionSlice = createSlice({
                 state.controllableAction[index] = action.payload;
             }
         },
-        deleteControllableAction(state, action: PayloadAction<string>) {
-            state.controllableAction = state.controllableAction.filter(cycle => cycle.id !== action.payload);
-        },
+
 
         updateControllableActionStatus(state, action: PayloadAction<{ actionId: string; triggerId: string }>) {
             const { actionId, triggerId } = action.payload;
@@ -80,11 +82,11 @@ const ControllableActionSlice = createSlice({
 })
 
 export const {
-    changedControllableAction,
+    //changedControllableAction,
     setControllableAction,
     addControllableAction,
     updateControllableActionSlice,
-    deleteControllableAction,
+    //deleteControllableAction,
     updateControllableActionStatus,
     updateIsAutomated,
     addActionTrigger,

@@ -14,7 +14,7 @@ import {useAppDispatch} from "../../../utils/Hooks";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {showNotification} from "@mantine/notifications";
 import {getBackendTranslation} from "../../../utils/utils";
-
+import { IconRobot } from "@tabler/icons-react";
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
     const { t, i18n } = useTranslation();
@@ -94,7 +94,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         dispatch(updateIsAutomated({actionId: actionId, isAutomated: isActive || triggerId === "auto"}));
         dispatch(updateControllableActionStatus({actionId, triggerId: triggerId !== "auto" && !isActive ? triggerId : ""}));
 
-        executeTrigger(actionId, triggerId, value).then((v) => {
+        executeTrigger(actionId, triggerId, value).then(() => {
             showNotification({
                 title: t('common.executeSuccess'),
                 message: '',
@@ -164,7 +164,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                             return (
                                 <>
                                     <Text>{t("controllableActionList.confirmMessage")}</Text>
-                                    <Text color="red" size="sm">
+                                    <Text c="red" size="sm">
                                         ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
                                     </Text>
                                 </>

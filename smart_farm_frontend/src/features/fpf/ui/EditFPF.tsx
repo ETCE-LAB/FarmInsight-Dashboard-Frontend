@@ -96,19 +96,15 @@ export const EditFPF: React.FC = () => {
         if (fpf?.Sensors && fpf.Sensors.length >= 1) {
             setSensors(fpf.Sensors);
         }
-    }, [fpf]);
-
-    useEffect(() => {
         if (fpf?.Models && fpf.Models.length >= 1) {
             setModels(fpf.Models);
         }
-    }, [fpf]);
-
-    useEffect(() => {
         if (fpf?.Hardware && fpf.Hardware.length >= 1) {
             setHardware(fpf.Hardware);
         }
     }, [fpf]);
+
+
 
     useEffect(() => {
         if (auth.isAuthenticated && organizationId) {
@@ -128,33 +124,7 @@ export const EditFPF: React.FC = () => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
                 setSensors(resp.Sensors);
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadError'),
-                    message: `${error}`,
-                    color: 'red',
-                });
-            });
-        }
-    }, [SensorEventListener]);
-
-    useEffect(() => {
-        if (fpfId) {
-            getFpf(fpfId).then((resp) => {
                 setModels(resp.Models);
-            }).catch((error) => {
-                showNotification({
-                    title: t('common.loadError'),
-                    message: `${error}`,
-                    color: 'red',
-                });
-            });
-        }
-    }, [ModelEventListener]);
-
-    useEffect(() => {
-        if (fpfId) {
-            getFpf(fpfId).then((resp) => {
                 setCameras(resp.Cameras);
             }).catch((error) => {
                 showNotification({
@@ -164,7 +134,8 @@ export const EditFPF: React.FC = () => {
                 });
             });
         }
-    }, [CameraEventListener]);
+    }, [SensorEventListener, ModelEventListener, CameraEventListener]);
+
 
     return (
         <Stack gap={"md"}>
