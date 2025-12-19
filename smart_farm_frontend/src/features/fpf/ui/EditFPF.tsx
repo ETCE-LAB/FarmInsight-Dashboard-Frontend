@@ -28,7 +28,7 @@ import { useAuth } from "react-oidc-context";
 import { AuthRoutes } from "../../../utils/Router";
 import { ModelList } from "../../model/ui/ModelList";
 import { Model } from "../../model/models/Model";
-import { ResourceManagementForm } from "../../resources/ui/ResourceManagementForm";
+import { ResourceManagementModalButton } from "../../resources/ui/ResourceManagementModalButton";
 
 
 export const EditFPF: React.FC = () => {
@@ -212,6 +212,7 @@ export const EditFPF: React.FC = () => {
                                     {t('energy.dashboardTitle')}
                                 </Button>
                                 <LogMessageModalButton resourceType={ResourceType.FPF} resourceId={fpfId}></LogMessageModalButton>
+                                <ResourceManagementModalButton fpf={fpf} />
                             </Flex>
                         </Flex>
                     </Grid.Col>
@@ -238,9 +239,7 @@ export const EditFPF: React.FC = () => {
                 <HardwareList hardwareToDisplay={hardware} fpfId={fpf.id} isAdmin={isAdmin} />
             </Card>
 
-            <Box>
-                <ResourceManagementForm fpf={fpf} />
-            </Box>
+
 
             <Card padding="lg" radius="md">
                 <ActionQueueList fpfId={fpf.id} />

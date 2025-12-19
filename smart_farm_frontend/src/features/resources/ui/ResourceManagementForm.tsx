@@ -10,9 +10,10 @@ import { updateRmm } from '../../water/useCase/updateRmmSensors';
 
 interface ResourceManagementFormProps {
     fpf: Fpf;
+    onSuccess?: () => void;
 }
 
-export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ fpf }) => {
+export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ fpf, onSuccess }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
 
@@ -68,6 +69,7 @@ export const ResourceManagementForm: React.FC<ResourceManagementFormProps> = ({ 
                 loading: false,
                 autoClose: 2000,
             });
+            onSuccess?.();
         } catch (error) {
             notifications.update({
                 id,
