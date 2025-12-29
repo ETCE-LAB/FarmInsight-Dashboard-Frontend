@@ -18,14 +18,13 @@ import {getBackendTranslation} from "../../../utils/utils";
 
 export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
     const { t, i18n } = useTranslation();
-    const controllableAction = useSelector((state: RootState) => state.controllableAction.controllableAction);
+    const controllableActions = useSelector((state: RootState) => state.controllableAction.controllableAction);
 
     const dispatch = useAppDispatch();
     const [controllableActionModalOpen, setControllableActionModalOpen] = useState(false);
     const [actionTriggerModalOpen, setActionTriggerModalOpen] = useState(false);
     const [selectedAction, setSelectedAction] = useState<ControllableAction | undefined>(undefined);
     const [selectedTrigger, setSelectedTrigger] = useState<ActionTrigger | undefined>(undefined);
-    const [selectedActionId, setSelectedActionId] = useState<string>("");
     const [expandedRows, setExpandedRows] = useState<string[]>([]);
 
     const [confirmModal, setConfirmModal] = useState<{
@@ -67,13 +66,14 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         setSelectedAction(undefined);
         setControllableActionModalOpen(true);
     }
-    const onClickAddTrigger = (id:string) => {
-        setSelectedActionId(id);
+
+    const onClickAddTrigger = (action: ControllableAction) => {
+        setSelectedAction(action);
         setSelectedTrigger(undefined);
         setActionTriggerModalOpen(true);
     }
 
-    const onClickEditTrigger = (trigger: ActionTrigger) => {
+    const onClickEditTrigger = (action: ControllableAction, trigger: ActionTrigger) => {
         const editTrigger: ActionTrigger = {
             id:                 trigger.id,
             isActive:           trigger.isActive,
@@ -86,6 +86,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
             lastTriggered: null
         }
 
+        setSelectedAction(action);
         setSelectedTrigger(editTrigger)
         setActionTriggerModalOpen(true)
     }
@@ -110,7 +111,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         });
     };
 
-    const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
+    const groupedActions = controllableActions.reduce<Record<string, typeof controllableActions>>((acc, action) => {
       const key = action.hardware?.id ?? action.id;
       if (!acc[key]) acc[key] = [];
       acc[key].push(action);
@@ -119,10 +120,11 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
 
     const getActionChain = (action: ControllableAction) => {
         let actions = [];
-        let nextAction = controllableAction.find(x => x.id === action.nextAction);
-        while (nextAction) {
+        for (let nextAction = controllableActions.find(x => x.id === action.nextAction);
+             nextAction;
+             nextAction = controllableActions.find(x => x.id === nextAction?.nextAction))
+        {
             actions.push(nextAction.name);
-            nextAction = controllableAction.find(x => x.id === nextAction?.nextAction);
         }
 
         return actions;
@@ -149,7 +151,9 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                 centered
                 size="70%"
             >
-                <ActionTriggerForm actionId={selectedActionId} toEditTrigger={selectedTrigger} setClosed={setActionTriggerModalOpen} />
+                {selectedAction &&
+                    <ActionTriggerForm action={selectedAction} actionList={controllableActions} toEditTrigger={selectedTrigger} setClosed={setActionTriggerModalOpen} />
+                }
             </Modal>
 
             <Modal
@@ -165,7 +169,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                     })}
 
                     {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
-                        const currentAction = controllableAction.find(a => a.id === confirmModal.actionId);
+                        const currentAction = controllableActions.find(a => a.id === confirmModal.actionId);
                         const currentGroup = currentAction?.hardware?.id ? groupedActions[currentAction.hardware.id] : [];
 
                         const autoTriggersInGroup = currentGroup?.some(action =>
@@ -227,7 +231,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                 }
             </Group>
             {/* Conditional Rendering of Table */}
-            {controllableAction && controllableAction.length > 0 ? (
+            {controllableActions && controllableActions.length > 0 ? (
                 <>
                 <Table striped highlightOnHover withColumnBorders>
                   <Table.Thead>
@@ -306,7 +310,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                         size={20}
                                                         stroke={2}
                                                         color="#199ff4"
-                                                        onClick={() => onClickAddTrigger(action.id)}
+                                                        onClick={() => onClickAddTrigger(action)}
                                                         style={{cursor: "pointer"}}
                                                     />
                                                 )}
@@ -388,7 +392,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                 <Table.Td>
                                                                     <Flex justify="space-between" align="center">
                                                                         <Badge color={isActive ? "blue" : trigger.isActive ? "green" : "gray"}>
-                                                                            {isActive ? t("controllableActionList.trigger.running") :trigger.isActive ? t("controllableActionList.trigger.active") : t("controllableActionList.trigger.inactive")}
+                                                                            {trigger.isActive ? (isActive ? t("controllableActionList.trigger.running") : t("controllableActionList.trigger.active")) : t("controllableActionList.trigger.inactive")}
                                                                         </Badge>
                                                                     </Flex>
                                                                 </Table.Td>
@@ -400,7 +404,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                                 color={"#199ff4"}
                                                                                 size={20}
                                                                                 stroke={2}
-                                                                                onClick={() => onClickEditTrigger(trigger)}
+                                                                                onClick={() => onClickEditTrigger(action, trigger)}
                                                                                 style={{cursor: "pointer"}}
                                                                             />
                                                                         </Flex>

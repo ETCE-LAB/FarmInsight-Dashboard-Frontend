@@ -10,18 +10,18 @@ import {ActionTrigger} from "../models/actionTrigger";
 import {createActionTrigger} from "../useCase/createActionTrigger";
 import {updateActionTrigger} from "../useCase/updateActionTrigger";
 import {addActionTrigger, updateActionTriggerNotify} from "../state/ControllableActionSlice";
-import {selectControllableActionById} from "../state/ControllableActionSlice";
 import {SensorTriggerForm} from "./TriggerTypes/sensorTriggerForm";
 import {TimeTriggerForm} from "./TriggerTypes/timeTriggerForm";
 import {triggerTypes} from "../models/triggerTypes";
 import {IntervalTriggerForm} from "./TriggerTypes/intervalTriggerForm";
-import {useSelector} from "react-redux";
-import {RootState} from "../../../utils/store";
 import {fetchAvailableActionScripts} from "../useCase/fetchAvailableActionScripts";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
+import {ControllableAction} from "../models/controllableAction";
+import {ActionScript} from "../models/actionScript";
+import {getBackendTranslation} from "../../../utils/utils";
 
 
-export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: ActionTrigger, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ actionId, toEditTrigger, setClosed }) => {
+export const ActionTriggerForm: React.FC<{ action: ControllableAction, actionList: ControllableAction[], toEditTrigger?: ActionTrigger, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ action, actionList, toEditTrigger, setClosed }) => {
     const auth = useAuth();
     const { t, i18n } = useTranslation();
     const { organizationId, fpfId } = useParams();
@@ -29,61 +29,68 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
     const [triggerId, setTriggerId] = useState<string>("")
     const [type, setType] = useState<string>("");
-    const [actionValueType, setActionValueType] = useState<string>("");
-    const [actionValue, setActionValue] = useState<string>("");
+    const [actionValueTypes, setActionValueTypes] = useState<string[]>([""]);
+    const [actionValues, setActionValues] = useState<string[]>([""]);
     const [triggerLogic, setTriggerLogic] = useState<string>("{}");
     const [description, setDescription] = useState<string>("");
 
     const [actionIdState, setActionId] = useState<string>("")
-    const [isActive, setIsActive] = useState<boolean>(true);
-    const [actionValueList, setActionValueList] = useState<string[]>([]);
-    const action = useSelector((state:RootState) =>
-        selectControllableActionById(state, actionId)
-    )
+    const [isActive, setIsActive] = useState<boolean>(false);
+
+    const [actionScripts, setActionScripts] = useState<ActionScript[]>([]);
+    const [chainActions, setChainActions] = useState<ControllableAction[]>([]);
 
     useEffect(() => {
+        /*
+        *  Order matters, we want the Edit trigger actionValueTypes and ActionValues to have priority if they exist,
+        *  but if not want the arrays to be initialized correctly
+         */
+        if (action.nextAction) {
+            let actionChain: ControllableAction[] = [];
+            for (let nextAction = actionList.find(x => x.id === action.nextAction);
+                 nextAction;
+                 nextAction = actionList.find(x => x.id === nextAction?.nextAction))
+            {
+                actionChain.push(nextAction);
+            }
+
+            if (actionValueTypes.length < actionChain.length + 1) {
+                setActionValueTypes([...actionValueTypes, ...Array(actionChain.length - actionValues.length).fill("")]);
+            }
+            if (actionValues.length < actionChain.length + 1) {
+                setActionValues([...actionValues, ...Array(actionChain.length - actionValues.length).fill("")]);
+            }
+
+            setChainActions(actionChain);
+        }
+
         if (toEditTrigger) {
             setTriggerId(toEditTrigger.id ||"")
             setType(toEditTrigger.type || "");
-            setActionValueType(toEditTrigger.actionValueType || "");
-            setActionValue(toEditTrigger.actionValue || "");
+            setActionValueTypes(toEditTrigger.actionValueType?.split(";") || [""]);
+            setActionValues(toEditTrigger.actionValue?.split(';') || [""]);
             setTriggerLogic(toEditTrigger.triggerLogic || "");
             setDescription(toEditTrigger.description || "");
-            setActionId(toEditTrigger.actionId)
+            setActionId(toEditTrigger.actionId);
+            setIsActive(toEditTrigger.isActive);
         }
-    }, [toEditTrigger]);
+    }, [action, actionList, toEditTrigger]);
 
     useEffect(() => {
-        if (actionId && fpfId) {
+        if (fpfId) {
             fetchAvailableActionScripts(fpfId).then(scripts => {
-                const actionScripts = scripts?.map(s => ({
-                  value: s.action_script_class_id,
-                  label: s.name,
-                  description: s.description,
-                  action_values: s.action_values,
-                  fields: s.fields
-                })) ?? [];
-                // Find the matching script
-              const matchedScript = actionScripts.find(
-                (script) => script.value === action?.actionClassId
-              );
-
-              // Set the action values if found
-              if (matchedScript) {
-                setActionValueList(matchedScript.action_values);
-              }
+                setActionScripts(scripts);
             })
         }
-
-    }, [actionId, fpfId]);
+    }, [fpfId]);
 
     const handleEdit = () => {
         if (toEditTrigger && fpfId) {
             setClosed(false);
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
-                message: 'Updating Controllable Action on your FPF',
+                title: t('common.updating'),
+                message: t('common.loading'),
                 autoClose: false,
                 withCloseButton: false,
             });
@@ -92,8 +99,8 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                 id: triggerId,
                 actionId: actionIdState,
                 type: type,
-                actionValueType: actionValueType,
-                actionValue: actionValue,
+                actionValueType: actionValueTypes.join(";"),
+                actionValue: actionValues.join(';'),
                 triggerLogic: triggerLogic,
                 isActive: isActive,
                 description: description,
@@ -102,8 +109,8 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                     dispatch(updateActionTriggerNotify({actionId: actionTrigger.actionId, trigger: actionTrigger}));
                     notifications.update({
                         id,
-                        title: 'Success',
-                        message: `ActionTrigger updated successfully.`,
+                        title: t('common.success'),
+                        message: t('common.updateSuccess'),
                         color: 'green',
                         loading: false,
                         autoClose: 2000,
@@ -111,7 +118,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                 } else {
                     notifications.update({
                         id,
-                        title: 'There was an error updating the ActionTrigger.',
+                        title: t('common.updateError'),
                         message: `${actionTrigger}`,
                         color: 'red',
                         loading: false,
@@ -128,7 +135,7 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
 
             const id = notifications.show({
                 loading: true,
-                title: 'Loading',
+                title: t('common.loading'),
                 message: 'Creating Trigger..',
                 autoClose: false,
                 withCloseButton: false,
@@ -136,15 +143,15 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
             createActionTrigger({
                 fpfId:fpfId,
                 id: '',
-                actionId: actionId,
+                actionId: action.id,
                 type:type,
-                actionValueType: actionValueType,
-                actionValue: actionValue,
+                actionValueType: actionValueTypes.join(";"),
+                actionValue: actionValues.join(';'),
                 triggerLogic: triggerLogic,
                 isActive: isActive,
                 description: description,
             }).then((response) => {
-                dispatch(addActionTrigger({actionId:actionId,trigger: response}))
+                dispatch(addActionTrigger({actionId: action.id, trigger: response}))
 
                 if (response) {
                     notifications.update({
@@ -169,6 +176,80 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
             });
         }
     };
+
+    const TriggerValueInput: React.FC<{action: ControllableAction, scripts: ActionScript[], showName: boolean, initialType: string, initialValue: string, index: number}> = ({action, scripts, showName, initialType, initialValue, index}) => {
+        const [actionValueList, setActionValueList] = useState<string[]>([]);
+        const [localType, setLocalType] = useState<string>(initialType);
+        const [localValue, setLocalValue] = useState<string>(initialValue);
+
+        console.log(initialType);
+
+        useEffect(() => {
+            if (scripts) {
+                // Find the matching script
+                const matchedScript = scripts.find(
+                    (script) => script.action_script_class_id === action.actionClassId
+                );
+
+                // Set the action values if found
+                if (matchedScript) {
+                    setActionValueList(matchedScript.action_values);
+                }
+            }
+        }, [scripts, action]);
+
+        const setActionValue = (value: string) => {
+            setLocalValue(value);
+            let values = [...actionValues];
+            values[index] = value;
+            setActionValues(values);
+        }
+
+        const setActionValueType = (value: string) => {
+            setLocalType(value);
+            let valueTypes = [...actionValueTypes];
+            valueTypes[index] = value;
+            setActionValueTypes(valueTypes);
+        }
+
+        return (
+            <>
+                <Grid.Col span={6}>
+                    <Autocomplete
+                        label={showName ? `${t("controllableActionList.trigger.actionValueTypeFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValueType")}
+                        placeholder={t("controllableActionList.trigger.enterActionValueType")}
+                        required
+                        data={["bool", "int", "float", "string", "range"]}
+                        value={localType}
+                        onChange={setActionValueType}
+                        description={t("controllableActionList.trigger.hint.actionValueTypeHint")}
+                    />
+                </Grid.Col>
+                <Grid.Col span={6}>
+                    {actionValueList.length > 0 ?
+                        <Autocomplete
+                            label={showName? `${t("controllableActionList.trigger.actionValueFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValue")}
+                            placeholder={t("controllableActionList.trigger.enterActionValue")}
+                            required
+                            data={actionValueList}
+                            value={localValue}
+                            onChange={setActionValue}
+                            description={t("controllableActionList.trigger.hint.actionValueHint")}
+                        />
+                        :
+                        <TextInput
+                            label={showName? `${t("controllableActionList.trigger.actionValueFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValue")}
+                            placeholder={t("controllableActionList.trigger.enterActionValue")}
+                            required
+                            value={localValue}
+                            onChange={(e) => setActionValue(e.currentTarget.value)}
+                            description={t("controllableActionList.trigger.hint.actionValueHint")}
+                        />
+                    }
+                </Grid.Col>
+            </>
+        );
+    }
 
     return (
         <>
@@ -214,41 +295,10 @@ export const ActionTriggerForm: React.FC<{ actionId:string, toEditTrigger?: Acti
                         </Grid.Col>
 
                         {/* actionValueType */}
-                        <Grid.Col span={6}>
-                          <Autocomplete
-                            label={t("controllableActionList.trigger.actionValueType")}
-                            placeholder={t("controllableActionList.trigger.enterActionValueType")}
-                            required
-                            data={["bool", "int", "float", "string", "range"]}
-                            value={actionValueType}
-                            onChange={setActionValueType}
-                            description={t("controllableActionList.trigger.hint.actionValueTypeHint")}
-                          />
-                        </Grid.Col>
-
-                        {/* actionValue */}
-                        <Grid.Col span={6}>
-                            {actionValueList.length > 0 ?
-                            <Autocomplete
-                                label={t("controllableActionList.trigger.actionValue")}
-                                placeholder={t("controllableActionList.trigger.enterActionValue")}
-                                required
-                                data={actionValueList}
-                                value={actionValue}
-                                onChange={setActionValue}
-                                description={t("controllableActionList.trigger.hint.actionValueHint")}
-                            />
-                            :
-                            <TextInput
-                                label={t("controllableActionList.trigger.actionValue")}
-                                placeholder={t("controllableActionList.trigger.enterActionValue")}
-                                required
-                                value={actionValue}
-                                onChange={(e) => setActionValue(e.currentTarget.value)}
-                                description={t("controllableActionList.trigger.hint.actionValueHint")}
-                            />
-                            }
-                        </Grid.Col>
+                        <TriggerValueInput action={action} scripts={actionScripts} showName={action.nextAction !== null} initialType={actionValueTypes[0]} initialValue={actionValues[0]} index={0} />
+                        {chainActions && chainActions.map((action, index) => (
+                            <TriggerValueInput action={action} scripts={actionScripts} showName={true} initialType={actionValueTypes[index+1]} initialValue={actionValues[index+1]} index={index+1} />
+                        ))}
 
                         {/* triggerLogic */}
                         {/* ...For Sensor */}

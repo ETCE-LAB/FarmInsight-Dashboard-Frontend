@@ -130,14 +130,15 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
         if (availableActions && toEditAction) {
             // make sure to avoid loops, if this action is already a followup action of another one
             let prevActions: ControllableAction[] = [];
-            let prevAction = availableActions.find(x => x.nextAction === toEditAction.id);
-            while (prevAction) {
+            for(let prevAction = availableActions.find(x => x.nextAction === toEditAction.id);
+                prevAction;
+                prevAction = availableActions.find(x => x.nextAction === prevAction?.id))
+            {
                 prevActions.push(prevAction);
-                prevAction = availableActions.find(x => x.nextAction === prevAction?.id);
             }
 
             const actions = availableActions.filter(x => !prevActions.includes(x));
-            //setAvailableActions(actions);
+            setAvailableActions(actions);
         }
     }, [availableActions, toEditAction]);
 
