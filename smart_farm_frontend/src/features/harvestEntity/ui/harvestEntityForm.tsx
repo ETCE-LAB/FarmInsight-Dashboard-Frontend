@@ -63,7 +63,7 @@ export const HarvestEntityForm: React.FC<{ growingCycleId: string; toEditHarvest
 
     const isFormValid = useMemo(() => {
         return harvestEntity.date && harvestEntity.amountInKg > 0;
-    }, [harvestEntity]);
+    }, [harvestEntity.date, harvestEntity.amountInKg]);
 
     useEffect(() => {
         if (toEditHarvestEntity) {

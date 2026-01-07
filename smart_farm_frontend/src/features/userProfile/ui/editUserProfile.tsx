@@ -1,7 +1,6 @@
 import { Button, Card, Group, Stack, TextInput, Divider } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { modifyUserProfile } from "../useCase/modifyUserProfile";
-import { receiveUserProfile } from "../useCase/receiveUserProfile";
 import { useAuth } from "react-oidc-context";
 import { useAppDispatch, useAppSelector } from "../../../utils/Hooks";
 import { changedUserProfile, changedUserProfileEvent } from "../state/UserProfileSlice";
@@ -30,7 +29,7 @@ export const EditUserProfile = () => {
     const handleSave = async () => {
         modifyUserProfile({
             name: editableProfile.name,
-        }).then((result) => {
+        }).then(() => {
             showNotification({
                 title: t("userprofile.notifications.success.title"),
                 message: t("userprofile.notifications.success.message"),

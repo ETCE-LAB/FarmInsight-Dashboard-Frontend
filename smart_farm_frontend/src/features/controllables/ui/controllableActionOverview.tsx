@@ -15,12 +15,12 @@ import {
 } from "@mantine/core";
 import {executeTrigger} from "../useCase/executeTrigger";
 import {updateControllableActionStatus, updateIsAutomated} from "../state/ControllableActionSlice";
-import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {useParams} from "react-router-dom";
 import {showNotification} from "@mantine/notifications";
 import {ControllableAction} from "../models/controllableAction";
 import {getBackendTranslation, truncateText} from "../../../utils/utils";
 import {useAuth} from "react-oidc-context";
+import { IconRobot } from "@tabler/icons-react";
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -37,7 +37,6 @@ const getColor = (value: string) => {
 const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
     const { t, i18n } = useTranslation();
 
-    const auth = useAuth();
     const controllableAction = useSelector(
         (state: RootState) => state.controllableAction.controllableAction
     );
@@ -159,7 +158,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                             return (
                                 <>
                                     <Text>{t("controllableActionList.confirmMessage")}</Text>
-                                    <Text color="red" size="sm">
+                                    <Text c="red" size="sm">
                                         ⚠ {t("controllableActionList.manualDisablesAutoWarning")}
                                     </Text>
                                 </>
@@ -187,7 +186,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                 confirmModal.triggerId,
                                 confirmModal.value,
                                 confirmModal.isActive
-                            );
+                            ).then(() =>console.log("Trigger change executed"));
                         }
                     }}>
                         {t("common.confirm")}
@@ -283,7 +282,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                             <Flex direction="column" gap="sm">
                                 {actions.map((action) => {
                                     const manualTriggers = action.trigger.filter((t) => t.type === "manual" && t.isActive);
-                                    const hasAuto = action.trigger.some((t) => t.type !== "manual" && t.isActive);
+                                    const hasAuto = action.trigger.some((t) => t.type !== "manual" && t.type !== "forecast" && t.isActive);
 
                                     return (
                                         <Card key={action.id} p="sm" shadow="none" style={
@@ -327,6 +326,30 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                                             </Button>
                                                         );
                                                     })}
+
+                                                    {/* Forecast triggers (read only) */}
+                                                        {action.trigger
+                                                          .filter((t) => t.type === "forecast")
+                                                          .map((trigger) => (
+                                                            <Flex key={trigger.id} align="center" gap="4px">
+                                                              <IconRobot size={18} color="#4dabf7" />
+                                                              <Text size="xs">
+                                                                  {((): string => {
+                                                                    try {
+                                                                      const logic = typeof trigger.triggerLogic === "string"
+                                                                        ? JSON.parse(trigger.triggerLogic)
+                                                                        : trigger.triggerLogic;
+
+                                                                      return logic?.timestamp
+                                                                        ? new Date(logic.timestamp).toLocaleString(navigator.language)
+                                                                        : t("controllableActionList.forecastPending");
+                                                                    } catch {
+                                                                      return t("controllableActionList.forecastPending");
+                                                                    }
+                                                                  })()}
+                                                                </Text>
+                                                            </Flex>
+                                                          ))}
 
                                                     {hasAuto && (
                                                         <Button

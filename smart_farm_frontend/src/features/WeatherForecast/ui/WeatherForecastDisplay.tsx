@@ -216,10 +216,10 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
                                             </Tooltip>
                                             <IconArrowsDiagonalMinimize2 style={{marginLeft:"auto", cursor:"pointer"}} onClick={() => {setIsDetailedView(-1)}}/>
                                         </Group>
-                                        <Text size="sm" color="dimmed"  >
+                                        <Text size="sm" c="dimmed"  >
                                             {t('weatherForecast.forecastDate')}: {formatDate(forecast.forecastDate.toString())}
                                         </Text>
-                                        <Text size="xs" color="dimmed">
+                                        <Text size="xs" c="dimmed">
                                             {t('weatherForecast.fetchDate')}: {formatDate(forecast.fetchDate.toString())}
                                         </Text>
                                         <Text>

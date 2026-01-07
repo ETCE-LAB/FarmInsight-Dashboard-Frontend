@@ -74,7 +74,7 @@ export const SelectFPFLocation: React.FC<{organizationId: string,  setLocation: 
                                 {locations.map((location, index) => (
                                     <Table.Tr
                                         key={location.id}
-                                        onClick={(e) => {
+                                        onClick={() => {
                                             setLocation(location);
                                         }}
                                         onMouseEnter={(e) => {

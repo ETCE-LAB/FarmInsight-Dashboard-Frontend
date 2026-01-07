@@ -17,10 +17,7 @@ import {
 import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { IconPlant } from '@tabler/icons-react';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import {OrganizationMembership} from '../../../features/organization/models/Organization';
 import { useAuth } from 'react-oidc-context';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../utils/store';
 import { OrganizationForm } from '../../../features/organization/ui/organizationForm';
 import { useNavigate } from 'react-router-dom';
 import { AppRoutes } from '../../../utils/appRoutes';
@@ -30,15 +27,14 @@ import { useTranslation } from 'react-i18next';
 import Footer from '../footer/footer';
 import { useMediaQuery } from '@mantine/hooks';
 import {showNotification} from "@mantine/notifications";
-import {useAppSelector} from "../../../utils/Hooks";
 
-const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+const LandingPage: React.FC<PropsWithChildren<{}>> = () => {
     const auth = useAuth();
-    const [organizations, setOrganizations] = useState<OrganizationMembership[]>([]);
+   // const [organizations, setOrganizations] = useState<OrganizationMembership[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
-    const organizationEventListener = useSelector(
+    /*const organizationEventListener = useSelector(
         (state: RootState) => state.organization.createdOrganizationEvent
-    );
+    ); */
     const navigate = useNavigate();
     const [fpfs, setFpfs] = useState<BasicFPF[]>([]);
     const { t } = useTranslation();
@@ -64,7 +60,7 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
     //Redux Store
     //const dispatch = useAppDispatch();
-    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
+   // const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -99,11 +95,13 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         return () => clearInterval(interval);
     }, [t]);
 
+    /* not needed
     useEffect(() => {
         if (auth.isAuthenticated) {
             setOrganizations(myOrganizationsSelector);
         }
     }, [auth.isAuthenticated, organizationEventListener, t, myOrganizationsSelector]);
+    */
 
     const handleFpfSelect = (organizationId: string, fpfId: string) => {
         navigate(
@@ -180,7 +178,7 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                                             left: 0,
                                                             right: 0,
                                                             bottom: 0,
-                                                            backgroundColor: 'rgba(128, 128, 128, 0.5)',
+                                                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
                                                             display: 'flex',
                                                             flexDirection: 'column',
                                                             gap: '16px',
@@ -192,10 +190,10 @@ const LandingPage: React.FC<PropsWithChildren<{}>> = ({ children }) => {
                                                         }}
                                                     >
 
-                                                        <HiOutlineWrenchScrewdriver size={64} color="red" />
-                                                        <Text c="red" fw={700} size="xl">
+                                                        <HiOutlineWrenchScrewdriver size={64} color="white" />
+                                                        <Text c="white" fw={700} size="xl">
 
-                                                            {t('Currently in maintenance')}
+                                                            {t('common.maintenance')}
 
                                                         </Text>
                                                     </Box>

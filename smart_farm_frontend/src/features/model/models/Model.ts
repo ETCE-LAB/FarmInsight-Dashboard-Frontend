@@ -1,3 +1,5 @@
+import {Threshold} from "../../threshold/models/threshold";
+
 export type ModelType = 'energy' | 'water';
 
 export interface Model {
@@ -6,10 +8,12 @@ export interface Model {
     URL:string,
     intervalSeconds:number,
     isActive:boolean,
+    thresholds:Threshold[],
     required_parameters:
         {
         name: string,
         type: string, // ENUM "static" or "sensor"
+        input_type: string,
         value: any // number, string or uuid
         }[],
     activeScenario:string,
@@ -47,6 +51,7 @@ export interface EditModel {
         {
         name: string,
         type: string, // ENUM "static" or "sensor"
+        input_type: string,
         value: any // number, string or uuid
         }[],
     availableScenarios:string[],

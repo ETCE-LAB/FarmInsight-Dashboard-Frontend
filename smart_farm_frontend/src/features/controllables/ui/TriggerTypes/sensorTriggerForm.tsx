@@ -61,7 +61,7 @@ export const SensorTriggerForm: React.FC<Props> = ({ triggerLogic, setTriggerLog
         }).catch((err) => {
             showNotification({
                 title: t('common.loadingError'),
-                message: '',
+                message: err,
                 color: "red",
             });
         });

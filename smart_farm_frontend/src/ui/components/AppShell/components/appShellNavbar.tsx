@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Menu, Text, Flex, Divider, Modal, Paper, useMantineTheme } from "@mantine/core";
 import { IconSettings, IconSquareRoundedPlus } from "@tabler/icons-react";
-import {Organization, OrganizationMembership} from "../../../../features/organization/models/Organization";
+import { OrganizationMembership} from "../../../../features/organization/models/Organization";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppRoutes } from "../../../../utils/appRoutes";
 import { getMyOrganizations } from "../../../../features/organization/useCase/getMyOrganizations";
@@ -12,10 +12,10 @@ import DynamicFontText from "../../../../utils/DynamicFontText";
 import { useTranslation } from "react-i18next";
 import { FpfForm } from "../../../../features/fpf/ui/fpfForm";
 import {showNotification} from "@mantine/notifications";
-import {useAppDispatch, useAppSelector} from "../../../../utils/Hooks";
+import {useAppDispatch} from "../../../../utils/Hooks";
 import {
     storeMyOrganizations,
-    storeSelectedOrganization
+   // storeSelectedOrganization
 } from "../../../../features/organization/state/OrganizationSlice";
 
 export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onNavbarShouldClose}) => {
@@ -35,7 +35,7 @@ export const AppShellNavbar: React.FC<{onNavbarShouldClose: () => void}> = ({onN
     const location = useLocation();
 
     //redux Store
-    const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
+    //const myOrganizationsSelector = useAppSelector((state) => state.organization.myOrganizations);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
