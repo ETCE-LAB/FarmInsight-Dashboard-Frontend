@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getOrganization } from "../useCase/getOrganization";
 import { Organization } from "../models/Organization";
 import {
@@ -30,24 +30,24 @@ import { addUserToOrganization } from "../useCase/addUserToOrganization";
 import { showNotification } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import { FpfForm } from "../../fpf/ui/fpfForm";
-import {useSelector} from "react-redux";
-import {changedMembership} from "../../membership/state/MembershipSlice";
-import {editOrganization} from "../useCase/editOrganization";
-import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
-import {RootState} from "../../../utils/store";
-import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
-import {ResourceType} from "../../logMessages/models/LogMessage";
-import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
-import {LocationList} from "../../location/ui/LocationList";
-import {useAuth} from "react-oidc-context";
-import {AuthRoutes} from "../../../utils/Router";
-import {DragDropContext, Draggable, DraggableProvided, Droppable} from "@hello-pangea/dnd";
-import {moveArrayItem} from "../../../utils/utils";
-import {Fpf} from "../../fpf/models/Fpf";
-import {postFpfOrder} from "../../fpf/useCase/postFpfOrder";
-import {createdFpf} from "../../fpf/state/FpfSlice";
-import {MembershipRole} from "../../membership/models/membership";
-import {storeSelectedOrganization} from "../state/OrganizationSlice";
+import { useSelector } from "react-redux";
+import { changedMembership } from "../../membership/state/MembershipSlice";
+import { editOrganization } from "../useCase/editOrganization";
+import { useAppDispatch, useAppSelector } from "../../../utils/Hooks";
+import { RootState } from "../../../utils/store";
+import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
+import { ResourceType } from "../../logMessages/models/LogMessage";
+import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
+import { LocationList } from "../../location/ui/LocationList";
+import { useAuth } from "react-oidc-context";
+import { AuthRoutes } from "../../../utils/Router";
+import { DragDropContext, Draggable, DraggableProvided, Droppable } from "@hello-pangea/dnd";
+import { moveArrayItem } from "../../../utils/utils";
+import { Fpf } from "../../fpf/models/Fpf";
+import { postFpfOrder } from "../../fpf/useCase/postFpfOrder";
+import { createdFpf } from "../../fpf/state/FpfSlice";
+import { MembershipRole } from "../../membership/models/membership";
+import { storeSelectedOrganization } from "../state/OrganizationSlice";
 
 export const EditOrganization = () => {
     const { t } = useTranslation();
@@ -55,7 +55,7 @@ export const EditOrganization = () => {
     const navigate = useNavigate();
 
     const dispatch = useAppDispatch();
-    const userProfileSelector =  useAppSelector((state) => state.userProfile.ownUserProfile);
+    const userProfileSelector = useAppSelector((state) => state.userProfile.ownUserProfile);
 
     const { organizationId } = useParams();
 
@@ -222,7 +222,7 @@ export const EditOrganization = () => {
                     </Card>
 
                     <Card padding={"lg"} radius={"md"} mt="lg">
-                        <LocationList locationsToDisplay={organization.locations} isAdmin={isAdmin}/>
+                        <LocationList locationsToDisplay={organization.locations} isAdmin={isAdmin} />
                     </Card>
 
                     {isAdmin &&
@@ -290,7 +290,7 @@ export const EditOrganization = () => {
                         centered
                     >
                         {organizationId &&
-                            <FpfForm organizationId={organizationId} close={setFpFModalOpen}/>
+                            <FpfForm organizationId={organizationId} close={setFpFModalOpen} />
                         }
                     </Modal>
 

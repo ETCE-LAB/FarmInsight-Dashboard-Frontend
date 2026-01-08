@@ -1,5 +1,5 @@
-import {createSlice } from "@reduxjs/toolkit";
-
+import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../../../utils/store";
 
 
 //Currently: 2 States, Logged in and not logged in
@@ -20,13 +20,13 @@ const modelSlice = createSlice({
     initialState,
 
     reducers: {
-        receivedModel(state){
+        receivedModel(state) {
             state.receivedModelEvent += 1
         }
     }
 })
 
-export const {receivedModel} = modelSlice.actions
+export const { receivedModel } = modelSlice.actions
 //export const receivedModelEvent = (state:RootState) => state.model.receivedModelEvent;
 export default modelSlice.reducer
 

@@ -23,7 +23,15 @@ const initialState: FpfSlice = {
         GrowingCycles: [],
         ControllableAction: [],
         Hardware: [],
-        isActive: true
+        isActive: true,
+        resourceManagementConfig: {
+            rmmActive: false,
+            rmmSensorConfig: {
+                waterSensorId: "",
+                soilSensorId: "",
+                tankCapacity: 0
+            }
+        }
     }
 }
 
