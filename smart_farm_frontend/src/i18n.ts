@@ -37,6 +37,7 @@ i18n
                         create: 'Create',
                         update: 'Update',
                         delete: 'Delete',
+                        maintenance: 'Under Maintenance',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -711,6 +712,7 @@ i18n
                         create: 'Erstellen',
                         update: 'Aktualisieren',
                         delete: 'Löschen',
+                        maintenance: 'Wartungsmodus',
                     },
                     threshold: {
                         title: 'Grenzwerte',
