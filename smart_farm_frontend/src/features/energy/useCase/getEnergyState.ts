@@ -29,7 +29,7 @@ export const getEnergyDashboard = async (
     batteryLevelWh?: number,
     includeGraphData: boolean = true,
     hoursBack: number = 12,
-    hoursAhead: number = 24
+    hoursAhead: number = 336
 ): Promise<EnergyDashboardWithGraphData> => {
     const apiClient = new APIClient();
 
@@ -75,8 +75,8 @@ export const getBatteryState = async (fpfId: string): Promise<BatteryState> => {
  * Evaluate and optionally execute an energy management action
  */
 export const evaluateEnergyAction = async (
-    fpfId: string, 
-    batteryLevelWh: number, 
+    fpfId: string,
+    batteryLevelWh: number,
     execute: boolean = false
 ): Promise<EnergyActionResponse> => {
     const apiClient = new APIClient();

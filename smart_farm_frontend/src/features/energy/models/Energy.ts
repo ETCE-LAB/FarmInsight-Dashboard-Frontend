@@ -28,6 +28,8 @@ export interface EnergyConsumer {
     consumptionWatts: number;
     priority: number; // 1-10, 1 = critical, 10 = optional
     shutdownThreshold: number; // Battery % at which to shutdown (0 = use global thresholds)
+    forecastShutdownThreshold: number; // Predicted battery % at which to schedule shutdown (0 = disabled)
+    forecastBufferDays: number; // Days before predicted threshold to execute shutdown
     dependencyIds: string[];
     dependencies?: EnergyConsumerSummary[];
     sensorId?: string | null; // Link to sensor for live power measurement
@@ -45,6 +47,8 @@ export interface EnergyConsumerSummary {
     consumptionWatts: number;
     priority: number;
     shutdownThreshold: number;
+    forecastShutdownThreshold: number;
+    forecastBufferDays: number;
     isActive: boolean;
 }
 
@@ -54,6 +58,8 @@ export interface CreateEnergyConsumer {
     consumptionWatts: number;
     priority: number;
     shutdownThreshold?: number;
+    forecastShutdownThreshold?: number;
+    forecastBufferDays?: number;
     dependencyIds?: string[];
     sensorId?: string | null;
     controllableActionId?: string | null;
@@ -65,6 +71,8 @@ export interface UpdateEnergyConsumer {
     consumptionWatts?: number;
     priority?: number;
     shutdownThreshold?: number;
+    forecastShutdownThreshold?: number;
+    forecastBufferDays?: number;
     dependencyIds?: string[];
     sensorId?: string | null;
     controllableActionId?: string | null;
@@ -118,11 +126,11 @@ export interface UpdateEnergySource {
 /**
  * Energy State - represents the current energy state of an FPF
  */
-export type EnergyAction = 
-    | 'normal' 
-    | 'connect_grid' 
-    | 'disconnect_grid' 
-    | 'shutdown_non_critical' 
+export type EnergyAction =
+    | 'normal'
+    | 'connect_grid'
+    | 'disconnect_grid'
+    | 'shutdown_non_critical'
     | 'emergency_shutdown';
 
 export type EnergyStatus = 'normal' | 'warning' | 'critical';
@@ -241,29 +249,28 @@ export const DEFAULT_ENERGY_THRESHOLDS: EnergyThresholds = {
 };
 
 /**
- * Graph Data Point - single data point for energy graphs
+ * Battery SoC Data Point - in Watt-hours (Wh)
  */
-export interface EnergyGraphDataPoint {
+export interface BatterySoCDataPoint {
     timestamp: string;
-    value_watts: number;
+    value_wh: number;
 }
 
 /**
- * Forecast Generation Data - contains expected, worst_case and best_case forecasts
+ * Battery SoC Forecast Data - contains expected, worst_case and best_case forecasts
  */
-export interface ForecastGenerationData {
-    expected: EnergyGraphDataPoint[];
-    worst_case: EnergyGraphDataPoint[];
-    best_case: EnergyGraphDataPoint[];
+export interface BatterySoCForecast {
+    expected: BatterySoCDataPoint[];
+    worst_case: BatterySoCDataPoint[];
+    best_case: BatterySoCDataPoint[];
 }
 
 /**
- * Energy Graph Data - complete data for energy dashboard graphs
+ * Energy Graph Data - battery SoC forecast for energy dashboard
  */
 export interface EnergyGraphData {
-    historical_consumption: EnergyGraphDataPoint[];
-    forecast_generation: ForecastGenerationData;
-    forecast_consumption: EnergyGraphDataPoint[];
+    battery_soc: BatterySoCForecast;
+    battery_max_wh: number;
 }
 
 /**

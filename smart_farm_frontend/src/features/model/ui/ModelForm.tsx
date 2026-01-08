@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor, Select} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
 import { EditModel, ModelType } from "../models/Model";
-import SelectHardwareConfiguration from "../../hardwareConfiguration/ui/SelectHardwareConfiguration";
 import { createModel } from "../useCase/createModel";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
@@ -116,43 +115,6 @@ const handleParamChange = (index: number, value: any) => {
         }
     };
 
-    const handleSave = () => {
-        if (/*hardwareConfiguration &&*/ fpfId && organizationId && requiredParameters && actions && forecasts) {
-            setClosed(false);
-            const interval = +intervalSeconds;
-            const id = notifications.show({
-                loading: true,
-                title: t('common.loading'),
-                message: t('model.creatingModel'),
-                autoClose: false,
-                withCloseButton: false,
-            });
-            createModel({
-                id: '', name, URL:url, activeScenario, intervalSeconds: interval, isActive, , model_type: modelType, fpfId, required_parameters: requiredParameters, availableScenarios, actions, forecasts
-            }).then(() => {
-                notifications.update({
-                    id,
-                    title: t('common.saveSuccess'),
-                    message: ``,
-                    color: 'green',
-                    loading: false,
-                    autoClose: 2000,
-                });
-                dispatch(receivedModel());
-
-                navigate(AppRoutes.editFpf.replace(":organizationId", organizationId).replace(":fpfId", fpfId));
-            }).catch((error) => {
-                notifications.update({
-                    id,
-                    title: t('common.saveError'),
-                    message: `${error}`,
-                    color: 'red',
-                    loading: false,
-                    autoClose: 2000,
-                });
-            });
-        }
-    };
 
     const handleFetchParameters = async () => {
         if (!url) {
@@ -213,19 +175,19 @@ const handleParamChange = (index: number, value: any) => {
     });
 
     try {
-      const payload = {
+      const payload: EditModel = {
         id: toEditModel?.id ?? "",
         name,
         URL: url,
         intervalSeconds,
         isActive,
         model_type: modelType,
-        fpfId,
+        fpfId: fpfId!,
         activeScenario,
-        required_parameters: requiredParameters,
+        required_parameters: requiredParameters!,
         availableScenarios,
-        actions,
-        forecasts
+        actions: actions!,
+        forecasts: forecasts!
       };
 
       if (toEditModel) {

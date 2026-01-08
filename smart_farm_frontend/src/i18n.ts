@@ -38,6 +38,7 @@ i18n
                         update: 'Update',
                         delete: 'Delete',
                         maintenance: 'Under Maintenance',
+                        days: 'days',
                     },
                     threshold: {
                         title: 'Thresholds',
@@ -155,7 +156,7 @@ i18n
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
                         aggregatedValues: 'Aggregated values',
-                        movingAverage:'Smooth values',
+                        movingAverage: 'Smooth values',
                         measurementsLoadError: "Failed to fetch initial measurements.",
                         measurementsProcessError: "Failed to process incoming data.",
                         updatingSensor: 'Updating Sensor on your FPF',
@@ -176,7 +177,7 @@ i18n
                         urlStepDesc: 'Enter the base URL of the model',
                         configureModel: 'Configure model',
                         configStepDesc: 'Configure parameters for the model',
-                        predictionViewTitle:'Model Predictions',
+                        predictionViewTitle: 'Model Predictions',
                         modelType: 'Model Type',
                         modelTypeDescription: 'Type of resource this model manages',
                         modelTypeEnergy: 'Energy',
@@ -349,14 +350,14 @@ i18n
                         inactive: 'Inactive',
                         cameras: 'Cameras',
                         hint: {
-                                nameHint: 'Name of the camera',
-                                locationHint: 'Location of the camera',
-                                modelNrHint: 'Model number of the camera',
-                                intervalSecondsHint: 'Interval of capturing images',
-                                resolutionHint: 'Resolution of the camera',
-                                livestreamUrlHint: 'URL for the livestream',
-                                snapshotUrlHint: 'URL for the snapshot',
-                            },
+                            nameHint: 'Name of the camera',
+                            locationHint: 'Location of the camera',
+                            modelNrHint: 'Model number of the camera',
+                            intervalSecondsHint: 'Interval of capturing images',
+                            resolutionHint: 'Resolution of the camera',
+                            livestreamUrlHint: 'URL for the livestream',
+                            snapshotUrlHint: 'URL for the snapshot',
+                        },
                         cameraList: 'Camera List',
                         noCamerasFound: 'No Camera found',
                         location: 'Location',
@@ -462,7 +463,7 @@ i18n
                             thunderstormWithHeavyHail: 'Thunderstorm with Heavy Hail',
                         },
                     },
-                    location:{
+                    location: {
                         noLocation: 'No Location',
                         name: 'Name',
                         city: 'City',
@@ -473,7 +474,7 @@ i18n
                         gatherForecasts: 'Gather Forecasts',
                         gatherForecastsNotActive: 'No Forecasts',
                         gatherForecastsActive: 'Gathers Forecast',
-                        buttons:{
+                        buttons: {
                             showForm: 'Create new Location',
                             hideForm: 'Hide ',
                             addLocation: 'Add Location',
@@ -481,15 +482,15 @@ i18n
                             createLocation: 'Create Location',
 
                         },
-                        text:{
+                        text: {
                             location: 'Location',
                             locations: 'Locations',
                             addLocation: 'Add Location',
                             isActive: 'Gather Forecasts',
                             isNotActive: 'No Forecasts',
                         },
-                        notifications:{
-                            loading:{
+                        notifications: {
+                            loading: {
                                 title: 'Loading',
                                 message: 'Loading locations...',
                             },
@@ -664,7 +665,26 @@ i18n
                         liveFromSensor: 'Live',
                         lastUpdated: 'Last updated',
                         noBatterySource: 'No battery source configured',
-                        batterySourceHint: 'Add an Energy Source with type "Battery" and link a sensor to get live battery levels.'
+                        batterySourceHint: 'Add an Energy Source with type "Battery" and link a sensor to get live battery levels.',
+                        batterySoC: 'Battery Capacity',
+                        batterySoCExpected: 'Expected',
+                        batterySoCWorstCase: 'Worst Case',
+                        batterySoCBestCase: 'Best Case',
+                        days1: '1 Day',
+                        days3: '3 Days',
+                        days7: '7 Days',
+                        days14: '14 Days',
+                        currentLevel: 'Current Level',
+                        disabled: 'Disabled',
+                        forecastShutdown: 'AI Forecast Shutdown',
+                        forecastShutdownDescription: 'Proactively shutdown this consumer when the AI model predicts the battery will reach a critical level.',
+                        forecastThresholdLabel: 'Predicted Battery Threshold',
+                        forecastThresholdHint: 'Shutdown when AI predicts battery will reach {{percent}}%',
+                        forecastDisabled: 'AI forecast-based shutdown is disabled',
+                        forecastBufferDays: 'Buffer Days',
+                        forecastBufferDaysHint: 'Execute shutdown this many days BEFORE the predicted threshold is reached',
+                        forecastShutdownExplanation: 'When the AI model predicts that the battery will reach {{threshold}}%, this consumer will be shut down {{buffer}} days in advance.',
+                        forecastNeedsAction: 'To enable AI-based shutdown, you must first link a Controllable Action above.'
                     }
                 },
             },
@@ -701,6 +721,7 @@ i18n
                         update: 'Aktualisieren',
                         delete: 'Löschen',
                         maintenance: 'Wartungsmodus',
+                        days: 'Tage',
                     },
                     threshold: {
                         title: 'Grenzwerte',
@@ -815,7 +836,7 @@ i18n
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
                         aggregatedValues: 'Zusammengefasste Werte',
-                        movingAverage:'Mittelwert glätten',
+                        movingAverage: 'Mittelwert glätten',
                         measurementsLoadError: "Fehler beim Laden der initialen Werte.",
                         measurementsProcessError: "Fehler beim Verarbeiten der erhaltenen Werte.",
                         updatingSensor: 'Sensor wird in Ihrer FPF aktualisiert',
@@ -975,7 +996,7 @@ i18n
                         loginToManage: 'Anmelden, um Organisation zu verwalten',
                         create: 'Erstellen',
                         add: 'Hinzufügen',
-                        update:'Änderungen speichern,'
+                        update: 'Änderungen speichern,'
                     },
                     label: {
                         organizationName: 'Organisationsname',
@@ -1009,13 +1030,13 @@ i18n
                         inactive: 'Inaktiv',
                         cameras: 'Kameras',
                         hint: {
-                                nameHint: 'Name der Kamera',
-                                locationHint: 'Standort der Kamera',
-                                modelNrHint: 'Modellnummer der Kamera',
-                                intervalSecondsHint: 'Intervall zum Aufnehmen von Bildern',
-                                resolutionHint: 'Auflösung der Kamera',
-                                livestreamUrlHint: 'URL für den Livestream',
-                                snapshotUrlHint: 'URL für den Schnappschuss',
+                            nameHint: 'Name der Kamera',
+                            locationHint: 'Standort der Kamera',
+                            modelNrHint: 'Modellnummer der Kamera',
+                            intervalSecondsHint: 'Intervall zum Aufnehmen von Bildern',
+                            resolutionHint: 'Auflösung der Kamera',
+                            livestreamUrlHint: 'URL für den Livestream',
+                            snapshotUrlHint: 'URL für den Schnappschuss',
                         },
                         cameraList: 'Kamera-Liste',
                         noCamerasFound: 'Keine Kamera gefunden',
@@ -1130,7 +1151,7 @@ i18n
                         houseNumber: 'Hausnummer',
                         latitude: 'Breitengrad',
                         longitude: 'Längengrad',
-                        gatherForecasts:'Wettervorhersage',
+                        gatherForecasts: 'Wettervorhersage',
                         gatherForecastsActive: 'Vorhersagen werden gesammelt',
                         gatherForecastsNotActive: 'Keine Vorhersagen',
                         buttons: {
@@ -1324,7 +1345,26 @@ i18n
                         liveFromSensor: 'Live',
                         lastUpdated: 'Zuletzt aktualisiert',
                         noBatterySource: 'Keine Batteriequelle konfiguriert',
-                        batterySourceHint: 'Fügen Sie eine Energiequelle vom Typ "Batterie" hinzu und verknüpfen Sie einen Sensor, um Live-Batteriestände zu erhalten.'
+                        batterySourceHint: 'Fügen Sie eine Energiequelle vom Typ "Batterie" hinzu und verknüpfen Sie einen Sensor, um Live-Batteriestände zu erhalten.',
+                        batterySoC: 'Batteriekapazität',
+                        batterySoCExpected: 'Erwartet',
+                        batterySoCWorstCase: 'Worst Case',
+                        batterySoCBestCase: 'Best Case',
+                        days1: '1 Tag',
+                        days3: '3 Tage',
+                        days7: '7 Tage',
+                        days14: '14 Tage',
+                        currentLevel: 'Aktueller Stand',
+                        disabled: 'Deaktiviert',
+                        forecastShutdown: 'KI-Prognose Abschaltung',
+                        forecastShutdownDescription: 'Proaktive Abschaltung dieses Verbrauchers, wenn das KI-Modell vorhersagt, dass die Batterie einen kritischen Stand erreicht.',
+                        forecastThresholdLabel: 'Vorhergesagter Batterie-Schwellwert',
+                        forecastThresholdHint: 'Abschalten wenn KI vorhersagt, dass Batterie {{percent}}% erreicht',
+                        forecastDisabled: 'KI-prognosebasierte Abschaltung ist deaktiviert',
+                        forecastBufferDays: 'Puffer-Tage',
+                        forecastBufferDaysHint: 'Abschaltung so viele Tage VOR dem vorhergesagten Schwellwert ausführen',
+                        forecastShutdownExplanation: 'Wenn das KI-Modell vorhersagt, dass die Batterie {{threshold}}% erreicht, wird dieser Verbraucher {{buffer}} Tage vorher abgeschaltet.',
+                        forecastNeedsAction: 'Um KI-basierte Abschaltung zu aktivieren, müssen Sie zuerst oben eine Steuerungsaktion verknüpfen.'
                     }
                 },
             },

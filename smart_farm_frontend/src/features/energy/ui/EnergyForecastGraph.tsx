@@ -1,98 +1,136 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { LineChart } from '@mantine/charts';
-import { Card, Title, Text, Group, Badge, Stack, Loader, Box } from '@mantine/core';
-import { IconChartLine, IconSun, IconBolt } from '@tabler/icons-react';
+import { Card, Title, Text, Group, Badge, Stack, Loader, Box, SegmentedControl } from '@mantine/core';
+import { IconChartLine, IconBattery } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
-import { selectGraphData, selectEnergyLoading } from '../state/EnergySlice';
-import { EnergyGraphDataPoint } from '../models/Energy';
+import { selectGraphData, selectEnergyLoading, selectBatteryLevel } from '../state/EnergySlice';
+import { BatterySoCDataPoint } from '../models/Energy';
 
 interface ChartDataPoint {
     timestamp: string;
     dateLabel: string;
-    historicalConsumption?: number;
-    forecastConsumption?: number;
-    forecastGenerationExpected?: number;
-    forecastGenerationWorstCase?: number;
-    forecastGenerationBestCase?: number;
+    batterySoCExpected?: number;
+    batterySoCWorstCase?: number;
+    batterySoCBestCase?: number;
+    currentLevel?: number;
 }
 
 /**
- * Format timestamp to readable date/time string
+ * Format Wh value for display
  */
-const formatTimestamp = (timestamp: string): string => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-};
-
-/**
- * Format watt value for tooltip display
- */
-const formatWattValue = (value: number | undefined): string => {
+const formatWhValue = (value: number | undefined): string => {
     if (value === undefined || value === null) return '-';
     if (value >= 1000) {
-        return `${(value / 1000).toFixed(2)} kW`;
+        return `${(value / 1000).toFixed(1)} kWh`;
     }
-    return `${value.toFixed(0)} W`;
+    return `${Math.round(value)} Wh`;
 };
 
 export const EnergyForecastGraph: React.FC = () => {
     const { t } = useTranslation();
     const graphData = useSelector(selectGraphData);
     const isLoading = useSelector(selectEnergyLoading);
+    const currentBatteryLevel = useSelector(selectBatteryLevel);
+    const [forecastDays, setForecastDays] = useState<string>('7');
+
+    const selectedDays = parseInt(forecastDays);
+    const filteredHours = selectedDays * 24;
 
     // Transform graph data for the chart
     const chartData = useMemo<ChartDataPoint[]>(() => {
-        if (!graphData) return [];
+        if (!graphData?.battery_soc) return [];
 
-        // Create a map to combine all data points by timestamp
         const dataMap = new Map<string, ChartDataPoint>();
 
-        // Helper to add data points to the map
         const addDataPoints = (
-            points: EnergyGraphDataPoint[] | undefined,
+            points: BatterySoCDataPoint[] | undefined,
             key: keyof ChartDataPoint
         ) => {
             if (!points) return;
             points.forEach((point) => {
                 const existing = dataMap.get(point.timestamp) || {
                     timestamp: point.timestamp,
-                    dateLabel: formatTimestamp(point.timestamp)
+                    dateLabel: ''
                 };
-                (existing as any)[key] = point.value_watts;
+                (existing as any)[key] = point.value_wh;
                 dataMap.set(point.timestamp, existing);
             });
         };
 
-        // Add all data series
-        addDataPoints(graphData.historical_consumption, 'historicalConsumption');
-        addDataPoints(graphData.forecast_consumption, 'forecastConsumption');
-        addDataPoints(graphData.forecast_generation?.expected, 'forecastGenerationExpected');
-        addDataPoints(graphData.forecast_generation?.worst_case, 'forecastGenerationWorstCase');
-        addDataPoints(graphData.forecast_generation?.best_case, 'forecastGenerationBestCase');
+        addDataPoints(graphData.battery_soc.expected, 'batterySoCExpected');
+        addDataPoints(graphData.battery_soc.worst_case, 'batterySoCWorstCase');
+        addDataPoints(graphData.battery_soc.best_case, 'batterySoCBestCase');
 
-        // Sort by timestamp and return as array
-        return Array.from(dataMap.values()).sort(
-            (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-        );
-    }, [graphData]);
+        // Sort and slice
+        const sortedData = Array.from(dataMap.values())
+            .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+            .slice(0, filteredHours);
 
-    // Define chart series
-    const series = useMemo(() => [
-        { name: 'historicalConsumption', color: 'red.6', label: t('energy.historicalConsumption') },
-        { name: 'forecastConsumption', color: 'orange.6', label: t('energy.forecastConsumption') },
-        { name: 'forecastGenerationExpected', color: 'green.6', label: t('energy.forecastExpected') },
-        { name: 'forecastGenerationWorstCase', color: 'yellow.6', label: t('energy.forecastWorstCase') },
-        { name: 'forecastGenerationBestCase', color: 'teal.6', label: t('energy.forecastBestCase') }
-    ], [t]);
+        // Format labels based on selected days
+        return sortedData.map((point, index) => {
+            const date = new Date(point.timestamp);
+            const hour = date.getHours();
 
-    // Check if we have any data to display
+            let label = '';
+
+            if (selectedDays === 1) {
+                // 1 day: show every 3 hours
+                if (hour % 3 === 0) {
+                    label = `${hour}:00`;
+                }
+            } else if (selectedDays === 3) {
+                // 3 days: show every 6 hours, date at midnight
+                if (hour % 6 === 0) {
+                    label = hour === 0
+                        ? date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })
+                        : `${hour}:00`;
+                }
+            } else if (selectedDays === 7) {
+                // 7 days: show date at midnight only
+                if (hour === 0) {
+                    label = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+                }
+            } else {
+                // 14 days: show date every 2 days at midnight
+                if (hour === 0 && (index / 24) % 2 === 0) {
+                    label = date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+                }
+            }
+
+            return {
+                ...point,
+                dateLabel: label,
+                currentLevel: currentBatteryLevel > 0 ? currentBatteryLevel : undefined
+            };
+        });
+    }, [graphData, filteredHours, selectedDays, currentBatteryLevel]);
+
+    // Chart series
+    const series = useMemo(() => {
+        const baseSeries = [
+            { name: 'batterySoCExpected', color: 'blue.6', label: t('energy.batterySoCExpected') },
+            { name: 'batterySoCWorstCase', color: 'orange.5', label: t('energy.batterySoCWorstCase') },
+            { name: 'batterySoCBestCase', color: 'green.5', label: t('energy.batterySoCBestCase') }
+        ];
+
+        if (currentBatteryLevel > 0) {
+            baseSeries.push({
+                name: 'currentLevel',
+                color: 'red.6',
+                label: t('energy.currentLevel')
+            });
+        }
+
+        return baseSeries;
+    }, [t, currentBatteryLevel]);
+
+    const labelMap = useMemo(() => {
+        return new Map(chartData.map(d => [d.timestamp, d.dateLabel]));
+    }, [chartData]);
+
     const hasData = chartData.length > 0;
+    const batteryMaxWh = graphData?.battery_max_wh || 1600;
 
     if (isLoading && !hasData) {
         return (
@@ -124,116 +162,111 @@ export const EnergyForecastGraph: React.FC = () => {
         <Card shadow="sm" padding="lg" withBorder>
             <Stack gap="md">
                 {/* Header */}
-                <Group justify="space-between">
+                <Group justify="space-between" wrap="wrap">
                     <Group gap="xs">
                         <IconChartLine size={24} />
                         <Title order={3}>{t('energy.forecastGraph')}</Title>
                     </Group>
-                    <Group gap="xs">
-                        <Badge leftSection={<IconBolt size={12} />} color="red" variant="light">
-                            {t('energy.consumption')}
-                        </Badge>
-                        <Badge leftSection={<IconSun size={12} />} color="green" variant="light">
-                            {t('energy.production')}
+                    <Group gap="sm">
+                        <SegmentedControl
+                            size="xs"
+                            value={forecastDays}
+                            onChange={setForecastDays}
+                            data={[
+                                { label: t('energy.days1'), value: '1' },
+                                { label: t('energy.days3'), value: '3' },
+                                { label: t('energy.days7'), value: '7' },
+                                { label: t('energy.days14'), value: '14' }
+                            ]}
+                        />
+                        <Badge leftSection={<IconBattery size={12} />} color="blue" variant="light">
+                            {t('energy.batterySoC')}
                         </Badge>
                     </Group>
                 </Group>
 
+                {/* Battery info */}
+                <Text size="xs" c="dimmed">
+                    {t('energy.maxBatteryCapacity')}: {formatWhValue(batteryMaxWh)}
+                    {currentBatteryLevel > 0 && (
+                        <> · <Text span c="red.6" inherit>{t('energy.currentLevel')}: {formatWhValue(currentBatteryLevel)}</Text></>
+                    )}
+                </Text>
+
                 {/* Chart */}
-                <LineChart
-                    h={350}
-                    data={chartData}
-                    dataKey="dateLabel"
-                    series={series}
-                    curveType="monotone"
-                    withLegend
-                    withDots={false}
-                    legendProps={{
-                        verticalAlign: 'bottom',
-                        align: 'center',
-                        height: 60,
-                        content: (props: any) => {
-                            const items = props?.payload ?? [];
-                            return (
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        gap: 16,
-                                        paddingTop: 12,
-                                        flexWrap: 'wrap',
-                                    }}
-                                >
-                                    {items.map((item: any) => (
-                                        <div
-                                            key={item.value}
-                                            style={{
-                                                display: 'inline-flex',
-                                                alignItems: 'center',
-                                                gap: 6,
-                                            }}
-                                        >
-                                            <span
-                                                style={{
-                                                    width: 12,
-                                                    height: 12,
-                                                    borderRadius: '50%',
-                                                    background: item.color,
-                                                    display: 'inline-block',
-                                                }}
-                                            />
-                                            <span style={{ fontSize: '12px' }}>
-                                                {series.find(s => s.name === item.value)?.label || item.value}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            );
-                        },
-                    }}
-                    tooltipProps={{
-                        content: ({ label, payload }) => {
-                            if (!payload || payload.length === 0) return null;
-                            return (
-                                <Card
-                                    p="xs"
-                                    radius="sm"
-                                    style={{
+                <Box style={{ width: '100%', minHeight: 320 }}>
+                    <LineChart
+                        h={320}
+                        data={chartData}
+                        dataKey="timestamp"
+                        series={series}
+                        curveType="monotone"
+                        withDots={false}
+                        strokeWidth={2}
+                        yAxisProps={{
+                            tickFormatter: (value: number) => formatWhValue(value),
+                            width: 70
+                        }}
+                        xAxisProps={{
+                            interval: 0,
+                            tickFormatter: (value: string) => labelMap.get(value) || ''
+                        }}
+                        gridProps={{ strokeDasharray: '3 3' }}
+                        tooltipProps={{
+                            content: ({ payload }) => {
+                                if (!payload || payload.length === 0) return null;
+                                const dataPoint = payload[0]?.payload as ChartDataPoint;
+                                const timestamp = dataPoint?.timestamp;
+                                if (!timestamp) return null;
+
+                                const date = new Date(timestamp);
+                                const formattedDate = date.toLocaleDateString('de-DE', {
+                                    weekday: 'short',
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+
+                                return (
+                                    <Card p="xs" radius="sm" style={{
                                         backgroundColor: 'var(--mantine-color-body)',
                                         border: '1px solid var(--mantine-color-default-border)'
-                                    }}
-                                >
-                                    <Text fw={600} size="sm" mb="xs">{label}</Text>
-                                    {payload.map((item: any) => (
-                                        <Group key={item.name} justify="space-between" gap="md">
-                                            <Group gap="xs">
-                                                <span
-                                                    style={{
-                                                        width: 8,
-                                                        height: 8,
-                                                        borderRadius: '50%',
-                                                        background: item.color,
-                                                        display: 'inline-block',
-                                                    }}
-                                                />
-                                                <Text size="xs">
-                                                    {series.find(s => s.name === item.name)?.label || item.name}:
-                                                </Text>
+                                    }}>
+                                        <Text fw={600} size="sm" mb="xs">{formattedDate}</Text>
+                                        {payload.filter((item: any) => item.name !== 'currentLevel').map((item: any) => (
+                                            <Group key={item.name} justify="space-between" gap="md">
+                                                <Group gap="xs">
+                                                    <span style={{
+                                                        width: 8, height: 8, borderRadius: '50%',
+                                                        background: item.color, display: 'inline-block'
+                                                    }} />
+                                                    <Text size="xs">{series.find(s => s.name === item.name)?.label}:</Text>
+                                                </Group>
+                                                <Text size="xs" fw={500}>{formatWhValue(item.value)}</Text>
                                             </Group>
-                                            <Text size="xs" fw={500}>
-                                                {formatWattValue(item.value)}
-                                            </Text>
-                                        </Group>
-                                    ))}
-                                </Card>
-                            );
-                        },
-                    }}
-                    yAxisProps={{
-                        tickFormatter: (value: number) => formatWattValue(value)
-                    }}
-                />
+                                        ))}
+                                    </Card>
+                                );
+                            },
+                        }}
+                    />
+                </Box>
+
+                {/* Legend below chart */}
+                <Group justify="center" gap="lg" wrap="wrap">
+                    {series.map((s) => (
+                        <Group key={s.name} gap={6}>
+                            <Box style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: '50%',
+                                backgroundColor: `var(--mantine-color-${s.color.replace('.', '-')})`
+                            }} />
+                            <Text size="xs">{s.label}</Text>
+                        </Group>
+                    ))}
+                </Group>
             </Stack>
         </Card>
     );
