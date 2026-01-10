@@ -11,13 +11,9 @@ import { IconDroplet, IconActivity, IconTopologyStar3, IconRefresh, IconAlertTri
 import { Fpf } from '../../fpf/models/Fpf';
 import { getFpf } from '../../fpf/useCase/getFpf';
 import { showNotification } from '@mantine/notifications';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../../utils/store';
-import { WeatherForecast } from '../../WeatherForecast/models/WeatherForecast';
-import { getWeatherForecast } from '../../WeatherForecast/useCase/getWeatherForecast';
-import { registerWeatherForecasts } from '../../WeatherForecast/state/WeatherForecastSlice';
-import { waterResource } from '../../../core/resources';
-import { registerWeatherAndWaterStatus } from '../state/WeatherAndWaterStatusSlice';
+import { waterResource } from '../../abstractResource/abstractExport';
 import { useAppDispatch } from '../../../utils/Hooks';
 import { WeatherAndWaterStatus } from '../models/WeatherAndWaterStatus';
 
@@ -77,19 +73,7 @@ export const WaterDashboard = () => {
 
     useEffect(() => {
         if (fpf?.id && fpf?.Location) {
-            /*if (weatherAndWaterStatusSelector.WeatherAndWaterStatus) {
-                const cachedDataWrapper = weatherAndWaterStatusSelector.WeatherAndWaterStatus.find(obj => obj[fpf.id]);
-                if (cachedDataWrapper) {
-                    const data = cachedDataWrapper[fpf.id];
-                    setTemperature(data.weatherStatus?.currentTemperature);
-                    setWeatherCode(data.weatherStatus?.weatherCode);
-                    setWeatherAndWaterStatus(data);
-                    return;
-                }
-            }*/
-
             waterResource.getState(fpf.id, { locationId: fpf.Location.id }).then((resp) => {
-                //dispatch(registerWeatherAndWaterStatus({ [fpf.id]: resp }));
                 setTemperature(resp.weatherStatus?.currentTemperature);
                 setWeatherCode(resp.weatherStatus?.weatherCode);
                 setWeatherAndWaterStatus(resp);
@@ -115,14 +99,6 @@ export const WaterDashboard = () => {
                         <IconDroplet size={20} />
                     </ThemeIcon>
                     <Title order={2}>{t('water.dashboardTitle')}</Title>
-                </Group>
-
-                <Group>
-                    {/*
-                    <ActionIcon variant="light" size="lg">
-                        <IconRefresh size={20} />
-                    </ActionIcon>
-                    */}
                 </Group>
             </Group>
 
@@ -172,7 +148,7 @@ export const WaterDashboard = () => {
                                 fpf?.Models && fpf.Models.length > 0 && (
                                     <>
                                         {fpf.Models.map((model) => (
-                                            <PredictionView fpfId={fpf.id} thresholds={model.thresholds}/>
+                                            <PredictionView fpfId={fpf.id} thresholds={model.thresholds} />
                                         ))}
                                     </>
                                 )
