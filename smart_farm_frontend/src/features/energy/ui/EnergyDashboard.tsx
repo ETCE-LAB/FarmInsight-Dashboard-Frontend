@@ -53,7 +53,7 @@ import {
     setError
 } from '../state/EnergySlice';
 import { EnergyConsumer, EnergySource, DEFAULT_ENERGY_THRESHOLDS } from '../models/Energy';
-import { energyResource } from '../../../core/resources';
+import { energyResource } from '../../abstractResource/abstractExport';
 import { EnergyConsumerForm } from './EnergyConsumerForm';
 import { EnergySourceForm } from './EnergySourceForm';
 import { EnergyConfigPanel } from './EnergyConfigPanel';
