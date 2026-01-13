@@ -12,16 +12,14 @@ pipeline {
     }
     stage('Fetch environment variables'){
       steps {
-        withCredentials([file(credentialsId: 'farminsight-env',
-                              variable: 'ENV_FILE')]){
-          sh '''
+        configFileProvider([configFile(fileId: 'farminsight-frontend-env',
+        variable: 'ENV_FILE')]) {
             [ -d "app" ] && rm -rf "app"
             mkdir app
             ls -lR app
             ls -l $ENV_FILE
             cat $ENV_FILE
-            cp ${ENV_FILE} app/.env.development
-          '''
+            cp ${ENV_FILE} app/.env.development     
         }
       }
     }
