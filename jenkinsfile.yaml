@@ -18,6 +18,7 @@ pipeline {
             [ -d "app" ] && rm -rf "app"
             mkdir app
             ls -lR app
+            cat ${ENV_FILE}
             cp ${ENV_FILE} app/.env.development
           '''
         }
