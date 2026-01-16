@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
@@ -15,19 +15,19 @@ import { useTranslation } from "react-i18next";
 import { IconEdit } from "@tabler/icons-react";
 import { receiveUserProfile } from "../../userProfile/useCase/receiveUserProfile";
 import { useAppDispatch } from "../../../utils/Hooks";
-import {updatedFpf} from "../state/FpfSlice";
+import { updatedFpf } from "../state/FpfSlice";
 import { LogMessageModalButton } from "../../logMessages/ui/LogMessageModalButton";
-import {ResourceType} from "../../logMessages/models/LogMessage";
-import {ControllableActionList} from "../../controllables/ui/controllableActionList";
-import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
-import {ActionQueueList} from "../../controllables/ui/actionQueueList";
-import {HardwareList} from "../../hardware/ui/hardwareList";
-import {Hardware} from "../../hardware/models/hardware";
-import {showNotification} from "@mantine/notifications";
-import {useAuth} from "react-oidc-context";
-import {AuthRoutes} from "../../../utils/Router";
-import {ModelList} from "../../model/ui/ModelList";
-import {Model} from "../../model/models/Model";
+import { ResourceType } from "../../logMessages/models/LogMessage";
+import { ControllableActionList } from "../../controllables/ui/controllableActionList";
+import { setControllableAction } from "../../controllables/state/ControllableActionSlice";
+import { ActionQueueList } from "../../controllables/ui/actionQueueList";
+import { HardwareList } from "../../hardware/ui/hardwareList";
+import { Hardware } from "../../hardware/models/hardware";
+import { showNotification } from "@mantine/notifications";
+import { useAuth } from "react-oidc-context";
+import { AuthRoutes } from "../../../utils/Router";
+import { ModelList } from "../../model/ui/ModelList";
+import { Model } from "../../model/models/Model";
 
 
 export const EditFPF: React.FC = () => {
@@ -75,7 +75,7 @@ export const EditFPF: React.FC = () => {
             navigate(AuthRoutes.signin);
         }
     }, [auth.isAuthenticated, fpf, navigate, organization, t]);
-    
+
     useEffect(() => {
         if (auth.isAuthenticated && fpfId) {
             getFpf(fpfId).then(resp => {
@@ -122,6 +122,7 @@ export const EditFPF: React.FC = () => {
     useEffect(() => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
+                dispatch(updatedFpf(resp));
                 setSensors(resp.Sensors);
                 setModels(resp.Models);
                 setCameras(resp.Cameras);

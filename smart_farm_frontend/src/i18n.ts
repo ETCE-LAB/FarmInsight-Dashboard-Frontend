@@ -142,6 +142,7 @@ i18n
                         parameter_hint: 'Please enter english and german',
                         unit: 'Unit',
                         tags: 'Notes',
+                        searchHardware: 'Search Hardware',
                         hint: {
                             nameHint: 'Name of the sensor',
                             locationHint: 'Location of the sensor',
@@ -152,7 +153,7 @@ i18n
                         lastMeasurementAt: 'Last measurement at',
                         lastValue: 'Last value',
                         aggregatedValues: 'Aggregated values',
-                        movingAverage:'Smooth values',
+                        movingAverage: 'Smooth values',
                         measurementsLoadError: "Failed to fetch initial measurements.",
                         measurementsProcessError: "Failed to process incoming data.",
                         updatingSensor: 'Updating Sensor on your FPF',
@@ -173,7 +174,7 @@ i18n
                         urlStepDesc: 'Enter the base URL of the model',
                         configureModel: 'Configure model',
                         configStepDesc: 'Configure parameters for the model',
-                        predictionViewTitle:'Model Predictions',
+                        predictionViewTitle: 'Model Predictions',
                         hint: {
                             locationHint: 'The URL of the model (e.g. http://<ip-adress>:<port>) The URL must provide sub endpoint /param and /farm-insight. For more details see the documentation.',
                             interval: 'The interval in which the model will do the calculation (default 1 day)',
@@ -278,6 +279,8 @@ i18n
                             active: 'Executable',
                             running: 'Active',
                             inactive: 'Execute',
+                            is_active: 'Active',
+                            not_active: 'Inactive',
                             lastTriggered: 'Last triggered',
                             hint: {
                                 typeHint: 'Select appropriate trigger type.',
@@ -342,14 +345,14 @@ i18n
                         inactive: 'Inactive',
                         cameras: 'Cameras',
                         hint: {
-                                nameHint: 'Name of the camera',
-                                locationHint: 'Location of the camera',
-                                modelNrHint: 'Model number of the camera',
-                                intervalSecondsHint: 'Interval of capturing images',
-                                resolutionHint: 'Resolution of the camera',
-                                livestreamUrlHint: 'URL for the livestream',
-                                snapshotUrlHint: 'URL for the snapshot',
-                            },
+                            nameHint: 'Name of the camera',
+                            locationHint: 'Location of the camera',
+                            modelNrHint: 'Model number of the camera',
+                            intervalSecondsHint: 'Interval of capturing images',
+                            resolutionHint: 'Resolution of the camera',
+                            livestreamUrlHint: 'URL for the livestream',
+                            snapshotUrlHint: 'URL for the snapshot',
+                        },
                         cameraList: 'Camera List',
                         noCamerasFound: 'No Camera found',
                         location: 'Location',
@@ -455,7 +458,7 @@ i18n
                             thunderstormWithHeavyHail: 'Thunderstorm with Heavy Hail',
                         },
                     },
-                    location:{
+                    location: {
                         noLocation: 'No Location',
                         name: 'Name',
                         city: 'City',
@@ -466,7 +469,7 @@ i18n
                         gatherForecasts: 'Gather Forecasts',
                         gatherForecastsNotActive: 'No Forecasts',
                         gatherForecastsActive: 'Gathers Forecast',
-                        buttons:{
+                        buttons: {
                             showForm: 'Create new Location',
                             hideForm: 'Hide ',
                             addLocation: 'Add Location',
@@ -474,15 +477,15 @@ i18n
                             createLocation: 'Create Location',
 
                         },
-                        text:{
+                        text: {
                             location: 'Location',
                             locations: 'Locations',
                             addLocation: 'Add Location',
                             isActive: 'Gather Forecasts',
                             isNotActive: 'No Forecasts',
                         },
-                        notifications:{
-                            loading:{
+                        notifications: {
+                            loading: {
                                 title: 'Loading',
                                 message: 'Loading locations...',
                             },
@@ -661,6 +664,7 @@ i18n
                         parameter_hint: 'Bitte in Englisch und Deutsch eingeben',
                         unit: 'Einheit',
                         tags: 'Notizen',
+                        searchHardware: 'Hardware suchen',
                         hint: {
                             nameHint: 'Name des Sensors',
                             locationHint: 'Standort des Sensors',
@@ -671,7 +675,7 @@ i18n
                         lastMeasurementAt: "Letzer Wert empfangen",
                         lastValue: 'Letzter Wert',
                         aggregatedValues: 'Zusammengefasste Werte',
-                        movingAverage:'Mittelwert glätten',
+                        movingAverage: 'Mittelwert glätten',
                         measurementsLoadError: "Fehler beim Laden der initialen Werte.",
                         measurementsProcessError: "Fehler beim Verarbeiten der erhaltenen Werte.",
                         updatingSensor: 'Sensor wird in Ihrer FPF aktualisiert',
@@ -797,6 +801,8 @@ i18n
                             active: 'Ausführbar',
                             running: 'Aktiv',
                             inactive: 'Ausführen',
+                            is_active: 'Aktiv',
+                            not_active: 'Inaktiv',
                             lastTriggered: 'Zuletzt ausgelöst',
                             hint: {
                                 typeHint: 'Wähle den passenden Auslöser-Typ.',
@@ -827,7 +833,7 @@ i18n
                         loginToManage: 'Anmelden, um Organisation zu verwalten',
                         create: 'Erstellen',
                         add: 'Hinzufügen',
-                        update:'Änderungen speichern,'
+                        update: 'Änderungen speichern,'
                     },
                     label: {
                         organizationName: 'Organisationsname',
@@ -861,13 +867,13 @@ i18n
                         inactive: 'Inaktiv',
                         cameras: 'Kameras',
                         hint: {
-                                nameHint: 'Name der Kamera',
-                                locationHint: 'Standort der Kamera',
-                                modelNrHint: 'Modellnummer der Kamera',
-                                intervalSecondsHint: 'Intervall zum Aufnehmen von Bildern',
-                                resolutionHint: 'Auflösung der Kamera',
-                                livestreamUrlHint: 'URL für den Livestream',
-                                snapshotUrlHint: 'URL für den Schnappschuss',
+                            nameHint: 'Name der Kamera',
+                            locationHint: 'Standort der Kamera',
+                            modelNrHint: 'Modellnummer der Kamera',
+                            intervalSecondsHint: 'Intervall zum Aufnehmen von Bildern',
+                            resolutionHint: 'Auflösung der Kamera',
+                            livestreamUrlHint: 'URL für den Livestream',
+                            snapshotUrlHint: 'URL für den Schnappschuss',
                         },
                         cameraList: 'Kamera-Liste',
                         noCamerasFound: 'Keine Kamera gefunden',
@@ -982,7 +988,7 @@ i18n
                         houseNumber: 'Hausnummer',
                         latitude: 'Breitengrad',
                         longitude: 'Längengrad',
-                        gatherForecasts:'Wettervorhersage',
+                        gatherForecasts: 'Wettervorhersage',
                         gatherForecastsActive: 'Vorhersagen werden gesammelt',
                         gatherForecastsNotActive: 'Keine Vorhersagen',
                         buttons: {
