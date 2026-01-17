@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Table, ScrollArea, TextInput, Text, HoverCard, Loader, Box } from "@mantine/core";
 import { HardwareConfiguration } from "../models/HardwareConfiguration";
 import { getAvailableHardwareConfiguration } from "../useCase/getAvailableHardwareConfiguration";
-import {useTranslation} from "react-i18next";
-import {EditSensor} from "../../sensor/models/Sensor";
-import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils";
-import {showNotification} from "@mantine/notifications";
-import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
-import {getSensor} from "../../sensor/useCase/getSensor";
+import { useTranslation } from "react-i18next";
+import { EditSensor } from "../../sensor/models/Sensor";
+import { capitalizeFirstLetter, getBackendTranslation } from "../../../utils/utils";
+import { showNotification } from "@mantine/notifications";
+import { MultiLanguageInput } from "../../../utils/MultiLanguageInput";
+import { getSensor } from "../../sensor/useCase/getSensor";
+import { IconSearch } from "@tabler/icons-react";
 
 interface SelectHardwareConfigurationProps {
     fpfId: string;
@@ -27,6 +28,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
     const [originalId, setOriginalId] = useState<string>("");
     const [originalInfo, setOriginalInfo] = useState<Record<string, any>>({});
     const [manualInput, setManualInput] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     useEffect(() => {
         if (isLoading) {
@@ -74,7 +76,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
 
     const handleSensorClassSelected = (sensorClassId: string) => {
         if (sensorClassId === originalId && !manualInput) {
-            postHardwareConfiguration({sensorClassId: sensorClassId, additionalInformation: originalInfo});
+            postHardwareConfiguration({ sensorClassId: sensorClassId, additionalInformation: originalInfo });
             setAdditionalInformation(originalInfo);
             setSelectedSensorClassId(sensorClassId);
         } else {
@@ -88,7 +90,7 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                 if (config.unit !== '') setUnit(config.unit);
                 if (config.parameter !== '') setParameter(config.parameter);
                 if (config.model !== '') setModel(config.model);
-                postHardwareConfiguration({sensorClassId: sensorClassId, additionalInformation: info});
+                postHardwareConfiguration({ sensorClassId: sensorClassId, additionalInformation: info });
                 setSelectedSensorClassId(sensorClassId);
             }
         }
@@ -114,6 +116,13 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                 </Box>
             ) : hardwareConfiguration?.length > 0 ? (
                 <Box>
+                    <TextInput
+                        placeholder={t("sensor.searchHardware")}
+                        mb="md"
+                        leftSection={<IconSearch size={16} stroke={1.5} />}
+                        value={searchQuery}
+                        onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                    />
                     <Table striped highlightOnHover withColumnBorders>
                         <Table.Thead style={{ position: 'sticky', backgroundColor: "var(--mantine-color-body)" }}>
                             <Table.Tr>
@@ -125,88 +134,101 @@ const SelectHardwareConfiguration: React.FC<SelectHardwareConfigurationProps> = 
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody >
-                            {hardwareConfiguration.map((configuration) => (
-                                <React.Fragment key={configuration.sensorClassId}>
-                                    <Table.Tr
-                                        onClick={() => handleSensorClassSelected(configuration.sensorClassId)}
-                                        style={{ cursor: "pointer" }}
-                                    >
-                                        <Table.Td>{capitalizeFirstLetter(configuration.connection)}</Table.Td>
-                                        <Table.Td>{capitalizeFirstLetter(configuration.model)}</Table.Td>
-                                        <Table.Td>{capitalizeFirstLetter(getBackendTranslation(configuration.parameter, i18n.language))}</Table.Td>
-                                        <Table.Td>{capitalizeFirstLetter(configuration.unit)}</Table.Td>
-                                        <Table.Td>
-                                            {Object.entries(configuration.tags).map(([key, value]) => (
-                                                <HoverCard key={key} width={280} shadow="md">
-                                                    <HoverCard.Target>
-                                                        <Text>{capitalizeFirstLetter(getBackendTranslation(value, i18n.language))}</Text>
-                                                    </HoverCard.Target>
-                                                </HoverCard>
-                                            ))}
-                                        </Table.Td>
-                                    </Table.Tr>
-                                    {configuration.sensorClassId === selectedSensorClassId && (
-                                        <>
-                                            {configuration.model === "" && (
-                                                <Table.Tr>
-                                                    <Table.Td colSpan={1} />
-                                                    <Table.Td colSpan={4}>
-                                                        <TextInput
-                                                            label={t("sensor.model")}
-                                                            type="text"
-                                                            value={sensor?.modelNr}
-                                                            onChange={(e) => setModel(e.target.value)}
-                                                        />
-                                                    </Table.Td>
-                                                </Table.Tr>
-                                            )}
-                                            {configuration.parameter === "" && (
-                                                <Table.Tr>
-                                                    <Table.Td colSpan={1} />
-                                                    <Table.Td colSpan={4}>
-                                                        <MultiLanguageInput
-                                                            label={`${t("sensor.parameter")} (${t("sensor.parameter_hint")})`}
-                                                            value={sensor?.parameter || ""}
-                                                            onChange={(value) => setParameter(value)}
-                                                        />
-                                                    </Table.Td>
-                                                </Table.Tr>
-                                            )}
-                                            {configuration.unit === "" && (
-                                                <Table.Tr>
-                                                    <Table.Td colSpan={1} />
-                                                    <Table.Td colSpan={4}>
-                                                        <TextInput
-                                                            label={t("sensor.unit")}
-                                                            type="text"
-                                                            value={sensor?.unit}
-                                                            onChange={(e) => setUnit(e.target.value)}
-                                                        />
-                                                    </Table.Td>
-                                                </Table.Tr>
-                                            )}
-                                            {configuration.fields.map((field) => (
-                                            <Table.Tr>
-                                                <Table.Td colSpan={1} />
-                                                <Table.Td colSpan={4}>
-                                                    <TextInput
-                                                        required
-                                                        placeholder={capitalizeFirstLetter(field.name)}
-                                                        key={field.name}
-                                                        label={`${capitalizeFirstLetter(field.name)}`}
-                                                        type={field.type}
-                                                        value={additionalInformation[field.name]}
-                                                        onChange={(e) =>
-                                                            handleFieldInputChanged(field.name, e.target.value)
-                                                        }
-                                                    />
-                                                </Table.Td>
-                                            </Table.Tr>
-                                            ))}
-                                        </>
-                                    )}
-                                </React.Fragment>
-                            ))}
+                            {hardwareConfiguration
+                                .filter((config) => {
+                                    const query = searchQuery.toLowerCase();
+                                    return (
+                                        config.connection.toLowerCase().includes(query) ||
+                                        config.model.toLowerCase().includes(query) ||
+                                        getBackendTranslation(config.parameter, i18n.language).toLowerCase().includes(query) ||
+                                        config.unit.toLowerCase().includes(query) ||
+                                        Object.values(config.tags).some(tag =>
+                                            getBackendTranslation(tag, i18n.language).toLowerCase().includes(query)
+                                        )
+                                    );
+                                })
+                                .map((configuration) => (
+                                    <React.Fragment key={configuration.sensorClassId}>
+                                        <Table.Tr
+                                            onClick={() => handleSensorClassSelected(configuration.sensorClassId)}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <Table.Td>{capitalizeFirstLetter(configuration.connection)}</Table.Td>
+                                            <Table.Td>{capitalizeFirstLetter(configuration.model)}</Table.Td>
+                                            <Table.Td>{capitalizeFirstLetter(getBackendTranslation(configuration.parameter, i18n.language))}</Table.Td>
+                                            <Table.Td>{capitalizeFirstLetter(configuration.unit)}</Table.Td>
+                                            <Table.Td>
+                                                {Object.entries(configuration.tags).map(([key, value]) => (
+                                                    <HoverCard key={key} width={280} shadow="md">
+                                                        <HoverCard.Target>
+                                                            <Text>{capitalizeFirstLetter(getBackendTranslation(value, i18n.language))}</Text>
+                                                        </HoverCard.Target>
+                                                    </HoverCard>
+                                                ))}
+                                            </Table.Td>
+                                        </Table.Tr>
+                                        {configuration.sensorClassId === selectedSensorClassId && (
+                                            <>
+                                                {configuration.model === "" && (
+                                                    <Table.Tr>
+                                                        <Table.Td colSpan={1} />
+                                                        <Table.Td colSpan={4}>
+                                                            <TextInput
+                                                                label={t("sensor.model")}
+                                                                type="text"
+                                                                value={sensor?.modelNr}
+                                                                onChange={(e) => setModel(e.target.value)}
+                                                            />
+                                                        </Table.Td>
+                                                    </Table.Tr>
+                                                )}
+                                                {configuration.parameter === "" && (
+                                                    <Table.Tr>
+                                                        <Table.Td colSpan={1} />
+                                                        <Table.Td colSpan={4}>
+                                                            <MultiLanguageInput
+                                                                label={`${t("sensor.parameter")} (${t("sensor.parameter_hint")})`}
+                                                                value={sensor?.parameter || ""}
+                                                                onChange={(value) => setParameter(value)}
+                                                            />
+                                                        </Table.Td>
+                                                    </Table.Tr>
+                                                )}
+                                                {configuration.unit === "" && (
+                                                    <Table.Tr>
+                                                        <Table.Td colSpan={1} />
+                                                        <Table.Td colSpan={4}>
+                                                            <TextInput
+                                                                label={t("sensor.unit")}
+                                                                type="text"
+                                                                value={sensor?.unit}
+                                                                onChange={(e) => setUnit(e.target.value)}
+                                                            />
+                                                        </Table.Td>
+                                                    </Table.Tr>
+                                                )}
+                                                {configuration.fields.map((field) => (
+                                                    <Table.Tr>
+                                                        <Table.Td colSpan={1} />
+                                                        <Table.Td colSpan={4}>
+                                                            <TextInput
+                                                                required
+                                                                placeholder={capitalizeFirstLetter(field.name)}
+                                                                key={field.name}
+                                                                label={`${capitalizeFirstLetter(field.name)}`}
+                                                                type={field.type}
+                                                                value={additionalInformation[field.name]}
+                                                                onChange={(e) =>
+                                                                    handleFieldInputChanged(field.name, e.target.value)
+                                                                }
+                                                            />
+                                                        </Table.Td>
+                                                    </Table.Tr>
+                                                ))}
+                                            </>
+                                        )}
+                                    </React.Fragment>
+                                ))}
                         </Table.Tbody>
                     </Table>
                 </Box>

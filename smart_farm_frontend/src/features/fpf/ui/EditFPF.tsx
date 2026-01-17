@@ -123,6 +123,7 @@ export const EditFPF: React.FC = () => {
     useEffect(() => {
         if (fpfId) {
             getFpf(fpfId).then((resp) => {
+                dispatch(updatedFpf(resp));
                 setSensors(resp.Sensors);
                 setModels(resp.Models);
                 setCameras(resp.Cameras);

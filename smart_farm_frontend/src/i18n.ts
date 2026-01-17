@@ -145,6 +145,7 @@ i18n
                         parameter_hint: 'Please enter english and german',
                         unit: 'Unit',
                         tags: 'Notes',
+                        searchHardware: 'Search Hardware',
                         hint: {
                             nameHint: 'Name of the sensor',
                             locationHint: 'Location of the sensor',
@@ -281,6 +282,8 @@ i18n
                             active: 'Executable',
                             running: 'Active',
                             inactive: 'Execute',
+                            is_active: 'Active',
+                            not_active: 'Inactive',
                             lastTriggered: 'Last triggered',
                             hint: {
                                 typeHint: 'Select appropriate trigger type.',
@@ -817,6 +820,7 @@ i18n
                         parameter_hint: 'Bitte in Englisch und Deutsch eingeben',
                         unit: 'Einheit',
                         tags: 'Notizen',
+                        searchHardware: 'Hardware suchen',
                         hint: {
                             nameHint: 'Name des Sensors',
                             locationHint: 'Standort des Sensors',
@@ -953,6 +957,8 @@ i18n
                             active: 'Ausführbar',
                             running: 'Aktiv',
                             inactive: 'Ausführen',
+                            is_active: 'Aktiv',
+                            not_active: 'Inaktiv',
                             lastTriggered: 'Zuletzt ausgelöst',
                             hint: {
                                 typeHint: 'Wähle den passenden Auslöser-Typ.',
