@@ -28,6 +28,7 @@ import ControllableActionOverview from "../../controllables/ui/controllableActio
 import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {showNotification} from "@mantine/notifications";
+import {fetchAvailableActions} from "../../controllables/useCase/fetchAvailableActions";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
@@ -51,6 +52,18 @@ export const FpfOverview = () => {
                 if (org) {
                     setIsMember(true);
                     setIsAdmin(org.membership.role === 'admin');
+
+                    if (params?.fpfId) {
+                        fetchAvailableActions(params.fpfId).then(resp => {
+                            dispatch(setControllableAction(resp));
+                        }).catch((error) => {
+                            showNotification({
+                                title: t('common.loadingErrorFpf'),
+                                message: `${error}`,
+                                color: "red",
+                            });
+                        });
+                    }
                 }
             }).catch((error) => {
                 showNotification({
@@ -67,8 +80,6 @@ export const FpfOverview = () => {
             getFpf(params.fpfId).then(resp => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
-                dispatch(setControllableAction(resp.ControllableAction));
-                
             }).catch((error) => {
                 showNotification({
                     title: t('common.loadingError'),

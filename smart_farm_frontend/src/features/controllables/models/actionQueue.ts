@@ -4,7 +4,7 @@ export interface ActionQueue {
     id: string,
     createdAt: string,
     startedAt: string,
-    endedAt: string,
+    endedAt?: string,
     value: string,
     controllableAction: {
         name: string,
@@ -17,4 +17,7 @@ export interface ActionQueue {
         actionValueType: string,
         actionValue: string,
     },
+    actionTriggerId: string,
+    actionId: string,
+    dependsOn?: string,
 }

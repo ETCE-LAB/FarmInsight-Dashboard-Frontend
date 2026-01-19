@@ -22,6 +22,7 @@ i18n
                         confirmTitle: 'Confirm',
                         confirmMessage: 'Are you sure you want to do this?',
                         loadingError: 'Failed to load',
+                        loadingErrorFpf: 'Failed to load from FPF',
                         updateSuccess: 'Updated successfully',
                         updateError: 'Failed to update',
                         loadErrorGeneric: 'Error loading data',
@@ -226,6 +227,8 @@ i18n
                         nextAction: 'Next Action',
                         nextActionDesc: 'The action to get executed after this action has finished.',
                         actionChain: 'Followup actions',
+                        actionManuallyTriggered: 'triggered',
+                        actionWaitingForResponse: 'Waiting for response...',
                         hint: {
                             nameHint: 'Name of the controllable action',
                             hardware: 'Optional: If this action blocks hardware on the FPF, set it here. Example: A robot arm which can only execute one action at a time.',
@@ -523,6 +526,7 @@ i18n
                         confirmTitle: 'Bestätige Ausführung',
                         confirmMessage: 'Sind Sie sicher, dass Sie das tun wollen?',
                         loadingError: 'Fehler beim Laden',
+                        loadingErrorFpf: 'Fehler beim Laden von der FPF',
                         updateSuccess: 'Erfolgreich geändert',
                         updateError: 'Fehler beim ändern',
                         loadErrorGeneric: 'Fehler beim laden der Daten',
@@ -724,6 +728,8 @@ i18n
                         nextAction: 'Nächste Aktion',
                         nextActionDesc: 'Die Aktion die ausgeführt wird, sobald diese Aktion endet.',
                         actionChain: 'Nachfolgende Aktionen',
+                        actionManuallyTriggered: 'ausgelöst',
+                        actionWaitingForResponse: 'Warten auf Ergebnis...',
                         hint: {
                             nameHint: "Name der steuerbaren Aktion",
                             hardware: "Optional: Wenn diese Aktion Hardware auf dem FPF blockiert, hier festlegen. Beispiel: Ein Roboterarm, der nur eine Aktion gleichzeitig ausführen kann.",

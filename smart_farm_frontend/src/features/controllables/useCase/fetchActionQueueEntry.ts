@@ -4,7 +4,7 @@ import {BACKEND_URL} from "../../../env-config";
 import {ActionQueue} from "../models/actionQueue";
 
 
-export const executeTrigger = (controllableActionId: string, actionTriggerId: string, actionValue: string) => {
+export const fetchActionQueueEntry = (fpfId: string, entryId: string) => {
     const apiClient = new APIClient()
 
     const user = getUser();
@@ -13,8 +13,8 @@ export const executeTrigger = (controllableActionId: string, actionTriggerId: st
     const headers =
         {'Authorization': `Bearer ${token}`}
 
-    const url = `${BACKEND_URL}/api/execute-actions/${controllableActionId}/${actionTriggerId}`;
-    const result: Promise<ActionQueue[]> = apiClient.post(url, {actionValue:actionValue}, headers)
+    const url = `${BACKEND_URL}/api/action-queue/${fpfId}/${entryId}`;
+    const result:  Promise<ActionQueue> = apiClient.get(url, headers)
 
     return result
 }

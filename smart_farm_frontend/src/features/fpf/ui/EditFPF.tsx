@@ -26,6 +26,7 @@ import {Hardware} from "../../hardware/models/hardware";
 import {showNotification} from "@mantine/notifications";
 import {useAuth} from "react-oidc-context";
 import {AuthRoutes} from "../../../utils/Router";
+import {fetchAvailableActions} from "../../controllables/useCase/fetchAvailableActions";
 
 
 export const EditFPF: React.FC = () => {
@@ -76,12 +77,21 @@ export const EditFPF: React.FC = () => {
         if (auth.isAuthenticated && fpfId) {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
-                dispatch(setControllableAction(resp.ControllableAction));
             }).catch((error) => {
                 showNotification({
                     title: t('common.loadError'),
                     message: `${error}`,
                     color: 'red',
+                });
+            });
+
+            fetchAvailableActions(fpfId).then(resp => {
+                dispatch(setControllableAction(resp));
+            }).catch((error) => {
+                showNotification({
+                    title: t('common.loadingErrorFpf'),
+                    message: `${error}`,
+                    color: "red",
                 });
             });
         }
@@ -192,7 +202,7 @@ export const EditFPF: React.FC = () => {
             </Card>
 
             <Card padding="lg" radius="md">
-                <ControllableActionList isAdmin={isAdmin} />
+                <ControllableActionList isAdmin={isAdmin} fpfId={fpf.id} />
             </Card>
 
             <Card padding="lg" radius="md">

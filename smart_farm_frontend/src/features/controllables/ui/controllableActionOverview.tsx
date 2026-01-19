@@ -18,8 +18,13 @@ import {updateControllableActionStatus, updateIsAutomated} from "../state/Contro
 import {getMyOrganizations} from "../../organization/useCase/getMyOrganizations";
 import {useParams} from "react-router-dom";
 import {showNotification} from "@mantine/notifications";
-import {ControllableAction} from "../models/controllableAction";
+import {ControllableAction, getActionChain} from "../models/controllableAction";
 import {getBackendTranslation, truncateText} from "../../../utils/utils";
+import {ActionQueue} from "../models/actionQueue";
+import {useInterval} from "@mantine/hooks";
+import {fetchActionQueueEntry} from "../useCase/fetchActionQueueEntry";
+import {getLogMessages} from "../../logMessages/useCase/getLogMessages";
+
 
 const getColor = (value: string) => {
     switch (lowerFirst(value)) {
@@ -33,10 +38,10 @@ const getColor = (value: string) => {
     }
 };
 
-const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
+const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
     const { t, i18n } = useTranslation();
     const dispatch = useAppDispatch();
-    const controllableAction = useSelector(
+    const controllableActions = useSelector(
         (state: RootState) => state.controllableAction.controllableAction
     );
     const { organizationId } = useParams<{ organizationId: string }>();
@@ -49,6 +54,8 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
         value?: string;
         isActive?: boolean;
     }>({ open: false });
+
+    const [waitingOn, setWaitingOn] = useState<ActionQueue[]>([]);
 
     useEffect(() => {
         if (organizationId) {
@@ -75,6 +82,34 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
         }
     }, [organizationId, t]);
 
+    useInterval(async () => {
+        if (waitingOn.length === 0) return;
+
+        let done: string[] = []
+        for (const entry of waitingOn) {
+            // if dependsOn is not done yet, this one can't be either
+            if (entry.dependsOn !== undefined && (waitingOn.some((e) => e.id === entry.dependsOn) && !done.includes(entry.dependsOn))) continue;
+
+            const entryNow = await fetchActionQueueEntry(fpfId, entry.id);
+            if (entryNow.endedAt) {
+                const logs = await getLogMessages('action', entry.actionId, undefined, entry.createdAt, undefined);
+                for (const log of logs) {
+                    if (log.logLevel === 'debug') continue;
+                    showNotification({
+                        title: getBackendTranslation(controllableActions.find((e) => e.id === entry.actionId)?.name, i18n.language),
+                        message: log.message,
+                        color: log.logLevel === 'error'? 'red': 'green',
+                    });
+                }
+                done.push(entry.id);
+            }
+        }
+
+        if (done.length > 0) {
+            setWaitingOn(waitingOn.filter((e) => !done.includes(e.id)));
+        }
+    }, 1000, { autoInvoke: true });
+
     const handleTriggerChange = async (action: ControllableAction, triggerId: string, value: string, isActive: boolean) => {
         const hardwareId = action?.hardware?.id
 
@@ -92,7 +127,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                 if (!isActive) {
                     setConfirmModal({ open: false });
 
-                    const groupActions = controllableAction.filter(
+                    const groupActions = controllableActions.filter(
                         (a) => a.hardware?.id === hardwareId
                     );
 
@@ -113,16 +148,18 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                         dispatch(updateControllableActionStatus({ actionId: activeManualAction.id, triggerId: "" }));
                     }
 
-                    await executeTrigger(action.id, triggerId, value);
+                    const queue_entries = await executeTrigger(action.id, triggerId, value);
+                    setWaitingOn([...waitingOn, ...queue_entries]);
                     dispatch(updateIsAutomated({ actionId: action.id, isAutomated: false }));
                     dispatch(updateControllableActionStatus({ actionId: action.id, triggerId }));
+
+                    showNotification({
+                        title: `${getBackendTranslation(action.name, i18n.language)} ${t('controllableActionList.actionManuallyTriggered')}`,
+                        message: t('controllableActionList.actionWaitingForResponse'),
+                        color: 'green',
+                    });
                 }
             }
-            showNotification({
-                title: t('common.executeSuccess'),
-                message: '',
-                color: 'green',
-            });
         } catch (error) {
             showNotification({
                 title: t('common.executeError'),
@@ -135,7 +172,7 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
         }
     };
 
-    const groupedActions = controllableAction.reduce<Record<string, typeof controllableAction>>((acc, action) => {
+    const groupedActions = controllableActions.reduce<Record<string, typeof controllableActions>>((acc, action) => {
         const key = action.hardware?.id ?? action.id;
         if (!acc[key]) acc[key] = [];
         acc[key].push(action);
@@ -301,6 +338,11 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                             <Flex align="center" justify="space-between" gap="md" wrap="nowrap">
                                                 <Text fw={600} tt="capitalize" style={{ whiteSpace: "nowrap", minWidth: 150 }}>
                                                     {truncateText(getBackendTranslation(action.name, i18n.language), 30)}
+                                                    {getActionChain(action, controllableActions).map((a) => (
+                                                        <>
+                                                            &nbsp;&gt; {getBackendTranslation(a, i18n.language)}
+                                                        </>
+                                                    ))}
                                                 </Text>
 
                                                 <Flex direction="row" gap="xs" align="center" wrap="wrap">
@@ -328,7 +370,11 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = () => {
                                                                     }
                                                                 }}
                                                             >
-                                                                {trigger.actionValue}
+                                                                {trigger.actionValue.split(";").map((v, i) => (
+                                                                    <>
+                                                                        {i !== 0? " >" : ""} {v}
+                                                                    </>
+                                                                ))}
                                                             </Button>
                                                         );
                                                     })}

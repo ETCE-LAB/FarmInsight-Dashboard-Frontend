@@ -30,3 +30,17 @@ export interface EditControllableAction{
     trigger: ActionTrigger[],
     nextAction: string | null,
 }
+
+
+
+export const getActionChain = (action: ControllableAction, controllableActions: ControllableAction[]) => {
+    let actions = [];
+    for (let nextAction = controllableActions.find(x => x.id === action.nextAction);
+         nextAction;
+         nextAction = controllableActions.find(x => x.id === nextAction?.nextAction))
+    {
+        actions.push(nextAction.name);
+    }
+
+    return actions;
+}

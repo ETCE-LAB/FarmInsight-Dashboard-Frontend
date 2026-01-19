@@ -4,7 +4,7 @@ import {IconChevronDown, IconChevronRight, IconCirclePlus, IconEdit} from "@tabl
 import { useTranslation } from "react-i18next";
 import {useSelector} from "react-redux";
 import {RootState} from "../../../utils/store";
-import {ControllableAction} from "../models/controllableAction";
+import {ControllableAction, getActionChain} from "../models/controllableAction";
 import {ActionTrigger} from "../models/actionTrigger";
 import {ControllableActionForm} from "./controllableActionForm";
 import {ActionTriggerForm} from "./actionTriggerForm";
@@ -14,9 +14,13 @@ import {useAppDispatch} from "../../../utils/Hooks";
 import {LogMessageModalButton} from "../../logMessages/ui/LogMessageModalButton";
 import {showNotification} from "@mantine/notifications";
 import {getBackendTranslation} from "../../../utils/utils";
+import {ActionQueue} from "../models/actionQueue";
+import {useInterval} from "@mantine/hooks";
+import {fetchActionQueueEntry} from "../useCase/fetchActionQueueEntry";
+import {getLogMessages} from "../../logMessages/useCase/getLogMessages";
 
 
-export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) => {
+export const ControllableActionList: React.FC<{ isAdmin:Boolean, fpfId: string }> = ({isAdmin, fpfId}) => {
     const { t, i18n } = useTranslation();
     const controllableActions = useSelector((state: RootState) => state.controllableAction.controllableAction);
 
@@ -29,12 +33,41 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
 
     const [confirmModal, setConfirmModal] = useState<{
         open: boolean,
-        actionId?: string,
+        action?: ControllableAction,
         triggerId?: string,
         value?: string,
         isActive?: boolean
     }>({open: false});
 
+    const [waitingOn, setWaitingOn] = useState<ActionQueue[]>([]);
+
+    useInterval(async () => {
+        if (waitingOn.length === 0) return;
+
+        let done: string[] = []
+        for (const entry of waitingOn) {
+            // if dependsOn is not done yet, this one can't be either
+            if (entry.dependsOn !== undefined && (waitingOn.some((e) => e.id === entry.dependsOn) && !done.includes(entry.dependsOn))) continue;
+
+            const entryNow = await fetchActionQueueEntry(fpfId, entry.id);
+            if (entryNow.endedAt) {
+                const logs = await getLogMessages('action', entry.actionId, undefined, entry.createdAt, undefined);
+                for (const log of logs) {
+                    if (log.logLevel === 'debug') continue;
+                    showNotification({
+                        title: getBackendTranslation(controllableActions.find((e) => e.id === entry.actionId)?.name, i18n.language),
+                        message: log.message,
+                        color: log.logLevel === 'error'? 'red': 'green',
+                    });
+                }
+                done.push(entry.id);
+            }
+        }
+
+        if (done.length > 0) {
+            setWaitingOn(waitingOn.filter((e) => !done.includes(e.id)));
+        }
+    }, 1000, { autoInvoke: true });
 
     const toggleRow = (id: string) => {
       setExpandedRows((prev) =>
@@ -91,19 +124,22 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
         setActionTriggerModalOpen(true)
     }
 
-    const handleTriggerChange = (actionId: string, triggerId: string, value: string, isActive: boolean) => {
+    const handleTriggerChange = (action: ControllableAction, triggerId: string, value: string, isActive: boolean) => {
         setConfirmModal({open: false});
-        dispatch(updateIsAutomated({actionId: actionId, isAutomated: isActive || triggerId === "auto"}));
-        dispatch(updateControllableActionStatus({actionId, triggerId: triggerId !== "auto" && !isActive ? triggerId : ""}));
+        dispatch(updateIsAutomated({actionId: action.id, isAutomated: isActive || triggerId === "auto"}));
+        dispatch(updateControllableActionStatus({actionId: action.id, triggerId: triggerId !== "auto" && !isActive ? triggerId : ""}));
 
-        executeTrigger(actionId, triggerId, value).then((v) => {
-            showNotification({
-                title: t('common.executeSuccess'),
-                message: '',
-                color: 'green',
-            });
+        executeTrigger(action.id, triggerId, value).then((queueEntries) => {
+            if (triggerId !== "auto") { // if we just set it to auto we won't get any results back
+                setWaitingOn([...waitingOn, ...queueEntries]);
+                showNotification({
+                    title: `${getBackendTranslation(action.name, i18n.language)} ${t('controllableActionList.actionManuallyTriggered')}`,
+                    message: t('controllableActionList.actionWaitingForResponse'),
+                    color: 'green',
+                });
+            }
         }).catch((error) => {
-            showNotification({
+                showNotification({
                 title: t('common.executeError'),
                 message: `${error}`,
                 color: 'red',
@@ -117,18 +153,6 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
       acc[key].push(action);
       return acc;
     }, {});
-
-    const getActionChain = (action: ControllableAction) => {
-        let actions = [];
-        for (let nextAction = controllableActions.find(x => x.id === action.nextAction);
-             nextAction;
-             nextAction = controllableActions.find(x => x.id === nextAction?.nextAction))
-        {
-            actions.push(nextAction.name);
-        }
-
-        return actions;
-    }
 
     return (
         <Box>
@@ -169,7 +193,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                     })}
 
                     {confirmModal.triggerId !== "auto" && confirmModal.isActive === false && (() => {
-                        const currentAction = controllableActions.find(a => a.id === confirmModal.actionId);
+                        const currentAction = controllableActions.find(a => a.id === confirmModal.action?.id);
                         const currentGroup = currentAction?.hardware?.id ? groupedActions[currentAction.hardware.id] : [];
 
                         const autoTriggersInGroup = currentGroup?.some(action =>
@@ -199,13 +223,13 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                     </Button>
                     <Button onClick={() => {
                         if (
-                            confirmModal.actionId &&
+                            confirmModal.action &&
                             confirmModal.triggerId &&
                             confirmModal.value !== undefined &&
                             confirmModal.isActive !== undefined
                         ) {
                             handleTriggerChange(
-                                confirmModal.actionId,
+                                confirmModal.action,
                                 confirmModal.triggerId,
                                 confirmModal.value,
                                 confirmModal.isActive
@@ -333,7 +357,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                             if (activeManual) {
                                                                 setConfirmModal({
                                                                     open: true,
-                                                                    actionId: activeManual.id,
+                                                                    action: activeManual,
                                                                     triggerId: "auto",
                                                                     value: "",
                                                                     isActive: true
@@ -376,7 +400,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                         disabled={hasActiveManualInGroup && trigger.type !== 'manual'}
                                                                         onClick={() => setConfirmModal({
                                                                             open: true,
-                                                                            actionId: action.id,
+                                                                            action: action,
                                                                             triggerId: trigger.type !== 'manual' ? "auto" : trigger.id,
                                                                             value: trigger.type !== 'manual' ? "" : trigger.actionValue,
                                                                             isActive: isActive
@@ -420,7 +444,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                             <Card mt='sm'>
                                                 <Text fw={500}>{t("controllableActionList.actionChain")}</Text>
                                                 <Flex>
-                                                    {getActionChain(action).map((acts, index) => (
+                                                    {getActionChain(action, controllableActions).map((acts, index) => (
                                                         <>
                                                             {index !== 0 &&
                                                                 <Text>
