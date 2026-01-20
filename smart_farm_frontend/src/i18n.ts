@@ -70,6 +70,11 @@ i18n
                             publicHint: 'Set the FPF to public or private',
                             sensorServiceIpHint: 'IP or URL of the FPF Backend',
                         },
+                        error: {
+                            nameTaken: 'This name is already used by another FPF in this organization.',
+                            locationRequired: 'Please select a location for this FPF.',
+                            locationNotFound: 'The selected location does not exist.',
+                        },
                     },
                     header: {
                         loading: 'Loading...',
@@ -746,6 +751,11 @@ i18n
                         hint: {
                             publicHint: 'FPF öffentlich oder privat einstellen.',
                             sensorServiceIpHint: 'IP oder URL des FPF-Backends',
+                        },
+                        error: {
+                            nameTaken: 'Dieser Name wird bereits für ein anderes FPF in dieser Organisation verwendet.',
+                            locationRequired: 'Bitte wähle einen Standort für dieses FPF aus.',
+                            locationNotFound: 'Der ausgewählte Standort existiert nicht.',
                         },
                     },
                     header: {
