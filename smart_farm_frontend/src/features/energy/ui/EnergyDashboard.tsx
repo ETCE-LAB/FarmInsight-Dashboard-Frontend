@@ -391,17 +391,22 @@ const EnergyDashboard: React.FC = () => {
                 <EnergyForecastGraph />
             </Box>
 
-            {/* Energy Sources Section */}
+            {/* Energy Production Section (Solar, Wind, Grid, Generator) */}
             <Card shadow="sm" padding="lg" withBorder mb="lg">
                 <Group justify="space-between" mb="md">
-                    <Title order={3}>{t('energy.sources')}</Title>
+                    <Group gap="xs">
+                        <ThemeIcon color="yellow" variant="light">
+                            <IconSun size={20} />
+                        </ThemeIcon>
+                        <Title order={3}>{t('energy.energyProduction')}</Title>
+                    </Group>
                     <ActionIcon variant="light" color="blue" onClick={handleAddSource}>
                         <IconCirclePlus size={20} />
                     </ActionIcon>
                 </Group>
 
-                {sources.length === 0 ? (
-                    <Text c="dimmed" ta="center" py="xl">{t('energy.noSourcesFound')}</Text>
+                {sources.filter(s => s.sourceType !== 'battery').length === 0 ? (
+                    <Text c="dimmed" ta="center" py="xl">{t('energy.noProductionSources')}</Text>
                 ) : (
                     <Table striped highlightOnHover>
                         <Table.Thead>
@@ -416,7 +421,7 @@ const EnergyDashboard: React.FC = () => {
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
-                            {sources.map((source) => (
+                            {sources.filter(s => s.sourceType !== 'battery').map((source) => (
                                 <Table.Tr key={source.id}>
                                     <Table.Td>
                                         <Group gap="xs">
@@ -427,12 +432,7 @@ const EnergyDashboard: React.FC = () => {
                                     <Table.Td>{source.name}</Table.Td>
                                     <Table.Td>
                                         <Group gap="xs">
-                                            <Text c="green" fw={500}>
-                                                {source.sourceType === 'battery'
-                                                    ? `${source.currentOutputWatts} Wh`
-                                                    : `${source.currentOutputWatts} W`
-                                                }
-                                            </Text>
+                                            <Text c="green" fw={500}>{source.currentOutputWatts} W</Text>
                                             {source.sensor && (
                                                 <Badge size="xs" variant="light" color="blue">
                                                     {t('energy.liveFromSensor')}
@@ -440,15 +440,10 @@ const EnergyDashboard: React.FC = () => {
                                             )}
                                         </Group>
                                     </Table.Td>
-                                    <Table.Td>
-                                        {source.sourceType === 'battery'
-                                            ? `${source.maxOutputWatts} Wh`
-                                            : `${source.maxOutputWatts} W`
-                                        }
-                                    </Table.Td>
+                                    <Table.Td>{source.maxOutputWatts} W</Table.Td>
                                     <Table.Td>
                                         <Badge color={source.weatherDependent ? 'blue' : 'gray'}>
-                                            {source.weatherDependent ? t('common.activated') : t('common.inactive')}
+                                            {source.weatherDependent ? t('common.yes') : t('common.no')}
                                         </Badge>
                                     </Table.Td>
                                     <Table.Td>
@@ -463,6 +458,84 @@ const EnergyDashboard: React.FC = () => {
                                     </Table.Td>
                                 </Table.Tr>
                             ))}
+                        </Table.Tbody>
+                    </Table>
+                )}
+            </Card>
+
+            {/* Energy Storage Section (Batteries) */}
+            <Card shadow="sm" padding="lg" withBorder mb="lg">
+                <Group justify="space-between" mb="md">
+                    <Group gap="xs">
+                        <ThemeIcon color="teal" variant="light">
+                            <IconBattery size={20} />
+                        </ThemeIcon>
+                        <Title order={3}>{t('energy.energyStorage')}</Title>
+                    </Group>
+                    <ActionIcon variant="light" color="blue" onClick={handleAddSource}>
+                        <IconCirclePlus size={20} />
+                    </ActionIcon>
+                </Group>
+
+                {sources.filter(s => s.sourceType === 'battery').length === 0 ? (
+                    <Text c="dimmed" ta="center" py="xl">{t('energy.noStorageSources')}</Text>
+                ) : (
+                    <Table striped highlightOnHover>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>{t('energy.storageName')}</Table.Th>
+                                <Table.Th>{t('energy.currentCapacity')}</Table.Th>
+                                <Table.Th>{t('energy.maxCapacity')}</Table.Th>
+                                <Table.Th>{t('energy.chargeLevel')}</Table.Th>
+                                <Table.Th>{t('header.status')}</Table.Th>
+                                <Table.Th>{t('header.actions')}</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {sources.filter(s => s.sourceType === 'battery').map((source) => {
+                                const chargePercent = source.maxOutputWatts > 0
+                                    ? Math.min(100, (source.currentOutputWatts / source.maxOutputWatts) * 100)
+                                    : 0;
+                                return (
+                                    <Table.Tr key={source.id}>
+                                        <Table.Td>
+                                            <Group gap="xs">
+                                                <IconBattery size={20} />
+                                                <Text>{source.name}</Text>
+                                            </Group>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <Group gap="xs">
+                                                <Text c="teal" fw={500}>{source.currentOutputWatts} Wh</Text>
+                                                {source.sensor && (
+                                                    <Badge size="xs" variant="light" color="blue">
+                                                        {t('energy.liveFromSensor')}
+                                                    </Badge>
+                                                )}
+                                            </Group>
+                                        </Table.Td>
+                                        <Table.Td>{source.maxOutputWatts} Wh</Table.Td>
+                                        <Table.Td>
+                                            <Badge
+                                                color={chargePercent > 50 ? 'green' : chargePercent > 20 ? 'yellow' : 'red'}
+                                                size="lg"
+                                            >
+                                                {chargePercent.toFixed(1)}%
+                                            </Badge>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <Badge color={source.isActive ? 'green' : 'gray'}>
+                                                {source.isActive ? t('common.activated') : t('common.inactive')}
+                                            </Badge>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <ActionIcon variant="subtle" onClick={() => handleEditSource(source)}>
+                                                <IconEdit size={18} />
+                                            </ActionIcon>
+                                        </Table.Td>
+                                    </Table.Tr>
+                                );
+                            })}
                         </Table.Tbody>
                     </Table>
                 )}

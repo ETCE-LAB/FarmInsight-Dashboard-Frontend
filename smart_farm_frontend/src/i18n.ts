@@ -684,7 +684,15 @@ i18n
                         forecastBufferDays: 'Buffer Days',
                         forecastBufferDaysHint: 'Execute shutdown this many days BEFORE the predicted threshold is reached',
                         forecastShutdownExplanation: 'When the AI model predicts that the battery will reach {{threshold}}%, this consumer will be shut down {{buffer}} days in advance.',
-                        forecastNeedsAction: 'To enable AI-based shutdown, you must first link a Controllable Action above.'
+                        forecastNeedsAction: 'To enable AI-based shutdown, you must first link a Controllable Action above.',
+                        energyProduction: 'Energy Production',
+                        energyStorage: 'Energy Storage',
+                        noProductionSources: 'No energy production sources configured',
+                        noStorageSources: 'No energy storage sources configured',
+                        storageName: 'Storage Name',
+                        currentCapacity: 'Current Capacity',
+                        maxCapacity: 'Max Capacity',
+                        chargeLevel: 'Charge Level'
                     }
                 },
             },
@@ -1364,7 +1372,15 @@ i18n
                         forecastBufferDays: 'Puffer-Tage',
                         forecastBufferDaysHint: 'Abschaltung so viele Tage VOR dem vorhergesagten Schwellwert ausführen',
                         forecastShutdownExplanation: 'Wenn das KI-Modell vorhersagt, dass die Batterie {{threshold}}% erreicht, wird dieser Verbraucher {{buffer}} Tage vorher abgeschaltet.',
-                        forecastNeedsAction: 'Um KI-basierte Abschaltung zu aktivieren, müssen Sie zuerst oben eine Steuerungsaktion verknüpfen.'
+                        forecastNeedsAction: 'Um KI-basierte Abschaltung zu aktivieren, müssen Sie zuerst oben eine Steuerungsaktion verknüpfen.',
+                        energyProduction: 'Energieproduktion',
+                        energyStorage: 'Energiespeicher',
+                        noProductionSources: 'Keine Energieerzeugungsquellen konfiguriert',
+                        noStorageSources: 'Keine Energiespeicher konfiguriert',
+                        storageName: 'Speichername',
+                        currentCapacity: 'Aktuelle Kapazität',
+                        maxCapacity: 'Max. Kapazität',
+                        chargeLevel: 'Ladestand'
                     }
                 },
             },
