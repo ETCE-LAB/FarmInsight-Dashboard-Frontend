@@ -1,7 +1,6 @@
 import {useAuth} from "react-oidc-context";
 import {useTranslation} from "react-i18next";
 import React, {useEffect, useState} from "react";
-import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
 import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
 import {useNavigate} from "react-router-dom";
 import {AppRoutes} from "../../../utils/appRoutes";
@@ -14,11 +13,10 @@ import {AuthRoutes} from "../../../utils/Router";
 import {Organization} from "../../organization/models/Organization";
 import {getAllOrganizations} from "../../organization/useCase/getAllOrganizations";
 import {DragDropContext, Draggable, DraggableProvided, Droppable} from "@hello-pangea/dnd";
-import {Fpf} from "../../fpf/models/Fpf";
 import {moveArrayItem} from "../../../utils/utils";
 import {IconGripVertical} from "@tabler/icons-react";
 import {postOrganizationOrder} from "../../organization/useCase/postOrganizationOrder";
-import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
+import { useAppSelector} from "../../../utils/Hooks";
 import {NotificationList} from "../../notification/ui/NotificationList";
 
 export const AdminPage = () => {

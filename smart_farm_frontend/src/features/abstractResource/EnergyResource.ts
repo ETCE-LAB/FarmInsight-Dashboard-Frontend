@@ -15,18 +15,18 @@ import {
     CreateEnergyConsumer,
     UpdateEnergySource,
     UpdateEnergyConsumer
-} from '../../features/energy/models/Energy';
-import { EnergyConfig, EnergyConfigUpdate } from '../../features/energy/useCase/updateEnergyConfig';
+} from '../energy/models/Energy';
+import { EnergyConfig, EnergyConfigUpdate } from '../energy/useCase/updateEnergyConfig';
 
 // Import existing useCase functions
-import { getEnergyState, getEnergyDashboard } from '../../features/energy/useCase/getEnergyState';
-import { getEnergySources } from '../../features/energy/useCase/getEnergySources';
-import { getEnergyConsumers } from '../../features/energy/useCase/getEnergyConsumers';
-import { createEnergySource } from '../../features/energy/useCase/createEnergySource';
-import { createEnergyConsumer } from '../../features/energy/useCase/createEnergyConsumer';
-import { updateEnergySource, deleteEnergySource } from '../../features/energy/useCase/updateEnergySource';
-import { updateEnergyConsumer, deleteEnergyConsumer } from '../../features/energy/useCase/updateEnergyConsumer';
-import { updateEnergyConfig, getEnergyConfig } from '../../features/energy/useCase/updateEnergyConfig';
+import { getEnergyState, getEnergyDashboard } from '../energy/useCase/getEnergyState';
+import { getEnergySources } from '../energy/useCase/getEnergySources';
+import { getEnergyConsumers } from '../energy/useCase/getEnergyConsumers';
+import { createEnergySource } from '../energy/useCase/createEnergySource';
+import { createEnergyConsumer } from '../energy/useCase/createEnergyConsumer';
+import { updateEnergySource, deleteEnergySource } from '../energy/useCase/updateEnergySource';
+import { updateEnergyConsumer, deleteEnergyConsumer } from '../energy/useCase/updateEnergyConsumer';
+import { updateEnergyConfig, getEnergyConfig } from '../energy/useCase/updateEnergyConfig';
 
 /**
  * Energy resource adapter implementing the AbstractResource interface.

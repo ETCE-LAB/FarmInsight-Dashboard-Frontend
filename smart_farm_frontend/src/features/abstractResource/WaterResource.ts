@@ -7,8 +7,8 @@
  */
 
 import { AbstractResource, ResourceNotImplementedError } from './AbstractResource';
-import { WeatherAndWaterStatus } from '../../features/water/models/WeatherAndWaterStatus';
-import { getWeatherAndWaterStatus } from '../../features/water/useCase/getWeatherAndWaterStatus';
+import { WeatherAndWaterStatus } from '../water/models/WeatherAndWaterStatus';
+import { getWeatherAndWaterStatus } from '../water/useCase/getWeatherAndWaterStatus';
 
 /**
  * Placeholder types for future Water module expansion.

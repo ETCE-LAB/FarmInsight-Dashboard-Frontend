@@ -3,8 +3,8 @@
  */
 
 import { AbstractResource } from './AbstractResource';
-import { EnergyResource, energyResource } from './EnergyResource';
-import { WaterResource, waterResource } from './WaterResource';
+import {  energyResource } from './EnergyResource';
+import {  waterResource } from './WaterResource';
 
 /**
  * Available resource types in the application
