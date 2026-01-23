@@ -18,9 +18,11 @@ import {ActionQueue} from "../models/actionQueue";
 import {useInterval} from "@mantine/hooks";
 import {fetchActionQueueEntry} from "../useCase/fetchActionQueueEntry";
 import {getLogMessages} from "../../logMessages/useCase/getLogMessages";
+import {Sensor} from "../../sensor/models/Sensor";
+import {Camera} from "../../camera/models/camera";
 
 
-export const ControllableActionList: React.FC<{ isAdmin:Boolean, fpfId: string }> = ({isAdmin, fpfId}) => {
+export const ControllableActionList: React.FC<{ isAdmin:Boolean, fpfId: string, sensors: Sensor[], cameras: Camera[] }> = ({isAdmin, fpfId, sensors, cameras}) => {
     const { t, i18n } = useTranslation();
     const controllableActions = useSelector((state: RootState) => state.controllableAction.controllableAction);
 
@@ -49,18 +51,27 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean, fpfId: string }
             // if dependsOn is not done yet, this one can't be either
             if (entry.dependsOn !== undefined && (waitingOn.some((e) => e.id === entry.dependsOn) && !done.includes(entry.dependsOn))) continue;
 
-            const entryNow = await fetchActionQueueEntry(fpfId, entry.id);
-            if (entryNow.endedAt) {
-                const logs = await getLogMessages('action', entry.actionId, undefined, entry.createdAt, undefined);
-                for (const log of logs) {
-                    if (log.logLevel === 'debug') continue;
-                    showNotification({
-                        title: getBackendTranslation(controllableActions.find((e) => e.id === entry.actionId)?.name, i18n.language),
-                        message: log.message,
-                        color: log.logLevel === 'error'? 'red': 'green',
-                    });
+            try {
+                const entryNow = await fetchActionQueueEntry(fpfId, entry.id);
+                if (entryNow.endedAt) {
+                    const logs = await getLogMessages('action', entry.actionId, undefined, entry.createdAt, undefined);
+                    for (const log of logs) {
+                        if (log.logLevel === 'debug') continue;
+                        showNotification({
+                            title: getBackendTranslation(controllableActions.find((e) => e.id === entry.actionId)?.name, i18n.language),
+                            message: log.message,
+                            color: log.logLevel === 'error'? 'red': 'green',
+                        });
+                    }
+                    done.push(entry.id);
                 }
+            } catch(error) {
                 done.push(entry.id);
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             }
         }
 
@@ -164,7 +175,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean, fpfId: string }
                 centered
                 size="40%"
             >
-                <ControllableActionForm toEditAction={selectedAction} setClosed={setControllableActionModalOpen} />
+                <ControllableActionForm toEditAction={selectedAction} setClosed={setControllableActionModalOpen} cameras={cameras} sensors={sensors} />
             </Modal>
 
             {/* Add Action Trigger Modal */}
@@ -401,7 +412,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean, fpfId: string }
                                                                         onClick={() => setConfirmModal({
                                                                             open: true,
                                                                             action: action,
-                                                                            triggerId: trigger.type !== 'manual' ? "auto" : trigger.id,
+                                                                            triggerId: trigger.type === 'manual' ? isActive ? "auto" : trigger.id : "auto",
                                                                             value: trigger.type !== 'manual' ? "" : trigger.actionValue,
                                                                             isActive: isActive
                                                                         })}

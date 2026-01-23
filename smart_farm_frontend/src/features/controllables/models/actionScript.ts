@@ -12,6 +12,7 @@ export interface ActionScript {
     action_script_class_id:string,
     name:string,
     description:string,
+    has_action_value: boolean,
     action_values:[],
     fields:ActionScriptField[]
 }

@@ -29,9 +29,11 @@ import {capitalizeFirstLetter, getBackendTranslation} from "../../../utils/utils
 import {ActionScript} from "../models/actionScript";
 import {MultiLanguageInput} from "../../../utils/MultiLanguageInput";
 import {fetchAvailableActions} from "../useCase/fetchAvailableActions";
+import {Sensor} from "../../sensor/models/Sensor";
+import {Camera} from "../../camera/models/camera";
 
 
-export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>> }> = ({ toEditAction, setClosed }) => {
+export const ControllableActionForm: React.FC<{ toEditAction?: ControllableAction, setClosed: React.Dispatch<React.SetStateAction<boolean>>, sensors: Sensor[], cameras: Camera[] }> = ({ toEditAction, setClosed, sensors, cameras }) => {
     const auth = useAuth();
     const { t, i18n } = useTranslation();
     const { organizationId, fpfId } = useParams();
@@ -334,6 +336,26 @@ export const ControllableActionForm: React.FC<{ toEditAction?: ControllableActio
                                 <Flex direction="column" gap="sm">
                                     {selectedActionScript.fields.map((field, index) => {
                                         switch (field.type) {
+                                            case "sensorId":
+                                                return (
+                                                    <Select
+                                                        label={getBackendTranslation(field.name, i18n.language)}
+                                                        description={getBackendTranslation(field.description, i18n.language)}
+                                                        data={sensors.map((s) => ({ value: s.id, label: getBackendTranslation(s.name, i18n.language) }))}
+                                                        value={dynamicFieldValues[field.id] || ""}
+                                                        onChange={(value) => handleDynamicFieldChange(field.id, String(value ?? ""))}
+                                                    />
+                                                );
+                                            case "cameraId":
+                                                return (
+                                                    <Select
+                                                        label={getBackendTranslation(field.name, i18n.language)}
+                                                        description={getBackendTranslation(field.description, i18n.language)}
+                                                        data={cameras.map((c) => ({ value: c.id, label: getBackendTranslation(c.name, i18n.language) }))}
+                                                        value={dynamicFieldValues[field.id] || ""}
+                                                        onChange={(value) => handleDynamicFieldChange(field.id, String(value ?? ""))}
+                                                    />
+                                                );
                                             case "int":
                                                 return (
                                                     <NumberInput

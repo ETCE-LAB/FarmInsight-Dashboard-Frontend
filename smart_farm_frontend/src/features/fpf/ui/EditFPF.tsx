@@ -36,9 +36,9 @@ export const EditFPF: React.FC = () => {
     const { t } = useTranslation();
 
     const [organization, setOrganization] = useState<Organization>();
-    const [sensors, setSensors] = useState<Sensor[]>();
-    const [cameras, setCameras] = useState<Camera[]>();
-    const [hardware, setHardware] = useState<Hardware[]>();
+    const [sensors, setSensors] = useState<Sensor[]>([]);
+    const [cameras, setCameras] = useState<Camera[]>([]);
+    const [hardware, setHardware] = useState<Hardware[]>([]);
 
     const [editModalOpen, setEditModalOpen] = useState(false);  // State to control modal visibility
 
@@ -77,6 +77,15 @@ export const EditFPF: React.FC = () => {
         if (auth.isAuthenticated && fpfId) {
             getFpf(fpfId).then(resp => {
                 dispatch(updatedFpf(resp));
+                if (resp.Sensors && resp.Sensors.length >= 1) {
+                    setSensors(resp.Sensors);
+                }
+                if (resp.Hardware && resp.Hardware.length >= 1) {
+                    setHardware(resp.Hardware);
+                }
+                if (resp.Cameras && resp.Cameras.length >= 1) {
+                    setCameras(resp.Cameras);
+                }
             }).catch((error) => {
                 showNotification({
                     title: t('common.loadError'),
@@ -96,18 +105,6 @@ export const EditFPF: React.FC = () => {
             });
         }
     }, [auth.isAuthenticated, fpfId, fpfCreatedEventListener, dispatch, t]);
-
-    useEffect(() => {
-        if (fpf?.Sensors && fpf.Sensors.length >= 1) {
-            setSensors(fpf.Sensors);
-        }
-    }, [fpf]);
-
-    useEffect(() => {
-        if (fpf?.Hardware && fpf.Hardware.length >= 1) {
-            setHardware(fpf.Hardware);
-        }
-    }, [fpf]);
 
     useEffect(() => {
         if (auth.isAuthenticated && organizationId) {
@@ -202,7 +199,7 @@ export const EditFPF: React.FC = () => {
             </Card>
 
             <Card padding="lg" radius="md">
-                <ControllableActionList isAdmin={isAdmin} fpfId={fpf.id} />
+                <ControllableActionList isAdmin={isAdmin} fpfId={fpf.id} cameras={cameras} sensors={sensors} />
             </Card>
 
             <Card padding="lg" radius="md">

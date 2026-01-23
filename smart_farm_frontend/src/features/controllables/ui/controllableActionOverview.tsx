@@ -89,19 +89,27 @@ const ControllableActionOverview: React.FC<{ fpfId: string }> = ({ fpfId }) => {
         for (const entry of waitingOn) {
             // if dependsOn is not done yet, this one can't be either
             if (entry.dependsOn !== undefined && (waitingOn.some((e) => e.id === entry.dependsOn) && !done.includes(entry.dependsOn))) continue;
-
-            const entryNow = await fetchActionQueueEntry(fpfId, entry.id);
-            if (entryNow.endedAt) {
-                const logs = await getLogMessages('action', entry.actionId, undefined, entry.createdAt, undefined);
-                for (const log of logs) {
-                    if (log.logLevel === 'debug') continue;
-                    showNotification({
-                        title: getBackendTranslation(controllableActions.find((e) => e.id === entry.actionId)?.name, i18n.language),
-                        message: log.message,
-                        color: log.logLevel === 'error'? 'red': 'green',
-                    });
+            try {
+                const entryNow = await fetchActionQueueEntry(fpfId, entry.id);
+                if (entryNow.endedAt) {
+                    const logs = await getLogMessages('action', entry.actionId, undefined, entry.createdAt, undefined);
+                    for (const log of logs) {
+                        if (log.logLevel === 'debug') continue;
+                        showNotification({
+                            title: getBackendTranslation(controllableActions.find((e) => e.id === entry.actionId)?.name, i18n.language),
+                            message: log.message,
+                            color: log.logLevel === 'error' ? 'red' : 'green',
+                        });
+                    }
+                    done.push(entry.id);
                 }
+            } catch(error) {
                 done.push(entry.id);
+                showNotification({
+                    title: t('common.loadError'),
+                    message: `${error}`,
+                    color: 'red',
+                });
             }
         }
 

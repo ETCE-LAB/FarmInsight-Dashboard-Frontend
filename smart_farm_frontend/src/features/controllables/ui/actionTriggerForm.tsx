@@ -181,8 +181,7 @@ export const ActionTriggerForm: React.FC<{ action: ControllableAction, actionLis
         const [actionValueList, setActionValueList] = useState<string[]>([]);
         const [localType, setLocalType] = useState<string>(initialType);
         const [localValue, setLocalValue] = useState<string>(initialValue);
-
-        console.log(initialType);
+        const [hasValue, setHasValue] = useState(false);
 
         useEffect(() => {
             if (scripts) {
@@ -193,7 +192,14 @@ export const ActionTriggerForm: React.FC<{ action: ControllableAction, actionLis
 
                 // Set the action values if found
                 if (matchedScript) {
+                    setHasValue(matchedScript.has_action_value);
                     setActionValueList(matchedScript.action_values);
+
+                    if (!matchedScript.has_action_value) {
+                        //LAZY: just set a default here if the action doesn't use the trigger value, so the serializer doesn't complain
+                        setActionValueType("none");
+                        setActionValue("none");
+                    }
                 }
             }
         }, [scripts, action]);
@@ -214,6 +220,7 @@ export const ActionTriggerForm: React.FC<{ action: ControllableAction, actionLis
 
         return (
             <>
+            {hasValue && <>
                 <Grid.Col span={6}>
                     <Autocomplete
                         label={showName ? `${t("controllableActionList.trigger.actionValueTypeFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValueType")}
@@ -228,7 +235,7 @@ export const ActionTriggerForm: React.FC<{ action: ControllableAction, actionLis
                 <Grid.Col span={6}>
                     {actionValueList.length > 0 ?
                         <Autocomplete
-                            label={showName? `${t("controllableActionList.trigger.actionValueFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValue")}
+                            label={showName ? `${t("controllableActionList.trigger.actionValueFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValue")}
                             placeholder={t("controllableActionList.trigger.enterActionValue")}
                             required
                             data={actionValueList}
@@ -238,7 +245,7 @@ export const ActionTriggerForm: React.FC<{ action: ControllableAction, actionLis
                         />
                         :
                         <TextInput
-                            label={showName? `${t("controllableActionList.trigger.actionValueFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValue")}
+                            label={showName ? `${t("controllableActionList.trigger.actionValueFor")} ${getBackendTranslation(action.name, i18n.language)}` : t("controllableActionList.trigger.actionValue")}
                             placeholder={t("controllableActionList.trigger.enterActionValue")}
                             required
                             value={localValue}
@@ -247,7 +254,7 @@ export const ActionTriggerForm: React.FC<{ action: ControllableAction, actionLis
                         />
                     }
                 </Grid.Col>
-            </>
+            </>}</>
         );
     }
 
