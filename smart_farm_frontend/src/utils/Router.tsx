@@ -2,17 +2,19 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthenticationCallbackPage } from "../features/auth/ui/AuthenticationCallbackPage";
 import { AuthenticationSignoutCallbackPage } from "../features/auth/ui/AuthenticationSignoutCallbackPage";
 import { SignIn } from "../features/auth/ui/SignIn";
-import {BasicAppShell} from "../ui/components/AppShell/appShell";
+import { BasicAppShell } from "../ui/components/AppShell/appShell";
 import LandingPage from "../ui/components/landingPage/landingPage";
-import {AppRoutes} from "./appRoutes";
-import {EditOrganization} from "../features/organization/ui/editOrganization";
-import {EditUserProfile} from "../features/userProfile/ui/editUserProfile";
-import {FpfOverview} from "../features/fpf/ui/fpfOverview";
-import {EditFPF} from "../features/fpf/ui/EditFPF";
+import { AppRoutes } from "./appRoutes";
+import { EditOrganization } from "../features/organization/ui/editOrganization";
+import { EditUserProfile } from "../features/userProfile/ui/editUserProfile";
+import { FpfOverview } from "../features/fpf/ui/fpfOverview";
+import { EditFPF } from "../features/fpf/ui/EditFPF";
 import LegalNoticePage from "../ui/components/footer/legalNoticePage";
-import {StatusPage} from "../features/status/ui/status_page";
-import {AdminPage} from "../features/admin/ui/adminPage";
+import { StatusPage } from "../features/status/ui/status_page";
+import { AdminPage } from "../features/admin/ui/adminPage";
 import EnergyDashboard from "../features/energy/ui/EnergyDashboard";
+import { ResourceHub } from "../features/resources/ui/ResourceHub";
+import { WaterDashboard } from "../features/water/ui/WaterDashboard";
 
 export class AuthRoutes {
     static callback = "auth/callback";
@@ -35,6 +37,8 @@ export const Router = () => {
                     <Route path={AppRoutes.displayFpf} element={<FpfOverview />} />
                     <Route path={AppRoutes.editFpf} element={<EditFPF />} />
                     <Route path={AppRoutes.energyDashboard} element={<EnergyDashboard />} />
+                    <Route path={AppRoutes.resourceHub} element={<ResourceHub />} />
+                    <Route path={AppRoutes.waterDashboard} element={<WaterDashboard />} />
                     <Route path={AppRoutes.legalNotice} element={<LegalNoticePage />} />
 
                     <Route path={AppRoutes.statusOverview} element={<StatusPage />} />

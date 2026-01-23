@@ -1,4 +1,4 @@
-import {configureStore} from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import UserProfileReducer from "../features/userProfile/state/UserProfileSlice";
 import OrganizationReducer from "../features/organization/state/OrganizationSlice";
 import FpfReducer from "../features/fpf/state/FpfSlice";
@@ -13,16 +13,17 @@ import ControllableActionReducer from "../features/controllables/state/Controlla
 import WeatherForecastReducer from "../features/WeatherForecast/state/WeatherForecastSlice";
 import ModelReducer from "../features/model/state/ModelSlice";
 import EnergyReducer from "../features/energy/state/EnergySlice";
+import WeatherAndWaterStatusReducer from "../features/water/state/WeatherAndWaterStatusSlice";
 
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
-        userProfile : UserProfileReducer,
-        organization :OrganizationReducer,
+        userProfile: UserProfileReducer,
+        organization: OrganizationReducer,
         sensor: SensorReducer,
-        fpf : FpfReducer,
-        model : ModelReducer,
+        fpf: FpfReducer,
+        model: ModelReducer,
         measurement: measurementReducer,
         membership: MembershipReducer,
         growingCycle: GrowingCycleReducer,
@@ -30,11 +31,12 @@ export const store = configureStore({
         controllableAction: ControllableActionReducer,
         location: LocationReducer,
         weatherForecast: WeatherForecastReducer,
-        energy: EnergyReducer
+        energy: EnergyReducer,
+        weatherAndWaterStatus: WeatherAndWaterStatusReducer
     }
 })
 
-export type RootState = ReturnType<typeof   store.getState>
+export type RootState = ReturnType<typeof store.getState>
 
 export type AppDispatch = typeof store.dispatch;
 

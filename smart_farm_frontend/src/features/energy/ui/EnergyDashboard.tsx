@@ -38,8 +38,6 @@ import { useSelector } from 'react-redux';
 import { notifications } from '@mantine/notifications';
 
 import { useAppDispatch } from '../../../utils/Hooks';
-import { getFpf } from '../../fpf/useCase/getFpf';
-import { updatedFpf } from '../../fpf/state/FpfSlice';
 import {
     selectEnergyConsumers,
     selectEnergySources,
@@ -57,11 +55,14 @@ import {
 } from '../state/EnergySlice';
 import { EnergyConsumer, EnergySource, DEFAULT_ENERGY_THRESHOLDS, BatteryState } from '../models/Energy';
 import { getEnergyDashboard, getBatteryState } from '../useCase/getEnergyState';
+import { energyResource } from '../../abstractResource/abstractExport';
 import { EnergyConsumerForm } from './EnergyConsumerForm';
 import { EnergySourceForm } from './EnergySourceForm';
 import { EnergyConfigPanel } from './EnergyConfigPanel';
 import { EnergyForecastGraph } from './EnergyForecastGraph';
 import { RootState } from '../../../utils/store';
+import {updatedFpf} from "../../fpf/state/FpfSlice";
+import {getFpf} from "../../fpf/useCase/getFpf";
 
 const EnergyDashboard: React.FC = () => {
     const { fpfId } = useParams<{ fpfId: string }>();
@@ -123,6 +124,7 @@ const EnergyDashboard: React.FC = () => {
         dispatch(setError(null));
 
         try {
+            const dashboardData = await energyResource.getDashboard(fpfId, batteryLevelWh);
             // Load FPF data to ensure sensors are available in Redux state
             const fpfData = await getFpf(fpfId);
             dispatch(updatedFpf(fpfData));
@@ -130,7 +132,6 @@ const EnergyDashboard: React.FC = () => {
             // First, try to get live battery state
             await loadBatteryState();
 
-            const dashboardData = await getEnergyDashboard(fpfId, batteryLevelWh);
             dispatch(setEnergyDashboard(dashboardData));
 
             // Update thresholds from backend

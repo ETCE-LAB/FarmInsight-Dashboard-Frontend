@@ -8,4 +8,6 @@ export class AppRoutes {
     static legalNotice = "/legal-notice"
     static statusOverview = "/status-overview"
     static adminPage = "/admin"
+    static resourceHub = "/organization/:organizationId/fpf/:fpfId/resources"
+    static waterDashboard = "/organization/:organizationId/fpf/:fpfId/water"
 }

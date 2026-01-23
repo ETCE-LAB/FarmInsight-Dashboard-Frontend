@@ -1,40 +1,34 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
 import TimeseriesGraph from "../../measurements/ui/timeseriesGraph";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { AppRoutes } from "../../../utils/appRoutes";
 import { Fpf } from "../models/Fpf";
 import { getFpf } from "../useCase/getFpf";
-import {
-    Container,
-    Box,
-    SimpleGrid,
-    Button,
-    Modal,
-    useMantineTheme,
-    Center,
-    Text,
-} from '@mantine/core';
+import { Box, Button, Center, Container, Flex, Modal, SimpleGrid, Text, useMantineTheme } from '@mantine/core';
 import GrowingCycleList from "../../growthCycle/ui/growingCycleList";
 import { GrowingCycleForm } from "../../growthCycle/ui/growingCycleForm";
 import { CameraCarousel } from "../../camera/ui/CameraCarousel";
-import {useAppDispatch, useAppSelector} from "../../../utils/Hooks";
+import { useAppDispatch, useAppSelector } from "../../../utils/Hooks";
 import { setGrowingCycles } from "../../growthCycle/state/GrowingCycleSlice";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "@mantine/hooks";
 import { IconPlant } from "@tabler/icons-react";
 import { useAuth } from 'react-oidc-context';
 import TimeRangeSelector from "../../../utils/TimeRangeSelector";
-import {WeatherForecastDisplay} from "../../WeatherForecast/ui/WeatherForecastDisplay";
+import { WeatherForecastDisplay } from "../../WeatherForecast/ui/WeatherForecastDisplay";
 import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
-import {setControllableAction} from "../../controllables/state/ControllableActionSlice";
-import {showNotification} from "@mantine/notifications";
-import {useSelector} from "react-redux";
+
 import {RootState} from "../../../utils/store";
 import {PredictionView} from "../../model/ui/PredictionView";
+import { setControllableAction } from "../../controllables/state/ControllableActionSlice";
+import { showNotification } from "@mantine/notifications";
+import { useSelector } from "react-redux";
 
 export const FpfOverview = () => {
     const theme = useMantineTheme();
     const [fpf, setFpf] = useState<Fpf | null>(null);
     const params = useParams();
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const [isCameraActive, setCameraActive] = useState(false);
     const isMobile = useMediaQuery('(max-width: 768px)');
@@ -66,7 +60,6 @@ export const FpfOverview = () => {
                 setFpf(resp);
                 dispatch(setGrowingCycles(resp.GrowingCycles));
                 dispatch(setControllableAction(resp.ControllableAction));
-                
             }).catch((error) => {
                 showNotification({
                     title: t('common.loadingError'),
@@ -95,6 +88,11 @@ export const FpfOverview = () => {
 
     return (
         <Container fluid style={{ width: '100%', height: '100%' }}>
+            <Flex justify="flex-end" mb="sm">
+                <Button onClick={() => navigate(AppRoutes.resourceHub.replace(':organizationId', organizationId ?? '').replace(':fpfId', params.fpfId ?? ''))}>
+                    {t('Resources')}
+                </Button>
+            </Flex>
             {/* Modal for Adding a Growing Cycle */}
             <Modal
                 opened={showGrowingCycleForm}

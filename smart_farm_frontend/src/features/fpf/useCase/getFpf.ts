@@ -1,7 +1,7 @@
-import {getUser} from "../../../utils/getUser";
+import { getUser } from "../../../utils/getUser";
 import APIClient from "../../../utils/APIClient";
-import {Fpf} from "../models/Fpf";
-import {BACKEND_URL} from "../../../env-config";
+import { Fpf } from "../models/Fpf";
+import { BACKEND_URL } from "../../../env-config";
 
 
 export const getFpf = (fpfID: string) => {
@@ -11,7 +11,7 @@ export const getFpf = (fpfID: string) => {
     const token = user?.access_token;
 
     const headers =
-        {'Authorization': `Bearer ${token}`}
+        { 'Authorization': `Bearer ${token}` }
 
     const url = `${BACKEND_URL}/api/fpfs/${fpfID}`;
 

@@ -23,7 +23,7 @@ interface Forecast {
     }[],
 }
 
-export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isAdmin:Boolean }> = ({ modelsToDisplay, fpfId, isAdmin }) => {
+export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isAdmin: Boolean }> = ({ modelsToDisplay, fpfId, isAdmin }) => {
     const [models, setModels] = useState<Model[] | undefined>(undefined);
     const [modelModalOpen, setModelModalOpen] = useState(false);
     const [selectedModel, setSelectedModel] = useState<EditModel | undefined>(undefined);
@@ -196,13 +196,13 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
             <Group mb="md" justify="space-between">
                 <Title order={2}>{t('model.title')}</Title>
                 {isAdmin &&
-                <IconCirclePlus
-                    size={25}
-                    stroke={2}
-                    color={"#199ff4"}
-                    onClick={() => onClickAddModel()}
-                    style={{ cursor: "pointer" }}
-                />
+                    <IconCirclePlus
+                        size={25}
+                        stroke={2}
+                        color={"#199ff4"}
+                        onClick={() => onClickAddModel()}
+                        style={{ cursor: "pointer" }}
+                    />
                 }
             </Group>
             {models && models.length > 0 ? (
@@ -232,7 +232,6 @@ export const ModelList: React.FC<{ modelsToDisplay?: Model[], fpfId: string, isA
                             <Table.Th>{t('model.intervalSeconds')}</Table.Th>
                             <Table.Th>{t('model.isActive')}</Table.Th>
                              <Table.Th>{t('header.status')}</Table.Th>
-
                             {isAdmin && <Table.Th />}
                         </Table.Tr>
                         </Table.Thead>
