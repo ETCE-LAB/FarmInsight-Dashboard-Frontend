@@ -344,7 +344,7 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                 </Table.Thead>
                                                 <Table.Tbody>
                                                     {action.trigger.map((trigger) => {
-                                                        const isActive = (trigger.id === action.status && !action.isAutomated) || (trigger.type !== 'manual' && action.isAutomated);
+                                                        const isActive = (trigger.id === action.status && !action.isAutomated && trigger.isActive) || (trigger.type !== 'manual' && action.isAutomated && trigger.isActive);
                                                         return(
                                                             <Table.Tr key={trigger.id}>
                                                                 <Table.Td>
@@ -375,8 +375,8 @@ export const ControllableActionList: React.FC<{ isAdmin:Boolean }> = (isAdmin) =
                                                                 <Table.Td>{trigger.triggerLogic}</Table.Td>
                                                                 <Table.Td>
                                                                     <Flex justify="space-between" align="center">
-                                                                        <Badge color={isActive ? "blue" : trigger.isActive ? "green" : "gray"}>
-                                                                            {isActive ? t("controllableActionList.trigger.running") :trigger.isActive ? t("controllableActionList.trigger.active") : t("controllableActionList.trigger.inactive")}
+                                                                        <Badge color={trigger.isActive ? "green" : "gray"}>
+                                                                            {trigger.isActive ? t("controllableActionList.trigger.active") : t("controllableActionList.trigger.not_active")}
                                                                         </Badge>
                                                                     </Flex>
                                                                 </Table.Td>

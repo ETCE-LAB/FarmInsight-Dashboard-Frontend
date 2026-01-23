@@ -19,7 +19,6 @@ import {useParams} from "react-router-dom";
 import {showNotification} from "@mantine/notifications";
 import {ControllableAction} from "../models/controllableAction";
 import {getBackendTranslation, truncateText} from "../../../utils/utils";
-import {useAuth} from "react-oidc-context";
 import { IconRobot } from "@tabler/icons-react";
 
 const getColor = (value: string) => {
