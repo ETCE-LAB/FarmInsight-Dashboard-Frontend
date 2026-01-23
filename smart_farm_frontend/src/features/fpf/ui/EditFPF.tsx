@@ -4,7 +4,7 @@ import { getFpf } from "../useCase/getFpf";
 import { FpfForm } from "./fpfForm";
 import { getOrganization } from "../../organization/useCase/getOrganization";
 import { Organization } from "../../organization/models/Organization";
-import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button, Box } from "@mantine/core";
+import { Card, Stack, Text, Flex, Badge, Title, Grid, Modal, Button } from "@mantine/core";
 import { Sensor } from "../../sensor/models/Sensor";
 import { SensorList } from "../../sensor/ui/SensorList";
 import { useSelector } from "react-redux";
