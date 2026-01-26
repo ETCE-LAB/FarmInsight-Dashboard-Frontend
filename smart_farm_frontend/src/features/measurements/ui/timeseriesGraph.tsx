@@ -53,7 +53,13 @@ export function applyMovingAverage(
     for (let i = 0; i < measurements.length; i++) {
         const start = Math.max(0, i - windowSize + 1);
         const window = measurements.slice(start, i + 1);
-        const average = window.reduce((sum, m) => sum + m.value, 0) / window.length;
+        const nonNullValues = window
+            .map(w => w.value)
+            .filter((v): v is number => v != null);
+
+        const average = nonNullValues.length === 0
+            ? null
+            : nonNullValues.reduce((sum, v) => sum + v, 0) / nonNullValues.length;
 
         result.push({
             measuredAt: measurements[i].measuredAt,
@@ -98,7 +104,10 @@ export function computeHourlyConsumption(measurements: Measurement[]) {
         const t1 = new Date(sorted[i + 1].measuredAt).getTime();   // ms
         const dtSeconds = (t1 - t0) / 1_000;                       // s
 
-
+        if(sorted[i].value === null || sorted[i + 1].value === null){
+            continue; //skip null values
+        }
+        // @ts-ignore NUll checked above
         const pAvg = (sorted[i].value + sorted[i + 1].value) / 2;  // W
         energyWh += (pAvg * dtSeconds) / 3_600;                    // Wh
     }
@@ -151,7 +160,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 sum = calculateMovingAverage ? computeHourlyConsumption(averagedMeasurements):  computeHourlyConsumption(measurements);
                 setAggregatedUnit('Wh');
             } else {
-                sum = measurements.reduce((acc, cur) => acc + cur.value, 0);
+                sum = measurements.reduce((acc, cur) => acc + (cur.value != null ? cur.value : 0), 0);
             }
             setAggregatedValues(+sum.toFixed(2));
         }
@@ -184,7 +193,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                 const data = JSON.parse(lastMessage.data);
                 if (!data.measurement) throw new Error("Invalid WebSocket message format.");
                 const newMeasurements = data.measurement.map((m: Measurement) => ({
-                    value: Math.round(m.value * 100) / 100,
+                    value: m.value != null ? Math.round(m.value * 100) / 100 : null,
                     measuredAt: m.measuredAt,
                 }));
                 setMeasurements((prev) => [...prev, ...newMeasurements]);
@@ -207,8 +216,11 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
         setLoading(true);
         requestMeasuremnt(sensor.id, dates?.from, dates?.to).then((resp) => {
             let roundedMeasurements = resp.map(m => ({
+
                 ...m,
-                value: parseFloat(m.value.toFixed(1)),
+                value: (m.value === null || m.value === undefined)
+                    ? null
+                    : parseFloat(m.value.toFixed(2)),
             }));
             setMeasurements(roundedMeasurements);
             setAveragedMeasurements(applyMovingAverage(roundedMeasurements, movingAverageWindow));
@@ -338,6 +350,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                 )}
                             </Center>
                         ) : (
+                            //NOT MOBILE VIEW
                             measurements.length === 0 ? (
                                 <Center style={{ height: '250px' }}>
                                     <Text c="dimmed">No data</Text>
@@ -421,6 +434,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                             },
                                         }}
                                         referenceLines={getThresholdLines(sensor.thresholds)}
+                                        connectNulls={true}
                                     />
                                     {sensor.aggregate && (
                                         <Text>{t('sensor.aggregatedValues')}: {aggregatedValues} {aggregatedUnit}</Text>
