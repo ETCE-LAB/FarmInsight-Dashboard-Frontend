@@ -1,6 +1,6 @@
 import APIClient from "../../../utils/APIClient";
 import { getUser } from "../../../utils/getUser";
-import { EnergyState, EnergyDashboard, EnergyActionResponse, EnergyConsumer, EnergySource } from "../models/Energy";
+import { EnergyState, EnergyDashboard, EnergyActionResponse, EnergyConsumer, EnergySource, BatteryState, EnergyDashboardWithGraphData } from "../models/Energy";
 import { BACKEND_URL } from "../../../env-config";
 
 /**
@@ -22,9 +22,15 @@ export const getEnergyState = async (fpfId: string, batteryLevelWh: number): Pro
 };
 
 /**
- * Get complete energy dashboard data for an FPF
+ * Get complete energy dashboard data for an FPF (with optional graph data)
  */
-export const getEnergyDashboard = async (fpfId: string, batteryLevelWh?: number): Promise<EnergyDashboard> => {
+export const getEnergyDashboard = async (
+    fpfId: string,
+    batteryLevelWh?: number,
+    includeGraphData: boolean = true,
+    hoursBack: number = 12,
+    hoursAhead: number = 336
+): Promise<EnergyDashboardWithGraphData> => {
     const apiClient = new APIClient();
 
     const user = getUser();
@@ -34,10 +40,33 @@ export const getEnergyDashboard = async (fpfId: string, batteryLevelWh?: number)
         'Authorization': `Bearer ${token}`
     };
 
-    let url = `${BACKEND_URL}/api/energy-dashboard/${fpfId}`;
+    const params = new URLSearchParams();
     if (batteryLevelWh !== undefined) {
-        url += `?battery_level_wh=${batteryLevelWh}`;
+        params.append('battery_level_wh', batteryLevelWh.toString());
     }
+    params.append('include_graph_data', includeGraphData.toString());
+    params.append('hours_back', hoursBack.toString());
+    params.append('hours_ahead', hoursAhead.toString());
+
+    const url = `${BACKEND_URL}/api/energy-dashboard/${fpfId}?${params.toString()}`;
+
+    return apiClient.get(url, headers);
+};
+
+/**
+ * Get the current battery state for an FPF
+ */
+export const getBatteryState = async (fpfId: string): Promise<BatteryState> => {
+    const apiClient = new APIClient();
+
+    const user = getUser();
+    const token = user?.access_token;
+
+    const headers = {
+        'Authorization': `Bearer ${token}`
+    };
+
+    const url = `${BACKEND_URL}/api/battery-state/${fpfId}`;
 
     return apiClient.get(url, headers);
 };
