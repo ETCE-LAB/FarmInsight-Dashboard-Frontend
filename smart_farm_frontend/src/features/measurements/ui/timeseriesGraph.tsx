@@ -434,7 +434,7 @@ const TimeseriesGraph: React.FC<{ sensor: Sensor; dates: { from: string; to: str
                                             },
                                         }}
                                         referenceLines={getThresholdLines(sensor.thresholds)}
-                                        connectNulls={true}
+                                        connectNulls={false}
                                     />
                                     {sensor.aggregate && (
                                         <Text>{t('sensor.aggregatedValues')}: {aggregatedValues} {aggregatedUnit}</Text>
