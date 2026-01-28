@@ -1,18 +1,25 @@
+import {Threshold} from "../../threshold/models/threshold";
+
+export type ModelType = 'energy' | 'water';
+
 export interface Model {
     id:string,
     name:string,
     URL:string,
     intervalSeconds:number,
     isActive:boolean,
+    thresholds:Threshold[],
     required_parameters:
         {
         name: string,
         type: string, // ENUM "static" or "sensor"
+        input_type: string,
         value: any // number, string or uuid
         }[],
     activeScenario:string,
     availableScenarios:string[],
     fpfId:string,
+    model_type: ModelType,
     forecasts:
             {
                 name: string // Scenario
@@ -36,6 +43,7 @@ export interface EditModel {
     intervalSeconds:number,
     activeScenario: string,
     isActive:boolean,
+    model_type: ModelType,
     forecasts: {
         name: string // Name of the forecast e.g. "Water level in tank"
     }[],
@@ -43,6 +51,7 @@ export interface EditModel {
         {
         name: string,
         type: string, // ENUM "static" or "sensor"
+        input_type: string,
         value: any // number, string or uuid
         }[],
     availableScenarios:string[],

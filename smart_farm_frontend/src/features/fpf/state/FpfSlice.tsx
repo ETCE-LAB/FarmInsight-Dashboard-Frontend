@@ -1,5 +1,4 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {RootState} from "../../../utils/store";
 import {Fpf} from "../models/Fpf";
 
 
@@ -23,7 +22,16 @@ const initialState: FpfSlice = {
         Location: {id: "", name: "", latitude: 0, longitude: 0, city: "", street: "", houseNumber: "", organizationId: "", gatherForecasts: false},
         GrowingCycles: [],
         ControllableAction: [],
-        Hardware: []
+        Hardware: [],
+        isActive: true,
+        resourceManagementConfig: {
+            rmmActive: false,
+            rmmSensorConfig: {
+                waterSensorId: "",
+                soilSensorId: "",
+                tankCapacity: 0
+            }
+        }
     }
 }
 
@@ -43,5 +51,5 @@ const fpfSlice = createSlice({
 })
 
 export const {createdFpf, updatedFpf} = fpfSlice.actions
-export const receivedUserProfileEvent = (state:RootState) => state.fpf.createdFpfEvent;
+//export const receivedUserProfileEvent = (state:RootState) => state.fpf.createdFpfEvent;
 export default fpfSlice.reducer

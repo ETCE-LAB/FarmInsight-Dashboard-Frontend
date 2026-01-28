@@ -81,7 +81,10 @@ export const LocationList: React.FC<{ locationsToDisplay?: Location[], isAdmin:b
                     size={25}
                     stroke={2}
                     color={"#199ff4"}
-                    onClick={() => setLocationModalOpen(true)}
+                    onClick={() => {
+                        setSelectedLocation(undefined);
+                        setLocationModalOpen(true);
+                    }}
                     style={{ cursor: "pointer" }}
                 />
                 }

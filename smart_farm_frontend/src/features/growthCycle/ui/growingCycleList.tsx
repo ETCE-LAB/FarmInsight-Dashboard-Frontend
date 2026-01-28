@@ -6,7 +6,7 @@ import { IconCirclePlus, IconEdit, IconSeeding, IconInfoSquareRounded, IconSquar
 import { GrowingCycleForm } from "./growingCycleForm";
 import { GrowingCycle } from "../models/growingCycle";
 import { removeGrowingCycle } from "../useCase/removeGrowingCycle";
-import {changedGrowingCycle, deleteGrowingCycle, setGrowingCycles} from "../state/GrowingCycleSlice";
+import {deleteGrowingCycle, setGrowingCycles} from "../state/GrowingCycleSlice";
 import { useAppDispatch } from "../../../utils/Hooks";
 import HarvestEntityList from "../../harvestEntity/ui/harvestEntityList";
 import { HarvestEntityForm } from "../../harvestEntity/ui/harvestEntityForm";
@@ -55,7 +55,7 @@ const GrowingCycleList: React.FC<{ fpfId: string, isAdmin: boolean }> = ({ fpfId
 
     const confirmDelete = () => {
         if (cycleToDelete) {
-            removeGrowingCycle(cycleToDelete.id).then((result) => {
+            removeGrowingCycle(cycleToDelete.id).then(() => {
                 dispatch(deleteGrowingCycle(cycleToDelete.id));
                 showNotification({
                     title: t('common.deleteSuccess'),

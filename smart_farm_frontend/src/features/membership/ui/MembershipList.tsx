@@ -1,13 +1,13 @@
 import {Table} from "@mantine/core";
 import React, {useEffect, useState} from "react";
-import {receiveUserProfile} from "../../userProfile/useCase/receiveUserProfile";
+
 import {Membership, MembershipRole} from "../models/membership";
 import {PromoteMembershipButton} from "./PromoteMembershipButton";
 import {KickMemberButton} from "./KickMemberButton";
 import { useTranslation } from 'react-i18next';
 import {SystemRole, UserProfile} from "../../userProfile/models/UserProfile";
 import {DemoteMembershipButton} from "./DemoteMembershipButton";
-import {showNotification} from "@mantine/notifications";
+
 import {useAppSelector} from "../../../utils/Hooks";
 import {RootState} from "../../../utils/store";
 
