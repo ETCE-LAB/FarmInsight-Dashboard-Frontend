@@ -13,18 +13,19 @@ import {
     Text,
     Paper,
     ThemeIcon,
-    Alert
+    Alert,
+    Badge
 } from "@mantine/core";
-import { IconBolt, IconPlug, IconActivity, IconInfoCircle } from "@tabler/icons-react";
+import { IconBolt, IconPlug, IconActivity, IconInfoCircle, IconCalendarEvent } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { notifications } from "@mantine/notifications";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../../utils/Hooks";
-import { 
-    EnergyConsumer, 
-    CreateEnergyConsumer, 
-    UpdateEnergyConsumer 
+import {
+    EnergyConsumer,
+    CreateEnergyConsumer,
+    UpdateEnergyConsumer
 } from "../models/Energy";
 import { createEnergyConsumer } from "../useCase/createEnergyConsumer";
 import { updateEnergyConsumer, deleteEnergyConsumer } from "../useCase/updateEnergyConsumer";
@@ -37,8 +38,8 @@ interface EnergyConsumerFormProps {
     existingConsumers?: EnergyConsumer[];
 }
 
-export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({ 
-    toEditConsumer, 
+export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
+    toEditConsumer,
     onClose,
     existingConsumers = []
 }) => {
@@ -54,6 +55,8 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
     const [consumptionWatts, setConsumptionWatts] = useState<number>(0);
     const [priority, setPriority] = useState<number>(5);
     const [shutdownThreshold, setShutdownThreshold] = useState<number>(0);
+    const [forecastShutdownThreshold, setForecastShutdownThreshold] = useState<number>(0);
+    const [forecastBufferDays, setForecastBufferDays] = useState<number>(0);
     const [isActive, setIsActive] = useState<boolean>(true);
     const [dependencyIds, setDependencyIds] = useState<string[]>([]);
     const [sensorId, setSensorId] = useState<string | null>(null);
@@ -66,6 +69,8 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
             setConsumptionWatts(toEditConsumer.consumptionWatts || 0);
             setPriority(toEditConsumer.priority || 5);
             setShutdownThreshold(toEditConsumer.shutdownThreshold || 0);
+            setForecastShutdownThreshold(toEditConsumer.forecastShutdownThreshold || 0);
+            setForecastBufferDays(toEditConsumer.forecastBufferDays || 0);
             setIsActive(toEditConsumer.isActive ?? true);
             setDependencyIds(toEditConsumer.dependencyIds || []);
             setSensorId(toEditConsumer.sensorId || null);
@@ -85,7 +90,8 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
             label: `${c.name} (${c.consumptionWatts}W)`
         }));
 
-    // Sensor options - filter for power-related sensors
+    // Sensor options - show all active sensors
+    // Users can choose any sensor they want to link to this energy consumer
     const sensorOptions = sensors
         .filter((s: any) => s.isActive)
         .map((s: any) => ({
@@ -120,6 +126,8 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
                     consumptionWatts,
                     priority,
                     shutdownThreshold,
+                    forecastShutdownThreshold,
+                    forecastBufferDays,
                     isActive,
                     dependencyIds,
                     sensorId,
@@ -143,6 +151,8 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
                     consumptionWatts,
                     priority,
                     shutdownThreshold,
+                    forecastShutdownThreshold,
+                    forecastBufferDays,
                     isActive,
                     dependencyIds,
                     sensorId,
@@ -211,13 +221,18 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
 
                 <NumberInput
                     label={t('energy.consumptionWatts')}
-                    description={sensorId ? t('energy.consumptionLiveNote') : undefined}
-                    placeholder="0"
+                    description={sensorId
+                        ? t('energy.consumptionLiveMeasured')
+                        : t('energy.consumptionManualDescription')
+                    }
+                    placeholder={sensorId ? t('energy.measuredBySensor') : "0"}
                     value={consumptionWatts}
                     onChange={(val) => setConsumptionWatts(Number(val) || 0)}
                     min={0}
                     suffix=" W"
-                    required
+                    required={!sensorId}
+                    disabled={!!sensorId}
+                    styles={sensorId ? { input: { backgroundColor: 'var(--mantine-color-gray-1)', color: 'var(--mantine-color-dimmed)' } } : undefined}
                 />
 
                 <Select
@@ -310,6 +325,76 @@ export const EnergyConsumerForm: React.FC<EnergyConsumerFormProps> = ({
                         size="sm"
                         description={shutdownThreshold === 0 ? t('energy.shutdownUseGlobal') : t('energy.shutdownAtPercent', { percent: shutdownThreshold })}
                     />
+                </Paper>
+
+                {/* AI Forecast Shutdown Threshold */}
+                <Paper p="md" withBorder radius="md" style={{ borderLeft: '4px solid var(--mantine-color-blue-6)' }}>
+                    <Group gap="xs" mb="xs">
+                        <ThemeIcon size="sm" color="blue" variant="light" radius="xl">
+                            <IconCalendarEvent size={14} />
+                        </ThemeIcon>
+                        <Text size="sm" fw={600}>{t('energy.forecastShutdown')}</Text>
+                        <Badge size="xs" color="blue" variant="light">AI</Badge>
+                    </Group>
+                    <Text size="xs" c="dimmed" mb="md">{t('energy.forecastShutdownDescription')}</Text>
+
+                    <Stack gap="md">
+                        <Slider
+                            value={forecastShutdownThreshold}
+                            onChange={setForecastShutdownThreshold}
+                            min={0}
+                            max={100}
+                            step={5}
+                            marks={[
+                                { value: 0, label: t('energy.disabled') },
+                                { value: 25, label: '25%' },
+                                { value: 50, label: '50%' },
+                            ]}
+                            color={forecastShutdownThreshold === 0 ? 'gray' : 'blue'}
+                            mb="md"
+                            label={(val) => val === 0 ? t('energy.disabled') : `${val}%`}
+                        />
+                        <NumberInput
+                            label={t('energy.forecastThresholdLabel')}
+                            value={forecastShutdownThreshold}
+                            onChange={(val) => setForecastShutdownThreshold(Number(val) || 0)}
+                            min={0}
+                            max={100}
+                            suffix=" %"
+                            size="sm"
+                            description={forecastShutdownThreshold === 0
+                                ? t('energy.forecastDisabled')
+                                : t('energy.forecastThresholdHint', { percent: forecastShutdownThreshold })
+                            }
+                        />
+
+                        {forecastShutdownThreshold > 0 && (
+                            <NumberInput
+                                label={t('energy.forecastBufferDays')}
+                                description={t('energy.forecastBufferDaysHint')}
+                                value={forecastBufferDays}
+                                onChange={(val) => setForecastBufferDays(Number(val) || 0)}
+                                min={0}
+                                max={14}
+                                suffix={` ${t('common.days')}`}
+                            />
+                        )}
+                    </Stack>
+
+                    {forecastShutdownThreshold > 0 && controllableActionId && (
+                        <Alert icon={<IconInfoCircle size={16} />} color="blue" mt="md" variant="light">
+                            {t('energy.forecastShutdownExplanation', {
+                                threshold: forecastShutdownThreshold,
+                                buffer: forecastBufferDays
+                            })}
+                        </Alert>
+                    )}
+
+                    {forecastShutdownThreshold > 0 && !controllableActionId && (
+                        <Alert icon={<IconInfoCircle size={16} />} color="yellow" mt="md" variant="light">
+                            {t('energy.forecastNeedsAction')}
+                        </Alert>
+                    )}
                 </Paper>
 
                 {dependencyOptions.length > 0 && (

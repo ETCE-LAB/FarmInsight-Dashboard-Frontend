@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor } from "@mantine/core";
+import {Box, Button, Grid, NumberInput, Switch, TextInput, Text, Stepper, LoadingOverlay, Anchor, Select} from "@mantine/core";
 import { useAuth } from "react-oidc-context";
-import { EditModel } from "../models/Model";
-
+import { EditModel, ModelType } from "../models/Model";
 import { createModel } from "../useCase/createModel";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "../../../utils/Hooks";
@@ -27,14 +26,15 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const [name, setName] = useState<string>("");
-  const [intervalSeconds, setIntervalSeconds] = useState<number>(86400);
-  const [url, setUrl] = useState<string>("");
-  const [isActive, setIsActive] = useState<boolean>(true);
-  const [availableScenarios, setAvailableScenarios] = useState<string[]>([]);
-  const [activeScenario, setActiveScenario] = useState<string>("");
-  const [requiredParameters, setRequiredParameters] = useState<{ name: string, type: string, input_type: string, value: any }[] | undefined>(undefined);
-  const [actions, setActions] = useState<{ name: string; controllable_action_id: string; }[] | undefined>(undefined);
+    const [name, setName] = useState<string>("");
+    const [intervalSeconds, setIntervalSeconds] = useState<number>(86400);
+    const [url, setUrl] = useState<string>("");
+    const [isActive, setIsActive] = useState<boolean>(true);
+    const [modelType, setModelType] = useState<ModelType>('energy');
+    const [availableScenarios, setAvailableScenarios] = useState<string[]>([]);
+    const [activeScenario, setActiveScenario] = useState<string>("");
+    const [requiredParameters, setRequiredParameters] = useState<{ name: string, type: string, input_type: string, value: any }[] | undefined>(undefined);
+    const [actions, setActions] = useState<{ name: string; controllable_action_id: string; }[] | undefined>(undefined);
 
   const [forecasts, setForecasts] = useState<{ name: string }[] | undefined>(undefined);
 
@@ -43,19 +43,20 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
 
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (toEditModel) {
-      setName(toEditModel.name || "");
-      setUrl(toEditModel.URL || "");
-      setIsActive(toEditModel.isActive || false);
-      setIntervalSeconds(toEditModel.intervalSeconds || 86400); // default is one day
-      setAvailableScenarios(toEditModel.availableScenarios || []);
-      setRequiredParameters(toEditModel.required_parameters || []);
-      setActions(toEditModel.actions || []);
-      setActiveScenario(toEditModel.activeScenario || "");
-      setForecasts(toEditModel.forecasts)
-    }
-  }, [toEditModel]);
+    useEffect(() => {
+        if (toEditModel) {
+            setName(toEditModel.name || "");
+            setUrl(toEditModel.URL || "");
+            setIsActive(toEditModel.isActive || false);
+            setIntervalSeconds(toEditModel.intervalSeconds || 86400); // default is one day
+            setModelType(toEditModel.model_type || 'energy');
+            setAvailableScenarios(toEditModel.availableScenarios || []);
+            setRequiredParameters(toEditModel.required_parameters || []);
+            setActions(toEditModel.actions || []);
+            setActiveScenario(toEditModel.activeScenario || "");
+            setForecasts(toEditModel.forecasts)
+        }
+    }, [toEditModel]);
 
   const handleParamChange = (index: number, value: any) => {
     setRequiredParameters((prev) => {
@@ -67,28 +68,29 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
     });
   };
 
-  const handleEdit = () => {
-    if (toEditModel && requiredParameters) {
-      setClosed(false);
-      const id = notifications.show({
-        loading: true,
-        title: t('common.loading'),
-        message: t('model.updatingModel'),
-        autoClose: false,
-        withCloseButton: false,
-      });
-      updateModel({
-        id: toEditModel.id,
-        name,
-        URL: url,
-        intervalSeconds,
-        isActive,
-        fpfId: toEditModel.fpfId,
-        activeScenario,
-        required_parameters: requiredParameters,
-        availableScenarios,
-        actions: actions ?? [],
-        forecasts: forecasts ?? []
+    const handleEdit = () => {
+        if (toEditModel && requiredParameters) {
+            setClosed(false);
+            const id = notifications.show({
+                loading: true,
+                title: t('common.loading'),
+                message: t('model.updatingModel'),
+                autoClose: false,
+                withCloseButton: false,
+            });
+            updateModel({
+                id: toEditModel.id,
+                name,
+                URL:url,
+                intervalSeconds,
+                isActive,
+                model_type: modelType,
+                fpfId: toEditModel.fpfId,
+                activeScenario,
+                required_parameters: requiredParameters,
+                availableScenarios,
+                actions: actions ?? [],
+                forecasts: forecasts ?? []
 
       }).then(() => {
         notifications.update({
@@ -210,18 +212,19 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
     });
 
     try {
-      const payload = {
+      const payload: EditModel = {
         id: toEditModel?.id ?? "",
         name,
         URL: url,
         intervalSeconds,
         isActive,
-        fpfId,
+        model_type: modelType,
+        fpfId: fpfId!,
         activeScenario,
-        required_parameters: requiredParameters,
+        required_parameters: requiredParameters!,
         availableScenarios,
-        actions,
-        forecasts
+        actions: actions!,
+        forecasts: forecasts!
       };
 
       if (toEditModel) {
@@ -335,6 +338,19 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
                   size="md"
                   checked={isActive}
                   onChange={() => setIsActive(!isActive)}
+                />
+              </Grid.Col>
+
+              <Grid.Col span={6}>
+                <Select
+                  label={t("model.modelType")}
+                  description={t("model.modelTypeDescription")}
+                  data={[
+                    { value: 'energy', label: t("model.modelTypeEnergy") },
+                    { value: 'water', label: t("model.modelTypeWater") },
+                  ]}
+                  value={modelType}
+                  onChange={(value) => setModelType(value as ModelType)}
                 />
               </Grid.Col>
 

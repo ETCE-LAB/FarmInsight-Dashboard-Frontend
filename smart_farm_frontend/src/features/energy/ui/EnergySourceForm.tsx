@@ -65,7 +65,8 @@ export const EnergySourceForm: React.FC<EnergySourceFormProps> = ({
         { value: 'generator', label: t('energy.sourceGenerator') },
     ];
 
-    // Sensor options - filter for power-related sensors
+    // Sensor options - show all active sensors
+    // Users can choose any sensor they want to link to this energy source
     const sensorOptions = sensors
         .filter((s: any) => s.isActive)
         .map((s: any) => ({
@@ -220,25 +221,33 @@ export const EnergySourceForm: React.FC<EnergySourceFormProps> = ({
                 />
 
                 <NumberInput
-                    label={t('energy.maxOutputWatts')}
+                    label={sourceType === 'battery' ? t('energy.batteryCapacitySource') : t('energy.maxOutputWatts')}
+                    description={sourceType === 'battery' ? t('energy.batteryCapacitySourceDescription') : undefined}
                     placeholder="0"
                     value={maxOutputWatts}
                     onChange={(val) => setMaxOutputWatts(Number(val) || 0)}
                     min={0}
-                    suffix=" W"
+                    suffix={sourceType === 'battery' ? " Wh" : " W"}
                     required
                 />
 
-                <NumberInput
-                    label={t('energy.currentOutputWatts')}
-                    description={sensorId ? t('energy.outputLiveNote') : undefined}
-                    placeholder="0"
-                    value={currentOutputWatts}
-                    onChange={(val) => setCurrentOutputWatts(Number(val) || 0)}
-                    min={0}
-                    max={maxOutputWatts}
-                    suffix=" W"
-                />
+                {sourceType !== 'battery' && (
+                    <NumberInput
+                        label={t('energy.currentOutputWatts')}
+                        description={sensorId
+                            ? t('energy.outputLiveMeasured')
+                            : t('energy.outputManualDescription')
+                        }
+                        placeholder={sensorId ? t('energy.measuredBySensor') : "0"}
+                        value={currentOutputWatts}
+                        onChange={(val) => setCurrentOutputWatts(Number(val) || 0)}
+                        min={0}
+                        max={maxOutputWatts}
+                        suffix=" W"
+                        disabled={!!sensorId}
+                        styles={sensorId ? { input: { backgroundColor: 'var(--mantine-color-gray-1)', color: 'var(--mantine-color-dimmed)' } } : undefined}
+                    />
+                )}
 
                 {/* Linked Sensor for Live Measurement */}
                 <Paper p="md" withBorder radius="md" style={{ borderLeft: '4px solid var(--mantine-color-blue-6)' }}>

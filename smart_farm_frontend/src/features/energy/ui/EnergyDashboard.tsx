@@ -50,14 +50,19 @@ import {
     selectEnergyError,
     setEnergyDashboard,
     setLoading,
-    setError
+    setError,
+    setBatteryLevel
 } from '../state/EnergySlice';
-import { EnergyConsumer, EnergySource, DEFAULT_ENERGY_THRESHOLDS } from '../models/Energy';
+import { EnergyConsumer, EnergySource, DEFAULT_ENERGY_THRESHOLDS, BatteryState } from '../models/Energy';
+import { getEnergyDashboard, getBatteryState } from '../useCase/getEnergyState';
 import { energyResource } from '../../abstractResource/abstractExport';
 import { EnergyConsumerForm } from './EnergyConsumerForm';
 import { EnergySourceForm } from './EnergySourceForm';
 import { EnergyConfigPanel } from './EnergyConfigPanel';
+import { EnergyForecastGraph } from './EnergyForecastGraph';
 import { RootState } from '../../../utils/store';
+import {updatedFpf} from "../../fpf/state/FpfSlice";
+import {getFpf} from "../../fpf/useCase/getFpf";
 
 const EnergyDashboard: React.FC = () => {
     const { fpfId } = useParams<{ fpfId: string }>();
@@ -81,6 +86,8 @@ const EnergyDashboard: React.FC = () => {
     const [sourceModalOpen, setSourceModalOpen] = useState(false);
     const [selectedConsumer, setSelectedConsumer] = useState<EnergyConsumer | undefined>(undefined);
     const [selectedSource, setSelectedSource] = useState<EnergySource | undefined>(undefined);
+    const [batterySource, setBatterySource] = useState<BatteryState | null>(null);
+    const [batteryLastUpdated, setBatteryLastUpdated] = useState<string | null>(null);
 
     // Threshold Settings (for config panel)
     const [gridConnectThreshold, setGridConnectThreshold] = useState(DEFAULT_ENERGY_THRESHOLDS.gridConnectPercent);
@@ -88,6 +95,26 @@ const EnergyDashboard: React.FC = () => {
     const [warningThreshold, setWarningThreshold] = useState(DEFAULT_ENERGY_THRESHOLDS.warningPercent);
     const [gridDisconnectThreshold, setGridDisconnectThreshold] = useState(DEFAULT_ENERGY_THRESHOLDS.gridDisconnectPercent);
     const [batteryMaxWh, setBatteryMaxWh] = useState(DEFAULT_ENERGY_THRESHOLDS.batteryMaxWh);
+
+    // Load battery state from sensor (if available)
+    const loadBatteryState = useCallback(async () => {
+        if (!fpfId) return;
+
+        try {
+            const batteryData = await getBatteryState(fpfId);
+            setBatterySource(batteryData);
+            setBatteryLastUpdated(batteryData.last_updated);
+
+            // Update Redux with live battery level
+            if (batteryData.battery_level_wh !== undefined) {
+                dispatch(setBatteryLevel(batteryData.battery_level_wh));
+            }
+        } catch (err: any) {
+            // Battery source may not be configured - this is not an error
+            console.log('Battery state not available:', err.message);
+            setBatterySource(null);
+        }
+    }, [fpfId, dispatch]);
 
     // Load data
     const loadData = useCallback(async () => {
@@ -98,6 +125,13 @@ const EnergyDashboard: React.FC = () => {
 
         try {
             const dashboardData = await energyResource.getDashboard(fpfId, batteryLevelWh);
+            // Load FPF data to ensure sensors are available in Redux state
+            const fpfData = await getFpf(fpfId);
+            dispatch(updatedFpf(fpfData));
+
+            // First, try to get live battery state
+            await loadBatteryState();
+
             dispatch(setEnergyDashboard(dashboardData));
 
             // Update thresholds from backend
@@ -118,7 +152,7 @@ const EnergyDashboard: React.FC = () => {
         } finally {
             dispatch(setLoading(false));
         }
-    }, [fpfId, batteryLevelWh, dispatch, t]);
+    }, [fpfId, batteryLevelWh, dispatch, t, loadBatteryState]);
 
     useEffect(() => {
         loadData();
@@ -239,6 +273,23 @@ const EnergyDashboard: React.FC = () => {
                         <Text size="sm" c="dimmed" ta="center" mt="xs">
                             {batteryLevelWh.toFixed(0)} Wh / {batteryMaxWh} Wh
                         </Text>
+                        {batterySource && (
+                            <Stack gap={4} mt="xs">
+                                <Badge size="xs" variant="light" color="blue">
+                                    {t('energy.liveFromSensor')}: {batterySource.source_name}
+                                </Badge>
+                                {batteryLastUpdated && (
+                                    <Text size="xs" c="dimmed" ta="center">
+                                        {t('energy.lastUpdated')}: {new Date(batteryLastUpdated).toLocaleTimeString('de-DE')}
+                                    </Text>
+                                )}
+                            </Stack>
+                        )}
+                        {!batterySource && (
+                            <Badge size="xs" variant="light" color="gray" mt="xs">
+                                {t('energy.manualBatteryLevel')}
+                            </Badge>
+                        )}
                     </Card>
                 </Grid.Col>
 
@@ -336,17 +387,27 @@ const EnergyDashboard: React.FC = () => {
                 />
             )}
 
-            {/* Energy Sources Section */}
+            {/* Energy Forecast Graph */}
+            <Box mb="lg">
+                <EnergyForecastGraph />
+            </Box>
+
+            {/* Energy Production Section (Solar, Wind, Grid, Generator) */}
             <Card shadow="sm" padding="lg" withBorder mb="lg">
                 <Group justify="space-between" mb="md">
-                    <Title order={3}>{t('energy.sources')}</Title>
+                    <Group gap="xs">
+                        <ThemeIcon color="yellow" variant="light">
+                            <IconSun size={20} />
+                        </ThemeIcon>
+                        <Title order={3}>{t('energy.energyProduction')}</Title>
+                    </Group>
                     <ActionIcon variant="light" color="blue" onClick={handleAddSource}>
                         <IconCirclePlus size={20} />
                     </ActionIcon>
                 </Group>
 
-                {sources.length === 0 ? (
-                    <Text c="dimmed" ta="center" py="xl">{t('energy.noSourcesFound')}</Text>
+                {sources.filter(s => s.sourceType !== 'battery').length === 0 ? (
+                    <Text c="dimmed" ta="center" py="xl">{t('energy.noProductionSources')}</Text>
                 ) : (
                     <Table striped highlightOnHover>
                         <Table.Thead>
@@ -361,7 +422,7 @@ const EnergyDashboard: React.FC = () => {
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
-                            {sources.map((source) => (
+                            {sources.filter(s => s.sourceType !== 'battery').map((source) => (
                                 <Table.Tr key={source.id}>
                                     <Table.Td>
                                         <Group gap="xs">
@@ -371,12 +432,19 @@ const EnergyDashboard: React.FC = () => {
                                     </Table.Td>
                                     <Table.Td>{source.name}</Table.Td>
                                     <Table.Td>
-                                        <Text c="green" fw={500}>{source.currentOutputWatts} W</Text>
+                                        <Group gap="xs">
+                                            <Text c="green" fw={500}>{source.currentOutputWatts} W</Text>
+                                            {source.sensor && (
+                                                <Badge size="xs" variant="light" color="blue">
+                                                    {t('energy.liveFromSensor')}
+                                                </Badge>
+                                            )}
+                                        </Group>
                                     </Table.Td>
                                     <Table.Td>{source.maxOutputWatts} W</Table.Td>
                                     <Table.Td>
                                         <Badge color={source.weatherDependent ? 'blue' : 'gray'}>
-                                            {source.weatherDependent ? t('common.activated') : t('common.inactive')}
+                                            {source.weatherDependent ? t('common.yes') : t('common.no')}
                                         </Badge>
                                     </Table.Td>
                                     <Table.Td>
@@ -391,6 +459,84 @@ const EnergyDashboard: React.FC = () => {
                                     </Table.Td>
                                 </Table.Tr>
                             ))}
+                        </Table.Tbody>
+                    </Table>
+                )}
+            </Card>
+
+            {/* Energy Storage Section (Batteries) */}
+            <Card shadow="sm" padding="lg" withBorder mb="lg">
+                <Group justify="space-between" mb="md">
+                    <Group gap="xs">
+                        <ThemeIcon color="teal" variant="light">
+                            <IconBattery size={20} />
+                        </ThemeIcon>
+                        <Title order={3}>{t('energy.energyStorage')}</Title>
+                    </Group>
+                    <ActionIcon variant="light" color="blue" onClick={handleAddSource}>
+                        <IconCirclePlus size={20} />
+                    </ActionIcon>
+                </Group>
+
+                {sources.filter(s => s.sourceType === 'battery').length === 0 ? (
+                    <Text c="dimmed" ta="center" py="xl">{t('energy.noStorageSources')}</Text>
+                ) : (
+                    <Table striped highlightOnHover>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>{t('energy.storageName')}</Table.Th>
+                                <Table.Th>{t('energy.currentCapacity')}</Table.Th>
+                                <Table.Th>{t('energy.maxCapacity')}</Table.Th>
+                                <Table.Th>{t('energy.chargeLevel')}</Table.Th>
+                                <Table.Th>{t('header.status')}</Table.Th>
+                                <Table.Th>{t('header.actions')}</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {sources.filter(s => s.sourceType === 'battery').map((source) => {
+                                const chargePercent = source.maxOutputWatts > 0
+                                    ? Math.min(100, (source.currentOutputWatts / source.maxOutputWatts) * 100)
+                                    : 0;
+                                return (
+                                    <Table.Tr key={source.id}>
+                                        <Table.Td>
+                                            <Group gap="xs">
+                                                <IconBattery size={20} />
+                                                <Text>{source.name}</Text>
+                                            </Group>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <Group gap="xs">
+                                                <Text c="teal" fw={500}>{source.currentOutputWatts} Wh</Text>
+                                                {source.sensor && (
+                                                    <Badge size="xs" variant="light" color="blue">
+                                                        {t('energy.liveFromSensor')}
+                                                    </Badge>
+                                                )}
+                                            </Group>
+                                        </Table.Td>
+                                        <Table.Td>{source.maxOutputWatts} Wh</Table.Td>
+                                        <Table.Td>
+                                            <Badge
+                                                color={chargePercent > 50 ? 'green' : chargePercent > 20 ? 'yellow' : 'red'}
+                                                size="lg"
+                                            >
+                                                {chargePercent.toFixed(1)}%
+                                            </Badge>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <Badge color={source.isActive ? 'green' : 'gray'}>
+                                                {source.isActive ? t('common.activated') : t('common.inactive')}
+                                            </Badge>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <ActionIcon variant="subtle" onClick={() => handleEditSource(source)}>
+                                                <IconEdit size={18} />
+                                            </ActionIcon>
+                                        </Table.Td>
+                                    </Table.Tr>
+                                );
+                            })}
                         </Table.Tbody>
                     </Table>
                 )}
@@ -425,7 +571,14 @@ const EnergyDashboard: React.FC = () => {
                                 <Table.Tr key={consumer.id}>
                                     <Table.Td>{consumer.name}</Table.Td>
                                     <Table.Td>
-                                        <Text c="red" fw={500}>{consumer.consumptionWatts} W</Text>
+                                        <Group gap="xs">
+                                            <Text c="red" fw={500}>{consumer.consumptionWatts} W</Text>
+                                            {consumer.sensor && (
+                                                <Badge size="xs" variant="light" color="blue">
+                                                    {t('energy.liveFromSensor')}
+                                                </Badge>
+                                            )}
+                                        </Group>
                                     </Table.Td>
                                     <Table.Td>
                                         <Badge color={getPriorityColor(consumer.priority)}>
