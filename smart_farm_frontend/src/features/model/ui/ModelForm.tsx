@@ -127,7 +127,7 @@ export const ModelForm: React.FC<{ toEditModel?: EditModel, setClosed: React.Dis
         withCloseButton: false,
       });
       createModel({
-        id: '', name, URL: url, activeScenario, intervalSeconds: interval, isActive, fpfId, required_parameters: requiredParameters, availableScenarios, actions, forecasts
+        id: '', name, URL: url, activeScenario, intervalSeconds: interval, isActive, model_type: modelType, fpfId, required_parameters: requiredParameters, availableScenarios, actions, forecasts
       }).then(() => {
         notifications.update({
           id,

@@ -123,7 +123,7 @@ export const WeatherForecastDisplay: React.FC<{ location: Location }> = ({ locat
             case "67":
                 return t('weatherForecast.weatherCode.freezingRainHeavy');
             case "71":
-                return t('weatherForecast.weatherCode.snowFallSlight');
+                return t('weatherForecast.weatherCode.snowFallLight');
             case "73":
                 return t('weatherForecast.weatherCode.snowFallModerate');
             case "75":
