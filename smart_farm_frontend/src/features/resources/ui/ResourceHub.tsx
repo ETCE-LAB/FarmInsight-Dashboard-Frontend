@@ -36,7 +36,7 @@ export const ResourceHub = () => {
         navigate(url);
     };
 
-    const hasWaterMonitoring = fpf && fpf.resourceManagementConfig.rmmActive;
+    const hasWaterMonitoring = Boolean(fpf?.resourceManagementConfig?.rmmActive);
 
     return (
         <Container size="lg" py="xl">
