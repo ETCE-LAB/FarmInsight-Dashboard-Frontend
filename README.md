@@ -3,6 +3,7 @@
 # FarmInsight Dashboard Frontend
 
 ## Table of Contents
+
 - [The FarmInsight Project](#the-farminsight-project)
   - [Core vision](#core-vision)
 - [Overview](#-overview)
@@ -14,17 +15,19 @@
 - [Contributing](#-contributing)
 - [License](#-license)
 
-
 ## The FarmInsight Project
+
 Welcome to the FarmInsight Project by ETCE!
 
-The FarmInsight platform brings together advanced monitoring of "Food Production Facilities" (FPF), enabling users to 
+The FarmInsight platform brings together advanced monitoring of "Food Production Facilities" (FPF), enabling users to
 document, track, and optimize every stage of food production seamlessly.
 
 All FarmInsight Repositories:
-* <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Frontend">Dashboard-Frontend</a>
-* <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend">Dashboard-Backend</a>
-* <a href="https://github.com/ETCE-LAB/FarmInsight-FPF-Backend">FPF-Backend</a>
+
+- <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Frontend">Dashboard-Frontend</a>
+- <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend">Dashboard-Backend</a>
+- <a href="https://github.com/ETCE-LAB/FarmInsight-FPF-Backend">FPF-Backend</a>
+- <a href="https://github.com/ETCE-LAB/FarmInsight-AI-Backend">AI-Backend</a>
 
 Link to our productive System:<a href="https://farminsight.etce.isse.tu-clausthal.de"> FarmInsight.etce.isse.tu-clausthal.de</a>
 
@@ -32,24 +35,26 @@ Link to our productive System:<a href="https://farminsight.etce.isse.tu-claustha
 
 <img src="/.documentation/FarmInsightOverview.jpg">
 
-FarmInsight empowers users to manage food production facilities with precision and ease. 
+FarmInsight empowers users to manage food production facilities with precision and ease.
 
 Key features include:
 
-* User Management: Set up organizations with role-based access control for secure and personalized use.
-* FPF Management: Configure and manage Food Production Facilities (FPFs), each equipped with sensors and cameras.
-* Sensor & Camera Integration: Collect sensor data and capture images or livestreams at configurable intervals, all 
+- User Management: Set up organizations with role-based access control for secure and personalized use.
+- FPF Management: Configure and manage Food Production Facilities (FPFs), each equipped with sensors and cameras.
+- Sensor & Camera Integration: Collect sensor data and capture images or livestreams at configurable intervals, all
 accessible through the web application.
-* Harvest Documentation: Log and track harvests for each plant directly from the frontend interface.
-* Data Visualization: Visualize sensor data with intuitive graphs and charts.
-* Controllable Action: To control the FPF you can add controllable actions which can perform actions on hardware which is reachable via network.
-* Weather forecast: You can configure a location for your FPF for which a weather forecast will be gathered. 
-* Media Display: View and manage captured images and livestreams for real-time monitoring.
+- Harvest Documentation: Log and track harvests for each plant directly from the frontend interface.
+- Data Visualization: Visualize sensor data with intuitive graphs and charts.
+- Controllable Action: To control the FPF you can add controllable actions which can perform actions on hardware which is reachable via network.
+- Weather forecast: You can configure a location for your FPF for which a weather forecast will be gathered.
+- Media Display: View and manage captured images and livestreams for real-time monitoring.
 
 ## 🔎 Overview
+
 The **FarmInsight Dashboard Frontend** is a user interface for managing and monitoring Food Production Facilities (FPFs). It serves as the frontend for a corresponding backend, which is also hosted in the ETCE-Labs GitHub repository.
 
 The dashboard provides:
+
 - A detailed overview of FPFs.
 - Features for creating and editing organizations.
 - Assignment of FPFs to organizations.
@@ -64,64 +69,100 @@ The dashboard provides:
 [![React][React-img]][React-url] <br>
 [![Redux][Redux-img]][Redux-url] <br>
 [![Mantine][Mantine-img]][Mantine-url] <br>
-[![Typescript][Typescript-img]][Typescript-url] 
-
+[![Typescript][Typescript-img]][Typescript-url]
 
 ## 🔬 Features
 
 ### Organizations
+
 - Creation and editing of organizations.
 - Assignment of existing users to organizations.
 - Promoting or removing users of an organization.
 
 ### Food Production Facilities (FPFs)
+
 - Creation, management, and editing of FPFs.
 - Adding and editing of sensors and cameras.
 - Displaying and graphically analyzing sensor data in an intuitive UI.
 - Adding, editing, deleting Growing Cycles.
 - Adding, editing, deleting Controllable Actions and Trigger.
 
+### Resource Management
+
+#### Water Dashboard
+
+- Visual tank status with fill level indicator
+- Field moisture map for irrigation zones
+- AI-driven water level forecasts
+- Integration with watering automation (e.g., FarmBot)
+
+#### Energy Dashboard
+
+- Battery state-of-charge monitoring and history
+- Energy consumption and production graphs
+- Multi-scenario forecasts (best/average/worst-case)
+- Configure energy consumers and sources
+- Grid connect threshold management
+
+### AI Models
+
+- Add and manage predictive models per FPF
+- Configure model parameters and polling intervals
+- View forecasts with scenario selection
+- See model-triggered proactive actions
+
 ## 🔧 Installation
+
 ### System Requirements
+
 - Node.js (recommended: LTS version)
 
 ### Steps
+
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/ETCE-LAB/FarmInsight-Dashboard-Frontend.git
    ```
+
 2. **Move into directory:**
+
    ```bash
    cd .\smart_farm_frontend\
    ```
 
 3. **Install dependencies:**
+
    ```bash
    npm install
    ```
+
 4. **Set up .env-Config:**
    Setup .env files at:
-    * smart_farm_frontend/src/env-config.ts
-    
+    - smart_farm_frontend/src/env-config.ts
+
 Example of .env file:
+
    ```bash
    export const BACKEND_URL = "http://127.0.0.1:8000";
   ```
-   
-   
-5. **Start the development server:**
+
+1. **Start the development server:**
+
    ```bash
    npm start
    ```
+
    The development server will run by default at [http://localhost:3000](http://localhost:3000).
 
-
-6. **Set up the backend:**
+2. **Set up the backend:**
 
    Please follow the instructions in the [Backend Repository](https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend) to set up the API.
 
 ## 💡 Usage
+
 ### Access
+
 After starting the frontend, you can either create or log in with a user account in order
 to create your own organizations and FPFs or manage existing ones.
 
@@ -130,30 +171,32 @@ to create your own organizations and FPFs or manage existing ones.
 To add a sensor, you need to fill in the required information in the form.
 The additional information is different depending on the sensor you want to add.
 For example: A HTTP sensor requires a http endpoint of the sensor, so the FPF can reach it on the given endpoint.
-The same goes for MQTT sensors. They require the name of the topic they publish the messages to. 
+The same goes for MQTT sensors. They require the name of the topic they publish the messages to.
 It is important to choose unique topic names per FPF and broker to distinguish between the sensors.
 
-
 ### Handle the Controllable Actions
+
 With controllable actions you can control hardware via an action script which is running on the [Backend](https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend/blob/dev/README.md#controllable-actions).
-This action script is a custom script which communicates an action to the hardware (e.g. via HTTP). 
+This action script is a custom script which communicates an action to the hardware (e.g. via HTTP).
 The hardware must be reachable via HTTP in order for it to work.
 You can define and configure your controllable action as an admin of the FPF in the Edit-FPF-Page.
 
 See more details about controllable actions in the <a href="https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend">Dashboard-Backend</a> Readme.
 
 #### Trigger
+
 Your action needs Trigger to be called. You have a variety of trigger types to choose from like:
-* Interval (provide an interval in which the action will be called)
-* Time (will trigger the action within a timeframe)
-* Sensor measurement (Triggers the action by a set threshold for a sensor measurement)
-* Manual
+
+- Interval (provide an interval in which the action will be called)
+- Time (will trigger the action within a timeframe)
+- Sensor measurement (Triggers the action by a set threshold for a sensor measurement)
+- Manual
 
 With the manual trigger you can execute an action with a click of a button in the frontend.
 This can only be done by admins of the FPF.
 Please note that the manual trigger will block the auto-trigger as long as they are active. You need to disable the manual trigger manually again, if you want to resume automatic control.
 
-Create for one action as much trigger as you want. 
+Create for one action as much trigger as you want.
 In most cases it is sufficient to have 1-2 automatic trigger and 2 manual trigger (simple ON/OFF).
 It is recommended to create manual trigger in the case of manual intervention during live production.
 
@@ -171,6 +214,7 @@ The user has always the option it overwrite the auto-logic and execute the manua
 <img src="/.documentation/TriggerExample.gif">
 
 #### Hardware
+
 If you have hardware which can executes multiple actions but only one at a time. (e.g. a robot arm), specify a Hardware for the controllable action. (with the same name)
 This way no two actions will be executed at the same time and the hardware is protected against any form of overloading.
 
@@ -182,12 +226,11 @@ Current System Architecture:
 
 <img src="/.documentation/FarmInsightSystemArchitecture.jpg">
 
-
 Current Frontend File Structure:
 
 <img src="/.documentation/FarmInsightFileStructure.jpg">
 
-All normal Features are located in the Feature directory. 
+All normal Features are located in the Feature directory.
 
 Special UI-Components (navbar, header. landingPage) are located under ./ui/components/...
 
@@ -196,15 +239,34 @@ Special functions like WebSocket, APIClient, Redux Store are all located in ./ut
 Translation: ./i18n.ts
 
 ## ⚖️ License
+
 This project is licensed under the [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html) license.
 
 ## 🔄 Contribute to FarmInsight
+
 We welcome contributions! Please follow these steps:
+
 1. Fork the repository.
 2. Create a new branch: `git checkout -b feature/your-feature`
 3. Make your changes and commit them: `git commit -m 'Add new feature'`
 4. Push the branch: `git push origin feature/your-feature`
 5. Create a pull request.
+
+## Past/Present Contributors
+
+This project was developed as part of the Digitalisierungsprojekt at DigitalTechnologies WS24/25 by:
+- Tom Luca Heering
+- Theo Lesser
+- Mattes Knigge
+- Julian Schöpe
+- Marius Peter
+- Paul Golke
+- Niklas Schaumann
+- M. Linke
+
+Project supervision:
+- Johannes Mayer
+- Benjamin Leiding
 
 ---
 For more information or questions, please contact the ETCE-Lab team.
@@ -220,5 +282,3 @@ For more information or questions, please contact the ETCE-Lab team.
 [Mantine-url]: https://mantine.dev/
 [Typescript-img]: https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white
 [Typescript-url]: https://www.typescriptlang.org/
-
-
