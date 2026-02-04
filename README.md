@@ -252,6 +252,22 @@ We welcome contributions! Please follow these steps:
 4. Push the branch: `git push origin feature/your-feature`
 5. Create a pull request.
 
+## Past/Present Contributors
+
+This project was developed as part of the Digitalisierungsprojekt at DigitalTechnologies WS24/25 by:
+- Tom Luca Heering
+- Theo Lesser
+- Mattes Knigge
+- Julian Schöpe
+- Marius Peter
+- Paul Golke
+- Niklas Schaumann
+- M. Linke
+
+Project supervision:
+- Johannes Mayer
+- Benjamin Leiding
+
 ---
 For more information or questions, please contact the ETCE-Lab team.
 
