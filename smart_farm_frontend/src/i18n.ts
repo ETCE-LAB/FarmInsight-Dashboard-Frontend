@@ -583,6 +583,8 @@ i18n
                         consumerShutdownThreshold: 'Auto-Shutdown Threshold',
                         consumerShutdownThresholdDescription: 'Battery level at which this consumer will be automatically shut down',
                         shutdownNever: 'Never',
+                        aiShutdown: 'AI Shutdown',
+                        aiControlled: 'AI Controlled',
                         shutdownUseGlobal: 'Uses global threshold settings (no individual shutdown)',
                         shutdownAtPercent: 'Will shutdown when battery falls below {{percent}}%',
                         dependencies: 'Dependencies',
@@ -1379,7 +1381,9 @@ i18n
                             disconnect_grid: 'Netz trennen',
                             shutdown_non_critical: 'Nicht-Kritische abschalten',
                             emergency_shutdown: 'Notabschaltung'
-                        }
+                        },
+                        aiShutdown: 'KI Abschaltung',
+                        aiControlled: 'KI Gesteuert'
                     },
                     resources: {
                         managementTitle: 'Ressourcenverwaltung',
