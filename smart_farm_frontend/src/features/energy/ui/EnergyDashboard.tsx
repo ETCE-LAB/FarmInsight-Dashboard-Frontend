@@ -421,47 +421,65 @@ const EnergyDashboard: React.FC = () => {
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
-                            {consumers.map((consumer) => (
-                                <Table.Tr key={consumer.id}>
-                                    <Table.Td>{consumer.name}</Table.Td>
-                                    <Table.Td>
-                                        <Text c="red" fw={500}>{consumer.consumptionWatts} W</Text>
-                                    </Table.Td>
-                                    <Table.Td>
-                                        <Badge color={getPriorityColor(consumer.priority)}>
-                                            {consumer.priority} - {getPriorityLabel(consumer.priority)}
-                                        </Badge>
-                                    </Table.Td>
-                                    <Table.Td>
-                                        <Badge color={consumer.shutdownThreshold > 0 ? 'orange' : 'gray'} variant="light">
-                                            {consumer.shutdownThreshold > 0 ? `${consumer.shutdownThreshold}%` : t('energy.shutdownNever')}
-                                        </Badge>
-                                    </Table.Td>
-                                    <Table.Td>
-                                        {consumer.dependencies && consumer.dependencies.length > 0 ? (
+                            {consumers.map((consumer) => {
+                                const isAiShutdown = consumer.controllableAction && energyState?.consumers_to_shutdown?.includes(consumer.id);
+                                return (
+                                    <Table.Tr key={consumer.id} style={isAiShutdown ? { backgroundColor: 'var(--mantine-color-orange-light)' } : undefined}>
+                                        <Table.Td>
                                             <Group gap="xs">
-                                                {consumer.dependencies.map((dep) => (
-                                                    <Badge key={dep.id} variant="outline" size="sm">
-                                                        {dep.name}
+                                                {consumer.name}
+                                                {isAiShutdown && (
+                                                    <Badge size="xs" color="orange" variant="filled">
+                                                        {t('energy.aiShutdown')}
                                                     </Badge>
-                                                ))}
+                                                )}
                                             </Group>
-                                        ) : (
-                                            <Text c="dimmed" size="sm">{t('energy.noDependencies')}</Text>
-                                        )}
-                                    </Table.Td>
-                                    <Table.Td>
-                                        <Badge color={consumer.isActive ? 'green' : 'gray'}>
-                                            {consumer.isActive ? t('common.activated') : t('common.inactive')}
-                                        </Badge>
-                                    </Table.Td>
-                                    <Table.Td>
-                                        <ActionIcon variant="subtle" onClick={() => handleEditConsumer(consumer)}>
-                                            <IconEdit size={18} />
-                                        </ActionIcon>
-                                    </Table.Td>
-                                </Table.Tr>
-                            ))}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <Text c="red" fw={500}>{consumer.consumptionWatts} W</Text>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <Badge color={getPriorityColor(consumer.priority)}>
+                                                {consumer.priority} - {getPriorityLabel(consumer.priority)}
+                                            </Badge>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <Badge color={consumer.shutdownThreshold > 0 ? 'orange' : 'gray'} variant="light">
+                                                {consumer.shutdownThreshold > 0 ? `${consumer.shutdownThreshold}%` : t('energy.shutdownNever')}
+                                            </Badge>
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {consumer.dependencies && consumer.dependencies.length > 0 ? (
+                                                <Group gap="xs">
+                                                    {consumer.dependencies.map((dep) => (
+                                                        <Badge key={dep.id} variant="outline" size="sm">
+                                                            {dep.name}
+                                                        </Badge>
+                                                    ))}
+                                                </Group>
+                                            ) : (
+                                                <Text c="dimmed" size="sm">{t('energy.noDependencies')}</Text>
+                                            )}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            {isAiShutdown ? (
+                                                <Badge color="cyan" variant="filled">
+                                                    {t('energy.aiControlled')}
+                                                </Badge>
+                                            ) : (
+                                                <Badge color={consumer.isActive ? 'green' : 'gray'}>
+                                                    {consumer.isActive ? t('common.activated') : t('common.inactive')}
+                                                </Badge>
+                                            )}
+                                        </Table.Td>
+                                        <Table.Td>
+                                            <ActionIcon variant="subtle" onClick={() => handleEditConsumer(consumer)}>
+                                                <IconEdit size={18} />
+                                            </ActionIcon>
+                                        </Table.Td>
+                                    </Table.Tr>
+                                );
+                            })}
                         </Table.Tbody>
                     </Table>
                 )}
