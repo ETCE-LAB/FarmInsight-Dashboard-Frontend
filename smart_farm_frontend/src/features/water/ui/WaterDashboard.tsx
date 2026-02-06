@@ -146,11 +146,7 @@ export const WaterDashboard = () => {
                             {fpfId ? (
                                 /* Prediction Graphs */
                                 fpf?.Models && fpf.Models.length > 0 && (
-                                    <>
-                                        {fpf.Models.map((model) => (
-                                            <PredictionView fpfId={fpf.id} thresholds={model.thresholds} />
-                                        ))}
-                                    </>
+                                    <PredictionView fpfId={fpf.id} models={fpf.Models} />
                                 )
                             ) : (
                                 <Text c="dimmed">{t('water.noData')}</Text>
