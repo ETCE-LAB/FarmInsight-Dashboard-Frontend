@@ -1,4 +1,3 @@
 .env
 .env.dev
 /smart_farm_frontend/package-lock.json
-/smart_farm_frontend/src/env-config.ts

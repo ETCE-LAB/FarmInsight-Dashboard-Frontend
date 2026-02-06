@@ -18,8 +18,8 @@ import TimeRangeSelector from "../../../utils/TimeRangeSelector";
 import { WeatherForecastDisplay } from "../../WeatherForecast/ui/WeatherForecastDisplay";
 import ControllableActionOverview from "../../controllables/ui/controllableActionOverview";
 
-import {RootState} from "../../../utils/store";
-import {PredictionView} from "../../model/ui/PredictionView";
+import { RootState } from "../../../utils/store";
+import { PredictionView } from "../../model/ui/PredictionView";
 import { setControllableAction } from "../../controllables/state/ControllableActionSlice";
 import { showNotification } from "@mantine/notifications";
 import { useSelector } from "react-redux";
@@ -35,7 +35,7 @@ export const FpfOverview = () => {
     const [showGrowingCycleForm, setShowGrowingCycleForm] = useState(false);
     const auth = useAuth();
     const { organizationId } = useParams<{ organizationId: string }>();
-    const [dateRange, setDateRange] = useState<{from:string, to:string} |null>(null)
+    const [dateRange, setDateRange] = useState<{ from: string, to: string } | null>(null)
     const [isMember, setIsMember] = useState<boolean>(false);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const growingCycles = useSelector((state: RootState) => state.growingCycle.growingCycles);
@@ -136,9 +136,7 @@ export const FpfOverview = () => {
                     {/* Prediction Graphs */}
                     {fpf?.Models && fpf.Models.length > 0 && (
                         <>
-                            {fpf.Models.map((model) => (
-                                <PredictionView fpfId={fpf.id} thresholds={model.thresholds}/>
-                            ))}
+                            <PredictionView fpfId={fpf.id} models={fpf.Models} />
                         </>
                     )}
 
@@ -153,7 +151,7 @@ export const FpfOverview = () => {
                                         marginBottom: '20px',
                                     }}
                                 >
-                                    <TimeseriesGraph sensor={sensor} dates={dateRange}/>
+                                    <TimeseriesGraph sensor={sensor} dates={dateRange} />
                                 </Box>
                             ))}
                         </>
@@ -215,16 +213,14 @@ export const FpfOverview = () => {
                         {/* Prediction Graphs */}
                         {fpf?.Models && fpf.Models.length > 0 && (
                             <>
-                                {fpf.Models.map((model) => (
-                                    <PredictionView fpfId={fpf.id} thresholds={model.thresholds}/>
-                                ))}
+                                <PredictionView fpfId={fpf.id} models={fpf.Models} />
                             </>
                         )}
 
                         <TimeRangeSelector onDateChange={setDateRange} defaultSelected={true} />
                         {fpf?.Sensors && fpf.Sensors.length > 0 ? (
 
-                             fpf.Sensors.map((sensor) => (
+                            fpf.Sensors.map((sensor) => (
                                 <Box
                                     key={sensor.id}
                                     style={{
