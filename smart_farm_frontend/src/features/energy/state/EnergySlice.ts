@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../../utils/store";
-import { 
-    EnergyConsumer, 
-    EnergySource, 
-    EnergyState, 
+import {
+    EnergyConsumer,
+    EnergySource,
+    EnergyState,
     EnergyDashboard,
-    DEFAULT_ENERGY_THRESHOLDS 
+    EnergyGraphData,
+    EnergyDashboardWithGraphData,
+    DEFAULT_ENERGY_THRESHOLDS
 } from "../models/Energy";
 
 interface EnergySliceState {
@@ -13,6 +15,7 @@ interface EnergySliceState {
     sources: EnergySource[];
     energyState: EnergyState | null;
     dashboard: EnergyDashboard | null;
+    graphData: EnergyGraphData | null;
     batteryLevelWh: number;
     isLoading: boolean;
     error: string | null;
@@ -24,6 +27,7 @@ const initialState: EnergySliceState = {
     sources: [],
     energyState: null,
     dashboard: null,
+    graphData: null,
     batteryLevelWh: DEFAULT_ENERGY_THRESHOLDS.batteryMaxWh * 0.5, // Default to 50%
     isLoading: false,
     error: null,
@@ -39,12 +43,12 @@ const energySlice = createSlice({
             state.consumers = action.payload;
             state.lastUpdated = Date.now();
         },
-        
+
         addEnergyConsumer(state, action: PayloadAction<EnergyConsumer>) {
             state.consumers.push(action.payload);
             state.lastUpdated = Date.now();
         },
-        
+
         updateEnergyConsumer(state, action: PayloadAction<EnergyConsumer>) {
             const index = state.consumers.findIndex(c => c.id === action.payload.id);
             if (index !== -1) {
@@ -52,22 +56,22 @@ const energySlice = createSlice({
                 state.lastUpdated = Date.now();
             }
         },
-        
+
         removeEnergyConsumer(state, action: PayloadAction<string>) {
             state.consumers = state.consumers.filter(c => c.id !== action.payload);
             state.lastUpdated = Date.now();
         },
-        
+
         setEnergySources(state, action: PayloadAction<EnergySource[]>) {
             state.sources = action.payload;
             state.lastUpdated = Date.now();
         },
-        
+
         addEnergySource(state, action: PayloadAction<EnergySource>) {
             state.sources.push(action.payload);
             state.lastUpdated = Date.now();
         },
-        
+
         updateEnergySource(state, action: PayloadAction<EnergySource>) {
             const index = state.sources.findIndex(s => s.id === action.payload.id);
             if (index !== -1) {
@@ -75,37 +79,45 @@ const energySlice = createSlice({
                 state.lastUpdated = Date.now();
             }
         },
-        
+
         removeEnergySource(state, action: PayloadAction<string>) {
             state.sources = state.sources.filter(s => s.id !== action.payload);
             state.lastUpdated = Date.now();
         },
-        
+
         setEnergyState(state, action: PayloadAction<EnergyState>) {
             state.energyState = action.payload;
             state.lastUpdated = Date.now();
         },
-        
-        setEnergyDashboard(state, action: PayloadAction<EnergyDashboard>) {
+
+        setEnergyDashboard(state, action: PayloadAction<EnergyDashboardWithGraphData>) {
             state.dashboard = action.payload;
             state.consumers = action.payload.consumers.list;
             state.sources = action.payload.sources.list;
             state.energyState = action.payload.state;
+            if (action.payload.graph_data) {
+                state.graphData = action.payload.graph_data;
+            }
             state.lastUpdated = Date.now();
         },
-        
+
+        setGraphData(state, action: PayloadAction<EnergyGraphData | null>) {
+            state.graphData = action.payload;
+            state.lastUpdated = Date.now();
+        },
+
         setBatteryLevel(state, action: PayloadAction<number>) {
             state.batteryLevelWh = action.payload;
         },
-        
+
         setLoading(state, action: PayloadAction<boolean>) {
             state.isLoading = action.payload;
         },
-        
+
         setError(state, action: PayloadAction<string | null>) {
             state.error = action.payload;
         },
-        
+
         clearEnergyData(state) {
             state.consumers = [];
             state.sources = [];
@@ -127,6 +139,7 @@ export const {
     removeEnergySource,
     setEnergyState,
     setEnergyDashboard,
+    setGraphData,
     setBatteryLevel,
     setLoading,
     setError,
@@ -138,12 +151,13 @@ export const selectEnergyConsumers = (state: RootState) => state.energy.consumer
 export const selectEnergySources = (state: RootState) => state.energy.sources;
 export const selectEnergyState = (state: RootState) => state.energy.energyState;
 export const selectEnergyDashboard = (state: RootState) => state.energy.dashboard;
+export const selectGraphData = (state: RootState) => state.energy.graphData;
 export const selectBatteryLevel = (state: RootState) => state.energy.batteryLevelWh;
 export const selectEnergyLoading = (state: RootState) => state.energy.isLoading;
 export const selectEnergyError = (state: RootState) => state.energy.error;
 
 // Computed selectors
-export const selectTotalConsumption = (state: RootState) => 
+export const selectTotalConsumption = (state: RootState) =>
     state.energy.consumers
         .filter(c => c.isActive)
         .reduce((sum, c) => sum + c.consumptionWatts, 0);
