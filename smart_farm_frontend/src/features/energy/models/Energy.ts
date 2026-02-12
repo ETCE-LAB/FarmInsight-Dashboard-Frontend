@@ -28,6 +28,8 @@ export interface EnergyConsumer {
     consumptionWatts: number;
     priority: number; // 1-10, 1 = critical, 10 = optional
     shutdownThreshold: number; // Battery % at which to shutdown (0 = use global thresholds)
+    forecastShutdownThreshold: number; // Predicted battery % at which to schedule shutdown (0 = disabled)
+    forecastBufferDays: number; // Days before predicted threshold to execute shutdown
     dependencyIds: string[];
     dependencies?: EnergyConsumerSummary[];
     sensorId?: string | null; // Link to sensor for live power measurement
@@ -45,6 +47,8 @@ export interface EnergyConsumerSummary {
     consumptionWatts: number;
     priority: number;
     shutdownThreshold: number;
+    forecastShutdownThreshold: number;
+    forecastBufferDays: number;
     isActive: boolean;
 }
 
@@ -54,6 +58,8 @@ export interface CreateEnergyConsumer {
     consumptionWatts: number;
     priority: number;
     shutdownThreshold?: number;
+    forecastShutdownThreshold?: number;
+    forecastBufferDays?: number;
     dependencyIds?: string[];
     sensorId?: string | null;
     controllableActionId?: string | null;
@@ -65,6 +71,8 @@ export interface UpdateEnergyConsumer {
     consumptionWatts?: number;
     priority?: number;
     shutdownThreshold?: number;
+    forecastShutdownThreshold?: number;
+    forecastBufferDays?: number;
     dependencyIds?: string[];
     sensorId?: string | null;
     controllableActionId?: string | null;
@@ -239,3 +247,47 @@ export const DEFAULT_ENERGY_THRESHOLDS: EnergyThresholds = {
     gridDisconnectPercent: 50,
     batteryMaxWh: 1600 // 1.6 kWh in Wh
 };
+
+/**
+ * Battery SoC Data Point - in Watt-hours (Wh)
+ */
+export interface BatterySoCDataPoint {
+    timestamp: string;
+    value_wh: number;
+}
+
+/**
+ * Battery SoC Forecast Data - contains expected, worst_case and best_case forecasts
+ */
+export interface BatterySoCForecast {
+    expected: BatterySoCDataPoint[];
+    worst_case: BatterySoCDataPoint[];
+    best_case: BatterySoCDataPoint[];
+}
+
+/**
+ * Energy Graph Data - battery SoC forecast for energy dashboard
+ */
+export interface EnergyGraphData {
+    battery_soc: BatterySoCForecast;
+    battery_max_wh: number;
+}
+
+/**
+ * Extended Energy Dashboard with Graph Data
+ */
+export interface EnergyDashboardWithGraphData extends EnergyDashboard {
+    graph_data?: EnergyGraphData;
+}
+
+/**
+ * Battery State Response
+ */
+export interface BatteryState {
+    battery_level_wh: number;
+    percentage: number;
+    max_wh: number;
+    last_updated: string | null;
+    source_name: string;
+    source_id: string;
+}
